@@ -1,0 +1,46 @@
+POST http://localhost:5000/api/register
+Content-Type: application/json
+
+{
+"username":"nguyentanmai2",
+"password":"123456",
+ "name":"tanmai","avatar":"dajdwd", "street":"myhoa", "province":"tiengiang", "school":"CSC", "email":"killdogvinam@gmail.com" ,"districts":"huyen_chau_thanh","province":"tinh_tien_giang","school":"truong_dai_hoc_tien_giang_tcn"
+}
+
+###
+GET http://localhost:5000/api/
+###
+POST http://localhost:5000/api/login
+Content-Type: application/json
+
+{
+    "username":"nguyentanmai2",
+    "password":"123456"
+}
+###
+GET http://localhost:5000/api/checkAuthorization
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyODlmMWMyZTVkMWY0MDdiMGEyNzFmIiwiaWF0IjoxNjMwMDU1MTY5LCJleHAiOjE2MzAyMjc5Njl9.oWeci9oDo-_JObUscH1D1tYMJ3117OqX-KG0LNPkT28
+
+###
+POST http://localhost:5000/api/forgot-password
+Content-Type: application/json
+
+{
+    "email":"tanmaijnguyen@gmail.com"
+}
+###
+GET http://localhost:5000/api/reset-password/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyODlmMWMyZTVkMWY0MDdiMGEyNzFmIiwiaWF0IjoxNjMwMDY1NzAwLCJleHAiOjE2MzAwNjc1MDB9.lb24sbXuHo5ylAASqCPc0tB8V4L7Sr7iXbBPhmzEce4
+
+
+###
+POST http://localhost:5000/api/reset-password/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyODlmMWMyZTVkMWY0MDdiMGEyNzFmIiwiaWF0IjoxNjMwMDY1NzAwLCJleHAiOjE2MzAwNjc1MDB9.lb24sbXuHo5ylAASqCPc0tB8V4L7Sr7iXbBPhmzEce4
+Content-Type: application/json
+
+{
+    "newPassword":"01234"
+}
+###
+GET http://localhost:5000/api/province
+
+
+###
