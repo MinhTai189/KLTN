@@ -2,7 +2,7 @@ import { Container, makeStyles } from '@material-ui/core';
 import axiosClient from 'api/axiosClent';
 import { useAppDispatch } from 'app/hooks';
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { SetStateAction, useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { authActions } from './authSlice';
 import ForgotPasswork from './components/ForgotPasswork';
@@ -25,8 +25,7 @@ const useStyles = makeStyles(theme => ({
 export default function Auth() {
     const classes = useStyles();
     const dispatch = useAppDispatch();
-    const [avatarUrl, setAvatarUrl] = useState('');
-    const [loadingUploadAvatar, setLoadingUploadAvatar] = useState(false);
+    const [formAvatarUrl, setFormAvatarUrl] = useState<FormData>();
     const [rememberMe, setRememberMe] = useState<boolean>(false)
 
     const handleSubmitLogin = (data: LoginData) => {
@@ -34,8 +33,7 @@ export default function Auth() {
     }
 
     const handleSubmitRegister = (data: RegisterData) => {
-        console.log("regis");
-
+        console.log("regis", formAvatarUrl);
     }
     const handleSubmitForgotPassword = async (data: ForgotPasswordData) => {
         try {
@@ -46,18 +44,14 @@ export default function Auth() {
         }
     }
 
-    const handleUploadAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleUploadAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files ? e.target.files : []
         console.log(files);
 
         const data = new FormData();
         data.append('file', files[0])
         data.append('upload_preset', 'user-avatar')
-        setLoadingUploadAvatar(true);
-        const dataAvatar = await axios.post('https://api.cloudinary.com/v1_1/kltn/image/upload', data)
-
-        setAvatarUrl(dataAvatar.data.secure_url)
-        setLoadingUploadAvatar(false)
+        setFormAvatarUrl(data)
     }
 
     const handleSubmitResetPassword = (data: ResetPasswordData) => {

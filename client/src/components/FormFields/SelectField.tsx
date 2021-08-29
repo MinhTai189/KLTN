@@ -20,10 +20,9 @@ export const SelectField = ({ label, name, control, ...props }: Props) => {
 
     return (
         <FormControl variant="outlined" fullWidth margin="normal">
-            <InputLabel id="demo-simple-select-outlined-label">{label}</InputLabel>
+            <InputLabel>{label}</InputLabel>
             <Select
                 labelId="demo-simple-select-outlined-label"
-                id="demo-simple-select-outlined"
                 value={value}
                 onChange={onChange}
                 onBlur={onBlur}

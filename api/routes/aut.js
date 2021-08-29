@@ -117,7 +117,7 @@ router.post("/forgot-password", async (req, res) => {
         margin-right: 10px;
         border:2px #00189e solid;
         color: #00189e;
-        font-size: 18px;" href="${process.env.ORIGIN}/reset-password/${forgotPasswordToken}"> Lấy lại mật khẩu
+        font-size: 18px;" href="${process.env.ORIGIN}/auth/reset-password/${forgotPasswordToken}"> Lấy lại mật khẩu
       </a>
       </div>
       </div></div>`,
