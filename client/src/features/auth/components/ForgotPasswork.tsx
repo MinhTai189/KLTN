@@ -1,7 +1,6 @@
 import { Box, Button, makeStyles, Typography } from '@material-ui/core'
 import { AlternateEmail } from '@material-ui/icons'
 import { InputField } from 'components/FormFields'
-import React from 'react'
 import { useForm } from 'react-hook-form'
 import { ForgotPasswordData } from '../models'
 import Header from './Header'
@@ -42,10 +41,6 @@ const ForgotPasswork = ({ onSubmit }: Props) => {
                             Xác nhận
                         </Button>
                     </Box>
-
-                    <Typography color='primary'>
-                        Gửi lại mã xác nhận
-                    </Typography>
                 </form>
             </Box>
         </Box>

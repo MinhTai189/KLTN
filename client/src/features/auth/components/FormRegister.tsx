@@ -1,17 +1,20 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import { Box, Button, Grid, makeStyles, Typography } from '@material-ui/core'
 import { PersonOutline } from '@material-ui/icons'
+import { FileInputField } from 'components/FormFields/FileInputField'
 import React, { ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
+import * as yup from 'yup'
 import { InputField, InputPasswordField } from '../../../components/FormFields'
 import { SelectField } from '../../../components/FormFields/SelectField'
 import { RegisterData } from '../models'
 import Header from './Header'
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
+
 
 interface Props {
-    onSubmit: (data: RegisterData) => void
+    onSubmit: (data: RegisterData) => void;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const initialRegisterData: RegisterData = {
@@ -93,7 +96,7 @@ const schema = yup.object().shape({
         .max(15, "Tối thiểu 15 ký tự")
 })
 
-function FormRegister({ onSubmit }: Props): ReactElement {
+function FormRegister({ onSubmit, onChange }: Props): ReactElement {
     const classes = useStyles()
     const { control, handleSubmit } = useForm<RegisterData>({
         defaultValues: initialRegisterData,
@@ -140,7 +143,7 @@ function FormRegister({ onSubmit }: Props): ReactElement {
 
                                 <SelectField label='Trường' name='school' control={control} />
 
-                                <InputField name='avatarUrl' control={control} type="file" label='Ảnh đại diện' required={true} />
+                                <FileInputField name='avatarUrl' onChange={onChange} label='Ảnh đại diện' accept='.png, .jpg, .jpeg' />
                             </Box>
                         </Grid>
                     </Grid>
