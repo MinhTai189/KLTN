@@ -6,7 +6,7 @@ const Province = require("../models/province");
 const School = require("../models/school");
 
 router.get("/province", async(req, res) => {
-    //Lấy tất cả tỉnh http://localhost:5000/api/schoolData/province
+    //Lấy tất cả tỉnh http://localhost:5000/api/province
     try {
         const province = await Province.find({});
         res.status(200).json({ success: true, data: province });
@@ -16,7 +16,7 @@ router.get("/province", async(req, res) => {
 });
 router.get("/districts", async(req, res) => {
     try {
-        // Lấy quận huyện http://localhost:5000/api/schoolData/districts/?code=mã tỉnh
+        // Lấy quận huyện http://localhost:5000/api/districts/?code=mã tỉnh
         const codeProvince = req.query.code;
         const districts = await Districts.find({ codeProvince }).select(
             "-codeProvince"
@@ -29,7 +29,7 @@ router.get("/districts", async(req, res) => {
 });
 router.get("/school", async(req, res) => {
     try {
-        //Lậy trường http://localhost:5000/api/schoolData/school/?code=mã quận huyện
+        //Lậy trường http://localhost:5000/api/school/?code=mã quận huyện
         const codeDistricts = req.query.code;
         const school = await School.find({ codeDistricts });
         res.status(200).json({ success: true, data: school });
