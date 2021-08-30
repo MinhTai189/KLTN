@@ -5,7 +5,7 @@ const user = require("../models/user");
 const JWT = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
-router.post("/reset-password/:key", async (req, res) => {
+router.post("/reset-password/:key", async(req, res) => {
     const token = req.params.key; // Lấy key
     const { newPassword } = req.body; //Lấy mật khẩu mới
     let data;
@@ -34,7 +34,7 @@ router.post("/reset-password/:key", async (req, res) => {
 router.get("/reset-password/:key", (req, res) => {
     //Route kiểm tra key
     const token = req.params.key;
-    JWT.verify(token, process.env.forgotPasswordToken, async (err, data) => {
+    JWT.verify(token, process.env.forgotPasswordToken, async(err, data) => {
         if (err) {
             //Nếu không đúng
 
@@ -44,11 +44,28 @@ router.get("/reset-password/:key", (req, res) => {
         }
         const userLogin = await user.findById(data.user);
         if (userLogin)
-            //nếu đúng
+        //nếu đúng
             return res.status(200).json({ success: true, message: "Key is true" });
     });
 });
-router.post("/forgot-password", async (req, res) => {
+router.post("/refesh-token", (req, res) => {
+    const { refeshToken } = req.body;
+    JWT.verify(refeshToken, process.env.refeshToken, (err, data) => {
+        console.log(data);
+        if (err)
+            return res
+                .status(400)
+                .json({ success: false, message: "refeshToken is false" });
+        const accessToken = JWT.sign({ user: data.user }, process.env.accessToken, {
+            expiresIn: "10m",
+        });
+        const refeshToken = JWT.sign({ user: data.user }, process.env.refeshToken);
+        res
+            .status(200)
+            .json({ success: true, message: "thanh cong", accessToken, refeshToken });
+    });
+});
+router.post("/forgot-password", async(req, res) => {
     //Route quên mật khẩu, nhận mail, xác thực
     const { email } = req.body; //lấy email
     const User = await user.findOne({ email: email });
@@ -60,7 +77,7 @@ router.post("/forgot-password", async (req, res) => {
     }
     //Cung cấp key (30 phút)
     const forgotPasswordToken = JWT.sign({ user: User._id },
-        process.env.forgotPasswordToken, { expiresIn: "30m" }
+        process.env.forgotPasswordToken, { expiresIn: "10m" }
     );
     const transporter = nodemailer.createTransport({
         // config mail
@@ -122,7 +139,7 @@ router.post("/forgot-password", async (req, res) => {
       </div>
       </div></div>`,
     };
-    transporter.sendMail(mainOptions, function (err, info) {
+    transporter.sendMail(mainOptions, function(err, info) {
         //tiến hành gửi mail
         if (err) {
             return res
@@ -134,7 +151,7 @@ router.post("/forgot-password", async (req, res) => {
     });
 });
 
-router.post("/register", async (req, res) => {
+router.post("/register", async(req, res) => {
     const {
         username,
         password,
@@ -180,7 +197,7 @@ router.post("/register", async (req, res) => {
 });
 
 //đăng nhập
-router.post("/login", async (req, res) => {
+router.post("/login", async(req, res) => {
     const { username, password } = req.body;
 
     const checkUser = await user.findOne({ username });
@@ -193,7 +210,10 @@ router.post("/login", async (req, res) => {
     //good
     try {
         const accessToken = JWT.sign({ user: checkUser._id },
-            process.env.accessToken, { expiresIn: "2d" }
+            process.env.accessToken, { expiresIn: "30m" }
+        );
+        const refeshToken = JWT.sign({ user: checkUser._id },
+            process.env.refeshToken
         );
         const newData = await user.findById(checkUser._id).select("-password");
         if (accessToken)
@@ -201,6 +221,7 @@ router.post("/login", async (req, res) => {
                 success: true,
                 message: "thanh cong",
                 accessToken,
+                refeshToken,
                 data: newData,
             });
     } catch (error) {
