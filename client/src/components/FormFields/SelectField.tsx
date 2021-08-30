@@ -1,42 +1,51 @@
-import { FormHelperText } from '@material-ui/core';
+import { FormHelperText, makeStyles } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import React from 'react';
+import { School } from 'models';
 import { Control, useController } from 'react-hook-form';
 
 interface Props {
     label: string;
     name: string;
-    control: Control<any>
+    control: Control<any>;
+    options: Array<School>;
+    disabled: boolean;
 }
 
-export const SelectField = ({ label, name, control, ...props }: Props) => {
-    const { field: { value, onChange, onBlur, ref }, fieldState: { invalid, error } } = useController({
+const useStyles = makeStyles(theme => ({
+    root: {
+        marginTop: theme.spacing(3.3),
+        marginBottom: theme.spacing(1.4),
+    }
+}))
+
+export const SelectField = ({ label, name, control, options, disabled, ...props }: Props) => {
+    const classes = useStyles()
+    const { field: { value, onChange, onBlur, ref } } = useController({
         name,
         control
     })
 
     return (
-        <FormControl variant="outlined" fullWidth margin="normal">
-            <InputLabel id="demo-simple-select-outlined-label">{label}</InputLabel>
+        <FormControl className={classes.root} variant="outlined" fullWidth disabled={disabled}>
+            <InputLabel>{label}</InputLabel>
             <Select
                 labelId="demo-simple-select-outlined-label"
-                id="demo-simple-select-outlined"
                 value={value}
                 onChange={onChange}
                 onBlur={onBlur}
                 inputRef={ref}
-                error={invalid}
                 label={label}
                 inputProps={props}
             >
-                <MenuItem value={10}>Thành phố Mỹ Tho</MenuItem>
-                <MenuItem value={20}>Châu Thành</MenuItem>
-                <MenuItem value={30}>Bến Tre</MenuItem>
+                {
+                    options.map(option => (
+                        <MenuItem key={option._id} value={option.codeName}>{option.name}</MenuItem>
+                    ))
+                }
             </Select>
-            <FormHelperText id="component-error-text">{error?.message}</FormHelperText>
         </FormControl>
     )
 }

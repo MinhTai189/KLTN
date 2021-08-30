@@ -25,7 +25,6 @@ export const FileInputField = ({ name, label, onChange, ...props }: Props) => {
         type="file"
         fullWidth
         margin="normal"
-        id="outlined-search"
         variant="outlined"
         name={name}
         label={label}

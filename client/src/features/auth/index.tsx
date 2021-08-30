@@ -3,7 +3,7 @@ import axiosClient from 'api/axiosClent';
 import { useAppDispatch } from 'app/hooks';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import { authActions } from './authSlice';
 import ForgotPasswork from './components/ForgotPasswork';
 import FormLogin from './components/FormLogin';
@@ -24,17 +24,36 @@ const useStyles = makeStyles(theme => ({
 
 export default function Auth() {
     const classes = useStyles();
+    const history = useHistory();
     const dispatch = useAppDispatch();
-    const [avatarUrl, setAvatarUrl] = useState('');
-    const [loadingUploadAvatar, setLoadingUploadAvatar] = useState(false);
+    const [formAvatar, setFormAvatar] = useState<FormData>();
     const [rememberMe, setRememberMe] = useState<boolean>(false)
 
     const handleSubmitLogin = (data: LoginData) => {
         dispatch(authActions.login({ ...data, rememberMe }))
     }
 
-    const handleSubmitRegister = (data: RegisterData) => {
-        console.log("regis");
+    const handleSubmitRegister = async (data: RegisterData) => {
+        if (!formAvatar) {
+            data.avatarUrl = '../../assets/images/avatar-default.jpg';
+        }
+        else {
+            try {
+                const response = await axios.post('https://api.cloudinary.com/v1_1/kltn/image/upload', formAvatar)
+                data.avatarUrl = response.data.secure_url
+            }
+            catch (err) {
+                console.log('Can not upload avatar', err.message);
+            }
+        }
+
+        try {
+            await axiosClient.post('/register', data)
+            history.push('/auth/login');
+        }
+        catch (err) {
+            console.log("Can not register account", err.message);
+        }
 
     }
     const handleSubmitForgotPassword = async (data: ForgotPasswordData) => {
@@ -46,18 +65,13 @@ export default function Auth() {
         }
     }
 
-    const handleUploadAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleUploadAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files ? e.target.files : []
-        console.log(files);
 
-        const data = new FormData();
-        data.append('file', files[0])
-        data.append('upload_preset', 'user-avatar')
-        setLoadingUploadAvatar(true);
-        const dataAvatar = await axios.post('https://api.cloudinary.com/v1_1/kltn/image/upload', data)
-
-        setAvatarUrl(dataAvatar.data.secure_url)
-        setLoadingUploadAvatar(false)
+        const form = new FormData();
+        form.append('file', files[0])
+        form.append('upload_preset', 'user-avatar')
+        setFormAvatar(form)
     }
 
     const handleSubmitResetPassword = (data: ResetPasswordData) => {

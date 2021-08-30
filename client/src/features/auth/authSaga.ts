@@ -1,22 +1,19 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import axiosClient from 'api/axiosClent';
-import { User } from 'models';
+import { push } from 'connected-react-router';
+import { Response, User } from 'models';
 import { call, fork, put, take } from 'redux-saga/effects';
 import { authActions } from './authSlice';
-import { LoginData, LoginResponse } from './models';
-import { push } from 'connected-react-router';
+import { LoginData } from './models';
 
 function* handleLogin(payload: LoginData) {
   try {
-    const responseData: LoginResponse = yield axiosClient.post('/login', {
+    const responseData: Response<User> = yield axiosClient.post('/login', {
       username: payload.username,
       password: payload.password,
     });
 
-    const userData: User = {
-      ...responseData.data,
-      accessToken: responseData.accessToken,
-    };
+    const userData: User = responseData.data;
 
     payload.rememberMe && localStorage.setItem('user', JSON.stringify(userData));
 

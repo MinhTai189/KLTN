@@ -1,4 +1,4 @@
-import { Box, Button, makeStyles, Typography } from '@material-ui/core'
+import { Box, Button, makeStyles } from '@material-ui/core'
 import { AlternateEmail } from '@material-ui/icons'
 import { InputField } from 'components/FormFields'
 import { useForm } from 'react-hook-form'

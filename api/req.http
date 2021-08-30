@@ -45,7 +45,11 @@ Content-Type: application/json
     "newPassword":"01234"
 }
 ###
-GET http://localhost:5000/api/province
+GET http://localhost:5000/api/provinces
+###
 
+GET http://localhost:5000/api/districts?province=thanh_pho_ha_noi
 
 ###
+
+GET http://localhost:5000/api/schools?province=thanh_pho_ho_chi_minh&district=quan_9

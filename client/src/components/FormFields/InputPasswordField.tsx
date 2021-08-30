@@ -35,7 +35,6 @@ export const InputPasswordField = ({ label, labelWidth, name, control, ...props 
         <FormControl variant="outlined" fullWidth margin='normal'>
             <InputLabel htmlFor="outlined-adornment-password">{label}</InputLabel>
             <OutlinedInput
-                id="outlined-adornment-password"
                 type={showPassword ? 'text' : 'password'}
                 value={value}
                 onChange={onChange}

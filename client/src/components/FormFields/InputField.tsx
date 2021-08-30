@@ -22,7 +22,6 @@ export const InputField = ({ type, label, name, control, ...props }: Props) => {
         <TextField
             fullWidth
             margin="normal"
-            id="outlined-search"
             label={label}
             type={type}
             variant="outlined"
