@@ -16,15 +16,15 @@ const corsOpts = {
     ],
 };
 
-const connectDB = async () => {
+const connectDB = async() => {
     try {
         await Mongoose.connect(
             `mongodb+srv://${process.env.MONGO_CONNECT_USERNAME}:${process.env.MONGO_CONNECT_PASSWORD}@kltn.w0whk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`, {
-            //  useCreateIndex: true,
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            //  useFindAndModify: false,
-        }
+                //  useCreateIndex: true,
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+                //  useFindAndModify: false,
+            }
         );
         console.log("db ok");
     } catch (error) {
