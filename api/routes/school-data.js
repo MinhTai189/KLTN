@@ -5,7 +5,7 @@ const Province = require("../models/province");
 
 const School = require("../models/school");
 
-router.get("/province", async(req, res) => {
+router.get("/provinces", async (req, res) => {
     //Lấy tất cả tỉnh http://localhost:5000/api/province
     try {
         const province = await Province.find({});
@@ -14,11 +14,11 @@ router.get("/province", async(req, res) => {
         res.status(404).json({ success: false, message: "error 404" });
     }
 });
-router.get("/district", async(req, res) => {
+router.get("/districts", async (req, res) => {
     try {
         // Lấy quận huyện http://localhost:5000/api/districts/?province=mã tỉnh
         const codeProvince = req.query.province;
-        const districts = await Districts.find({ province }).select(
+        const districts = await Districts.find({ codeProvince }).select(
             "-codeProvince"
         );
 
@@ -28,7 +28,7 @@ router.get("/district", async(req, res) => {
     }
 });
 
-router.get("/school", async(req, res) => {
+router.get("/schools", async (req, res) => {
     try {
         //Lậy trường http://localhost:5000/api/school/?province=tinh&district=quan
         //Neu muon lay tat ca truong http://localhost:5000/api/school/
