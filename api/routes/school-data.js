@@ -18,7 +18,7 @@ router.get("/district", async(req, res) => {
     try {
         // Lấy quận huyện http://localhost:5000/api/districts/?province=mã tỉnh
         const codeProvince = req.query.province;
-        const districts = await Districts.find({ province }).select(
+        const districts = await Districts.find({ codeProvince }).select(
             "-codeProvince"
         );
 
