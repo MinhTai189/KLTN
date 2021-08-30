@@ -9,7 +9,7 @@ import ForgotPasswork from './components/ForgotPasswork';
 import FormLogin from './components/FormLogin';
 import FormRegister from './components/FormRegister';
 import ResetPassword from './components/ResetPassword';
-import { ForgotPasswordData, LoginData, RegisterData, ResetPasswordData } from './models';
+import { ForgotPasswordData, LoginData, RegisterData } from './models';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -26,6 +26,7 @@ export default function Auth() {
     const classes = useStyles();
     const history = useHistory();
     const dispatch = useAppDispatch();
+
     const [formAvatar, setFormAvatar] = useState<FormData>();
     const [rememberMe, setRememberMe] = useState<boolean>(false)
 
@@ -74,10 +75,6 @@ export default function Auth() {
         setFormAvatar(form)
     }
 
-    const handleSubmitResetPassword = (data: ResetPasswordData) => {
-        console.log('data reset password', data)
-    }
-
     return (
         <Container className={classes.root}>
             <Switch>
@@ -93,8 +90,8 @@ export default function Auth() {
                     <ForgotPasswork onSubmit={handleSubmitForgotPassword} />
                 </Route>
 
-                <Route path="/auth/reset-password">
-                    <ResetPassword onSubmit={handleSubmitResetPassword} />
+                <Route path="/auth/reset-password/:token">
+                    <ResetPassword />
                 </Route>
             </Switch>
         </Container>

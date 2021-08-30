@@ -1,13 +1,13 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import { Box, Button, makeStyles } from '@material-ui/core'
 import { Lock } from '@material-ui/icons'
+import axiosClient from 'api/axiosClent'
 import { InputPasswordField } from 'components/FormFields'
+import { useForm } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
+import * as yup from 'yup'
 import { ResetPasswordData } from '../models'
 import Header from './Header'
-import { useForm } from 'react-hook-form'
-
-interface Props {
-    onSubmit: (data: ResetPasswordData) => void
-}
 
 const intialResetPasswordData: ResetPasswordData = {
     password: '',
@@ -23,12 +23,43 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
+const schema = yup.object().shape({
+    password: yup
+        .string()
+        .min(6, 'Mật khẩu tối thiểu 6 ký tự')
+        .max(15, "Mật khẩu tối đa 15 ký tự")
+        .trim('Không được chứa khoảng trắng ở đầu và cuối')
+        .strict(),
+    confirmPassword: yup
+        .string()
+        .test('passwords-match', 'Mật khẩu xác thực không chính xác', function (value) {
+            return this.parent.password === value
+        }),
+})
 
-const ResetPassword = ({ onSubmit }: Props) => {
+interface Token {
+    token: string
+}
+
+const ResetPassword = () => {
     const classes = useStyles()
+    const { token } = useParams<Token>()
     const { control, handleSubmit } = useForm<ResetPasswordData>({
-        defaultValues: intialResetPasswordData
+        defaultValues: intialResetPasswordData,
+        resolver: yupResolver(schema),
     })
+
+    const onSubmit = async (data: ResetPasswordData) => {
+        try {
+            await axiosClient.post('/reset-password', {
+                password: data.password,
+                token
+            })
+        }
+        catch (err) {
+            console.log('reset password', err.message);
+        }
+    }
 
     return (
         <Box className={classes.root}>

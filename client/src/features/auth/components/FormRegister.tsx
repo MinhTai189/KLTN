@@ -89,16 +89,20 @@ const schema = yup.object().shape({
     email: yup
         .string()
         .email('Hãy kiểm tra lại email'),
-    fristName: yup
+    name: yup
         .string()
         .trim('Không được chứa khoảng trắng ở đầu và cuối')
         .strict()
         .max(30, "Tối thiểu 30 ký tự"),
-    lastName: yup
+    province: yup
         .string()
-        .trim('Không được chứa khoảng trắng ở đầu và cuối')
-        .strict()
-        .max(15, "Tối thiểu 15 ký tự")
+        .required(),
+    district: yup
+        .string()
+        .required(),
+    school: yup
+        .string()
+        .required('Hãy chọn đủ Tỉnh, Quận/Huyện/TP và Trường')
 })
 
 const changeNameProvince = (name: string) => {
@@ -123,7 +127,7 @@ function FormRegister({ onSubmit, onChange }: Props): ReactElement {
     const [optionsDistrict, setOptionsDistrict] = useState<Array<District>>([]);
     const [optionsSchool, setOptionsSchool] = useState<Array<School>>([]);
 
-    const { control, handleSubmit } = useForm<RegisterData>({
+    const { control, handleSubmit, setValue } = useForm<RegisterData>({
         defaultValues: initialRegisterData,
         resolver: yupResolver(schema),
     })
@@ -141,6 +145,7 @@ function FormRegister({ onSubmit, onChange }: Props): ReactElement {
     const handleProvinceSelected = async (e: any, value: Province) => {
         if (value?.codeName) {
             setProvince(value.codeName)
+            setValue('province', value.codeName)
 
             const response: ListResponse<District> = await districtApi.getByCodeProvince(value.codeName);
             setOptionsDistrict(response.data);
@@ -149,12 +154,11 @@ function FormRegister({ onSubmit, onChange }: Props): ReactElement {
 
     const handleDistrictSelected = async (e: any, value: District) => {
         if (value?.codeName) {
-            setProvince(value.codeName)
+            setDistrict(value.codeName)
+            setValue('district', value.codeName)
 
             const response: ListResponse<School> = await schoolApi.getByProDis(province, value.codeName)
             setOptionsSchool(response.data);
-            console.log('school', response.data);
-
         }
     }
 
@@ -171,10 +175,10 @@ function FormRegister({ onSubmit, onChange }: Props): ReactElement {
                             </Typography>
 
                             <Box>
-                                <InputField type="text" control={control} name='username' label='Tài khoản' required={true} />
+                                <InputField type="text" control={control} name='username' label='Tài khoản*' required={true} />
 
-                                <InputPasswordField name='password' control={control} label='Mật khẩu' labelWidth={70} required={true} />
-                                <InputPasswordField name='confirmPassword' control={control} label='Xác nhận mật khẩu' labelWidth={140} required={true} />
+                                <InputPasswordField name='password' control={control} label='Mật khẩu*' labelWidth={70} required={true} />
+                                <InputPasswordField name='confirmPassword' control={control} label='Xác nhận mật khẩu*' labelWidth={140} required={true} />
 
                                 <InputField type="email" control={control} name='email' label='Email' required={true} />
                             </Box>
@@ -185,18 +189,18 @@ function FormRegister({ onSubmit, onChange }: Props): ReactElement {
                             </Typography>
 
                             <Box>
-                                <InputField type="text" control={control} name='name' label='Họ và tên' required={true} />
+                                <InputField type="text" control={control} name='name' label='Họ và tên*' required={true} />
 
                                 <Grid container justifyContent='space-between'>
                                     <Grid item xs={12} md={6}>
-                                        <AutoCompleteField label="Tỉnh" title='name' onChange={handleProvinceSelected} options={optionsProvince} disabled={optionsProvince.length === 0 ? true : false} />
+                                        <AutoCompleteField label="Tỉnh*" title='name' onChange={handleProvinceSelected} options={optionsProvince} disabled={optionsProvince.length === 0 ? true : false} />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
-                                        <AutoCompleteField label="Quận/Huyện/TP" title='name' onChange={handleDistrictSelected} options={optionsDistrict} disabled={optionsDistrict.length === 0 ? true : false} />
+                                        <AutoCompleteField label="Quận/Huyện/TP*" title='name' onChange={handleDistrictSelected} options={optionsDistrict} disabled={optionsDistrict.length === 0 ? true : false} />
                                     </Grid>
                                 </Grid>
 
-                                <SelectField label='Trường' name='school' control={control} disabled={optionsSchool.length === 0 ? true : false} options={optionsSchool} />
+                                <SelectField label='Trường*' name='school' control={control} disabled={optionsSchool.length === 0 ? true : false} options={optionsSchool} />
 
                                 <FileInputField name='avatarUrl' onChange={onChange} label='Ảnh đại diện' accept='.png, .jpg, .jpeg' />
                             </Box>
