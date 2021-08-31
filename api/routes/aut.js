@@ -213,19 +213,12 @@ router.post("/login", async(req, res) => {
     if (userID) {
         const User = await user.findById(userID).select("-password");
         if (User) {
-            const id = uuid.v4();
-            const refeshToken = JWT.sign({ user: User._id },
-                process.env.refeshToken + id
-            );
-            refeshTokens.push({ id, refeshToken });
-
             return res.status(200).json({
                 success: true,
                 message: "thanh cong 2",
                 data: {
                     ...User,
                     accessToken,
-                    refeshToken,
                 },
             });
         }
