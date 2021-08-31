@@ -34,42 +34,46 @@ router.post("/reset-password", async (req, res) => {
     }
 });
 
-const checkToken = (token) => {
-    for (let i = 0; i < refeshTokens.length; i++)
-        if (refeshTokens[i].refeshToken == token) return refeshTokens[i];
-    return undefined;
-};
+// const checkToken = (token) => {
+//     for (let i = 0; i < refeshTokens.length; i++)
+//         if (refeshTokens[i].refeshToken == token) return refeshTokens[i];
+//     return undefined;
+// };
 router.post("/refesh-token", (req, res) => {
     const { refeshToken } = req.body;
-
-    const check = checkToken(refeshToken);
+    console.log(refeshTokens)
+    const check = refeshTokens.find(x => x.refeshToken === refeshToken);
 
     if (!check)
-        return res.status(403).json({ success: false, message: "token is false" });
+        return res.status(403).json({ success: false, message: "refeshToken is false" });
 
-    JWT.verify(refeshToken, process.env.refeshToken + check.id, (err, data) => {
+    JWT.verify(refeshToken, check.key, (err, data) => {
         if (err)
             return res
                 .status(400)
                 .json({ success: false, message: "refeshToken is false" });
+
         const accessToken = JWT.sign({ user: data.user }, process.env.accessToken, {
-            expiresIn: "30m",
+            expiresIn: "50m",
         });
 
-        const newId = uuid.v4();
+        const key = uuid.v4();
         const newRefeshToken = JWT.sign({ user: data.user },
-            process.env.refeshToken + newId
+            key
         );
+
         refeshTokens = refeshTokens.filter((item) => {
-            return item.id !== check.id;
+            return item.key !== check.key;
         });
-        refeshTokens.push({ id: newId, refeshToken: newRefeshToken });
+        refeshTokens.push({ key, refeshToken: newRefeshToken });
 
         res.status(200).json({
             success: true,
             message: "thanh cong",
-            accessToken,
-            refeshToken: newRefeshToken,
+            data: {
+                accessToken,
+                refeshToken: newRefeshToken,
+            }
         });
     });
 });
@@ -202,83 +206,62 @@ router.post("/register", async (req, res) => {
 });
 
 //đăng nhập
-<<<<<<< HEAD
 router.post("/login", async (req, res) => {
-    const { username, password } = req.body;
-
-    try {
-        const checkUser = await user.findOne({ username });
-
-        if (checkUser === null)
-            return res.status(404).json({ success: false, message: "username isn't exist" });
-
-        const pass = await argon2.verify(checkUser.password, password);
-        if (!pass) return res.status(404).json({ success: false, message: "password is false" });
-
-=======
-router.post("/login", async(req, res) => {
     const { username, password, accessToken } = req.body;
     let userID = undefined;
-    if (accessToken) {
-        JWT.verify(accessToken, process.env.accessToken, async(err, data) => {
-            if (err) return;
-            userID = data.user;
-        });
-    }
-    if (userID) {
-        const User = await user.findById(userID).select("-password");
-        if (User) {
-            return res.status(200).json({
-                success: true,
-                message: "thanh cong 2",
-                data: {
-                    ...User,
-                    accessToken,
-                },
-            });
-        }
-    }
-    const checkUser = await user.findOne({ username });
+    let checkUser;
 
-    if (checkUser == null)
-        return res
-            .status(404)
-            .json({ success: false, message: "username isn't exist" });
-
-    const pass = await argon2.verify(checkUser.password, password);
-    if (!pass)
-        return res
-            .status(404)
-            .json({ success: false, message: "password is false" });
-    //good
     try {
->>>>>>> 904bb2c80fdfbb79b1d5bc249be7aae848c50606
-        const accessToken = JWT.sign({ user: checkUser._id },
-            process.env.accessToken, { expiresIn: "5m" }
-        );
-        const id = uuid.v4();
-        const refeshToken = JWT.sign({ user: checkUser._id },
-            process.env.refeshToken + id
-        );
-<<<<<<< HEAD
+        if (accessToken) {
 
-        if (checkUser)
-=======
-        refeshTokens.push({ id, refeshToken });
-        const newData = await user.findById(checkUser._id).select("-password");
-        if (accessToken)
->>>>>>> 904bb2c80fdfbb79b1d5bc249be7aae848c50606
-            res.status(200).json({
-                success: true,
-                message: "thanh cong",
-                data: {
-                    ...checkUser._doc,
-                    accessToken,
-                    refeshToken,
-                },
+            JWT.verify(accessToken, process.env.accessToken, async (err, data) => {
+                if (err) return;
+                userID = data.user;
+
+
             });
+
+        }
+        else {
+            checkUser = await user.findOne({ username });
+
+            if (checkUser == null)
+                return res
+                    .status(404)
+                    .json({ success: false, message: "username isn't exist" });
+
+            const pass = await argon2.verify(checkUser.password, password);
+            if (!pass)
+                return res
+                    .status(404)
+                    .json({ success: false, message: "password is false" });
+        }
+        if (userID)
+            checkUser = await user.findById(userID);
+
+        const newAccessToken = JWT.sign({ user: checkUser._id },
+            process.env.accessToken, { expiresIn: "50m" }
+        );
+
+        const key = uuid.v4();
+        const newRefeshToken = JWT.sign({ user: checkUser._id },
+            key
+        );
+
+        refeshTokens.push({ key, refeshToken: newRefeshToken });
+
+
+        res.status(200).json({
+            success: true,
+            message: "thanh cong",
+            data: {
+                ...checkUser._doc,
+                accessToken: newAccessToken,
+                refeshToken: newRefeshToken,
+            },
+        });
     } catch (error) {
-        res.status(404).json({ error: "404 Error" });
+        res.status(404).json({ error });
     }
 });
 

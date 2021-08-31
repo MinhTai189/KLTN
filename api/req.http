@@ -20,8 +20,8 @@ Content-Type: application/json
 
 {
     "username":"maideptrai",
-    "password":"123456",
-    "accessToken":"eyJhbGciOdiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyY2MyMjAwNTI3NGQ2ODVlZGJlNGQ3IiwiaWF0IjoxNjMwMzgwMTYxLCJleHAiOjE2MzAzODE5NjF9.0a71HLntDvdNwYs1rFG_G75Ucpp-e53j_YHPoyN7eF4"
+    "password":"123456"
+    //"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyY2MyMjAwNTI3NGQ2ODVlZGJlNGQ3IiwiaWF0IjoxNjMwNDA3NDU5LCJleHAiOjE2MzA0MTA0NTl9.AHec9XXH7CvYX5vFQ2CtEJo_4WAD01DlxUpSzdoTGQw"
 }
 ###
 GET http://localhost:5000/api/checkAuthorization
@@ -60,5 +60,5 @@ POST http://localhost:5000/api/refesh-token
 Content-Type: application/json
 
 {
-    "refeshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyY2MyMjAwNTI3NGQ2ODVlZGJlNGQ3IiwiaWF0IjoxNjMwMzc4MDk2fQ.6PVit8V-WLtIL_4d2oP7sp1xoN71hKPNdsye3k3fNek"
+    "refeshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyY2MyMjAwNTI3NGQ2ODVlZGJlNGQ3IiwiaWF0IjoxNjMwNDA4MTcxfQ.pPkFH4qzL5u_bvcWOr_fBJD8gofrYeZQITMPEbGJyt8"
 }

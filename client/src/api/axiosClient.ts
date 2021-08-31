@@ -26,7 +26,7 @@ axiosClient.interceptors.request.use(
       sessionStorage.getItem('refeshToken') ||
       '';
 
-    if (accessToken) {
+    if (accessToken && refeshToken) {
       const jwt = jwt_decode<any>(accessToken);
       if (new Date(jwt.exp * 1000) < new Date()) {
         const response: Response<RefeshTokenReponse> = await axiosClient.post(

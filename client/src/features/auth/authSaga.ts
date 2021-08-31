@@ -2,16 +2,18 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import axiosClient from 'api/axiosClient';
 import { push } from 'connected-react-router';
 import { Response, User } from 'models';
-import * as Eff from 'redux-saga/effects';
-import { put } from 'redux-saga/effects';
+import { put, takeLatest } from 'redux-saga/effects';
 import { authActions } from './authSlice';
 import { LoginData } from './models';
 
 function* handleLogin(action: PayloadAction<LoginData>) {
+  console.log('zooooooooooo');
+
   try {
     const responseData: Response<User> = yield axiosClient.post('/login', {
       username: action.payload.username,
       password: action.payload.password,
+      accessToken: action.payload.accessToken,
     });
 
     if (action.payload.rememberMe) {
@@ -53,8 +55,6 @@ function* handleLogout() {
 }
 
 export default function* authSaga() {
-  yield takeLeading(authActions.login, handleLogin);
-  yield takeLeading(authActions.logout, handleLogout);
+  yield takeLatest(authActions.login.type, handleLogin);
+  // yield takeLatest(authActions.logout.type, handleLogout);
 }
-
-const takeLeading: any = Eff.takeLeading;

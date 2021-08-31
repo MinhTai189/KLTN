@@ -1,20 +1,21 @@
-import axiosClient from 'api/axiosClient';
 import { useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import Auth from "./features/auth";
+
 function App() {
+  // const curentUser = useAppSelector(selectCurrentUser)
+  // const dispatch = useAppDispatch();
 
   useEffect(() => {
-    (async function autoLogin() {
-      const accessToken = localStorage.getItem('accessToken');
+    // function autoLogin() {
+    //   const accessToken = localStorage.getItem('accessToken');
 
-      if (accessToken) {
-        await axiosClient.post('/login', {
-          accessToken
-        })
-      }
-    })()
+    //   if (accessToken && !curentUser) {
+    //     dispatch(authActions.login({ accessToken, rememberMe: true }))
+    //   }
+    // }
+    // autoLogin();
   }, [])
 
   return (
