@@ -5,9 +5,8 @@ const user = require("../models/user");
 const JWT = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
-router.post("/reset-password/:key", async (req, res) => {
-    const token = req.params.key; // Lấy key
-    const { newPassword } = req.body; //Lấy mật khẩu mới
+router.post("/reset-password", async (req, res) => {
+    const { password, token } = req.body;
     let data;
     JWT.verify(token, process.env.forgotPasswordToken, (err, dataUser) => {
         //Xác thực key
@@ -20,7 +19,7 @@ router.post("/reset-password/:key", async (req, res) => {
         data = dataUser;
     });
     // hash mật khẩu mới
-    const newPasswordHashed = await argon2.hash(newPassword);
+    const newPasswordHashed = await argon2.hash(password);
     try {
         //Cập nhật mật khẩu
         await user.findByIdAndUpdate(data.user, {
@@ -31,23 +30,7 @@ router.post("/reset-password/:key", async (req, res) => {
         return res.status(404);
     }
 });
-router.get("/reset-password/:key", (req, res) => {
-    //Route kiểm tra key
-    const token = req.params.key;
-    JWT.verify(token, process.env.forgotPasswordToken, async (err, data) => {
-        if (err) {
-            //Nếu không đúng
 
-            return res
-                .status(500)
-                .json({ success: false, message: "Key isn't false" });
-        }
-        const userLogin = await user.findById(data.user);
-        if (userLogin)
-            //nếu đúng
-            return res.status(200).json({ success: true, message: "Key is true" });
-    });
-});
 router.post("/refesh-token", (req, res) => {
     const { refeshToken } = req.body;
     JWT.verify(refeshToken, process.env.refeshToken, (err, data) => {
@@ -202,10 +185,10 @@ router.post("/login", async (req, res) => {
     const checkUser = await user.findOne({ username });
 
     if (checkUser == null)
-        return res.json({ success: false, message: "username isn't exist" });
+        return res.status(404).json({ success: false, message: "username isn't exist" });
 
     const pass = await argon2.verify(checkUser.password, password);
-    if (!pass) return res.json({ success: false, message: "password is false" });
+    if (!pass) return res.status(404).json({ success: false, message: "password is false" });
     //good
     try {
         const accessToken = JWT.sign({ user: checkUser._id },

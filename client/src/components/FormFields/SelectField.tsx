@@ -17,13 +17,13 @@ interface Props {
 const useStyles = makeStyles(theme => ({
     root: {
         marginTop: theme.spacing(3.3),
-        marginBottom: theme.spacing(1.4),
+        marginBottom: theme.spacing(1),
     }
 }))
 
 export const SelectField = ({ label, name, control, options, disabled, ...props }: Props) => {
     const classes = useStyles()
-    const { field: { value, onChange, onBlur, ref } } = useController({
+    const { field: { value, onChange, onBlur, ref }, fieldState: { invalid, error } } = useController({
         name,
         control
     })
@@ -39,6 +39,7 @@ export const SelectField = ({ label, name, control, options, disabled, ...props 
                 inputRef={ref}
                 label={label}
                 inputProps={props}
+                error={invalid}
             >
                 {
                     options.map(option => (
@@ -46,6 +47,7 @@ export const SelectField = ({ label, name, control, options, disabled, ...props 
                     ))
                 }
             </Select>
+            <FormHelperText style={{ color: '#f44336' }} id="component-error-text">{error?.message}</FormHelperText>
         </FormControl>
     )
 }
