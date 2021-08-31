@@ -1,5 +1,5 @@
 import { ListResponse, Province } from 'models';
-import axiosClient from './axiosClent';
+import axiosClient from './axiosClient';
 
 const provinceApi = {
   getAll(): Promise<ListResponse<Province>> {

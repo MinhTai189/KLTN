@@ -40,12 +40,17 @@ router.post("/refesh-token", (req, res) => {
                 .status(400)
                 .json({ success: false, message: "refeshToken is false" });
         const accessToken = JWT.sign({ user: data.user }, process.env.accessToken, {
-            expiresIn: "10m",
+            expiresIn: "30m",
         });
         const refeshToken = JWT.sign({ user: data.user }, process.env.refeshToken);
         res
             .status(200)
-            .json({ success: true, message: "thanh cong", accessToken, refeshToken });
+            .json({
+                success: true, message: "thanh cong", data: {
+                    accessToken,
+                    refeshToken
+                }
+            });
     });
 });
 router.post("/forgot-password", async (req, res) => {
@@ -182,28 +187,28 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
-    const checkUser = await user.findOne({ username });
-
-    if (checkUser == null)
-        return res.status(404).json({ success: false, message: "username isn't exist" });
-
-    const pass = await argon2.verify(checkUser.password, password);
-    if (!pass) return res.status(404).json({ success: false, message: "password is false" });
-    //good
     try {
+        const checkUser = await user.findOne({ username });
+
+        if (checkUser === null)
+            return res.status(404).json({ success: false, message: "username isn't exist" });
+
+        const pass = await argon2.verify(checkUser.password, password);
+        if (!pass) return res.status(404).json({ success: false, message: "password is false" });
+
         const accessToken = JWT.sign({ user: checkUser._id },
             process.env.accessToken, { expiresIn: "30m" }
         );
         const refeshToken = JWT.sign({ user: checkUser._id },
             process.env.refeshToken
         );
-        const newData = await user.findById(checkUser._id).select("-password");
-        if (accessToken)
+
+        if (checkUser)
             res.status(200).json({
                 success: true,
                 message: "thanh cong",
                 data: {
-                    ...newData,
+                    ...checkUser._doc,
                     accessToken,
                     refeshToken,
                 }

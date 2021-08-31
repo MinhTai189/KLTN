@@ -1,10 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Box, Button, makeStyles } from '@material-ui/core'
 import { Lock } from '@material-ui/icons'
-import axiosClient from 'api/axiosClent'
+import axiosClient from 'api/axiosClient'
 import { InputPasswordField } from 'components/FormFields'
 import { useForm } from 'react-hook-form'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import * as yup from 'yup'
 import { ResetPasswordData } from '../models'
 import Header from './Header'
@@ -44,6 +44,8 @@ interface Token {
 const ResetPassword = () => {
     const classes = useStyles()
     const { token } = useParams<Token>()
+
+    const history = useHistory()
     const { control, handleSubmit } = useForm<ResetPasswordData>({
         defaultValues: intialResetPasswordData,
         resolver: yupResolver(schema),
@@ -55,6 +57,7 @@ const ResetPassword = () => {
                 password: data.password,
                 token
             })
+            history.push('/auth/login')
         }
         catch (err) {
             console.log('reset password', err.message);

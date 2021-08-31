@@ -1,5 +1,5 @@
 import { District, ListResponse } from 'models';
-import axiosClient from './axiosClent';
+import axiosClient from './axiosClient';
 
 const districtApi = {
   getByCodeProvince(codeProvince: string): Promise<ListResponse<District>> {

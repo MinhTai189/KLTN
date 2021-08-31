@@ -1,5 +1,5 @@
 import { Container, makeStyles } from '@material-ui/core';
-import axiosClient from 'api/axiosClent';
+import axiosClient from 'api/axiosClient';
 import { useAppDispatch } from 'app/hooks';
 import axios from 'axios';
 import React, { useState } from 'react';
@@ -10,6 +10,7 @@ import FormLogin from './components/FormLogin';
 import FormRegister from './components/FormRegister';
 import ResetPassword from './components/ResetPassword';
 import { ForgotPasswordData, LoginData, RegisterData } from './models';
+import { toast } from 'react-toastify';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -55,14 +56,15 @@ export default function Auth() {
         catch (err) {
             console.log("Can not register account", err.message);
         }
-
     }
     const handleSubmitForgotPassword = async (data: ForgotPasswordData) => {
         try {
             await axiosClient.post('/forgot-password', data)
+            toast.success("Mã xác nhận đã được gửi đến email của bạn!!!")
         }
         catch (err) {
             console.log('This is error in forgot password', err.message);
+            toast.error("Gửi mail thất bại!!!")
         }
     }
 

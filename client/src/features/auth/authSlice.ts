@@ -5,6 +5,7 @@ import { LoginData } from './models';
 interface AuthState {
   isLogged: boolean;
   loading: boolean;
+  error: string;
   currentUser?: User;
 }
 
@@ -12,6 +13,7 @@ const initialState: AuthState = {
   isLogged: false,
   loading: false,
   currentUser: undefined,
+  error: '',
 };
 
 const authSlice = createSlice({
@@ -28,6 +30,7 @@ const authSlice = createSlice({
     },
     loginFailed: (state, action: PayloadAction<string>) => {
       state.loading = false;
+      state.error = action.payload;
     },
     logout: (state) => {
       state.isLogged = false;
@@ -43,6 +46,7 @@ export const authActions = authSlice.actions;
 export const selectIsLogged = (state: any) => state.auth.isLogged;
 export const selectLoading = (state: any) => state.auth.loading;
 export const selectCurrentUser = (state: any) => state.auth.currentUser;
+export const selectErr = (state: any) => state.auth.error;
 
 //reducer
 const authReducer = authSlice.reducer;

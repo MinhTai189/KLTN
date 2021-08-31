@@ -1,5 +1,5 @@
 import { ListResponse, School } from 'models';
-import axiosClient from './axiosClent';
+import axiosClient from './axiosClient';
 
 const schoolApi = {
   getByProDis(

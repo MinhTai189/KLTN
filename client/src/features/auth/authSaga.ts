@@ -1,23 +1,40 @@
 import { PayloadAction } from '@reduxjs/toolkit';
-import axiosClient from 'api/axiosClent';
+import axiosClient from 'api/axiosClient';
 import { push } from 'connected-react-router';
 import { Response, User } from 'models';
-import { call, fork, put, take } from 'redux-saga/effects';
+import * as Eff from 'redux-saga/effects';
+import { put } from 'redux-saga/effects';
 import { authActions } from './authSlice';
 import { LoginData } from './models';
 
-function* handleLogin(payload: LoginData) {
+function* handleLogin(action: PayloadAction<LoginData>) {
   try {
     const responseData: Response<User> = yield axiosClient.post('/login', {
-      username: payload.username,
-      password: payload.password,
+      username: action.payload.username,
+      password: action.payload.password,
     });
 
-    const userData: User = responseData.data;
+    if (action.payload.rememberMe) {
+      localStorage.setItem(
+        'accessToken',
+        JSON.stringify(responseData.data.accessToken)
+      );
+      localStorage.setItem(
+        'refeshToken',
+        JSON.stringify(responseData.data.refeshToken)
+      );
+    } else {
+      sessionStorage.setItem(
+        'accessToken',
+        JSON.stringify(responseData.data.accessToken)
+      );
+      sessionStorage.setItem(
+        'refeshToken',
+        JSON.stringify(responseData.data.refeshToken)
+      );
+    }
 
-    payload.rememberMe && localStorage.setItem('user', JSON.stringify(userData));
-
-    yield put(authActions.loginSuccess(userData));
+    yield put(authActions.loginSuccess(responseData.data));
 
     //Redirect to Home page
     yield put(push('/'));
@@ -27,26 +44,17 @@ function* handleLogin(payload: LoginData) {
 }
 
 function* handleLogout() {
-  localStorage.removeItem('user');
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refeshToken');
+  sessionStorage.removeItem('accessToken');
+  sessionStorage.removeItem('refeshToken');
 
   yield put(authActions.logout());
 }
 
-function* workFlowLogin() {
-  while (1) {
-    let userData = true;
-
-    while (userData) {
-      const action: PayloadAction<LoginData> = yield take(authActions.login.type);
-      yield fork(handleLogin, action.payload);
-      userData = !Boolean(localStorage.getItem('user'));
-    }
-
-    yield take(authActions.logout.type);
-    yield call(handleLogout);
-  }
-}
-
 export default function* authSaga() {
-  yield fork(workFlowLogin);
+  yield takeLeading(authActions.login, handleLogin);
+  yield takeLeading(authActions.logout, handleLogout);
 }
+
+const takeLeading: any = Eff.takeLeading;

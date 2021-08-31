@@ -1,11 +1,14 @@
-import { Box, Button, IconButton, makeStyles, Typography } from '@material-ui/core'
+import { Box, Button, IconButton, makeStyles, Typography, CircularProgress } from '@material-ui/core'
 import { LockOpen } from '@material-ui/icons'
+import { Alert } from '@material-ui/lab'
+import { useAppSelector } from 'app/hooks'
 import React, { ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from "react-router-dom"
 import { ReactComponent as Face } from '../../../assets/images/facebook.svg'
 import { ReactComponent as Google } from '../../../assets/images/google.svg'
 import { CheckboxField, InputField, InputPasswordField } from '../../../components/FormFields'
+import { selectErr, selectLoading } from '../authSlice'
 import { LoginData } from '../models'
 import Header from './Header'
 
@@ -54,14 +57,16 @@ const useStyles = makeStyles(theme => ({
 
 function FormLogin({ onSubmit, setRememberMe }: Props): ReactElement {
     const classes = useStyles()
+    const loading = useAppSelector(selectLoading)
     const { control, handleSubmit } = useForm<LoginData>({
         defaultValues: initialLoginData
     })
+    const err = useAppSelector(selectErr)
 
     return (
         <Box className={classes.root}>
             <Header textBtn='ĐĂNG NHẬP' icon={<LockOpen />} />
-
+            {err && <Alert severity="error">Tài khoản hoặc mật khẩu không chính xác!</Alert>}
             <Box>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <InputField type="text" control={control} name='username' label='Tài khoản' required={true} />
@@ -72,7 +77,10 @@ function FormLogin({ onSubmit, setRememberMe }: Props): ReactElement {
                     </Box>
 
                     <Box mt={1}>
-                        <Button type="submit" size="large" variant="contained" color="primary" fullWidth >Đăng nhập</Button>
+                        <Button type="submit" size="large" variant="contained" color="primary" fullWidth >
+                            {loading && <CircularProgress color='secondary' size={20} />} &nbsp;
+                            Đăng nhập
+                        </Button>
                     </Box>
                 </form>
 
