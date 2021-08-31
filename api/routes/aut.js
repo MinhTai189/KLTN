@@ -4,8 +4,11 @@ const argon2 = require("argon2");
 const user = require("../models/user");
 const JWT = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const uuid = require("uuid");
 
-router.post("/reset-password", async (req, res) => {
+let refeshTokens = [];
+
+router.post("/reset-password", async(req, res) => {
     const { password, token } = req.body;
     let data;
     JWT.verify(token, process.env.forgotPasswordToken, (err, dataUser) => {
@@ -31,10 +34,20 @@ router.post("/reset-password", async (req, res) => {
     }
 });
 
+const checkToken = (token) => {
+    for (let i = 0; i < refeshTokens.length; i++)
+        if (refeshTokens[i].refeshToken == token) return refeshTokens[i];
+    return undefined;
+};
 router.post("/refesh-token", (req, res) => {
     const { refeshToken } = req.body;
-    JWT.verify(refeshToken, process.env.refeshToken, (err, data) => {
-        console.log(data);
+
+    const check = checkToken(refeshToken);
+
+    if (!check)
+        return res.status(403).json({ success: false, message: "token is false" });
+
+    JWT.verify(refeshToken, process.env.refeshToken + check.id, (err, data) => {
         if (err)
             return res
                 .status(400)
@@ -42,13 +55,24 @@ router.post("/refesh-token", (req, res) => {
         const accessToken = JWT.sign({ user: data.user }, process.env.accessToken, {
             expiresIn: "10m",
         });
-        const refeshToken = JWT.sign({ user: data.user }, process.env.refeshToken);
-        res
-            .status(200)
-            .json({ success: true, message: "thanh cong", accessToken, refeshToken });
+        const newId = uuid.v4();
+        const newRefeshToken = JWT.sign({ user: data.user },
+            process.env.refeshToken + newId
+        );
+        refeshTokens = refeshTokens.filter((item) => {
+            return item.id !== check.id;
+        });
+        refeshTokens.push({ id: newId, refeshToken: newRefeshToken });
+
+        res.status(200).json({
+            success: true,
+            message: "thanh cong",
+            accessToken,
+            refeshToken: newRefeshToken,
+        });
     });
 });
-router.post("/forgot-password", async (req, res) => {
+router.post("/forgot-password", async(req, res) => {
     //Route quên mật khẩu, nhận mail, xác thực
     const { email } = req.body; //lấy email
     const User = await user.findOne({ email: email });
@@ -122,19 +146,17 @@ router.post("/forgot-password", async (req, res) => {
       </div>
       </div></div>`,
     };
-    transporter.sendMail(mainOptions, function (err, info) {
+    transporter.sendMail(mainOptions, function(err, info) {
         //tiến hành gửi mail
         if (err) {
-            return res
-                .status(400)
-                .json({ error: err });
+            return res.status(400).json({ error: err });
         } else {
             return res.status(200).json({ success: true, message: "da gui mail" });
         }
     });
 });
 
-router.post("/register", async (req, res) => {
+router.post("/register", async(req, res) => {
     const {
         username,
         password,
@@ -179,24 +201,57 @@ router.post("/register", async (req, res) => {
 });
 
 //đăng nhập
-router.post("/login", async (req, res) => {
-    const { username, password } = req.body;
+router.post("/login", async(req, res) => {
+    const { username, password, accessToken } = req.body;
+    let userID = undefined;
+    if (accessToken) {
+        JWT.verify(accessToken, process.env.accessToken, async(err, data) => {
+            if (err) return;
+            userID = data.user;
+        });
+    }
+    if (userID) {
+        const User = await user.findById(userID).select("-password");
+        if (User) {
+            const id = uuid.v4();
+            const refeshToken = JWT.sign({ user: User._id },
+                process.env.refeshToken + id
+            );
+            refeshTokens.push({ id, refeshToken });
 
+            return res.status(200).json({
+                success: true,
+                message: "thanh cong 2",
+                data: {
+                    ...User,
+                    accessToken,
+                    refeshToken,
+                },
+            });
+        }
+    }
     const checkUser = await user.findOne({ username });
 
     if (checkUser == null)
-        return res.status(404).json({ success: false, message: "username isn't exist" });
+        return res
+            .status(404)
+            .json({ success: false, message: "username isn't exist" });
 
     const pass = await argon2.verify(checkUser.password, password);
-    if (!pass) return res.status(404).json({ success: false, message: "password is false" });
+    if (!pass)
+        return res
+            .status(404)
+            .json({ success: false, message: "password is false" });
     //good
     try {
         const accessToken = JWT.sign({ user: checkUser._id },
-            process.env.accessToken, { expiresIn: "30m" }
+            process.env.accessToken, { expiresIn: "5m" }
         );
+        const id = uuid.v4();
         const refeshToken = JWT.sign({ user: checkUser._id },
-            process.env.refeshToken
+            process.env.refeshToken + id
         );
+        refeshTokens.push({ id, refeshToken });
         const newData = await user.findById(checkUser._id).select("-password");
         if (accessToken)
             res.status(200).json({
@@ -206,7 +261,7 @@ router.post("/login", async (req, res) => {
                     ...newData,
                     accessToken,
                     refeshToken,
-                }
+                },
             });
     } catch (error) {
         res.status(404).json({ error: "404 Error" });
