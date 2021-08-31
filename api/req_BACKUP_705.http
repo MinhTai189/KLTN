@@ -19,9 +19,14 @@ POST http://localhost:5000/api/login
 Content-Type: application/json
 
 {
+<<<<<<< HEAD
+    "username":"minhtai",
+    "password":"123456789"
+=======
     "username":"maideptrai",
     "password":"123456",
     "accessToken":"eyJhbGciOdiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyY2MyMjAwNTI3NGQ2ODVlZGJlNGQ3IiwiaWF0IjoxNjMwMzgwMTYxLCJleHAiOjE2MzAzODE5NjF9.0a71HLntDvdNwYs1rFG_G75Ucpp-e53j_YHPoyN7eF4"
+>>>>>>> 904bb2c80fdfbb79b1d5bc249be7aae848c50606
 }
 ###
 GET http://localhost:5000/api/checkAuthorization
