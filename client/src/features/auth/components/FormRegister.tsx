@@ -167,7 +167,7 @@ function FormRegister({ onSubmit, onChange }: Props): ReactElement {
             <Header textBtn='ĐĂNG KÝ' icon={<PersonOutline />} />
 
             <Box>
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
                     <Grid container spacing={2}>
                         <Grid item className={classes.grid} xs={12} md={5}>
                             <Typography variant='h6'>

@@ -4,13 +4,13 @@ import { useAppDispatch } from 'app/hooks';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { authActions } from './authSlice';
 import ForgotPasswork from './components/ForgotPasswork';
 import FormLogin from './components/FormLogin';
 import FormRegister from './components/FormRegister';
 import ResetPassword from './components/ResetPassword';
 import { ForgotPasswordData, LoginData, RegisterData } from './models';
-import { toast } from 'react-toastify';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -57,6 +57,7 @@ export default function Auth() {
             console.log("Can not register account", err.message);
         }
     }
+
     const handleSubmitForgotPassword = async (data: ForgotPasswordData) => {
         try {
             await axiosClient.post('/forgot-password', data)

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
-import { Response } from '../models';
+import { Response } from 'models';
+import { refeshTokenApi } from './refeshToken';
 
 const axiosClient = axios.create({
   baseURL: 'http://localhost:5000/api',
@@ -9,42 +10,53 @@ const axiosClient = axios.create({
   },
 });
 
-interface RefeshTokenReponse {
-  accessToken: string;
-  refeshToken: string;
-}
-
 // Add a request interceptor
 axiosClient.interceptors.request.use(
   async function (config) {
-    const accessToken =
+    let accessToken =
       localStorage.getItem('accessToken') ||
-      sessionStorage.getItem('accessToken') ||
-      '';
-    const refeshToken =
+      sessionStorage.getItem('accessToken');
+
+    let refeshToken =
       localStorage.getItem('refeshToken') ||
-      sessionStorage.getItem('refeshToken') ||
-      '';
+      sessionStorage.getItem('refeshToken');
+    const currentDate = new Date();
 
-    if (accessToken && refeshToken) {
-      const jwt = jwt_decode<any>(accessToken);
-      if (new Date(jwt.exp * 1000) < new Date()) {
-        const response: Response<RefeshTokenReponse> = await axiosClient.post(
-          '/refesh-token',
-          {
-            refeshToken,
+    if (Boolean(accessToken) && Boolean(refeshToken)) {
+      accessToken = JSON.parse(accessToken as string);
+      refeshToken = JSON.parse(refeshToken as string);
+      const jwt: any = jwt_decode(accessToken as string);
+
+      if (jwt.exp * 1000 < currentDate.getTime()) {
+        try {
+          const response: Response<any> = await refeshTokenApi.refeshToken(
+            refeshToken as string
+          );
+
+          if (Boolean(localStorage.getItem('accessToken'))) {
+            localStorage.setItem(
+              'accessToken',
+              JSON.stringify(response.data.accessToken)
+            );
+            localStorage.setItem(
+              'refeshToken',
+              JSON.stringify(response.data.refeshToken)
+            );
+          } else {
+            sessionStorage.setItem(
+              'accessToken',
+              JSON.stringify(response.data.accessToken)
+            );
+            sessionStorage.setItem(
+              'refeshToken',
+              JSON.stringify(response.data.refeshToken)
+            );
           }
-        );
 
-        if (localStorage.getItem('accessToken')) {
-          localStorage.setItem('accessToken', response.data.accessToken);
-          localStorage.setItem('refeshToken', response.data.refeshToken);
-        } else {
-          sessionStorage.setItem('accessToken', response.data.accessToken);
-          sessionStorage.setItem('refeshToken', response.data.refeshToken);
+          config.headers['authorization'] = response.data.accessToken;
+        } catch (err) {
+          console.log('Loi xay ra trong qua trinh refesh token', err.message);
         }
-
-        config.headers.token = response.data.accessToken;
       }
     }
     return config;

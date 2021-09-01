@@ -1,33 +1,29 @@
-import { useEffect } from 'react';
+import { ThemeProvider } from '@material-ui/core';
+import { NotFound } from 'components/Common';
+import { HomeLayout } from 'components/Layouts';
 import { Route, Switch } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
+import { themeMUI } from 'utils';
 import Auth from "./features/auth";
 
 function App() {
-  // const curentUser = useAppSelector(selectCurrentUser)
-  // const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    // function autoLogin() {
-    //   const accessToken = localStorage.getItem('accessToken');
-
-    //   if (accessToken && !curentUser) {
-    //     dispatch(authActions.login({ accessToken, rememberMe: true }))
-    //   }
-    // }
-    // autoLogin();
-  }, [])
 
   return (
-    <Switch>
-      <Route path="/" exact>
-        <h1>This is a home page</h1>
-      </Route>
+    <ThemeProvider theme={themeMUI}>
+      <Switch>
+        <Route path="/" exact>
+          <HomeLayout />
+        </Route>
 
-      <Route path="/auth">
-        <Auth />
-      </Route>
-    </Switch>
+        <Route path="/auth">
+          <Auth />
+        </Route>
+
+        <Route>
+          <NotFound />
+        </Route>
+      </Switch>
+    </ThemeProvider>
   );
 }
 

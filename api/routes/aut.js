@@ -34,14 +34,10 @@ router.post("/reset-password", async (req, res) => {
     }
 });
 
-// const checkToken = (token) => {
-//     for (let i = 0; i < refeshTokens.length; i++)
-//         if (refeshTokens[i].refeshToken == token) return refeshTokens[i];
-//     return undefined;
-// };
 router.post("/refesh-token", (req, res) => {
     const { refeshToken } = req.body;
-    console.log(refeshTokens)
+    console.log('refesh', refeshTokens);
+
     const check = refeshTokens.find(x => x.refeshToken === refeshToken);
 
     if (!check)
@@ -207,22 +203,14 @@ router.post("/register", async (req, res) => {
 
 //đăng nhập
 router.post("/login", async (req, res) => {
-    const { username, password, accessToken } = req.body;
+    const { username, password } = req.body;
+    const { authorization } = req.headers;
     let userID = undefined;
     let checkUser;
+    console.log('autho', authorization);
 
     try {
-        if (accessToken) {
-
-            JWT.verify(accessToken, process.env.accessToken, async (err, data) => {
-                if (err) return;
-                userID = data.user;
-
-
-            });
-
-        }
-        else {
+        if (Boolean(username) && Boolean(password)) {
             checkUser = await user.findOne({ username });
 
             if (checkUser == null)
@@ -236,11 +224,18 @@ router.post("/login", async (req, res) => {
                     .status(404)
                     .json({ success: false, message: "password is false" });
         }
+        else {
+            JWT.verify(authorization, process.env.accessToken, async (err, data) => {
+                if (err) return;
+                userID = data.user;
+            });
+        }
+
         if (userID)
             checkUser = await user.findById(userID);
 
         const newAccessToken = JWT.sign({ user: checkUser._id },
-            process.env.accessToken, { expiresIn: "50m" }
+            process.env.accessToken, { expiresIn: "1m" }
         );
 
         const key = uuid.v4();
