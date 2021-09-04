@@ -31,7 +31,7 @@ function* handleLogin(action: PayloadAction<LoginData>) {
         JSON.stringify(responseData.data.accessToken)
       );
       localStorage.setItem(
-        'refeshToken',
+        'refreshToken',
         JSON.stringify(responseData.data.refreshToken)
       );
     } else {
@@ -40,7 +40,7 @@ function* handleLogin(action: PayloadAction<LoginData>) {
         JSON.stringify(responseData.data.accessToken)
       );
       sessionStorage.setItem(
-        'refeshToken',
+        'refreshToken',
         JSON.stringify(responseData.data.refreshToken)
       );
     }

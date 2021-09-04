@@ -47,6 +47,7 @@ export default function Auth() {
                 tokenId
             }).then((response: Response<any>) => {
                 if (response.success === false) {
+                    setIsLoginGG(true)
                     history.push('/auth/additional')
                 }
                 else {
@@ -55,9 +56,6 @@ export default function Auth() {
             }).catch((err: any) => {
                 console.log('Loi xay ra trong qua trinh dang nhap GG', err.message);
             })
-
-            setIsLoginGG(true)
-            history.push('/auth/additional')
         }
     }
 
@@ -75,6 +73,7 @@ export default function Auth() {
                 userID
             }).then((response: Response<any>) => {
                 if (response.success === false) {
+                    setIsLoginGG(false)
                     history.push('/auth/additional')
                 }
                 else {
@@ -83,9 +82,6 @@ export default function Auth() {
             }).catch((err: any) => {
                 console.log('Loi xay ra trong qua trinh dang nhap GG', err.message);
             })
-
-            setIsLoginGG(false)
-            history.push('/auth/additional')
         }
     }
 

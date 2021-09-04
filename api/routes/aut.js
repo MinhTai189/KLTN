@@ -234,8 +234,8 @@ router.post("/login", async (req, res) => {
                     .json({ success: false, message: "password is false" });
         } else {
             JWT.verify(authorization, process.env.accessToken, async (err, data) => {
-                if (err) return res.status(401).json({ success: false, message: "Invalid token" });
-                // trong đây, nếu hết hạn trả về mã 401, hình như mày phải dịch JWT ra, nó có chứa expire
+                if (err) return;
+
                 userID = data.id;
             });
         }
@@ -243,7 +243,7 @@ router.post("/login", async (req, res) => {
         if (userID) checkUser = await user.findById(userID).select("-unsignedName");
 
         const newAccessToken = JWT.sign({ id: checkUser._id, isAdmin: checkUser.isAdmin },
-            process.env.accessToken, { expiresIn: "10m" }
+            process.env.accessToken, { expiresIn: "1m" }
         );
 
         const key = uuid.v4();
@@ -276,15 +276,11 @@ router.post("/register-facebook", async (req, res) => {
     const data = await axios.get(url);
     const { id, name, picture } = data.data;
 
-    const checkUser = await user.findOne({
-        $or: [{ username: id }, {
-            email: email
-        }]
-    });
+    const checkUser = await user.findOne({ username: id });
     if (checkUser)
         return res
             .status(401)
-            .json({ message: "facebook userID or email was used", success: false });
+            .json({ message: "facebook userID was exist", success: false });
 
     const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
     const unsignedName = removeVietnameseTones(name);
@@ -303,20 +299,11 @@ router.post("/register-facebook", async (req, res) => {
         school,
     });
     await newUser.save();
-
-    const newAccessToken = JWT.sign({ id: newUser._id, isAdmin: newUser.isAdmin },
-        process.env.accessToken, { expiresIn: "10m" }
-    );
-
     res.status(200).json({
         success: true,
         message: " dang ky thanh cong",
-        data: {
-            accessToken: newAccessToken
-        }
     });
 });
-
 router.post("/login-facebook", async (req, res) => {
     const { accessToken, userID } = req.body;
 
@@ -327,7 +314,7 @@ router.post("/login-facebook", async (req, res) => {
     const { id } = data.data;
     const checkUser = await user.findOne({ username: id });
     if (!checkUser)
-        return res.status(200).json({ message: "user not found", success: false });
+        return res.status(404).json({ message: "user not found", success: false });
     const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
     const isMatch = await argon2.verify(checkUser.password, password);
     if (!isMatch)
@@ -337,14 +324,23 @@ router.post("/login-facebook", async (req, res) => {
 
     //good
     const newAccessToken = JWT.sign({ id: checkUser._id, isAdmin: checkUser.isAdmin },
-        process.env.accessToken, { expiresIn: "10m" }
+        process.env.accessToken, { expiresIn: "1m" }
     );
+
+    const key = uuid.v4();
+    const newRefreshToken = JWT.sign({ id: checkUser._id, isAdmin: checkUser.isAdmin },
+        key
+    );
+
+    refreshTokens.push({ key, refreshToken: newRefreshToken });
 
     res.status(200).json({
         success: true,
         message: "thanh cong",
         data: {
+            ...checkUser._doc,
             accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
         },
     });
 });
@@ -384,15 +380,9 @@ router.post("/register-google", async (req, res) => {
         school,
     });
     await newUser.save();
-    const newAccessToken = JWT.sign({ id: newUser._id, isAdmin: newUser.isAdmin },
-        process.env.accessToken, { expiresIn: "10m" }
-    );
     res.status(200).json({
         success: true,
         message: " dang ky thanh cong",
-        data: {
-            accessToken: newAccessToken
-        }
     });
 });
 router.post("/login-google", async (req, res) => {
@@ -404,28 +394,40 @@ router.post("/login-google", async (req, res) => {
     });
     const userGmail = result.getPayload();
     const checkUser = await user.findOne({ username: userGmail.email });
+
     if (!userGmail.email_verified)
         return res
             .status(400)
             .json({ success: false, message: "Email verification failed" });
+
     if (!checkUser)
-        return res.status(200).json({ success: false, message: "user not found" });
+        return res.status(404).json({ success: false, message: "user not found" });
     const password = userGmail.email + process.env.PASSWORD_SECRET_GOOGLE;
     const isMatch = await argon2.verify(checkUser.password, password);
+
     if (!isMatch)
         return res
             .status(400)
             .json({ success: false, message: "password is incorrect" });
 
     const newAccessToken = JWT.sign({ id: checkUser._id, isAdmin: checkUser.isAdmin },
-        process.env.accessToken, { expiresIn: "10m" }
+        process.env.accessToken, { expiresIn: "1m" }
     );
+
+    const key = uuid.v4();
+    const newRefreshToken = JWT.sign({ id: checkUser._id, isAdmin: checkUser.isAdmin },
+        key
+    );
+
+    refreshTokens.push({ key, refreshToken: newRefreshToken });
 
     res.status(200).json({
         success: true,
         message: "thanh cong",
         data: {
+            ...checkUser._doc,
             accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
         },
     });
 });
