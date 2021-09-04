@@ -42,8 +42,8 @@ axiosClient.interceptors.response.use(
 
         try {
           const rs: any = await refreshTokenApi.refreshToken();
-          const { accessToken, refeshToken } = rs.data;
-          setToken(accessToken, refeshToken);
+          const { accessToken, refreshToken } = rs.data;
+          setToken(accessToken, refreshToken);
           axiosClient.defaults.headers.common['authorization'] = accessToken;
 
           return axiosClient(originalConfig);

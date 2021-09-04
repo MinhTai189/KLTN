@@ -61,8 +61,8 @@ export default function Auth() {
 
     //hanlde login with Facebook
     const onSuccesFB = (res: any) => {
-        if (res) {
-            const { accessToken, userID } = res?.authResponse;
+        if (res && res.authResponse) {
+            const { accessToken, userID } = res.authResponse;
             setTokenFB({
                 accessToken,
                 userID

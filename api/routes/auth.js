@@ -397,25 +397,30 @@ router.post("/register-google", async (req, res) => {
 });
 router.post("/login-google", async (req, res) => {
     const { tokenId } = req.body;
-
+    console.log(tokenId);
     const result = await client.verifyIdToken({
         idToken: tokenId,
         audience: process.env.SERVICE_CLIENT_ID,
     });
     const userGmail = result.getPayload();
-    const checkUser = await user.findOne({ username: userGmail.email });
+    const checkUser = await user.findOne({ email: userGmail.email });
+
     if (!userGmail.email_verified)
         return res
             .status(400)
             .json({ success: false, message: "Email verification failed" });
+
     if (!checkUser)
         return res.status(200).json({ success: false, message: "user not found" });
-    const password = userGmail.email + process.env.PASSWORD_SECRET_GOOGLE;
-    const isMatch = await argon2.verify(checkUser.password, password);
-    if (!isMatch)
-        return res
-            .status(400)
-            .json({ success: false, message: "password is incorrect" });
+
+    if (!tokenId) {
+        const password = userGmail.email + process.env.PASSWORD_SECRET_GOOGLE;
+        const isMatch = await argon2.verify(checkUser.password, password);
+        if (!isMatch)
+            return res
+                .status(400)
+                .json({ success: false, message: "password is incorrect" });
+    }
 
     const newAccessToken = JWT.sign({ id: checkUser._id, isAdmin: checkUser.isAdmin },
         process.env.accessToken, { expiresIn: "10m" }
