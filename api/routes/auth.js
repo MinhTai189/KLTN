@@ -275,7 +275,7 @@ router.post("/register-facebook", async(req, res) => {
     &access_token=${accessToken}`;
     const data = await axios.get(url);
     const { id, name, picture } = data.data;
-    console.log(name);
+
     const checkUser = await user.findOne({ username: id });
     if (checkUser)
         return res
