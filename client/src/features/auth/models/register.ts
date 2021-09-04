@@ -9,3 +9,10 @@ export interface RegisterData {
   school: string;
   avatarUrl: string;
 }
+
+export interface AddiRegisterData {
+  email?: string;
+  province: string;
+  district: string;
+  school: string;
+}

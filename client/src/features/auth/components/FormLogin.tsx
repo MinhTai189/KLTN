@@ -1,22 +1,24 @@
-import { Box, Button, IconButton, makeStyles, Typography, CircularProgress } from '@material-ui/core'
+import { Box, Button, CircularProgress, IconButton, makeStyles, Typography } from '@material-ui/core'
 import { LockOpen } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import { useAppSelector } from 'app/hooks'
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from "react-router-dom"
-import { ReactComponent as Face } from '../../../assets/images/facebook.svg'
 import { ReactComponent as Google } from '../../../assets/images/google.svg'
+import { ReactComponent as Facebook } from '../../../assets/images/facebook.svg'
 import { CheckboxField, InputField, InputPasswordField } from '../../../components/FormFields'
 import { selectErr, selectLoading } from '../authSlice'
 import { LoginData } from '../models'
 import Header from './Header'
+import { useGoogleLogin, useGoogleLogout } from '@toxa23/react-google-login'
+import useFacebook from "react-easy-facebook";
 
 interface Props {
     onSubmit: (data: LoginData) => void;
     setRememberMe: (value: boolean) => void;
-    signinGG: () => void;
-    signinFB: () => void;
+    onSuccessGG: (response: any) => void;
+    onSuccessFB: (response: any) => void;
 }
 
 const initialLoginData: LoginData = {
@@ -57,13 +59,44 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-function FormLogin({ onSubmit, setRememberMe, signinGG, signinFB }: Props): ReactElement {
+function FormLogin({ onSubmit, setRememberMe, onSuccessGG, onSuccessFB }: Props): ReactElement {
     const classes = useStyles()
+    const clientId = '643013812637-sjj5ejfidpkjk93pt9l4t3qleplnof1m.apps.googleusercontent.com'
+    const appId = '985420175361023'
+
     const loading = useAppSelector(selectLoading)
     const { control, handleSubmit } = useForm<LoginData>({
         defaultValues: initialLoginData
     })
     const err = useAppSelector(selectErr)
+
+    // login with google
+    const { signIn } = useGoogleLogin({
+        clientId,
+        onSuccess: onSuccessGG
+    })
+
+    const { signOut } = useGoogleLogout({
+        clientId
+    })
+
+    // login with facebook
+    const { response, login, logout } = useFacebook({
+        appId,
+        options: {
+            scope: "email",
+        },
+        fields: "id, name, email, picture",
+    });
+
+    useEffect(() => {
+        onSuccessFB(response)
+
+        return () => {
+            signOut()
+            logout()
+        }
+    }, [response])
 
     return (
         <Box className={classes.root}>
@@ -99,12 +132,12 @@ function FormLogin({ onSubmit, setRememberMe, signinGG, signinFB }: Props): Reac
                 <Box className={classes.loginBy} mt={5} mb={1}>
                     <Typography component='p'>Đăng nhập với:</Typography>
 
-                    <IconButton onClick={() => signinGG()}>
+                    <IconButton onClick={() => signIn()}>
                         <Google className={classes.svg} />
                     </IconButton>
 
-                    <IconButton onClick={() => signinFB()}>
-                        <Face className={classes.svg} />
+                    <IconButton onClick={() => login()}>
+                        <Facebook className={classes.svg} />
                     </IconButton>
                 </Box>
             </Box>

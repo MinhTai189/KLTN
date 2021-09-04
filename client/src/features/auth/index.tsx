@@ -2,17 +2,17 @@ import { Container, makeStyles } from '@material-ui/core';
 import axiosClient from 'api/axiosClient';
 import { useAppDispatch } from 'app/hooks';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { Response } from 'models';
+import React, { useState } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { authActions } from './authSlice';
+import AddiRegister from './components/AddiRegister';
 import ForgotPasswork from './components/ForgotPasswork';
 import FormLogin from './components/FormLogin';
 import FormRegister from './components/FormRegister';
 import ResetPassword from './components/ResetPassword';
-import { ForgotPasswordData, LoginData, RegisterData } from './models';
-import { useGoogleLogin } from 'react-google-login'
-import useFacebook from "react-easy-facebook";
+import { AddiRegisterData, ForgotPasswordData, LoginData, RegisterData } from './models';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -32,29 +32,62 @@ export default function Auth() {
 
     const [formAvatar, setFormAvatar] = useState<FormData>();
     const [rememberMe, setRememberMe] = useState<boolean>(false)
+    const [isLoginGG, setIsLoginGG] = useState(false)
 
-    const onSuccess = (res: any) => {
-        console.log('da dang nhap gg', res);
+    const [tokenGG, setTokenGG] = useState(null)
+    const [tokenFB, setTokenFB] = useState<any>(null)
+
+    //hanlde login with Google
+    const onSuccesGG = (res: any) => {
+        if (res) {
+            const tokenId = res.tokenId;
+            setTokenGG(tokenId)
+
+            axiosClient.post('/login-google', {
+                tokenId
+            }).then((response: Response<any>) => {
+                if (response.success === false) {
+                    history.push('/auth/additional')
+                }
+                else {
+                    dispatch(authActions.login({ username: '', password: '', rememberMe: true, accessToken: response.data.accessToken }));
+                }
+            }).catch((err: any) => {
+                console.log('Loi xay ra trong qua trinh dang nhap GG', err.message);
+            })
+
+            setIsLoginGG(true)
+            history.push('/auth/additional')
+        }
     }
 
-    const onFailure = (res: any) => {
-        console.log('da dang nhap gg fa', res);
+    //hanlde login with Facebook
+    const onSuccesFB = (res: any) => {
+        if (res) {
+            const { accessToken, userID } = res?.authResponse;
+            setTokenFB({
+                accessToken,
+                userID
+            })
+
+            axiosClient.post('/login-facebook', {
+                accessToken,
+                userID
+            }).then((response: Response<any>) => {
+                if (response.success === false) {
+                    history.push('/auth/additional')
+                }
+                else {
+                    dispatch(authActions.login({ username: '', password: '', rememberMe: true, accessToken: response.data.accessToken }));
+                }
+            }).catch((err: any) => {
+                console.log('Loi xay ra trong qua trinh dang nhap GG', err.message);
+            })
+
+            setIsLoginGG(false)
+            history.push('/auth/additional')
+        }
     }
-
-    const { signIn } = useGoogleLogin({
-        clientId: '643013812637-sjj5ejfidpkjk93pt9l4t3qleplnof1m.apps.googleusercontent.com',
-        onSuccess: onSuccess,
-        onFailure
-    })
-
-    const { response, login } = useFacebook({
-        appId: "985420175361023",
-    });
-
-    useEffect(() => {
-        response && console.log(response);
-
-    }, [response])
 
     const handleSubmitLogin = (data: LoginData) => {
         dispatch(authActions.login({ ...data, rememberMe }))
@@ -69,7 +102,7 @@ export default function Auth() {
                 const response = await axios.post('https://api.cloudinary.com/v1_1/kltn/image/upload', formAvatar)
                 data.avatarUrl = response.data.secure_url
             }
-            catch (err) {
+            catch (err: any) {
                 console.log('Can not upload avatar', err.message);
             }
         }
@@ -78,7 +111,7 @@ export default function Auth() {
             await axiosClient.post('/register', data)
             history.push('/auth/login');
         }
-        catch (err) {
+        catch (err: any) {
             console.log("Can not register account", err.message);
         }
     }
@@ -88,7 +121,7 @@ export default function Auth() {
             await axiosClient.post('/forgot-password', data)
             toast.success("Mã xác nhận đã được gửi đến email của bạn!!!")
         }
-        catch (err) {
+        catch (err: any) {
             console.log('This is error in forgot password', err.message);
             toast.error("Gửi mail thất bại!!!")
         }
@@ -103,15 +136,34 @@ export default function Auth() {
         setFormAvatar(form)
     }
 
+    //additional data for login by FB, GG
+    const handleAddiRegister = async (data: AddiRegisterData) => {
+        const response: Response<any> = isLoginGG ?
+            await axiosClient.post('/register-google', {
+                tokenId: tokenGG,
+                ...data
+            })
+            : await axiosClient.post('/register-facebook', {
+                ...tokenFB,
+                ...data
+            })
+
+        dispatch(authActions.login({ username: '', password: '', rememberMe: true, accessToken: response.data.accessToken }));
+    }
+
     return (
         <Container className={classes.root}>
             <Switch>
                 <Route path='/auth/login'>
-                    <FormLogin onSubmit={handleSubmitLogin} signinGG={signIn} signinFB={login} setRememberMe={setRememberMe} />
+                    <FormLogin onSubmit={handleSubmitLogin} onSuccessGG={onSuccesGG} onSuccessFB={onSuccesFB} setRememberMe={setRememberMe} />
                 </Route>
 
                 <Route path="/auth/register">
                     <FormRegister onSubmit={handleSubmitRegister} onChange={handleUploadAvatar} />
+                </Route>
+
+                <Route path="/auth/additional">
+                    <AddiRegister onSubmit={handleAddiRegister} isLoginGG={isLoginGG} />
                 </Route>
 
                 <Route path="/auth/forgot-password">

@@ -3,7 +3,6 @@ import axiosClient from 'api/axiosClient';
 import { push } from 'connected-react-router';
 import { Response, User } from 'models';
 import { put, takeLatest } from 'redux-saga/effects';
-import { ErrorCallback } from 'typescript';
 import { clearToken } from 'utils';
 import { authActions } from './authSlice';
 import { LoginData } from './models';
@@ -15,7 +14,15 @@ function* handleLogin(action: PayloadAction<LoginData>) {
       password: action.payload.password,
     };
 
-    const responseData: Response<User> = yield axiosClient.post('/login', data);
+    const accessToken = action.payload.accessToken;
+
+    const responseData: Response<User> = accessToken
+      ? yield axiosClient.post('/login', data, {
+          headers: {
+            authorization: accessToken,
+          },
+        })
+      : yield axiosClient.post('/login', data);
 
     clearToken();
     if (action.payload.rememberMe) {
