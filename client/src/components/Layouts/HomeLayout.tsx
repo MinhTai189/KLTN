@@ -10,10 +10,8 @@ export const HomeLayout = () => {
 
     useEffect(() => {
         function autoLogin() {
-            const accessToken = JSON.parse(localStorage.getItem('accessToken') as string);
-
-            if (Boolean(accessToken) && !isLogged) {
-                dispatch(authActions.login({ username: '', password: '', rememberMe: true, accessToken }))
+            if (!isLogged) {
+                dispatch(authActions.login({ username: '', password: '', rememberMe: true }))
             }
         }
         autoLogin();

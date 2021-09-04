@@ -3,6 +3,7 @@ import axiosClient from 'api/axiosClient';
 import { push } from 'connected-react-router';
 import { Response, User } from 'models';
 import { put, takeLatest } from 'redux-saga/effects';
+import { ErrorCallback } from 'typescript';
 import { clearToken } from 'utils';
 import { authActions } from './authSlice';
 import { LoginData } from './models';
@@ -13,17 +14,8 @@ function* handleLogin(action: PayloadAction<LoginData>) {
       username: action.payload.username,
       password: action.payload.password,
     };
-    const headers = {
-      headers: {
-        Authorization: action.payload.accessToken,
-      },
-    };
 
-    const responseData: Response<User> = yield axiosClient.post(
-      '/login',
-      data,
-      headers
-    );
+    const responseData: Response<User> = yield axiosClient.post('/login', data);
 
     clearToken();
     if (action.payload.rememberMe) {
@@ -33,7 +25,7 @@ function* handleLogin(action: PayloadAction<LoginData>) {
       );
       localStorage.setItem(
         'refeshToken',
-        JSON.stringify(responseData.data.refeshToken)
+        JSON.stringify(responseData.data.refreshToken)
       );
     } else {
       sessionStorage.setItem(
@@ -42,7 +34,7 @@ function* handleLogin(action: PayloadAction<LoginData>) {
       );
       sessionStorage.setItem(
         'refeshToken',
-        JSON.stringify(responseData.data.refeshToken)
+        JSON.stringify(responseData.data.refreshToken)
       );
     }
 
@@ -50,7 +42,7 @@ function* handleLogin(action: PayloadAction<LoginData>) {
 
     //Redirect to Home page
     yield put(push('/'));
-  } catch (err) {
+  } catch (err: any) {
     yield put(authActions.loginFailed(err.message));
   }
 }

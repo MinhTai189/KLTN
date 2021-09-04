@@ -12,7 +12,7 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   accessToken: string;
-  refeshToken: string;
+  refreshToken: string;
 
   [key: string]: any;
 }

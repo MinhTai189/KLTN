@@ -2,7 +2,7 @@ import { Container, makeStyles } from '@material-ui/core';
 import axiosClient from 'api/axiosClient';
 import { useAppDispatch } from 'app/hooks';
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { authActions } from './authSlice';
@@ -11,6 +11,8 @@ import FormLogin from './components/FormLogin';
 import FormRegister from './components/FormRegister';
 import ResetPassword from './components/ResetPassword';
 import { ForgotPasswordData, LoginData, RegisterData } from './models';
+import { useGoogleLogin } from 'react-google-login'
+import useFacebook from "react-easy-facebook";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -30,6 +32,29 @@ export default function Auth() {
 
     const [formAvatar, setFormAvatar] = useState<FormData>();
     const [rememberMe, setRememberMe] = useState<boolean>(false)
+
+    const onSuccess = (res: any) => {
+        console.log('da dang nhap gg', res);
+    }
+
+    const onFailure = (res: any) => {
+        console.log('da dang nhap gg fa', res);
+    }
+
+    const { signIn } = useGoogleLogin({
+        clientId: '643013812637-sjj5ejfidpkjk93pt9l4t3qleplnof1m.apps.googleusercontent.com',
+        onSuccess: onSuccess,
+        onFailure
+    })
+
+    const { response, login } = useFacebook({
+        appId: "985420175361023",
+    });
+
+    useEffect(() => {
+        response && console.log(response);
+
+    }, [response])
 
     const handleSubmitLogin = (data: LoginData) => {
         dispatch(authActions.login({ ...data, rememberMe }))
@@ -82,7 +107,7 @@ export default function Auth() {
         <Container className={classes.root}>
             <Switch>
                 <Route path='/auth/login'>
-                    <FormLogin onSubmit={handleSubmitLogin} setRememberMe={setRememberMe} />
+                    <FormLogin onSubmit={handleSubmitLogin} signinGG={signIn} signinFB={login} setRememberMe={setRememberMe} />
                 </Route>
 
                 <Route path="/auth/register">

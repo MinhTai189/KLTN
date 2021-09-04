@@ -14,7 +14,9 @@ import Header from './Header'
 
 interface Props {
     onSubmit: (data: LoginData) => void;
-    setRememberMe: (value: boolean) => void
+    setRememberMe: (value: boolean) => void;
+    signinGG: () => void;
+    signinFB: () => void;
 }
 
 const initialLoginData: LoginData = {
@@ -55,7 +57,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-function FormLogin({ onSubmit, setRememberMe }: Props): ReactElement {
+function FormLogin({ onSubmit, setRememberMe, signinGG, signinFB }: Props): ReactElement {
     const classes = useStyles()
     const loading = useAppSelector(selectLoading)
     const { control, handleSubmit } = useForm<LoginData>({
@@ -97,11 +99,11 @@ function FormLogin({ onSubmit, setRememberMe }: Props): ReactElement {
                 <Box className={classes.loginBy} mt={5} mb={1}>
                     <Typography component='p'>Đăng nhập với:</Typography>
 
-                    <IconButton>
+                    <IconButton onClick={() => signinGG()}>
                         <Google className={classes.svg} />
                     </IconButton>
 
-                    <IconButton>
+                    <IconButton onClick={() => signinFB()}>
                         <Face className={classes.svg} />
                     </IconButton>
                 </Box>

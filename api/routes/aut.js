@@ -36,7 +36,7 @@ router.post("/reset-password", async (req, res) => {
 
 router.post("/refesh-token", (req, res) => {
     const { refeshToken } = req.body;
-    console.log('refesh', refeshTokens);
+    console.log('refesh', refeshToken);
 
     const check = refeshTokens.find(x => x.refeshToken === refeshToken);
 
@@ -226,7 +226,7 @@ router.post("/login", async (req, res) => {
         }
         else {
             JWT.verify(authorization, process.env.accessToken, async (err, data) => {
-                if (err) return;
+                if (err) return res.status(401).json({ success: false, message: "token is't valid" });;
                 userID = data.user;
             });
         }

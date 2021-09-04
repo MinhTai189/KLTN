@@ -1,7 +1,6 @@
 import axios from 'axios';
-import jwt_decode from 'jwt-decode';
-import { Response } from 'models';
-import { refeshTokenApi } from './refeshToken';
+import { getToken, setToken } from 'utils';
+import { refreshTokenApi } from './refreshToken';
 
 const axiosClient = axios.create({
   baseURL: 'http://localhost:5000/api',
@@ -12,56 +11,15 @@ const axiosClient = axios.create({
 
 // Add a request interceptor
 axiosClient.interceptors.request.use(
-  async function (config) {
-    let accessToken =
-      localStorage.getItem('accessToken') ||
-      sessionStorage.getItem('accessToken');
+  (config) => {
+    const { accessToken } = getToken();
 
-    let refeshToken =
-      localStorage.getItem('refeshToken') ||
-      sessionStorage.getItem('refeshToken');
-    const currentDate = new Date();
-
-    if (Boolean(accessToken) && Boolean(refeshToken)) {
-      accessToken = JSON.parse(accessToken as string);
-      refeshToken = JSON.parse(refeshToken as string);
-      const jwt: any = jwt_decode(accessToken as string);
-
-      if (jwt.exp * 1000 < currentDate.getTime()) {
-        try {
-          const response: Response<any> = await refeshTokenApi.refeshToken(
-            refeshToken as string
-          );
-
-          if (Boolean(localStorage.getItem('accessToken'))) {
-            localStorage.setItem(
-              'accessToken',
-              JSON.stringify(response.data.accessToken)
-            );
-            localStorage.setItem(
-              'refeshToken',
-              JSON.stringify(response.data.refeshToken)
-            );
-          } else {
-            sessionStorage.setItem(
-              'accessToken',
-              JSON.stringify(response.data.accessToken)
-            );
-            sessionStorage.setItem(
-              'refeshToken',
-              JSON.stringify(response.data.refeshToken)
-            );
-          }
-
-          config.headers['authorization'] = response.data.accessToken;
-        } catch (err) {
-          console.log('Loi xay ra trong qua trinh refesh token', err.message);
-        }
-      }
+    if (Boolean(accessToken)) {
+      config.headers['authorization'] = accessToken;
     }
     return config;
   },
-  function (error) {
+  (error) => {
     // Do something with request error
     return Promise.reject(error);
   }
@@ -74,10 +32,36 @@ axiosClient.interceptors.response.use(
     // Do something with response data
     return response.data;
   },
-  function (error) {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
-    return Promise.reject(error);
+  async (err) => {
+    const originalConfig = err.config;
+
+    if (err.response) {
+      // Access Token was expired
+      if (err.response.status === 401 && !originalConfig._retry) {
+        originalConfig._retry = true;
+
+        try {
+          const rs: any = await refreshTokenApi.refreshToken();
+          const { accessToken, refeshToken } = rs.data;
+          setToken(accessToken, refeshToken);
+          axiosClient.defaults.headers.common['authorization'] = accessToken;
+
+          return axiosClient(originalConfig);
+        } catch (_error: any) {
+          if (_error.response && _error.response.data) {
+            return Promise.reject(_error.response.data);
+          }
+
+          return Promise.reject(_error);
+        }
+      }
+
+      if (err.response.status === 403 && err.response.data) {
+        return Promise.reject(err.response.data);
+      }
+    }
+
+    return Promise.reject(err);
   }
 );
 
