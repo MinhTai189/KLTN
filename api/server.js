@@ -2,7 +2,8 @@ const express = require("express");
 require("dotenv").config();
 const app = express();
 const cors = require("cors");
-const autRouter = require("./routes/aut");
+const autRouter = require("./routes/auth");
+const userRouter = require("./routes/user");
 const schoolDataRouter = require("./routes/school-data");
 const Mongoose = require("mongoose");
 
@@ -43,3 +44,4 @@ app.listen(PORT, () => {
 
 app.use("/api/", autRouter);
 app.use("/api/", schoolDataRouter);
+app.use("/api", userRouter);

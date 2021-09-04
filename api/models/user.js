@@ -15,7 +15,10 @@ const UserSchema = new Schema({
         type: String,
         require: true,
     },
-
+    unsignedName:{
+        type:String,
+        required:true,
+    },
     avatarUrl: {
         type: String,
         required: true,

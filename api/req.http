@@ -2,11 +2,11 @@ POST http://localhost:5000/api/register
 Content-Type: application/json
 
 {
-"username":"tranminhtai",
+"username":"hehehehehe",
 "password":"admin",
-"name":"admin",
+"name":"Nguyễn Tấn Mãi",
 "avatarUrl":"dajdwd",
-"email":"tranminhtai189@gmail.com",
+"email":"hihi@gmail.com",
 "district":"huyen_chau_thanh",
 "province":"tinh_tien_giang",
 "school":"truong_dai_hoc_tien_giang_tcn"
@@ -16,35 +16,33 @@ Content-Type: application/json
 GET http://localhost:5000/api/
 ###
 POST http://localhost:5000/api/login
-token: undifined
 Content-Type: application/json
+//Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3MTg3MDEsImV4cCI6MTYzMDcxODc2MX0.6mBUhbPAmV74KcihB4y_3CgNRNtIBYRuuCXvC1sOIwk
 
 {
-    "username":"minhtai",
-    "password":"123456789"
-    //"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyY2UwMmZkNzVhMDU5NzNhNzYzYmY0IiwiaWF0IjoxNjMwNDU2MTU1LCJleHAiOjE2MzA0NTYyNzV9.c-yuRE88VbHBfyRyPwwgSyuQF3Py0Aav9WIDs8Kqswo"
+    "username":"maideptrai",
+   "password":"1234567"
+    //"accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3MTc4NDYsImV4cCI6MTYzMDcxNzkwNn0.sNtYRra6sUjZZkOikAyhlY8FdbXTwTksePSBNLjoRLI"
 }
-###
-GET http://localhost:5000/api/checkAuthorization
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyODlmMWMyZTVkMWY0MDdiMGEyNzFmIiwiaWF0IjoxNjMwMDU1MTY5LCJleHAiOjE2MzAyMjc5Njl9.oWeci9oDo-_JObUscH1D1tYMJ3117OqX-KG0LNPkT28
 
 ###
 POST http://localhost:5000/api/forgot-password
 Content-Type: application/json
 
 {
-    "email":"tranminhtai189@gmail.com"
+    "email":"killdogvinam@gmail.com"
 }
 ###
 GET http://localhost:5000/api/reset-password/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyODlmMWMyZTVkMWY0MDdiMGEyNzFmIiwiaWF0IjoxNjMwMDY1NzAwLCJleHAiOjE2MzAwNjc1MDB9.lb24sbXuHo5ylAASqCPc0tB8V4L7Sr7iXbBPhmzEce4
 
 
 ###
-POST http://localhost:5000/api/reset-password/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyODlmMWMyZTVkMWY0MDdiMGEyNzFmIiwiaWF0IjoxNjMwMDY1NzAwLCJleHAiOjE2MzAwNjc1MDB9.lb24sbXuHo5ylAASqCPc0tB8V4L7Sr7iXbBPhmzEce4
+POST http://localhost:5000/api/reset-password/
 Content-Type: application/json
 
 {
-    "newPassword":"01234"
+    "password":"1234567",
+    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlhdCI6MTYzMDU2MjE0NCwiZXhwIjoxNjMwNTYyNzQ0fQ.pE-hb1XIZES702cr02wyHXWuZRPLbocfcljYoMQHjs4"
 }
 ###
 GET http://localhost:5000/api/provinces
@@ -57,9 +55,20 @@ GET http://localhost:5000/api/districts?province=thanh_pho_ha_noi
 GET http://localhost:5000/api/schools?province=thanh_pho_ho_chi_minh&district=quan_9
 
 ###
-POST http://localhost:5000/api/refesh-token
+POST http://localhost:5000/api/refresh-token
 Content-Type: application/json
 
 {
-    "refeshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyY2UwMmZkNzVhMDU5NzNhNzYzYmY0IiwiaWF0IjoxNjMwNDkwMjc3fQ.gV8nOW9LdbMiGAncnQzWAsMWw-tiEnsbaP9NVHvB8yI"
+    "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzIwMjAwMTcxYjYwYzQ5YTBkYWQwOCIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3MTk1ODZ9.YkTj6TgS82IqFYQizfr7GxlRC6PGwn3A4V-kd_nskss"
+} 
+###
+GET http://localhost:5000/api/users?order=createAt&sort=desc&keySearch=
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyODlmMWMyZTVkMWY0MDdiMGEyNzFmIiwiaWF0IjoxNjMwMDU1MTY5LCJleHAiOjE2MzAyMjc5Njl9.oWeci9oDo-_JObUscH1D1tYMJ3117OqX-KG0LNPkT28
+
+###
+POST http://localhost:5000/api/login-google
+Content-Type: application/json
+
+{
+    "tokenId":"4/0AX4XfWjDvzNuBXggSEKhZYKRr0URYMlfiP6v1m3-hgn2H9hR6yXJMHL8FwUGqd_6KbyzhA"
 }
