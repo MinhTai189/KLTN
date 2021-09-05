@@ -7,6 +7,6 @@ const verifyToken = async(req, res, next) => {
             if (err) res.status(401).json("Token không đúng");
             req.user = data;
         });
-    else res.status(401).json("Yêu cầu xác thực");
+    else res.status(400).json("Yêu cầu xác thực");
 };
 module.exports = verifyToken;
