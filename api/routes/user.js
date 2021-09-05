@@ -9,7 +9,7 @@ router.get("/users", verifyToken, async(req, res) => {
     if (!req.user.isAdmin)
         return res
             .status(405)
-            .json({ success: false, message: "Method not allowed" });
+            .json({ success: false, message: "Không đủ quyền hạn truy cập" });
 
     const {
         order,
@@ -24,14 +24,14 @@ router.get("/users", verifyToken, async(req, res) => {
     } = req.query;
     // sap xep ngày tham gia moi nhat, cu nhat ; diem uy tin thap nhat , cao nhat
     /* query
-                                                                order: createAt, credit
-                                                                sort: tang dan, giam dan
-                                                                            keySearch: tu khoa tim kiem 
-                                                                            namelike
-                                                                            school
-                                                                            district 
-                                                                            province
-                                                                         \*/
+                                                                    order: createAt, credit
+                                                                    sort: tang dan, giam dan
+                                                                                keySearch: tu khoa tim kiem 
+                                                                                namelike
+                                                                                school
+                                                                                district 
+                                                                                province
+                                                                             \*/
     const keySearchs = [];
 
     let listUser;
@@ -144,17 +144,19 @@ router.put("/user/:id", verifyToken, async(req, res) => {
     if (req.user.id !== id || !req.user.isAdmin)
         return res
             .status(405)
-            .json({ success: false, message: "Method Not Allowed" });
+            .json({ success: false, message: "Không đủ quyền hạn truy cập" });
     const checkUser = await user.findById(id);
 
     if (!checkUser)
-        return res.status(404).json({ success: false, message: "User not found" });
+        return res
+            .status(404)
+            .json({ success: false, message: "Không tìm thấy người dùng" });
     if (req.body.password && req.body.newPassword) {
         const isMatch = await argon2.verify(checkUser.password, req.body.password);
         if (!isMatch)
             return res
                 .status(401)
-                .json({ success: false, message: "Password is incorrect" });
+                .json({ success: false, message: "Sai mật khẩu cũ" });
         req.body.newPassword = await argon2.hash(req.body.newPassword);
     }
     try {
@@ -169,17 +171,17 @@ router.delete("/user/:id", verifyToken, async(req, res) => {
     if (req.user.id !== id || !req.user.isAdmin)
         return res
             .status(405)
-            .json({ success: false, message: "Method Not Allowed" });
+            .json({ success: false, message: "Không đủ quyền hạn truy cập" });
 
     try {
         const userDelete = await user.findByIdAndDelete(id);
         if (!userDelete)
             return res
                 .status(404)
-                .json({ success: false, message: "User not found" });
-        res.status(200).json({ success: false, message: "Deleted user" });
+                .json({ success: false, message: "Không tìm thấy người dùng" });
+        res.status(200).json({ success: false, message: "Đã xóa người dùng" });
     } catch {
-        res.status(422).json({ success: false, message: "Unprocessable Entity" });
+        res.status(422).json({ success: false, message: "Vui lòng thử lại" });
     }
 });
 

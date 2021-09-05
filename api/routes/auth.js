@@ -12,7 +12,7 @@ const removeVietnameseTones = require("../methods/removeVietnameseTones");
 const axios = require("axios").default;
 let refreshTokens = [];
 
-router.post("/reset-password", async (req, res) => {
+router.post("/reset-password", async(req, res) => {
     const { password, token } = req.body;
     let data;
     JWT.verify(token, process.env.forgotPasswordToken, (err, dataUser) => {
@@ -21,7 +21,7 @@ router.post("/reset-password", async (req, res) => {
             console.log(err);
             return res
                 .status(500)
-                .json({ success: false, message: "Key isn't false" });
+                .json({ success: false, message: "Đường dẫn không chính xác" });
         }
         data = dataUser;
     });
@@ -32,7 +32,9 @@ router.post("/reset-password", async (req, res) => {
         await user.findByIdAndUpdate(data.id, {
             password: newPasswordHashed,
         });
-        res.status(200).json({ success: true, message: "password has been reset" });
+        res
+            .status(200)
+            .json({ success: true, message: "Mật khẩu đã được sửa đổi" });
     } catch (err) {
         return res.status(404);
     }
@@ -46,18 +48,18 @@ router.post("/refresh-token", (req, res) => {
     if (!check)
         return res
             .status(403)
-            .json({ success: false, message: "refreshToken is false" });
+            .json({ success: false, message: "refreshToken không đúng" });
 
     JWT.verify(refreshToken, check.key, (err, data) => {
         if (err)
             return res
                 .status(400)
-                .json({ success: false, message: "refreshToken is false" });
+                .json({ success: false, message: "refreshToken không đúng" });
 
         const accessToken = JWT.sign({ id: data.id, isAdmin: data.isAdmin },
             process.env.accessToken, {
-            expiresIn: "1m",
-        }
+                expiresIn: "1m",
+            }
         );
 
         const key = uuid.v4();
@@ -72,7 +74,7 @@ router.post("/refresh-token", (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "thanh cong",
+            message: "refresh thành công",
             data: {
                 accessToken,
                 refreshToken: newRefreshToken,
@@ -80,7 +82,7 @@ router.post("/refresh-token", (req, res) => {
         });
     });
 });
-router.post("/forgot-password", async (req, res) => {
+router.post("/forgot-password", async(req, res) => {
     //Route quên mật khẩu, nhận mail, xác thực
     const { email } = req.body; //lấy email
     const User = await user.findOne({ email: email });
@@ -88,7 +90,7 @@ router.post("/forgot-password", async (req, res) => {
     if (!User) {
         return res
             .status(401)
-            .json({ success: false, message: "email isn't exist" });
+            .json({ success: false, message: "Email không tồn tại" });
     }
     //Cung cấp key (30 phút)
     const forgotPasswordToken = JWT.sign({ id: User._id },
@@ -154,17 +156,19 @@ router.post("/forgot-password", async (req, res) => {
       </div>
       </div></div>`,
     };
-    transporter.sendMail(mainOptions, function (err, info) {
+    transporter.sendMail(mainOptions, function(err, info) {
         //tiến hành gửi mail
         if (err) {
             return res.status(400).json({ error: err });
         } else {
-            return res.status(200).json({ success: true, message: "da gui mail" });
+            return res
+                .status(200)
+                .json({ success: true, message: "Đã gửi mail thành công" });
         }
     });
 });
 
-router.post("/register", async (req, res) => {
+router.post("/register", async(req, res) => {
     const {
         username,
         password,
@@ -179,12 +183,12 @@ router.post("/register", async (req, res) => {
     if (checkUser)
         return res
             .status(400)
-            .json({ success: false, message: "username is exist" });
+            .json({ success: false, message: "Tên đăng nhập đã được sử dụng" });
     const checkEmail = await user.findOne({ email });
     if (checkEmail)
         return res
             .status(400)
-            .json({ success: false, message: "email already used" });
+            .json({ success: false, message: "Lỗi! Email đã được sử dụng" });
     // Good
     try {
         const unsignedName = removeVietnameseTones(name);
@@ -204,14 +208,20 @@ router.post("/register", async (req, res) => {
         });
 
         await newUser.save();
-        res.status(200).json({ success: true, message: "dang ky thanh cong" });
+        res.status(200).json({ success: true, message: "Đăng ký thành công" });
     } catch (err) {
-        res.status(401).json({ success: false, message: "khong thanh cong", err });
+        res
+            .status(401)
+            .json({
+                success: false,
+                message: "Đã có lỗi xảy ra! vui lòng thử lại",
+                err,
+            });
     }
 });
 
 //đăng nhập
-router.post("/login", async (req, res) => {
+router.post("/login", async(req, res) => {
     const { username, password } = req.body;
     const { authorization } = req.headers;
     let userID = undefined;
@@ -225,17 +235,20 @@ router.post("/login", async (req, res) => {
             if (checkUser == null)
                 return res
                     .status(404)
-                    .json({ success: false, message: "username isn't exist" });
+                    .json({ success: false, message: "Tên đăng nhập bị sai" });
 
             const pass = await argon2.verify(checkUser.password, password);
             if (!pass)
                 return res
                     .status(404)
-                    .json({ success: false, message: "password is false" });
+                    .json({ success: false, message: "Mật khẩu bị sai" });
         } else {
-            JWT.verify(authorization, process.env.accessToken, async (err, data) => {
-                if (err) return res.status(401).json({ success: false, message: "Invalid token" });
-                // trong đây, nếu hết hạn trả về mã 401, hình như mày phải dịch JWT ra, nó có chứa expire
+            JWT.verify(authorization, process.env.accessToken, async(err, data) => {
+                if (err)
+                    return res
+                        .status(401)
+                        .json({ success: false, message: "Token hết hạn" });
+
                 userID = data.id;
             });
         }
@@ -255,7 +268,7 @@ router.post("/login", async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "thanh cong",
+            message: "Đăng nhập thành công",
             data: {
                 ...checkUser._doc,
                 accessToken: newAccessToken,
@@ -269,7 +282,7 @@ router.post("/login", async (req, res) => {
         });
     }
 });
-router.post("/register-facebook", async (req, res) => {
+router.post("/register-facebook", async(req, res) => {
     const { accessToken, userID, email, district, school, province } = req.body;
     const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
     &access_token=${accessToken}`;
@@ -277,14 +290,20 @@ router.post("/register-facebook", async (req, res) => {
     const { id, name, picture } = data.data;
 
     const checkUser = await user.findOne({
-        $or: [{ username: id }, {
-            email: email
-        }]
+        $or: [
+            { username: id },
+            {
+                email: email,
+            },
+        ],
     });
     if (checkUser)
         return res
             .status(401)
-            .json({ message: "facebook userID or email was used", success: false });
+            .json({
+                message: "Tài khoản facebook hoặc email này đã được sử dụng",
+                success: false,
+            });
 
     const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
     const unsignedName = removeVietnameseTones(name);
@@ -310,14 +329,14 @@ router.post("/register-facebook", async (req, res) => {
 
     res.status(200).json({
         success: true,
-        message: " dang ky thanh cong",
+        message: "Đăng ký thành công",
         data: {
-            accessToken: newAccessToken
-        }
+            accessToken: newAccessToken,
+        },
     });
 });
 
-router.post("/login-facebook", async (req, res) => {
+router.post("/login-facebook", async(req, res) => {
     const { accessToken, userID } = req.body;
 
     const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
@@ -327,13 +346,16 @@ router.post("/login-facebook", async (req, res) => {
     const { id } = data.data;
     const checkUser = await user.findOne({ username: id });
     if (!checkUser)
-        return res.status(200).json({ message: "user not found", success: false });
+        return res
+            .status(200)
+            .json({
+                message: "Cần bổ sung một số dữ liệu để hoàn tất",
+                success: false,
+            });
     const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
     const isMatch = await argon2.verify(checkUser.password, password);
     if (!isMatch)
-        return res
-            .status(400)
-            .json({ message: "password id incorrect", success: false });
+        return res.status(400).json({ message: "Mật khẩu bị sai", success: false });
 
     //good
     const newAccessToken = JWT.sign({ id: checkUser._id, isAdmin: checkUser.isAdmin },
@@ -342,13 +364,13 @@ router.post("/login-facebook", async (req, res) => {
 
     res.status(200).json({
         success: true,
-        message: "thanh cong",
+        message: "Đăng nhập thành công",
         data: {
             accessToken: newAccessToken,
         },
     });
 });
-router.post("/register-google", async (req, res) => {
+router.post("/register-google", async(req, res) => {
     const { tokenId, school, district, province } = req.body;
 
     const result = await client.verifyIdToken({
@@ -360,12 +382,14 @@ router.post("/register-google", async (req, res) => {
     if (!userGmail.email_verified)
         return res
             .status(400)
-            .json({ success: false, message: "Email verification failed" });
+            .json({ success: false, message: "Email chưa xác thực" });
     const checkUser = await user.findOne({
         $or: [{ username: userGmail.email }, { email: userGmail.email }],
     });
     if (checkUser)
-        return res.status(401).json({ success: false, message: "email was used" });
+        return res
+            .status(401)
+            .json({ success: false, message: "Email đã được sử dụng" });
     const password = userGmail.email + process.env.PASSWORD_SECRET_GOOGLE;
     const { email, picture, name } = userGmail;
     const unsignedName = removeVietnameseTones(name);
@@ -389,13 +413,13 @@ router.post("/register-google", async (req, res) => {
     );
     res.status(200).json({
         success: true,
-        message: " dang ky thanh cong",
+        message: "Đăng ký thành công",
         data: {
-            accessToken: newAccessToken
-        }
+            accessToken: newAccessToken,
+        },
     });
 });
-router.post("/login-google", async (req, res) => {
+router.post("/login-google", async(req, res) => {
     const { tokenId } = req.body;
     console.log(tokenId);
     const result = await client.verifyIdToken({
@@ -408,10 +432,15 @@ router.post("/login-google", async (req, res) => {
     if (!userGmail.email_verified)
         return res
             .status(400)
-            .json({ success: false, message: "Email verification failed" });
+            .json({ success: false, message: "Email chưa được sử dụng" });
 
     if (!checkUser)
-        return res.status(200).json({ success: false, message: "user not found" });
+        return res
+            .status(200)
+            .json({
+                success: false,
+                message: "Cần bổ sung một số dữ liệu để hoàn tất",
+            });
 
     if (!tokenId) {
         const password = userGmail.email + process.env.PASSWORD_SECRET_GOOGLE;
@@ -419,7 +448,7 @@ router.post("/login-google", async (req, res) => {
         if (!isMatch)
             return res
                 .status(400)
-                .json({ success: false, message: "password is incorrect" });
+                .json({ success: false, message: "Mật khẩu bị sai" });
     }
 
     const newAccessToken = JWT.sign({ id: checkUser._id, isAdmin: checkUser.isAdmin },
@@ -428,7 +457,7 @@ router.post("/login-google", async (req, res) => {
 
     res.status(200).json({
         success: true,
-        message: "thanh cong",
+        message: "Đăng ký thành công",
         data: {
             accessToken: newAccessToken,
         },
