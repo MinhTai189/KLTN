@@ -24,17 +24,22 @@ router.get("/users", verifyToken, async(req, res) => {
     } = req.query;
     // sap xep ngày tham gia moi nhat, cu nhat ; diem uy tin thap nhat , cao nhat
     /* query
-                                                                    order: createAt, credit
-                                                                    sort: tang dan, giam dan
-                                                                                keySearch: tu khoa tim kiem 
-                                                                                namelike
-                                                                                school
-                                                                                district 
-                                                                                province
-                                                                             \*/
-    const keySearchs = [];
-
+                     order: createAt, credit
+                    sort: tang dan, giam dan
+                     limit
+                  page
+                    keySearch (1)
+                        namelike (2)
+                        school(3)
+                      district(4) 
+                  province(5)
+                  1 gia tri se tim theo 1 gia tri, 2 gia tri se tim theo 2 gia tri, keySearch tim tat ca
+                  getAll se khong co gia tri nao trong 5 gia tri tren
+                                                        
+                                                        */
+    let keySearchs = [];
     let listUser;
+    let totalRows;
     if (keySearch) {
         keySearchs = [
             ...keySearchs,
@@ -67,12 +72,12 @@ router.get("/users", verifyToken, async(req, res) => {
         if (nameLike)
             keySearchs = [
                 ...keySearchs,
-                { name: new RegExp(nameLike.replace(" ", "_"), "i") },
+                { unsignedName: new RegExp(nameLike.replace(" ", "_"), "i") },
                 {
-                    name: new RegExp("^" + nameLike.replace(" ", "_"), "i"),
+                    unsignedName: new RegExp("^" + nameLike.replace(" ", "_"), "i"),
                 },
                 {
-                    name: new RegExp(nameLike.replace(" ", "_") + "$", "i"),
+                    unsignedName: new RegExp(nameLike.replace(" ", "_") + "$", "i"),
                 },
             ];
         if (schoolLike)
@@ -109,33 +114,45 @@ router.get("/users", verifyToken, async(req, res) => {
                 },
             ];
     }
+    console.log(keySearchs);
+    if (keySearchs.length == 0) {
+        listUser = await user
+            .find({})
+            .sort({ createdAt: sort })
+            .limit(parseInt(limit))
+            .skip(limit * (page - 1));
+        totalRows = await user.countDocuments({});
+    } else {
+        totalRows = await user.countDocuments({ $or: keySearchs });
+        switch (order) {
+            case "createAt":
+                listUser = await user
+                    .find({ $or: keySearchs })
+                    .sort({ createdAt: sort })
+                    .limit(parseInt(limit))
+                    .skip(limit * (page - 1));
 
-    switch (order) {
-        case "createAt":
-            listUser = await user
-                .find({ $or: keySearchs })
-                .sort({ createdAt: sort })
-                .limit(parseInt(limit))
-                .skip(limit * (page - 1));
+                break;
+            case "credit":
+                listUser = await user
+                    .find({ $or: keySearchs })
+                    .sort({ credit: sort })
+                    .limit(parseInt(limit))
+                    .skip(limit * (page - 1));
 
-            break;
-        case "credit":
-            listUser = await user
-                .find({ $or: keySearchs })
-                .sort({ credit: sort })
-                .limit(parseInt(limit))
-                .skip(limit * (page - 1));
-
-            break;
-        default:
-            break;
+                break;
+            default:
+                break;
+        }
     }
-
     res.status(200).json({
         success: true,
         message: "thanh cong",
-        data: {
-            listUser,
+        data: listUser,
+        pagination: {
+            _page: page,
+            _limit: limit,
+            _totalRows: totalRows,
         },
     });
 });
@@ -146,18 +163,21 @@ router.put("/user/:id", verifyToken, async(req, res) => {
             .status(405)
             .json({ success: false, message: "Không đủ quyền hạn truy cập" });
     const checkUser = await user.findById(id);
-
     if (!checkUser)
         return res
             .status(404)
             .json({ success: false, message: "Không tìm thấy người dùng" });
-    if (req.body.password && req.body.newPassword) {
+    if (req.body.password) {
+        if (!req.body.newPassword)
+            return res
+                .status(401)
+                .json({ success: false, message: "Không có mật khẩu mới" });
         const isMatch = await argon2.verify(checkUser.password, req.body.password);
         if (!isMatch)
             return res
                 .status(401)
                 .json({ success: false, message: "Sai mật khẩu cũ" });
-        req.body.newPassword = await argon2.hash(req.body.newPassword);
+        req.body.password = await argon2.hash(req.body.newPassword);
     }
     try {
         await user.findByIdAndUpdate(id, { $set: req.body });

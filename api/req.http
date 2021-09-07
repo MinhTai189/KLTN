@@ -17,13 +17,13 @@ GET http://localhost:5000/api/
 ###
 POST http://localhost:5000/api/login
 Content-Type: application/json
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzM1NTFmZTI1Zjc4ZTEyOTA5YzFlYSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3NTQwNzksImV4cCI6MTYzMDc1NDY3OX0.frCvIwZSF4kIEZHPDKww0z2yDVFOWxwXxMPoIquMbLg
+//Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzM1NTFmZTI1Zjc4ZTEyOTA5YzFlYSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3NTQwNzksImV4cCI6MTYzMDc1NDY3OX0.frCvIwZSF4kIEZHPDKww0z2yDVFOWxwXxMPoIquMbLg
 
-# {
-#     "username":"maideptrai",
-#    "password":"1234567"
-#     //"accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3MTc4NDYsImV4cCI6MTYzMDcxNzkwNn0.sNtYRra6sUjZZkOikAyhlY8FdbXTwTksePSBNLjoRLI"
-# }
+ {
+    "username":"maideptrai",
+    "password":"1234567"
+     //"accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3MTc4NDYsImV4cCI6MTYzMDcxNzkwNn0.sNtYRra6sUjZZkOikAyhlY8FdbXTwTksePSBNLjoRLI"
+ }
 
 ###
 POST http://localhost:5000/api/forgot-password
@@ -62,8 +62,8 @@ Content-Type: application/json
     "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzM1NTFmZTI1Zjc4ZTEyOTA5YzFlYSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3NTgxMzl9.y2aih0S0nPtJtGv74InFRD_8pBPKzMW6-H7BX59Itws"
 } 
 ###
-GET http://localhost:5000/api/users?order=createAt&sort=desc&keySearch=
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjEyODlmMWMyZTVkMWY0MDdiMGEyNzFmIiwiaWF0IjoxNjMwMDU1MTY5LCJleHAiOjE2MzAyMjc5Njl9.oWeci9oDo-_JObUscH1D1tYMJ3117OqX-KG0LNPkT28
+GET http://localhost:5000/api/users/?schoolLike=tien giang&order=createAt&sort=desc&limit=2&page=1
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMDk3NjY2OSwiZXhwIjoxNjMwOTc3MjY5fQ.Yl6yY0I9qP2LGU5VYnzGKmydBCsL2NhB_yFhyufcIdw
 
 ###
 POST http://localhost:5000/api/login-google

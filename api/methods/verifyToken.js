@@ -6,7 +6,9 @@ const verifyToken = async(req, res, next) => {
         JWT.verify(token, process.env.accessToken, async(err, data) => {
             if (err) res.status(401).json("Token không đúng");
             req.user = data;
+
+            next();
         });
-    else res.status(400).json("Yêu cầu xác thực");
+    else res.status(400).json("Yêu cầu xác thực (không tìm thấy accessToken)");
 };
 module.exports = verifyToken;
