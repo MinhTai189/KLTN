@@ -11,123 +11,109 @@ router.get("/users", verifyToken, async(req, res) => {
             .status(405)
             .json({ success: false, message: "Không đủ quyền hạn truy cập" });
 
-    const {
-        order,
-        sort,
-        keySearch,
-        limit,
-        page,
-        nameLike,
-        schoolLike,
-        districtLike,
-        provinceLike,
+    let {
+        _order,
+        _sort,
+        _keySearch,
+        _limit,
+        _page,
+        _nameLike,
+        _school,
+        _district,
+        _province,
+        _role,
     } = req.query;
     let listUser;
     let totalRows;
     let keySearchs = [];
-    if (keySearch) {
+    if (_keySearch) {
         keySearchs = [
             ...keySearchs,
-            { unsignedName: new RegExp(keySearch, "i") },
-            { unsignedName: new RegExp("^" + keySearch, "i") },
-            { unsignedName: new RegExp(keySearch + "$", "i") },
-            { school: new RegExp(schoolLike.replace(" ", "_"), "i") },
+            { unsignedName: new RegExp(_keySearch, "i") },
+            { unsignedName: new RegExp("^" + _keySearch, "i") },
+            { unsignedName: new RegExp(_keySearch + "$", "i") },
+            { school: new RegExp(_keySearch.replace(" ", "_"), "i") },
             {
-                school: new RegExp("^" + schoolLike.replace(" ", "_"), "i"),
+                school: new RegExp("^" + _keySearch.replace(" ", "_"), "i"),
             },
             {
-                school: new RegExp(schoolLike.replace(" ", "_") + "$", "i"),
+                school: new RegExp(_keySearch.replace(" ", "_") + "$", "i"),
             },
-            { district: new RegExp(districtLike.replace(" ", "_"), "i") },
+            { district: new RegExp(_keySearch.replace(" ", "_"), "i") },
             {
-                district: new RegExp("^" + districtLike.replace(" ", "_"), "i"),
-            },
-            {
-                district: new RegExp(districtLike.replace(" ", "_") + "$", "i"),
-            },
-            { province: new RegExp(provinceLike.replace(" ", "_"), "i") },
-            {
-                province: new RegExp("^" + provinceLike.replace(" ", "_"), "i"),
+                district: new RegExp("^" + _keySearch.replace(" ", "_"), "i"),
             },
             {
-                province: new RegExp(provinceLike.replace(" ", "_") + "$", "i"),
+                district: new RegExp(_keySearch.replace(" ", "_") + "$", "i"),
+            },
+            { province: new RegExp(_keySearch.replace(" ", "_"), "i") },
+            {
+                province: new RegExp("^" + _keySearch.replace(" ", "_"), "i"),
+            },
+            {
+                province: new RegExp(_keySearch.replace(" ", "_") + "$", "i"),
             },
         ];
     } else {
-        if (nameLike)
+        if (_nameLike)
             keySearchs = [
                 ...keySearchs,
-                { unsignedName: new RegExp(nameLike, "i") },
+                { unsignedName: new RegExp(_nameLike, "i") },
                 {
-                    unsignedName: new RegExp("^" + nameLike, "i"),
+                    unsignedName: new RegExp("^" + _nameLike, "i"),
                 },
                 {
-                    unsignedName: new RegExp(nameLike + "$", "i"),
-                },
-            ];
-        if (schoolLike)
-            keySearchs = [
-                ...keySearchs,
-                { school: new RegExp(schoolLike.replace(" ", "_"), "i") },
-                {
-                    school: new RegExp("^" + schoolLike.replace(" ", "_"), "i"),
-                },
-                {
-                    school: new RegExp(schoolLike.replace(" ", "_") + "$", "i"),
-                },
-            ];
-        if (districtLike)
-            keySearchs = [
-                ...keySearchs,
-                { district: new RegExp(districtLike.replace(" ", "_"), "i") },
-                {
-                    district: new RegExp("^" + districtLike.replace(" ", "_"), "i"),
-                },
-                {
-                    district: new RegExp(districtLike.replace(" ", "_") + "$", "i"),
-                },
-            ];
-        if (provinceLike)
-            keySearchs = [
-                ...keySearchs,
-                { province: new RegExp(provinceLike.replace(" ", "_"), "i") },
-                {
-                    province: new RegExp("^" + provinceLike.replace(" ", "_"), "i"),
-                },
-                {
-                    province: new RegExp(provinceLike.replace(" ", "_") + "$", "i"),
+                    unsignedName: new RegExp(_nameLike + "$", "i"),
                 },
             ];
     }
-    console.log(keySearchs);
+
     if (keySearchs.length > 0) {
-        totalRows = await user.countDocuments({ $or: keySearchs });
-        listUser = await user.find({ $or: keySearchs }).select("-password");
+        listUser = await user
+            .find({ $or: keySearchs })
+            .select("-password")
+            .select("-unsignedName");
     } else {
-        totalRows = await user.countDocuments({});
-        listUser = await user.find({}).select("-password");
+        listUser = await user.find({}).select("-password").select("-unsignedName");
     }
-    if (order && sort)
-        switch (order) {
+
+    if (_role) {
+        if (_role === "user")
+            listUser = listUser.filter((item) => {
+                return item.isAdmin == false;
+            });
+        else if (_role === "admin")
+            listUser = listUser.filter((item) => {
+                return item.isAdmin == true;
+            });
+    }
+    if (_school) listUser = listUser.filter((item) => item.school === _school);
+    if (_district)
+        listUser = listUser.filter((item) => item.district === _district);
+    if (_province)
+        listUser = listUser.filter((item) => item.province === _province);
+    totalRows = listUser.length;
+    if (_order && _sort)
+        switch (_order) {
             case "createdAt":
-                if (sort === "asc")
-                    listUser = await listUser.sort(
+                if (_sort === "asc")
+                    listUser = listUser.sort(
                         (user1, user2) =>
                         new Date(user1.createdAt) - new Date(user2.createdAt)
                     );
-                else if (sort === "desc")
-                    listUser = await listUser.sort(
+                else if (_sort === "desc")
+                    listUser = listUser.sort(
                         (user1, user2) =>
                         new Date(user2.createdAt) - new Date(user1.createdAt)
                     );
                 break;
             case "credit":
-                if (sort === "asc")
-                    listUser = await listUser.sort(
+                if (_sort === "asc")
+                    listUser = listUser.sort(
                         (user1, user2) => user1.credit - user2.credit
                     );
-                else if (sort == "desc") {
-                    listUser = await listUser.sort(
+                else if (_sort == "desc") {
+                    listUser = listUser.sort(
                         (user1, user2) => user2.credit - user1.credit
                     );
                 }
@@ -135,19 +121,21 @@ router.get("/users", verifyToken, async(req, res) => {
             default:
                 break;
         }
-    if (page && limit)
-        listUser = await listUser.slice(
-            limit * (page - 1),
-            limit + limit * (page - 1)
+    _page = parseInt(_page);
+    _limit = parseInt(_limit);
+    if (_page && _limit)
+        listUser = listUser.slice(
+            _limit * (_page - 1),
+            _limit + _limit * (_page - 1)
         );
-    if (page && limit)
+    if (_page && _limit)
         res.status(200).json({
             success: true,
             message: "thanh cong",
             data: listUser,
             pagination: {
-                _page: page,
-                _limit: limit,
+                _page: _page,
+                _limit: _limit,
                 _totalRows: totalRows,
             },
         });

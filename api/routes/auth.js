@@ -210,13 +210,11 @@ router.post("/register", async(req, res) => {
         await newUser.save();
         res.status(200).json({ success: true, message: "Đăng ký thành công" });
     } catch (err) {
-        res
-            .status(401)
-            .json({
-                success: false,
-                message: "Đã có lỗi xảy ra! vui lòng thử lại",
-                err,
-            });
+        res.status(401).json({
+            success: false,
+            message: "Đã có lỗi xảy ra! vui lòng thử lại",
+            err,
+        });
     }
 });
 
@@ -226,7 +224,6 @@ router.post("/login", async(req, res) => {
     const { authorization } = req.headers;
     let userID = undefined;
     let checkUser;
-    console.log(authorization);
 
     try {
         if (Boolean(username) && Boolean(password)) {
@@ -282,6 +279,25 @@ router.post("/login", async(req, res) => {
         });
     }
 });
+router.get("/logout", (req, res) => {
+    const refreshToken = req.headers.authorization;
+    if (!refreshTokens)
+        return res
+            .status(400)
+            .json({ success: false, message: "Yêu cầu gửi lên thông tin đăng xuất" });
+    const check = refreshTokens.find(
+        (item) => item.refreshToken === refreshToken
+    );
+
+    if (!check)
+        return res
+            .status(400)
+            .json({ success: false, message: "Không tìm thấy token" });
+    refreshTokens = refreshTokens.filter((item) => {
+        return item.key !== check.key;
+    });
+    res.status(200).json({ success: true, message: "Đã đăng xuất" });
+});
 router.post("/register-facebook", async(req, res) => {
     const { accessToken, userID, email, district, school, province } = req.body;
     const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
@@ -298,12 +314,10 @@ router.post("/register-facebook", async(req, res) => {
         ],
     });
     if (checkUser)
-        return res
-            .status(401)
-            .json({
-                message: "Tài khoản facebook hoặc email này đã được sử dụng",
-                success: false,
-            });
+        return res.status(401).json({
+            message: "Tài khoản facebook hoặc email này đã được sử dụng",
+            success: false,
+        });
 
     const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
     const unsignedName = removeVietnameseTones(name);
@@ -346,12 +360,10 @@ router.post("/login-facebook", async(req, res) => {
     const { id } = data.data;
     const checkUser = await user.findOne({ username: id });
     if (!checkUser)
-        return res
-            .status(200)
-            .json({
-                message: "Cần bổ sung một số dữ liệu để hoàn tất",
-                success: false,
-            });
+        return res.status(200).json({
+            message: "Cần bổ sung một số dữ liệu để hoàn tất",
+            success: false,
+        });
     const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
     const isMatch = await argon2.verify(checkUser.password, password);
     if (!isMatch)
@@ -435,12 +447,10 @@ router.post("/login-google", async(req, res) => {
             .json({ success: false, message: "Email chưa được sử dụng" });
 
     if (!checkUser)
-        return res
-            .status(200)
-            .json({
-                success: false,
-                message: "Cần bổ sung một số dữ liệu để hoàn tất",
-            });
+        return res.status(200).json({
+            success: false,
+            message: "Cần bổ sung một số dữ liệu để hoàn tất",
+        });
 
     if (!tokenId) {
         const password = userGmail.email + process.env.PASSWORD_SECRET_GOOGLE;
