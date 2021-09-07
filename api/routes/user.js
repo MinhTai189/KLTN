@@ -24,19 +24,19 @@ router.get("/users", verifyToken, async(req, res) => {
     } = req.query;
     // sap xep ngày tham gia moi nhat, cu nhat ; diem uy tin thap nhat , cao nhat
     /* query
-                     order: createAt, credit
-                    sort: tang dan, giam dan
-                     limit
-                  page
-                    keySearch (1)
-                        namelike (2)
-                        school(3)
-                      district(4) 
-                  province(5)
-                  1 gia tri se tim theo 1 gia tri, 2 gia tri se tim theo 2 gia tri, keySearch tim tat ca
-                  getAll se khong co gia tri nao trong 5 gia tri tren
-                                                        
-                                                        */
+                           order: createAt, credit
+                          sort: tang dan, giam dan
+                           limit
+                        page
+                          keySearch (1)
+                              namelike (2)
+                              school(3)
+                            district(4) 
+                        province(5)
+                        1 gia tri se tim theo 1 gia tri, 2 gia tri se tim theo 2 gia tri, keySearch tim tat ca
+                        getAll se khong co gia tri nao trong 5 gia tri tren
+                                                              
+                                                              */
     let keySearchs = [];
     let listUser;
     let totalRows;
@@ -118,6 +118,7 @@ router.get("/users", verifyToken, async(req, res) => {
     if (keySearchs.length == 0) {
         listUser = await user
             .find({})
+            .select("-password")
             .sort({ createdAt: sort })
             .limit(parseInt(limit))
             .skip(limit * (page - 1));
@@ -128,6 +129,7 @@ router.get("/users", verifyToken, async(req, res) => {
             case "createAt":
                 listUser = await user
                     .find({ $or: keySearchs })
+                    .select("-password")
                     .sort({ createdAt: sort })
                     .limit(parseInt(limit))
                     .skip(limit * (page - 1));
@@ -136,6 +138,7 @@ router.get("/users", verifyToken, async(req, res) => {
             case "credit":
                 listUser = await user
                     .find({ $or: keySearchs })
+                    .select("-password")
                     .sort({ credit: sort })
                     .limit(parseInt(limit))
                     .skip(limit * (page - 1));
