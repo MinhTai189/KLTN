@@ -62,8 +62,8 @@ Content-Type: application/json
     "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzM1NTFmZTI1Zjc4ZTEyOTA5YzFlYSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3NTgxMzl9.y2aih0S0nPtJtGv74InFRD_8pBPKzMW6-H7BX59Itws"
 } 
 ###
-GET http://localhost:5000/api/users/?schoolLike=tien giang&order=createAt&sort=desc&limit=2&page=1
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMDk3NjY2OSwiZXhwIjoxNjMwOTc3MjY5fQ.Yl6yY0I9qP2LGU5VYnzGKmydBCsL2NhB_yFhyufcIdw
+GET http://localhost:5000/api/users/?&order=createdAt&sort=desc&page=2&limit=2
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMDk4NjgzNSwiZXhwIjoxNjMwOTg3NDM1fQ.5XnlJ-b1qnbVD0V3V0yCuZU9L2ESjldLgNL6mf5WDdY
 
 ###
 POST http://localhost:5000/api/login-google

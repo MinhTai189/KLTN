@@ -22,24 +22,9 @@ router.get("/users", verifyToken, async(req, res) => {
         districtLike,
         provinceLike,
     } = req.query;
-    // sap xep ngày tham gia moi nhat, cu nhat ; diem uy tin thap nhat , cao nhat
-    /* query
-                           order: createAt, credit
-                          sort: tang dan, giam dan
-                           limit
-                        page
-                          keySearch (1)
-                              namelike (2)
-                              school(3)
-                            district(4) 
-                        province(5)
-                        1 gia tri se tim theo 1 gia tri, 2 gia tri se tim theo 2 gia tri, keySearch tim tat ca
-                        getAll se khong co gia tri nao trong 5 gia tri tren
-                                                              
-                                                              */
-    let keySearchs = [];
     let listUser;
     let totalRows;
+    let keySearchs = [];
     if (keySearch) {
         keySearchs = [
             ...keySearchs,
@@ -72,12 +57,12 @@ router.get("/users", verifyToken, async(req, res) => {
         if (nameLike)
             keySearchs = [
                 ...keySearchs,
-                { unsignedName: new RegExp(nameLike.replace(" ", "_"), "i") },
+                { unsignedName: new RegExp(nameLike, "i") },
                 {
-                    unsignedName: new RegExp("^" + nameLike.replace(" ", "_"), "i"),
+                    unsignedName: new RegExp("^" + nameLike, "i"),
                 },
                 {
-                    unsignedName: new RegExp(nameLike.replace(" ", "_") + "$", "i"),
+                    unsignedName: new RegExp(nameLike + "$", "i"),
                 },
             ];
         if (schoolLike)
@@ -115,49 +100,64 @@ router.get("/users", verifyToken, async(req, res) => {
             ];
     }
     console.log(keySearchs);
-    if (keySearchs.length == 0) {
-        listUser = await user
-            .find({})
-            .select("-password")
-            .sort({ createdAt: sort })
-            .limit(parseInt(limit))
-            .skip(limit * (page - 1));
-        totalRows = await user.countDocuments({});
-    } else {
+    if (keySearchs.length > 0) {
         totalRows = await user.countDocuments({ $or: keySearchs });
+        listUser = await user.find({ $or: keySearchs }).select("-password");
+    } else {
+        totalRows = await user.countDocuments({});
+        listUser = await user.find({}).select("-password");
+    }
+    if (order && sort)
         switch (order) {
-            case "createAt":
-                listUser = await user
-                    .find({ $or: keySearchs })
-                    .select("-password")
-                    .sort({ createdAt: sort })
-                    .limit(parseInt(limit))
-                    .skip(limit * (page - 1));
-
+            case "createdAt":
+                if (sort === "asc")
+                    listUser = await listUser.sort(
+                        (user1, user2) =>
+                        new Date(user1.createdAt) - new Date(user2.createdAt)
+                    );
+                else if (sort === "desc")
+                    listUser = await listUser.sort(
+                        (user1, user2) =>
+                        new Date(user2.createdAt) - new Date(user1.createdAt)
+                    );
                 break;
             case "credit":
-                listUser = await user
-                    .find({ $or: keySearchs })
-                    .select("-password")
-                    .sort({ credit: sort })
-                    .limit(parseInt(limit))
-                    .skip(limit * (page - 1));
-
+                if (sort === "asc")
+                    listUser = await listUser.sort(
+                        (user1, user2) => user1.credit - user2.credit
+                    );
+                else if (sort == "desc") {
+                    listUser = await listUser.sort(
+                        (user1, user2) => user2.credit - user1.credit
+                    );
+                }
                 break;
             default:
                 break;
         }
-    }
-    res.status(200).json({
-        success: true,
-        message: "thanh cong",
-        data: listUser,
-        pagination: {
-            _page: page,
-            _limit: limit,
-            _totalRows: totalRows,
-        },
-    });
+    if (page && limit)
+        listUser = await listUser.slice(
+            limit * (page - 1),
+            limit + limit * (page - 1)
+        );
+    if (page && limit)
+        res.status(200).json({
+            success: true,
+            message: "thanh cong",
+            data: listUser,
+            pagination: {
+                _page: page,
+                _limit: limit,
+                _totalRows: totalRows,
+            },
+        });
+    else
+        res.status(200).json({
+            success: true,
+            message: "thanh cong",
+            data: listUser,
+            totalRows: totalRows,
+        });
 });
 router.put("/user/:id", verifyToken, async(req, res) => {
     const id = req.params.id;
