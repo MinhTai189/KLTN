@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const user = require("../models/user");
-
+const removeVietNameseTones = require("../methods/removeVietnameseTones");
 const argon2 = require("argon2");
 const verifyToken = require("../methods/verifyToken");
 
@@ -149,37 +149,108 @@ router.get("/users", verifyToken, async(req, res) => {
 });
 router.put("/user/:id", verifyToken, async(req, res) => {
     const id = req.params.id;
-    if (req.user.id !== id || !req.user.isAdmin)
+    if (req.user.id !== id && !req.user.isAdmin)
         return res
             .status(405)
             .json({ success: false, message: "Không đủ quyền hạn truy cập" });
+
     const checkUser = await user.findById(id);
     if (!checkUser)
         return res
             .status(404)
             .json({ success: false, message: "Không tìm thấy người dùng" });
-    if (req.body.password) {
-        if (!req.body.newPassword)
+    if (req.user.id === id && !req.user.isAdmin) {
+        if (req.body.password) {
+            if (!req.body.newPassword)
+                return res
+                    .status(400)
+                    .json({ success: false, message: "Không có mật khẩu mới" });
+            const isMatch = await argon2.verify(
+                checkUser.password,
+                req.body.password
+            );
+            if (!isMatch)
+                return res
+                    .status(400)
+                    .json({ success: false, message: "Sai mật khẩu cũ" });
+            req.body.password = await argon2.hash(req.body.newPassword);
+            await user.findByIdAndUpdate(id, { password: req.body.password });
             return res
-                .status(401)
-                .json({ success: false, message: "Không có mật khẩu mới" });
-        const isMatch = await argon2.verify(checkUser.password, req.body.password);
-        if (!isMatch)
-            return res
-                .status(401)
-                .json({ success: false, message: "Sai mật khẩu cũ" });
-        req.body.password = await argon2.hash(req.body.newPassword);
-    }
-    try {
-        await user.findByIdAndUpdate(id, { $set: req.body });
-        res.status(200).json({ success: true, message: "User has been updated" });
-    } catch (err) {
-        res.status(400);
-    }
+                .status(200)
+                .json({ success: true, message: "Đã thay đổi mật khẩu thành công" });
+        } else {
+            newDataUser = {};
+            const { name, avatarUrl, school, district, province } = req.body;
+            if (!name && !avatarUrl && !school && !district && province)
+                return res
+                    .status(400)
+                    .json({ success: true, message: "Không có thông tin cập nhật" });
+            if (name) {
+                newDataUser.name = name;
+                newDataUser.unsignedName = removeVietNameseTones(name);
+            }
+            if (avatarUrl) newDataUser.avatarUrl = avatarUrl;
+            if (school) newDataUser.school = school;
+            if (district) newDataUser.district = district;
+            if (province) newDataUser.province = province;
+            const userUpdate = await user.findByIdAndUpdate(id, {
+                $set: newDataUser,
+            });
+            if (userUpdate)
+                return res
+                    .status(200)
+                    .json({ success: true, message: "Đã cập nhật thông tin" });
+        }
+    } else if (req.user.isAdmin)
+        try {
+            newDataUser = {};
+            const {
+                name,
+                avatarUrl,
+                school,
+                district,
+                province,
+                isAdmin,
+                email,
+                credit,
+            } = req.body;
+            if (!name &&
+                !avatarUrl &&
+                !school &&
+                !district &&
+                !province &&
+                !isAdmin &&
+                !email &&
+                !credit
+            )
+                return res.status(400).json({
+                    success: false,
+                    message: "Không tìm thấy thông tin cập nhật",
+                });
+            if (name) {
+                newDataUser.name = name;
+                newDataUser.unsignedName = removeVietNameseTones(name);
+            }
+            if (avatarUrl) newDataUser.avatarUrl = avatarUrl;
+            if (school) newDataUser.school = school;
+            if (district) newDataUser.district = district;
+            if (province) newDataUser.province = province;
+            if (isAdmin && typeof isAdmin === "boolean")
+                newDataUser.isAdmin = isAdmin;
+            if (email) newDataUser.email = email;
+            if (credit && typeof credit == "number") newDataUser.credit = credit;
+
+            await user.findByIdAndUpdate(id, { $set: newDataUser });
+            res
+                .status(200)
+                .json({ success: true, message: "Đã cập nhật thông tin người dùng" });
+        } catch (err) {
+            res.status(500);
+        }
 });
 router.delete("/user/:id", verifyToken, async(req, res) => {
     const id = req.params.id;
-    if (req.user.id !== id || !req.user.isAdmin)
+    if (req.user.id !== id && !req.user.isAdmin)
         return res
             .status(405)
             .json({ success: false, message: "Không đủ quyền hạn truy cập" });

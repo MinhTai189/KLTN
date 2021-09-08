@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const motel = new Schema({
     owner: {
-        type:Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "user",
         required: true,
     },
@@ -13,13 +13,11 @@ const motel = new Schema({
         required: true,
     },
     districts: {
-        type:Schema.Types.ObjectId,
-        
+        type: Schema.Types.ObjectId,
         ref: "districts",
     },
     province: {
-        type:Schema.Types.ObjectId,
-        
+        type: Schema.Types.ObjectId,
         ref: "province",
     },
     price: {
@@ -64,7 +62,7 @@ const motel = new Schema({
     },
     rate: [{
         user: {
-            type:Schema.Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: "user",
         },
         star: {
@@ -79,9 +77,13 @@ const motel = new Schema({
         type: Number,
     },
     editor: {
-        type:Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "user",
     },
-});
+    school: {
+        type: [{ type: mongoose.type.ObjectId, ref: school }],
+        default: [],
+    },
+}, { timestamps: true });
 
 module.exports = mongoose.model("motel", motel);

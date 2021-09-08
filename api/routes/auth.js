@@ -179,6 +179,24 @@ router.post("/register", async(req, res) => {
         province,
         school,
     } = req.body;
+
+    if (!username || !password)
+        return res.status(400).json({
+            success: false,
+            message: "Tên đăng nhập hoặc mật khẩu không được bỏ trống",
+        });
+    if (!name)
+        return res
+            .status(400)
+            .json({ success: false, message: "Vui lòng nhập đủ họ tên" });
+    if (!email)
+        return res
+            .status(400)
+            .json({ success: false, message: "Email không được để trống" });
+    if (!school || !district || !province)
+        return res
+            .status(400)
+            .json({ success: false, message: "Vui lòng cung cấp đủ thông tin" });
     const checkUser = await user.findOne({ username });
     if (checkUser)
         return res
