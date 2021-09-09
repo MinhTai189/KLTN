@@ -316,6 +316,7 @@ router.get("/logout", (req, res) => {
     });
     res.status(200).json({ success: true, message: "Đã đăng xuất" });
 });
+
 router.post("/register-facebook", async (req, res) => {
     const { accessToken, userID, email, district, school, province } = req.body;
     const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture

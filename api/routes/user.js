@@ -24,7 +24,6 @@ router.get("/users", verifyToken, async (req, res) => {
         _role,
     } = req.query;
 
-
     let listUser;
     let totalRows;
     let keySearchs = [];
@@ -82,7 +81,6 @@ router.get("/users", verifyToken, async (req, res) => {
     } else {
         listUser = await user.find({}).select("-password").select("-unsignedName");
     }
-    console.log(listUser)
     if (_role) {
         if (_role === "user")
             listUser = listUser.filter((item) => {
@@ -160,7 +158,6 @@ router.get("/users", verifyToken, async (req, res) => {
 
 router.patch("/users/:id", verifyToken, async (req, res) => {
     const id = req.params.id;
-
     if (req.user.id !== id && !req.user.isAdmin)
         return res
             .status(405)
@@ -172,7 +169,6 @@ router.patch("/users/:id", verifyToken, async (req, res) => {
         return res
             .status(404)
             .json({ success: false, message: "Không tìm thấy tài khoản cần cập nhật!" });
-
     if (req.user.id === id && !req.user.isAdmin) {
         if (req.body.password) {
             if (!req.body.newPassword)
@@ -220,7 +216,6 @@ router.patch("/users/:id", verifyToken, async (req, res) => {
     } else if (req.user.isAdmin)
         try {
             newDataUser = {};
-
             const {
                 name,
                 avatarUrl,
@@ -243,9 +238,8 @@ router.patch("/users/:id", verifyToken, async (req, res) => {
             )
                 return res.status(400).json({
                     success: false,
-                    message: "KHãy điền đầy đủ thông tin cần cập nhật!",
+                    message: "Hãy điền đầy đủ thông tin cần cập nhật!",
                 });
-
             if (name) {
                 newDataUser.name = name;
                 newDataUser.unsignedName = removeVietNameseTones(name);
@@ -265,6 +259,7 @@ router.patch("/users/:id", verifyToken, async (req, res) => {
             res
                 .status(200)
                 .json({ success: true, message: "Đã cập nhật thông tin tài khoản!", data: userUpdated });
+
         } catch (err) {
             res.status(500);
         }
