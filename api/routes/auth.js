@@ -12,7 +12,7 @@ const removeVietnameseTones = require("../methods/removeVietnameseTones");
 const axios = require("axios").default;
 let refreshTokens = [];
 
-router.post("/reset-password", async(req, res) => {
+router.post("/reset-password", async (req, res) => {
     const { password, token } = req.body;
     let data;
     JWT.verify(token, process.env.forgotPasswordToken, (err, dataUser) => {
@@ -58,8 +58,8 @@ router.post("/refresh-token", (req, res) => {
 
         const accessToken = JWT.sign({ id: data.id, isAdmin: data.isAdmin },
             process.env.accessToken, {
-                expiresIn: "1m",
-            }
+            expiresIn: "1m",
+        }
         );
 
         const key = uuid.v4();
@@ -82,7 +82,7 @@ router.post("/refresh-token", (req, res) => {
         });
     });
 });
-router.post("/forgot-password", async(req, res) => {
+router.post("/forgot-password", async (req, res) => {
     //Route quên mật khẩu, nhận mail, xác thực
     const { email } = req.body; //lấy email
     const User = await user.findOne({ email: email });
@@ -156,7 +156,7 @@ router.post("/forgot-password", async(req, res) => {
       </div>
       </div></div>`,
     };
-    transporter.sendMail(mainOptions, function(err, info) {
+    transporter.sendMail(mainOptions, function (err, info) {
         //tiến hành gửi mail
         if (err) {
             return res.status(400).json({ error: err });
@@ -168,7 +168,7 @@ router.post("/forgot-password", async(req, res) => {
     });
 });
 
-router.post("/register", async(req, res) => {
+router.post("/register", async (req, res) => {
     const {
         username,
         password,
@@ -179,6 +179,24 @@ router.post("/register", async(req, res) => {
         province,
         school,
     } = req.body;
+
+    if (!username || !password)
+        return res.status(400).json({
+            success: false,
+            message: "Tên đăng nhập hoặc mật khẩu không được bỏ trống",
+        });
+    if (!name)
+        return res
+            .status(400)
+            .json({ success: false, message: "Vui lòng nhập đủ họ tên" });
+    if (!email)
+        return res
+            .status(400)
+            .json({ success: false, message: "Email không được để trống" });
+    if (!school || !district || !province)
+        return res
+            .status(400)
+            .json({ success: false, message: "Vui lòng cung cấp đủ thông tin" });
     const checkUser = await user.findOne({ username });
     if (checkUser)
         return res
@@ -210,23 +228,20 @@ router.post("/register", async(req, res) => {
         await newUser.save();
         res.status(200).json({ success: true, message: "Đăng ký thành công" });
     } catch (err) {
-        res
-            .status(401)
-            .json({
-                success: false,
-                message: "Đã có lỗi xảy ra! vui lòng thử lại",
-                err,
-            });
+        res.status(401).json({
+            success: false,
+            message: "Đã có lỗi xảy ra! vui lòng thử lại",
+            err,
+        });
     }
 });
 
 //đăng nhập
-router.post("/login", async(req, res) => {
+router.post("/login", async (req, res) => {
     const { username, password } = req.body;
     const { authorization } = req.headers;
     let userID = undefined;
     let checkUser;
-    console.log(authorization);
 
     try {
         if (Boolean(username) && Boolean(password)) {
@@ -243,7 +258,7 @@ router.post("/login", async(req, res) => {
                     .status(404)
                     .json({ success: false, message: "Mật khẩu bị sai" });
         } else {
-            JWT.verify(authorization, process.env.accessToken, async(err, data) => {
+            JWT.verify(authorization, process.env.accessToken, async (err, data) => {
                 if (err)
                     return res
                         .status(401)
@@ -282,7 +297,26 @@ router.post("/login", async(req, res) => {
         });
     }
 });
-router.post("/register-facebook", async(req, res) => {
+router.get("/logout", (req, res) => {
+    const refreshToken = req.headers.authorization;
+    if (!refreshTokens)
+        return res
+            .status(400)
+            .json({ success: false, message: "Yêu cầu gửi lên thông tin đăng xuất" });
+    const check = refreshTokens.find(
+        (item) => item.refreshToken === refreshToken
+    );
+
+    if (!check)
+        return res
+            .status(400)
+            .json({ success: false, message: "Không tìm thấy token" });
+    refreshTokens = refreshTokens.filter((item) => {
+        return item.key !== check.key;
+    });
+    res.status(200).json({ success: true, message: "Đã đăng xuất" });
+});
+router.post("/register-facebook", async (req, res) => {
     const { accessToken, userID, email, district, school, province } = req.body;
     const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
     &access_token=${accessToken}`;
@@ -298,12 +332,10 @@ router.post("/register-facebook", async(req, res) => {
         ],
     });
     if (checkUser)
-        return res
-            .status(401)
-            .json({
-                message: "Tài khoản facebook hoặc email này đã được sử dụng",
-                success: false,
-            });
+        return res.status(401).json({
+            message: "Tài khoản facebook hoặc email này đã được sử dụng",
+            success: false,
+        });
 
     const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
     const unsignedName = removeVietnameseTones(name);
@@ -336,7 +368,7 @@ router.post("/register-facebook", async(req, res) => {
     });
 });
 
-router.post("/login-facebook", async(req, res) => {
+router.post("/login-facebook", async (req, res) => {
     const { accessToken, userID } = req.body;
 
     const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
@@ -346,12 +378,10 @@ router.post("/login-facebook", async(req, res) => {
     const { id } = data.data;
     const checkUser = await user.findOne({ username: id });
     if (!checkUser)
-        return res
-            .status(200)
-            .json({
-                message: "Cần bổ sung một số dữ liệu để hoàn tất",
-                success: false,
-            });
+        return res.status(200).json({
+            message: "Cần bổ sung một số dữ liệu để hoàn tất",
+            success: false,
+        });
     const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
     const isMatch = await argon2.verify(checkUser.password, password);
     if (!isMatch)
@@ -370,7 +400,7 @@ router.post("/login-facebook", async(req, res) => {
         },
     });
 });
-router.post("/register-google", async(req, res) => {
+router.post("/register-google", async (req, res) => {
     const { tokenId, school, district, province } = req.body;
 
     const result = await client.verifyIdToken({
@@ -419,7 +449,7 @@ router.post("/register-google", async(req, res) => {
         },
     });
 });
-router.post("/login-google", async(req, res) => {
+router.post("/login-google", async (req, res) => {
     const { tokenId } = req.body;
     console.log(tokenId);
     const result = await client.verifyIdToken({
@@ -435,12 +465,10 @@ router.post("/login-google", async(req, res) => {
             .json({ success: false, message: "Email chưa được sử dụng" });
 
     if (!checkUser)
-        return res
-            .status(200)
-            .json({
-                success: false,
-                message: "Cần bổ sung một số dữ liệu để hoàn tất",
-            });
+        return res.status(200).json({
+            success: false,
+            message: "Cần bổ sung một số dữ liệu để hoàn tất",
+        });
 
     if (!tokenId) {
         const password = userGmail.email + process.env.PASSWORD_SECRET_GOOGLE;

@@ -7,21 +7,22 @@ interface Props {
     label: string;
     disabled: boolean;
     title: string;
+    value?: any;
 }
 
 const useStyles = makeStyles(theme => ({
     root: {
-        marginTop: theme.spacing(2)
+        marginTop: theme.spacing(2),
     }
 }))
 
-export const AutoCompleteField = ({ options, onChange, label, disabled = false, title, ...props }: Props) => {
+export const AutoCompleteField = ({ options, onChange, label, disabled = false, title, value, ...props }: Props) => {
     const classes = useStyles()
 
     return (
         <Autocomplete
             className={classes.root}
-            id="combo-box-demo"
+            value={value}
             options={options}
             getOptionLabel={(option) => option[title]}
             fullWidth

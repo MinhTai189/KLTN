@@ -4,6 +4,7 @@ import { useAppDispatch } from 'app/hooks';
 import axios from 'axios';
 import { Response } from 'models';
 import React, { useState } from 'react';
+import { UseFormSetValue } from 'react-hook-form';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { authActions } from './authSlice';
@@ -36,6 +37,9 @@ export default function Auth() {
 
     const [tokenGG, setTokenGG] = useState(null)
     const [tokenFB, setTokenFB] = useState<any>(null)
+    const [loading, setLoading] = useState(false)
+
+    const [errAvatar, setErrAvatar] = useState('')
 
     //hanlde login with Google
     const onSuccesGG = (res: any) => {
@@ -54,7 +58,7 @@ export default function Auth() {
                     dispatch(authActions.login({ username: '', password: '', rememberMe: true, accessToken: response.data.accessToken }));
                 }
             }).catch((err: any) => {
-                console.log('Loi xay ra trong qua trinh dang nhap GG', err.message);
+                dispatch(authActions.loginFailed(err.response.data.message))
             })
         }
     }
@@ -80,7 +84,7 @@ export default function Auth() {
                     dispatch(authActions.login({ username: '', password: '', rememberMe: true, accessToken: response.data.accessToken }));
                 }
             }).catch((err: any) => {
-                console.log('Loi xay ra trong qua trinh dang nhap GG', err.message);
+                dispatch(authActions.loginFailed(err.response.data.message))
             })
         }
     }
@@ -91,45 +95,60 @@ export default function Auth() {
 
     const handleSubmitRegister = async (data: RegisterData) => {
         if (!formAvatar) {
-            data.avatarUrl = '../../assets/images/avatar-default.jpg';
+            data.avatarUrl = 'https://res.cloudinary.com/kltn/image/upload/v1630851440/user-avatar/qiuawuts1ateicrjmyad.jpg';
         }
         else {
             try {
+                setLoading(true)
+
                 const response = await axios.post('https://api.cloudinary.com/v1_1/kltn/image/upload', formAvatar)
                 data.avatarUrl = response.data.secure_url
             }
             catch (err: any) {
-                console.log('Can not upload avatar', err.message);
+                toast.error("Tải hình ảnh thất bại!")
+                setLoading(false)
             }
         }
 
         try {
             await axiosClient.post('/register', data)
             history.push('/auth/login');
+
+            setLoading(false)
         }
         catch (err: any) {
-            console.log("Can not register account", err.message);
+            if (err.response?.data.message)
+                toast.error(err.response.data.message)
+            setLoading(false)
         }
     }
 
     const handleSubmitForgotPassword = async (data: ForgotPasswordData) => {
         try {
+            setLoading(true)
             await axiosClient.post('/forgot-password', data)
             toast.success("Mã xác nhận đã được gửi đến email của bạn!!!")
+            setLoading(false)
         }
         catch (err: any) {
-            console.log('This is error in forgot password', err.message);
-            toast.error("Gửi mail thất bại!!!")
+            if (err.response?.data.message)
+                toast.error(err.response.data.message)
+            setLoading(false)
         }
     }
 
     const handleUploadAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files ? e.target.files : []
 
-        const form = new FormData();
-        form.append('file', files[0])
-        form.append('upload_preset', 'user-avatar')
-        setFormAvatar(form)
+        if (files[0].size > 500 * 1024) {
+            setErrAvatar('Kích thước ảnh không được vượt quá 500KB')
+        } else {
+            const form = new FormData();
+            form.append('file', files[0])
+            form.append('upload_preset', 'user-avatar')
+            setFormAvatar(form)
+            setErrAvatar('')
+        }
     }
 
     //additional data for login by FB, GG
@@ -155,7 +174,8 @@ export default function Auth() {
                 </Route>
 
                 <Route path="/auth/register">
-                    <FormRegister onSubmit={handleSubmitRegister} onChange={handleUploadAvatar} />
+                    <FormRegister loading={loading} onSubmit={handleSubmitRegister} onChange={handleUploadAvatar}
+                        errAvatar={errAvatar} />
                 </Route>
 
                 <Route path="/auth/additional">
@@ -163,7 +183,7 @@ export default function Auth() {
                 </Route>
 
                 <Route path="/auth/forgot-password">
-                    <ForgotPasswork onSubmit={handleSubmitForgotPassword} />
+                    <ForgotPasswork onSubmit={handleSubmitForgotPassword} loading={loading} />
                 </Route>
 
                 <Route path="/auth/reset-password/:token">

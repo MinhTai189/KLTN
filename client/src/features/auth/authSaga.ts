@@ -3,7 +3,7 @@ import axiosClient from 'api/axiosClient';
 import { push } from 'connected-react-router';
 import { Response, User } from 'models';
 import { put, takeLatest } from 'redux-saga/effects';
-import { clearToken } from 'utils';
+import { clearToken, getToken } from 'utils';
 import { authActions } from './authSlice';
 import { LoginData } from './models';
 
@@ -50,14 +50,22 @@ function* handleLogin(action: PayloadAction<LoginData>) {
     //Redirect to Home page
     yield put(push('/'));
   } catch (err: any) {
-    yield put(authActions.loginFailed(err.message));
+    if (err.response.data.message)
+      yield put(authActions.loginFailed(err.response.data.message));
   }
 }
 
-function* handleLogout() {
-  clearToken();
+function* handleLogout(action: PayloadAction<string>) {
+  try {
+    yield axiosClient.post('/logout', {
+      refreshToken: action.payload,
+    });
 
-  yield put(authActions.logout());
+    clearToken();
+    yield put(authActions.logoutSuccess());
+  } catch (err: any) {
+    console.log('Xảy ra lỗi trong qua trình đăng xuất', err.message);
+  }
 }
 
 export default function* authSaga() {

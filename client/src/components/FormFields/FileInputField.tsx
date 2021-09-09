@@ -5,6 +5,7 @@ interface Props {
     name: string;
     label: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    error: string;
     [key: string]: any
 }
 
@@ -17,7 +18,7 @@ const useStyles = makeStyles({
     }
 })
 
-export const FileInputField = ({ name, label, onChange, ...props }: Props) => {
+export const FileInputField = ({ name, label, onChange, error, ...props }: Props) => {
     const classes = useStyles()
 
     return (<TextField
@@ -30,6 +31,8 @@ export const FileInputField = ({ name, label, onChange, ...props }: Props) => {
         label={label}
         onChange={onChange}
         inputProps={props}
+        error={!!error}
+        helperText={error}
     />
     )
 }

@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Box, Button, Grid, makeStyles, Typography } from '@material-ui/core'
+import { Box, Button, CircularProgress, Grid, makeStyles, Typography } from '@material-ui/core'
 import { PersonOutline } from '@material-ui/icons'
 import districtApi from 'api/district'
 import provinceApi from 'api/province'
@@ -9,7 +9,7 @@ import { District, ListResponse, Province, School } from 'models'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
-import { removeAccents, removeFirstElement } from 'utils'
+import { mapProvinces } from 'utils'
 import * as yup from 'yup'
 import { AutoCompleteField, InputField, InputPasswordField } from '../../../components/FormFields'
 import { SelectField } from '../../../components/FormFields/SelectField'
@@ -20,6 +20,8 @@ import Header from './Header'
 interface Props {
     onSubmit: (data: RegisterData) => void;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    loading: boolean;
+    errAvatar: string
 }
 
 const initialRegisterData: RegisterData = {
@@ -93,6 +95,7 @@ const schema = yup.object().shape({
         .string()
         .trim('Không được chứa khoảng trắng ở đầu và cuối')
         .strict()
+        .min(1, "Tối thiểu 1 ký tự")
         .max(30, "Tối thiểu 30 ký tự"),
     province: yup
         .string()
@@ -105,20 +108,7 @@ const schema = yup.object().shape({
         .required('Hãy chọn đủ Tỉnh, Quận/Huyện/TP và Trường')
 })
 
-const changeNameProvince = (name: string) => {
-    const split: string[] = name.split(' ');
-    const newName: string[] = removeAccents(split[0].toLocaleLowerCase()) === 'tinh' ? removeFirstElement(split) : split;
-    return newName.join(' ');
-}
-
-const mapProvinces = (provinces: Array<Province>) => {
-    return provinces.map(province => ({
-        ...province,
-        name: changeNameProvince(province.name)
-    }))
-}
-
-function FormRegister({ onSubmit, onChange }: Props): ReactElement {
+function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactElement {
     const classes = useStyles()
     const [province, setProvince] = useState('');
     const [optionsProvince, setOptionsProvince] = useState<Array<Province>>([]);
@@ -167,7 +157,7 @@ function FormRegister({ onSubmit, onChange }: Props): ReactElement {
             <Header textBtn='ĐĂNG KÝ' icon={<PersonOutline />} />
 
             <Box>
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form onSubmit={handleSubmit(onSubmit)} autoComplete='off'>
                     <Grid container spacing={2}>
                         <Grid item className={classes.grid} xs={12} md={5}>
                             <Typography variant='h6'>
@@ -200,15 +190,16 @@ function FormRegister({ onSubmit, onChange }: Props): ReactElement {
                                     </Grid>
                                 </Grid>
 
-                                <SelectField label='Trường*' name='school' control={control} disabled={optionsSchool.length === 0 ? true : false} options={optionsSchool} />
+                                <SelectField label='Trường*' name='school' control={control} disabled={optionsSchool.length === 0 ? true : false} options={optionsSchool} mt={26} mb={8} />
 
-                                <FileInputField name='avatarUrl' onChange={onChange} label='Ảnh đại diện' accept='.png, .jpg, .jpeg' />
+                                <FileInputField name='avatarUrl' onChange={onChange} label='Ảnh đại diện' accept='.png, .jpg, .jpeg' error={errAvatar} />
                             </Box>
                         </Grid>
                     </Grid>
 
                     <Box mt={2}>
-                        <Button type='submit' variant='contained' color="primary" size='large' fullWidth>
+                        <Button type='submit' variant='contained' color="primary" size='large' fullWidth disabled={loading || !!errAvatar}>
+                            {loading && <><CircularProgress color='secondary' size={20} /> &nbsp;</>}
                             Đăng ký
                         </Button>
                     </Box>

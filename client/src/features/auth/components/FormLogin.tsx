@@ -98,6 +98,7 @@ function FormLogin({ onSubmit, setRememberMe, onSuccessGG, onSuccessFB }: Props)
         }
     }, [response])
 
+
     return (
         <Box className={classes.root}>
             <Header textBtn='ĐĂNG NHẬP' icon={<LockOpen />} />
@@ -113,7 +114,7 @@ function FormLogin({ onSubmit, setRememberMe, onSuccessGG, onSuccessFB }: Props)
 
                     <Box mt={1}>
                         <Button type="submit" size="large" variant="contained" color="primary" fullWidth >
-                            {loading && <CircularProgress color='secondary' size={20} />} &nbsp;
+                            {loading && <><CircularProgress color='secondary' size={20} /> &nbsp;</>}
                             Đăng nhập
                         </Button>
                     </Box>

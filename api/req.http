@@ -20,8 +20,8 @@ Content-Type: application/json
 //Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzM1NTFmZTI1Zjc4ZTEyOTA5YzFlYSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3NTQwNzksImV4cCI6MTYzMDc1NDY3OX0.frCvIwZSF4kIEZHPDKww0z2yDVFOWxwXxMPoIquMbLg
 
  {
-    "username":"maideptrai",
-    "password":"1234567"
+    "username":"minhtai",
+    "password":"123456789"
      //"accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3MTc4NDYsImV4cCI6MTYzMDcxNzkwNn0.sNtYRra6sUjZZkOikAyhlY8FdbXTwTksePSBNLjoRLI"
  }
 
@@ -62,8 +62,8 @@ Content-Type: application/json
     "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzM1NTFmZTI1Zjc4ZTEyOTA5YzFlYSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3NTgxMzl9.y2aih0S0nPtJtGv74InFRD_8pBPKzMW6-H7BX59Itws"
 } 
 ###
-GET http://localhost:5000/api/users/?schoolLike=tien giang&order=createAt&sort=desc&limit=2&page=1
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMDk3NjY2OSwiZXhwIjoxNjMwOTc3MjY5fQ.Yl6yY0I9qP2LGU5VYnzGKmydBCsL2NhB_yFhyufcIdw
+GET http://localhost:5000/api/users/?&order=createdAt&sort=desc&page=2&limit=2
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMDk4NjgzNSwiZXhwIjoxNjMwOTg3NDM1fQ.5XnlJ-b1qnbVD0V3V0yCuZU9L2ESjldLgNL6mf5WDdY
 
 ###
 POST http://localhost:5000/api/login-google
@@ -72,3 +72,12 @@ Content-Type: application/json
 {
     "tokenId":"4/0AX4XfWjDvzNuBXggSEKhZYKRr0URYMlfiP6v1m3-hgn2H9hR6yXJMHL8FwUGqd_6KbyzhA"
 }
+
+###
+# @name GetUserByNamelike
+GET  http://localhost:5000/api/users?_page=1&_limit=10&_keysearch=fffffffffff
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNlMDJmZDc1YTA1OTczYTc2M2JmNCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTE1OTUxMSwiZXhwIjoxNjMxMTYwMTExfQ.lW6-GIUNyuOZGCLmV-G9_6-XGOMSO91zO9ed2YV6L38
+
+###
+DELETE http://localhost:5000/api/users/612cc22005274d685edbe4d7
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNlMDJmZDc1YTA1OTczYTc2M2JmNCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTA5MTQwMSwiZXhwIjoxNjMxMDkyMDAxfQ.ht6KBrOwMWBXZKWE3-vjnwP55UBsSwet0pq3lr7avvw

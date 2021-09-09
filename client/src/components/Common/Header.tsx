@@ -1,9 +1,9 @@
-import { Avatar } from '@material-ui/core';
-import AppBar from '@material-ui/core/AppBar';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar';
+import { AppBar, Button, createStyles, makeStyles, Theme, Toolbar } from '@material-ui/core';
 import { useAppSelector } from 'app/hooks';
+import { DropDownInfor } from '../Home';
 import { selectCurrentUser } from 'features/auth/authSlice';
+import { User } from 'models';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -13,22 +13,30 @@ const useStyles = makeStyles((theme: Theme) =>
         toolbar: {
             justifyContent: 'flex-end'
         },
-        avatar: {
-            cursor: 'pointer',
-            boxShadow: theme.shadows[3]
+        btn: {
+            borderRadius: 15,
+
+            "& a": {
+                color: 'inherit'
+            }
         }
     }),
 );
 
 export const Header = () => {
     const classes = useStyles();
-    const currentUser = useAppSelector(selectCurrentUser)
+    const currentUser: User = useAppSelector(selectCurrentUser)
 
     return (
         <div className={classes.root}>
             <AppBar position="static">
                 <Toolbar className={classes.toolbar}>
-                    {currentUser?.avatarUrl && <Avatar className={classes.avatar} src={currentUser.avatarUrl} />}
+                    {currentUser?.avatarUrl ?
+                        <DropDownInfor />
+                        : <Button className={classes.btn} color='secondary' variant="contained">
+                            <Link to='/auth/login'>Đăng nhập</Link>
+                        </Button>
+                    }
                 </Toolbar>
             </AppBar>
         </div>

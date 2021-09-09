@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Box, Button, makeStyles } from '@material-ui/core'
 import { PersonOutline } from '@material-ui/icons'
+import { Alert } from '@material-ui/lab'
 import districtApi from 'api/district'
 import provinceApi from 'api/province'
 import schoolApi from 'api/school'
@@ -119,6 +120,8 @@ const AddiRegister = ({ onSubmit, isLoginGG }: Props) => {
             <Header textBtn='Thông tin bổ sung' icon={<PersonOutline />} />
 
             <Box>
+                <Alert severity="info">{`Bạn cần bổ sung thêm một số thông tin để hoàn tất quá trình đăng nhập bằng ${isLoginGG ? "Google" : "Facebook"}`}</Alert>
+
                 <form onSubmit={handleSubmit(onSubmit)}>
                     {!isLoginGG &&
                         <InputField type="email" name='email' label='Email' control={control} required={true} />}
@@ -127,9 +130,9 @@ const AddiRegister = ({ onSubmit, isLoginGG }: Props) => {
 
                     <AutoCompleteField label="Quận/Huyện/TP*" title='name' onChange={handleDistrictSelected} options={optionsDistrict} disabled={optionsDistrict.length === 0 ? true : false} />
 
-                    <SelectField label='Trường*' name='school' control={control} disabled={optionsSchool.length === 0 ? true : false} options={optionsSchool} />
+                    <SelectField label='Trường*' name='school' control={control} disabled={optionsSchool.length === 0 ? true : false} options={optionsSchool} mt={16} mb={8} />
 
-                    <Box mt={2}>
+                    <Box my={2}>
                         <Button type='submit' variant='contained' color="primary" size='large' fullWidth>
                             Đăng ký
                         </Button>

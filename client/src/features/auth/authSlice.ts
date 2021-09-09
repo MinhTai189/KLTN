@@ -32,7 +32,8 @@ const authSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    logout: (state) => {
+    logout: (state, action: PayloadAction<string>) => {},
+    logoutSuccess: (state) => {
       state.isLogged = false;
       state.currentUser = undefined;
     },

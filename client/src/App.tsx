@@ -1,10 +1,11 @@
 import { ThemeProvider } from '@material-ui/core';
-import { NotFound } from 'components/Common';
-import { HomeLayout } from 'components/Layouts';
+import { AdminRoute, NotFound } from 'components/Common';
+import { AdminLayout, HomeLayout } from 'components/Layouts';
 import { Route, Switch } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import { themeMUI } from 'utils';
 import Auth from "./features/auth";
+import 'antd/dist/antd.css';
 
 function App() {
 
@@ -18,6 +19,10 @@ function App() {
         <Route path="/auth">
           <Auth />
         </Route>
+
+        <AdminRoute path="/admin">
+          <AdminLayout />
+        </AdminRoute>
 
         <Route>
           <NotFound />

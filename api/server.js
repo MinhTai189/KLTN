@@ -10,7 +10,7 @@ const Mongoose = require("mongoose");
 const corsOpts = {
     origin: "*",
 
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 
     allowedHeaders: [
         "Origin, X-Requested-With, Content-Type, Accept, Authorization",

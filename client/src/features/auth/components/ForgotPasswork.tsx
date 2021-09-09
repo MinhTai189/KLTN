@@ -1,4 +1,4 @@
-import { Box, Button, makeStyles } from '@material-ui/core'
+import { Box, Button, CircularProgress, makeStyles } from '@material-ui/core'
 import { AlternateEmail } from '@material-ui/icons'
 import { InputField } from 'components/FormFields'
 import { useForm } from 'react-hook-form'
@@ -7,6 +7,7 @@ import Header from './Header'
 
 interface Props {
     onSubmit: (data: ForgotPasswordData) => void
+    loading: boolean
 }
 
 const initialForgotPassword: ForgotPasswordData = {
@@ -22,7 +23,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const ForgotPasswork = ({ onSubmit }: Props) => {
+const ForgotPasswork = ({ onSubmit, loading }: Props) => {
     const classes = useStyles()
     const { control, handleSubmit } = useForm<ForgotPasswordData>({
         defaultValues: initialForgotPassword
@@ -37,7 +38,8 @@ const ForgotPasswork = ({ onSubmit }: Props) => {
                     <InputField type="email" control={control} name='email' label='Email' required={true} />
 
                     <Box my={2}>
-                        <Button type="submit" variant='contained' fullWidth color='primary' size="large">
+                        <Button type="submit" variant='contained' fullWidth color='primary' size="large" disabled={loading}>
+                            {loading && <><CircularProgress color='secondary' size={20} /> &nbsp;</>}
                             Xác nhận
                         </Button>
                     </Box>

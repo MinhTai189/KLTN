@@ -1,4 +1,4 @@
-import { FormHelperText, makeStyles } from '@material-ui/core';
+import { FormHelperText } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -12,24 +12,19 @@ interface Props {
     control: Control<any>;
     options: Array<School>;
     disabled: boolean;
+    defaultValue?: any;
+    mt: number;
+    mb: number;
 }
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        marginTop: theme.spacing(3.3),
-        marginBottom: theme.spacing(1),
-    }
-}))
-
-export const SelectField = ({ label, name, control, options, disabled, ...props }: Props) => {
-    const classes = useStyles()
+export const SelectField = ({ label, name, control, options, disabled, defaultValue, mb, mt, ...props }: Props) => {
     const { field: { value, onChange, onBlur, ref }, fieldState: { invalid, error } } = useController({
         name,
         control
     })
 
     return (
-        <FormControl className={classes.root} variant="outlined" fullWidth disabled={disabled}>
+        <FormControl style={{ marginTop: mt, marginBottom: mb }} variant="outlined" fullWidth disabled={disabled}>
             <InputLabel>{label}</InputLabel>
             <Select
                 labelId="demo-simple-select-outlined-label"
@@ -40,6 +35,7 @@ export const SelectField = ({ label, name, control, options, disabled, ...props 
                 label={label}
                 inputProps={props}
                 error={invalid}
+                defaultValue={defaultValue}
             >
                 {
                     options.map(option => (
