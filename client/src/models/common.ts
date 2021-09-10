@@ -20,7 +20,7 @@ export interface Filter {
   _school?: string;
   _district?: string;
   _province?: string;
-  _role?: boolean;
+  _role?: string;
   _keysearch?: string;
 
   [key: string]: any;
@@ -32,7 +32,7 @@ export interface Pagination {
   _totalRows: number;
 }
 
-export interface RadioOption {
+export interface FieldOption {
   value: string;
   label: string;
 }

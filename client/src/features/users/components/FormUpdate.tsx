@@ -7,7 +7,7 @@ import schoolApi from 'api/school'
 import { AutoCompleteField, InputField } from 'components/FormFields'
 import { RadioBtnField } from 'components/FormFields/RadioBtnField'
 import { SelectField } from 'components/FormFields/SelectField'
-import { District, ListResponse, Province, RadioOption, School, UserUpdate } from 'models'
+import { District, ListResponse, Province, FieldOption, School, UserUpdate } from 'models'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { mapProvinces } from 'utils'
@@ -20,7 +20,7 @@ interface Props {
     userUpdating: UserUpdate
 }
 
-const radioOptions: RadioOption[] = [
+const radioOptions: FieldOption[] = [
     {
         value: 'admin',
         label: 'Admin'

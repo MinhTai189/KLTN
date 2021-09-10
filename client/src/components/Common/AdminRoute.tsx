@@ -3,9 +3,9 @@ import { useAppSelector } from '../../app/hooks'
 import { selectCurrentUser } from '../../features/auth/authSlice'
 
 export const AdminRoute = (props: RouteProps) => {
-    const { isAdmin } = useAppSelector(selectCurrentUser)
+    const currentUser = useAppSelector(selectCurrentUser)
 
-    if (!isAdmin) return <Redirect to="/" />;
+    if (!currentUser?.isAdmin) return <Redirect to="/" />;
 
     return <Route {...props} />
 }

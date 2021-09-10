@@ -2,14 +2,13 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { Box, Button, CircularProgress, Grid, makeStyles, Typography } from '@material-ui/core'
 import { PersonOutline } from '@material-ui/icons'
 import districtApi from 'api/district'
-import provinceApi from 'api/province'
 import schoolApi from 'api/school'
 import { FileInputField } from 'components/FormFields/FileInputField'
+import { useProvince } from 'hooks'
 import { District, ListResponse, Province, School } from 'models'
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
-import { mapProvinces } from 'utils'
 import * as yup from 'yup'
 import { AutoCompleteField, InputField, InputPasswordField } from '../../../components/FormFields'
 import { SelectField } from '../../../components/FormFields/SelectField'
@@ -110,10 +109,10 @@ const schema = yup.object().shape({
 
 function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactElement {
     const classes = useStyles()
-    const [province, setProvince] = useState('');
-    const [optionsProvince, setOptionsProvince] = useState<Array<Province>>([]);
+    const [province, setProvince] = useState<Province>();
+    const { optionsProvince } = useProvince()
 
-    const [district, setDistrict] = useState('');
+    const [district, setDistrict] = useState<District | string>('');
     const [optionsDistrict, setOptionsDistrict] = useState<Array<District>>([]);
     const [optionsSchool, setOptionsSchool] = useState<Array<School>>([]);
 
@@ -122,20 +121,14 @@ function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactE
         resolver: yupResolver(schema),
     })
 
-    useEffect(() => {
-        provinceApi.getAll()
-            .then((response: ListResponse<Province>) => {
-                const listProvince = mapProvinces(response.data)
-                setOptionsProvince(listProvince)
-            })
-            .catch(err => console.log("Khong the lay du lieu provinces", err.message)
-            );
-    }, [])
-
     const handleProvinceSelected = async (e: any, value: Province) => {
         if (value?.codeName) {
-            setProvince(value.codeName)
+            setProvince(value)
             setValue('province', value.codeName)
+
+            //reset district, school field when province filed is changed
+            setDistrict('')
+            setValue('school', '')
 
             const response: ListResponse<District> = await districtApi.getByCodeProvince(value.codeName);
             setOptionsDistrict(response.data);
@@ -144,10 +137,12 @@ function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactE
 
     const handleDistrictSelected = async (e: any, value: District) => {
         if (value?.codeName) {
-            setDistrict(value.codeName)
+            setDistrict(value)
             setValue('district', value.codeName)
 
-            const response: ListResponse<School> = await schoolApi.getByProDis(province, value.codeName)
+            setValue('school', '')
+
+            const response: ListResponse<School> = await schoolApi.getByProDis(province?.codeName as string, value.codeName)
             setOptionsSchool(response.data);
         }
     }
@@ -186,7 +181,7 @@ function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactE
                                         <AutoCompleteField label="Tỉnh*" title='name' onChange={handleProvinceSelected} options={optionsProvince} disabled={optionsProvince.length === 0 ? true : false} />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
-                                        <AutoCompleteField label="Quận/Huyện/TP*" title='name' onChange={handleDistrictSelected} options={optionsDistrict} disabled={optionsDistrict.length === 0 ? true : false} />
+                                        <AutoCompleteField label="Quận/Huyện/TP*" title='name' value={district} onChange={handleDistrictSelected} options={optionsDistrict} disabled={optionsDistrict.length === 0 ? true : false} />
                                     </Grid>
                                 </Grid>
 

@@ -98,25 +98,25 @@ router.get("/users", verifyToken, async (req, res) => {
         listUser = listUser.filter((item) => item.province === _province);
     totalRows = listUser.length;
     if (_order && _sort)
-        switch (_order) {
-            case "createdAt":
-                if (_sort === "asc")
+        switch (_sort) {
+            case "createdat":
+                if (_order === "asc")
                     listUser = listUser.sort(
                         (user1, user2) =>
                             new Date(user1.createdAt) - new Date(user2.createdAt)
                     );
-                else if (_sort === "desc")
+                else if (_order === "desc")
                     listUser = listUser.sort(
                         (user1, user2) =>
                             new Date(user2.createdAt) - new Date(user1.createdAt)
                     );
                 break;
             case "credit":
-                if (_sort === "asc")
+                if (_order === "asc")
                     listUser = listUser.sort(
                         (user1, user2) => user1.credit - user2.credit
                     );
-                else if (_sort == "desc") {
+                else if (_order == "desc") {
                     listUser = listUser.sort(
                         (user1, user2) => user2.credit - user1.credit
                     );

@@ -30,8 +30,47 @@ const UserListPage = () => {
         dispatch(userActions.removeUser(record.key))
     }
 
-    const handleSearch = (filter: Filter) => {
-        dispatch(userActions.searchWithDebounce(filter))
+    const handleSearch = (value: Filter) => {
+        dispatch(userActions.searchWithDebounce(value))
+    }
+
+    const handleFilter = (e: any, key: string) => {
+        let newFilter = {};
+
+        if (key === '_sort') {
+            if (e) {
+                const [_sort, _order] = e.split('.')
+
+                newFilter = {
+                    ...filter,
+                    _sort,
+                    _order
+                }
+            } else {
+                newFilter = {
+                    ...filter,
+                    _sort: e,
+                    _order: e
+                }
+            }
+        }
+
+        if (key === '_role' || key === "_school" || key === '_district' || key === '_province') {
+            newFilter = {
+                ...filter,
+                ...newFilter,
+                [key]: e
+            }
+        }
+
+        dispatch(userActions.setFilter(newFilter))
+    }
+
+    const handleClearFilter = () => {
+        dispatch(userActions.setFilter({
+            _page: 1,
+            _limit: 15,
+        }))
     }
 
     return (
@@ -40,7 +79,7 @@ const UserListPage = () => {
 
             <Box padding={2}>
                 <Box mb={2}>
-                    <Operation handleSearch={handleSearch} />
+                    <Operation handleSearch={handleSearch} handleFilter={handleFilter} handleClearFilter={handleClearFilter} />
                 </Box>
 
 

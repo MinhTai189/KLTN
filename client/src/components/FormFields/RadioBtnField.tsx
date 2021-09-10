@@ -1,10 +1,10 @@
 import { FormControl, FormControlLabel, FormLabel, makeStyles, Radio, RadioGroup } from '@material-ui/core'
-import { RadioOption } from 'models'
+import { FieldOption } from 'models'
 import { useController, Control } from 'react-hook-form'
 
 interface Props {
     label: string;
-    options: RadioOption[];
+    options: FieldOption[];
     control: Control<any>;
     name: string
 }

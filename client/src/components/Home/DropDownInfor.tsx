@@ -67,13 +67,13 @@ export const DropDownInfor = (props: Props) => {
                 className={classes.dropdown}
                 style={{ display: isShowDD ? 'inline-block' : 'none' }}>
 
-                <ListItem button>
+                {currentUser?.isAdmin && <ListItem button>
                     <ListItemText>
                         <Link to='/admin/dashboard'>
                             Quản lý dữ liệu
                         </Link>
                     </ListItemText>
-                </ListItem>
+                </ListItem>}
 
                 <ListItem button>
                     <ListItemText primary='Trang cá nhân' />

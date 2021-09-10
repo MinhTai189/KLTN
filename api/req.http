@@ -21,7 +21,7 @@ Content-Type: application/json
 
  {
     "username":"minhtai",
-    "password":"123456789"
+    "password":"123456"
      //"accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3MTc4NDYsImV4cCI6MTYzMDcxNzkwNn0.sNtYRra6sUjZZkOikAyhlY8FdbXTwTksePSBNLjoRLI"
  }
 
@@ -77,8 +77,8 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRk
 
 ###
 # @name GetUserByNamelike
-GET  http://localhost:5000/api/users?_page=1&_limit=10&_keysearch=fffffffffff
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNlMDJmZDc1YTA1OTczYTc2M2JmNCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTE1OTUxMSwiZXhwIjoxNjMxMTYwMTExfQ.lW6-GIUNyuOZGCLmV-G9_6-XGOMSO91zO9ed2YV6L38
+GET  http://localhost:5000/api/users?_page=1&_limit=10&_sort=credit&_order=desc
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzllMzc4ZGMxZTljYzkwYThlZGZkNCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTE5NjA3MiwiZXhwIjoxNjMxMTk2NjcyfQ.IDbPq_yEos9NYQa8TvTzR9l_w7doqIW9L9HqbtyeDco
 
 ###
 DELETE http://localhost:5000/api/users/612cc22005274d685edbe4d7
@@ -90,3 +90,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNlMDJmZDc1YTA1
 ###
 GET http://localhost:5000/api/logout
 Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTAwODE3OH0.BQcvSs5Mm6vSQRp8ej-CJAXv7iR9S0GVbcbGBKYlZZQ
+
+
+###
+GET  http://localhost:5000/api/districts
