@@ -2,16 +2,17 @@ POST http://localhost:5000/api/register
 Content-Type: application/json
 
 {
-"username":"heheheheheddddd1dddd2ddddddsss",
+"username":"deptrainhat",
 "password":"admin",
 "name":"Nguyễn Tấn Mãi ĐẸP TRAIdddd12dddddddddsss",
-"avatarUrl":"dajdwddd",
-"email":"hihdidddddd12dddddsddss@gmail.com",
+"email":"hihdidddddd12dddddddsddss@gmail.com",
 "district":"huyen_chau_thanh",
 "province":"tinh_tien_giang",
 "school":"truong_dai_hoc_tien_giang_tcn"
 }
-
+###
+DELETE http://localhost:5000/api/users/613b466111d0f24b575a9e8f
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzllMzc4ZGMxZTljYzkwYThlZGZkNCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTI3NDk0MiwiZXhwIjoxNjMxMjc1NTQyfQ.-z3HGNPkdqhYoaLMUo6wt2cdXz63nKBLybwpqn-eXnY
 ###
 GET http://localhost:5000/api/
 ###
@@ -20,8 +21,8 @@ Content-Type: application/json
 //Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzM1NTFmZTI1Zjc4ZTEyOTA5YzFlYSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3NTQwNzksImV4cCI6MTYzMDc1NDY3OX0.frCvIwZSF4kIEZHPDKww0z2yDVFOWxwXxMPoIquMbLg
 
  {
-    "username":"minhtai",
-    "password":"123456"
+    "username":"maideptraivocung",
+    "password":"12345"
      //"accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3MTc4NDYsImV4cCI6MTYzMDcxNzkwNn0.sNtYRra6sUjZZkOikAyhlY8FdbXTwTksePSBNLjoRLI"
  }
 
@@ -94,3 +95,22 @@ Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkN
 
 ###
 GET  http://localhost:5000/api/districts
+
+###
+###
+POST http://localhost:5000/api/motels
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzllNGIzYzg5NTdhOGU5ODEwNTg5NCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTIzODY2MSwiZXhwIjoxNjMxMjM5MjYxfQ.JsVakaV2Xu5aYNcRltJpWVDMXNFQNNMvEfzbKcSCI5o
+
+{
+    "name":"dadawdw", 
+    "images":["d","l"], 
+    "district":"6139d5d6d02c8be6b208804f", 
+    "province":"6139d5d6d02c8be6b208801a", 
+    "price":300000, 
+    "desc":"dsaasdw", 
+    "room":20,
+    "contact":{"zalo":"0987654321"},
+    "area":{"width":5,"length":5},
+    "status":false
+}

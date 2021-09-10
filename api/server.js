@@ -5,6 +5,7 @@ const cors = require("cors");
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const schoolDataRouter = require("./routes/school-data");
+const fileUpload = require("express-fileupload");
 const Mongoose = require("mongoose");
 
 const corsOpts = {
@@ -17,15 +18,15 @@ const corsOpts = {
     ],
 };
 
-const connectDB = async () => {
+const connectDB = async() => {
     try {
         await Mongoose.connect(
             `mongodb+srv://${process.env.MONGO_CONNECT_USERNAME}:${process.env.MONGO_CONNECT_PASSWORD}@kltn.v3vrk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`, {
-            //  useCreateIndex: true,
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            //  useFindAndModify: false,
-        }
+                //  useCreateIndex: true,
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+                //  useFindAndModify: false,
+            }
         );
         console.log("db ok");
     } catch (error) {
@@ -35,7 +36,7 @@ const connectDB = async () => {
 connectDB();
 app.use(express.json());
 app.use(cors(corsOpts));
-
+app.use(fileUpload());
 const PORT = process.env.PORT;
 
 app.listen(PORT, () => {

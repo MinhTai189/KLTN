@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const user = require("./user");
 const Schema = mongoose.Schema;
 
-const motel = new Schema({
+const unapprovedMotel = new Schema({
     name: {
         type: String,
         required: true,
@@ -38,7 +38,6 @@ const motel = new Schema({
         required: true,
     },
     desc: { type: String },
-
     room: {
         type: Number,
         required: true,
@@ -85,7 +84,6 @@ const motel = new Schema({
             type: String,
         },
     }, ],
-
     mark: {
         default: 0,
         type: Number,
@@ -97,4 +95,4 @@ const motel = new Schema({
     school: [{ type: mongoose.Types.ObjectId, ref: "school" }],
 }, { timestamps: true });
 
-module.exports = mongoose.model("motel", motel);
+module.exports = mongoose.model("unapproved-motel", unapprovedMotel);
