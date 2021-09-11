@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const user = require("./user");
 const Schema = mongoose.Schema;
 
-const unapprovedMotel = new Schema({
+const motel = new Schema({
     name: {
         type: String,
         required: true,
@@ -14,6 +14,16 @@ const unapprovedMotel = new Schema({
         type: Schema.Types.ObjectId,
         ref: "user",
         required: true,
+    },
+    thumbnail: {
+        url: {
+            type: String,
+            required: true,
+        },
+        public_id: {
+            type: String,
+            required: true,
+        },
     },
     images: [{
         url: {
@@ -38,6 +48,7 @@ const unapprovedMotel = new Schema({
         required: true,
     },
     desc: { type: String },
+
     room: {
         type: Number,
         required: true,
@@ -83,7 +94,12 @@ const unapprovedMotel = new Schema({
         content: {
             type: String,
         },
+        createAt: {
+            type: Date,
+            default: Date.now,
+        },
     }, ],
+
     mark: {
         default: 0,
         type: Number,
@@ -95,4 +111,4 @@ const unapprovedMotel = new Schema({
     school: [{ type: mongoose.Types.ObjectId, ref: "school" }],
 }, { timestamps: true });
 
-module.exports = mongoose.model("unapproved-motel", unapprovedMotel);
+module.exports = mongoose.model("motel", motel);

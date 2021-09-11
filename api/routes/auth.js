@@ -170,8 +170,16 @@ router.post("/forgot-password", async(req, res) => {
 });
 
 router.post("/register", async(req, res) => {
-    const { username, password, name, email, district, province, school } =
-    req.body;
+    const {
+        username,
+        password,
+        name,
+        email,
+        district,
+        province,
+        school,
+        results,
+    } = req.body;
 
     if (!username || !password)
         return res.status(400).json({
@@ -203,16 +211,10 @@ router.post("/register", async(req, res) => {
     let avatarUrl = {
         url: "https://res.cloudinary.com/dvl0ntexs/image/upload/v1631273713/man_nki5vb.png",
     };
-    if (typeof req.files !== "undefined" && req.files != null) {
-        const file = req.files.avatar;
-        const uploadFile = await upload.upload(file);
-        if (uploadFile.success == false)
-            return res
-                .status(400)
-                .json({ success: false, message: uploadFile.message });
+    if (typeof results !== "undefined" && results.length == 1) {
         avatarUrl = {
-            url: uploadFile.data.url,
-            public_id: uploadFile.data.public_id,
+            url: results[0].url,
+            public_id: results[0].public_id,
         };
     }
 

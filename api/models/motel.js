@@ -15,6 +15,16 @@ const motel = new Schema({
         ref: "user",
         required: true,
     },
+    thumbnail: {
+        url: {
+            type: String,
+            required: true,
+        },
+        public_id: {
+            type: String,
+            required: true,
+        },
+    },
     images: [{
         url: {
             type: String,
@@ -83,6 +93,10 @@ const motel = new Schema({
         },
         content: {
             type: String,
+        },
+        createAt: {
+            type: Date,
+            default: Date.now,
         },
     }, ],
 

@@ -5,6 +5,7 @@ const cors = require("cors");
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const schoolDataRouter = require("./routes/school-data");
+const uploadRouter = require("./routes/upload");
 const fileUpload = require("express-fileupload");
 const Mongoose = require("mongoose");
 
@@ -46,3 +47,4 @@ app.listen(PORT, () => {
 app.use("/api/", authRouter);
 app.use("/api/", schoolDataRouter);
 app.use("/api/", userRouter);
+app.use("/api/uploads", uploadRouter);
