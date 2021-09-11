@@ -60,7 +60,7 @@ POST http://localhost:5000/api/refresh-token
 Content-Type: application/json
 
 {
-    "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTM2MjQ3NH0.kJf-zFofe7kM-6q4S1gxHhnEK-69_AcmlE9AIBBnvWk"
+    "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTM2NzQ4OH0.D77ovVhpsGWHnzeiERgL5IaeeXfp5s6ft6PAyHiisEA"
 } 
 ###
 
@@ -89,8 +89,8 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNlMDJmZDc1YTA1
     "newPassword":"01234567"
 }
 ###
-GET http://localhost:5000/api/logout
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTAwODE3OH0.BQcvSs5Mm6vSQRp8ej-CJAXv7iR9S0GVbcbGBKYlZZQ
+POST http://localhost:5000/api/logout
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTM2NzUxMX0.LM34kOI46VtmiB899A5YqVsdhwNnetkEshmY5O2LvuE
 
 
 ###
@@ -114,3 +114,5 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
     "area":{"width":5,"length":5},
     "status":false
 }
+###
+GET http://localhost:5000/api/motels

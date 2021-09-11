@@ -28,8 +28,17 @@ router.get("/", async(req, res) => {
         },
     ];
     if (_keysearch)
-        var listMotel = await motel.find({ $or: keySearchs }).populate("owner");
-    else var listMotel = await motel.find({}).populate("owner");
+        var listMotel = await motel
+            .find({ $or: keySearchs })
+            .populate("owner", "name avatarUrl _id")
+            .populate("editor", "name avatarUrl _id");
+    else
+        var listMotel = await motel
+            .find({})
+            .populate("owner")
+            .populate("owner", "name avatarUrl _id")
+            .populate("editor", "name avatarUrl _id");
+
     if (_owner)
         listMotel = listMotel.filter((item) => {
             item.owner._id === _owner;
@@ -105,11 +114,44 @@ router.get("/", async(req, res) => {
             _limit * (_page - 1),
             _limit + _limit * (_page - 1)
         );
+    let newData = [];
+    for (let i = 0; i < listMotel.length; i++) {
+        let ownerData;
+        let editorData;
+        let imagesUrl = [];
+        if (listMotel[i].owner) {
+            const avatarUrl = listMotel[i].owner.avatarUrl.url;
+            ownerData = {
+                avatarUrl,
+                name: listMotel[i].owner.name,
+                _id: listMotel[i].owner._id,
+            };
+        } else ownerData = null;
+        if (listMotel[i].editor) {
+            const avatarUrl = listMotel[i].editor.avatarUrl.url;
+            editorData = {
+                avatarUrl,
+                name: listMotel[i].editor.name,
+                _id: listMotel[i].editor._id,
+            };
+        } else editorData = null;
+        let thumbnailUrl = listMotel[i].thumbnail.url;
+        listMotel[i].images.forEach((image) => {
+            imagesUrl.push(image.url);
+        });
+        newData.push({
+            ...listMotel[i]._doc,
+            owner: ownerData,
+            editor: editorData,
+            thumbnail: thumbnailUrl,
+            images: imagesUrl,
+        });
+    }
 
     return res.status(200).json({
         success: true,
         message: "Thành công",
-        data: listMotel,
+        data: newData,
         pagination: { _page, _limit, _totalRows: listMotel.length },
     });
 });
