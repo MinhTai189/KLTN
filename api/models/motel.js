@@ -15,6 +15,16 @@ const motel = new Schema({
         ref: "user",
         required: true,
     },
+    thumbnail: {
+        url: {
+            type: String,
+            required: true,
+        },
+        public_id: {
+            type: String,
+            required: true,
+        },
+    },
     images: [{
         url: {
             type: String,
@@ -25,13 +35,9 @@ const motel = new Schema({
             required: true,
         },
     }, ],
-    districts: {
-        type: Schema.Types.ObjectId,
-        ref: "districts",
-    },
-    province: {
-        type: Schema.Types.ObjectId,
-        ref: "province",
+    address: {
+        type: String,
+        require: true,
     },
     price: {
         type: Number,
@@ -83,6 +89,10 @@ const motel = new Schema({
         },
         content: {
             type: String,
+        },
+        createAt: {
+            type: Date,
+            default: Date.now,
         },
     }, ],
 

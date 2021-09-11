@@ -209,9 +209,9 @@ router.patch("/users/:id", verifyToken, async (req, res) => {
                 .json({ success: true, message: "Đã thay đổi mật khẩu thành công!" });
         } else {
             newDataUser = {};
-            const { name, school, district, province } = req.body;
+            const { name, school, district, province, results } = req.body;
             if (!name &&
-                typeof req.files === "undefined" &&
+                typeof results === "undefined" &&
                 !school &&
                 !district &&
                 !province
@@ -225,17 +225,11 @@ router.patch("/users/:id", verifyToken, async (req, res) => {
                 newDataUser.name = name;
                 newDataUser.unsignedName = removeVietNameseTones(name);
             }
-            if (req.files) {
-                if (req.files.avatar) {
-                    const file = req.files.avatar;
-                    const uploadFile = await upload.upload(file);
-                    if (uploadFile.success == false)
-                        return res
-                            .status(400)
-                            .json({ success: false, message: uploadFile.message });
+            if (results) {
+                if (results.length == 1) {
                     const avatarUrl = {
-                        url: uploadFile.data.url,
-                        public_id: uploadFile.data.public_id,
+                        url: results[0].url,
+                        public_id: results[0].public_id,
                     };
                     newDataUser.avatarUrl = avatarUrl;
                 }
@@ -253,24 +247,28 @@ router.patch("/users/:id", verifyToken, async (req, res) => {
                 ) {
                     await upload.unlink(checkUser.avatarUrl.public_id);
                 }
-                return res
-                    .status(200)
-                    .json({ success: true, message: "Đã cập nhật thông tin" });
+                return res.status(200).json({
+                    success: true,
+                    message: "Đã cập nhật thông tin",
+                    data: userUpdate,
+                });
             }
         }
     } else if (req.user.isAdmin)
         try {
             newDataUser = {};
+
             const { name, school, district, province, isAdmin, email, credit } =
                 req.body;
 
             if (
-                typeof req.files === "undefined" &&
+                typeof results === "undefined" &&
                 !name &&
                 !school &&
                 !district &&
                 !province &&
                 !email &&
+                !results &&
                 typeof credit === "undefined" &&
                 typeof isAdmin === "undefined"
             )
@@ -282,17 +280,11 @@ router.patch("/users/:id", verifyToken, async (req, res) => {
                 newDataUser.name = name;
                 newDataUser.unsignedName = removeVietNameseTones(name);
             }
-            if (req.files) {
-                if (req.files.avatar) {
-                    const file = req.files.avatar;
-                    const uploadFile = await upload.upload(file);
-                    if (uploadFile.success == false)
-                        return res
-                            .status(400)
-                            .json({ success: false, message: uploadFile.message });
+            if (results) {
+                if (results.length > 0) {
                     const avatarUrl = {
-                        url: uploadFile.data.url,
-                        public_id: uploadFile.data.public_id,
+                        url: results[0].url,
+                        public_id: results[0].public_id,
                     };
                     newDataUser.avatarUrl = avatarUrl;
                 }

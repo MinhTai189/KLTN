@@ -7,11 +7,25 @@ const argon2 = require("argon2");
 const verifyToken = require("../middleware/verifyToken");
 const unapprovedMotel = require("../models/unapproved-motel");
 
-router.get("/motels", verifyToken, (req, res) => {});
+router.get("/motels", (req, res) => {
+    let {
+        _order,
+        _sort,
+        _keysearch,
+        _limit,
+        _page,
+        _namelike,
+        _school,
+        _district,
+        _province,
+        _role,
+    } = req.query;
+});
 router.post("/motels", verifyToken, async(req, res) => {
-    const {
+    let {
         id,
         name,
+        thumbnail,
         images,
         district,
         province,
@@ -36,6 +50,7 @@ router.post("/motels", verifyToken, async(req, res) => {
         const newMotel = new motel({
             name: checkMotel.name,
             unsignedName: checkMotel.unsignedName,
+            thumbnail: checkMotel.thumbnail,
             images: checkMotel.images,
             district: checkMotel.district,
             province: checkMotel.province,
@@ -67,6 +82,10 @@ router.post("/motels", verifyToken, async(req, res) => {
             });
         }
     }
+    if (!thumbnail)
+        return res
+            .status(400)
+            .json({ success: false, message: "Vui lòng cung cấp ảnh tiêu đề" });
     if (!name || name === "")
         return res
             .status(400)
@@ -107,11 +126,13 @@ router.post("/motels", verifyToken, async(req, res) => {
             success: false,
             message: "Vui lòng cho biết còn phòng trống hay không",
         });
+    if (!images) images = [];
     const checkUserPost = await user.findById(req.user.id).select("credit");
     if (req.user.isAdmin == true || checkUserPost.credit >= 100) {
         const newMotel = new motel({
             name,
             unsignedName: removeVietNameseTones(name),
+            thumbnail,
             images,
             district,
             province,
@@ -145,6 +166,7 @@ router.post("/motels", verifyToken, async(req, res) => {
         const newMotel = new unapprovedMotel({
             name,
             unsignedName: removeVietNameseTones(name),
+            thumbnail,
             images,
             district,
             province,
