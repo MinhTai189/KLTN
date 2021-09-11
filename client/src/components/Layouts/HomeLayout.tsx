@@ -22,6 +22,7 @@ export const HomeLayout = () => {
             <Header />
 
             <Container>
+                {/* hero */}
                 {/* list motel */}
                 {/* find motel */}
                 {/* forum */}

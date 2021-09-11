@@ -94,22 +94,6 @@ export default function Auth() {
     }
 
     const handleSubmitRegister = async (data: RegisterData) => {
-        if (!formAvatar) {
-            data.avatarUrl = 'https://res.cloudinary.com/kltn/image/upload/v1630851440/user-avatar/qiuawuts1ateicrjmyad.jpg';
-        }
-        else {
-            try {
-                setLoading(true)
-
-                const response = await axios.post('https://api.cloudinary.com/v1_1/kltn/image/upload', formAvatar)
-                data.avatarUrl = response.data.secure_url
-            }
-            catch (err: any) {
-                toast.error("Tải hình ảnh thất bại!")
-                setLoading(false)
-            }
-        }
-
         try {
             await axiosClient.post('/register', data)
             history.push('/auth/login');
@@ -144,8 +128,7 @@ export default function Auth() {
             setErrAvatar('Kích thước ảnh không được vượt quá 500KB')
         } else {
             const form = new FormData();
-            form.append('file', files[0])
-            form.append('upload_preset', 'user-avatar')
+            form.append('avatar', files[0])
             setFormAvatar(form)
             setErrAvatar('')
         }

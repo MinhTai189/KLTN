@@ -5,7 +5,9 @@ const removeVietNameseTones = require("../middleware/removeVietnameseTones");
 const argon2 = require("argon2");
 const verifyToken = require("../middleware/verifyToken");
 const upload = require("../middleware/upload");
-router.get("/users", verifyToken, async(req, res) => {
+
+
+router.get("/users", verifyToken, async (req, res) => {
     if (!req.user.isAdmin)
         return res
             .status(405)
@@ -117,12 +119,12 @@ router.get("/users", verifyToken, async(req, res) => {
                 if (_order === "asc")
                     listUser = listUser.sort(
                         (user1, user2) =>
-                        new Date(user1.createdAt) - new Date(user2.createdAt)
+                            new Date(user1.createdAt) - new Date(user2.createdAt)
                     );
                 else if (_order === "desc")
                     listUser = listUser.sort(
                         (user1, user2) =>
-                        new Date(user2.createdAt) - new Date(user1.createdAt)
+                            new Date(user2.createdAt) - new Date(user1.createdAt)
                     );
                 break;
             case "credit":
@@ -170,7 +172,7 @@ router.get("/users", verifyToken, async(req, res) => {
         });
 });
 
-router.patch("/users/:id", verifyToken, async(req, res) => {
+router.patch("/users/:id", verifyToken, async (req, res) => {
     const id = req.params.id;
     if (req.user.id !== id && !req.user.isAdmin)
         return res
@@ -260,7 +262,7 @@ router.patch("/users/:id", verifyToken, async(req, res) => {
         try {
             newDataUser = {};
             const { name, school, district, province, isAdmin, email, credit } =
-            req.body;
+                req.body;
 
             if (
                 typeof req.files === "undefined" &&
@@ -325,7 +327,7 @@ router.patch("/users/:id", verifyToken, async(req, res) => {
         }
 });
 
-router.delete("/users/:id", verifyToken, async(req, res) => {
+router.delete("/users/:id", verifyToken, async (req, res) => {
     const { id } = req.params;
     if (req.user.id !== id && !req.user.isAdmin)
         return res

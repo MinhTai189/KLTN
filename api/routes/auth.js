@@ -13,7 +13,7 @@ const removeVietnameseTones = require("../middleware/removeVietnameseTones");
 const axios = require("axios").default;
 let refreshTokens = [];
 
-router.post("/reset-password", async(req, res) => {
+router.post("/reset-password", async (req, res) => {
     const { password, token } = req.body;
     let data;
     JWT.verify(token, process.env.forgotPasswordToken, (err, dataUser) => {
@@ -59,8 +59,8 @@ router.post("/refresh-token", (req, res) => {
 
         const accessToken = JWT.sign({ id: data.id, isAdmin: data.isAdmin },
             process.env.accessToken, {
-                expiresIn: "1m",
-            }
+            expiresIn: "1m",
+        }
         );
 
         const key = uuid.v4();
@@ -83,7 +83,8 @@ router.post("/refresh-token", (req, res) => {
         });
     });
 });
-router.post("/forgot-password", async(req, res) => {
+
+router.post("/forgot-password", async (req, res) => {
     //Route quên mật khẩu, nhận mail, xác thực
     const { email } = req.body; //lấy email
     const User = await user.findOne({ email: email });
@@ -157,7 +158,7 @@ router.post("/forgot-password", async(req, res) => {
       </div>
       </div></div>`,
     };
-    transporter.sendMail(mainOptions, function(err, info) {
+    transporter.sendMail(mainOptions, function (err, info) {
         //tiến hành gửi mail
         if (err) {
             return res.status(400).json({ error: err });
@@ -169,9 +170,10 @@ router.post("/forgot-password", async(req, res) => {
     });
 });
 
-router.post("/register", async(req, res) => {
+router.post("/register", async (req, res) => {
+    console.log(req.body)
     const { username, password, name, email, district, province, school } =
-    req.body;
+        req.body;
 
     if (!username || !password)
         return res.status(400).json({
@@ -246,7 +248,7 @@ router.post("/register", async(req, res) => {
 });
 
 //đăng nhập
-router.post("/login", async(req, res) => {
+router.post("/login", async (req, res) => {
     const { username, password } = req.body;
     const { authorization } = req.headers;
     let userID = undefined;
@@ -267,7 +269,7 @@ router.post("/login", async(req, res) => {
                     .status(404)
                     .json({ success: false, message: "Mật khẩu bị sai" });
         } else {
-            JWT.verify(authorization, process.env.accessToken, async(err, data) => {
+            JWT.verify(authorization, process.env.accessToken, async (err, data) => {
                 if (err)
                     return res
                         .status(401)
@@ -289,7 +291,7 @@ router.post("/login", async(req, res) => {
         );
 
         refreshTokens.push({ key, refreshToken: newRefreshToken });
-        checkUser = {...checkUser._doc, avatarUrl: url };
+        checkUser = { ...checkUser._doc, avatarUrl: url };
         console.log(checkUser);
         res.status(200).json({
             success: true,
@@ -307,6 +309,7 @@ router.post("/login", async(req, res) => {
         });
     }
 });
+
 router.get("/logout", (req, res) => {
     const refreshToken = req.headers.authorization;
     if (!refreshTokens)
@@ -327,7 +330,7 @@ router.get("/logout", (req, res) => {
     res.status(200).json({ success: true, message: "Đã đăng xuất" });
 });
 
-router.post("/register-facebook", async(req, res) => {
+router.post("/register-facebook", async (req, res) => {
     const { accessToken, userID, email, district, school, province } = req.body;
     const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
     &access_token=${accessToken}`;
@@ -379,7 +382,7 @@ router.post("/register-facebook", async(req, res) => {
     });
 });
 
-router.post("/login-facebook", async(req, res) => {
+router.post("/login-facebook", async (req, res) => {
     const { accessToken, userID } = req.body;
 
     const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
@@ -411,7 +414,8 @@ router.post("/login-facebook", async(req, res) => {
         },
     });
 });
-router.post("/register-google", async(req, res) => {
+
+router.post("/register-google", async (req, res) => {
     const { tokenId, school, district, province } = req.body;
 
     const result = await client.verifyIdToken({
@@ -460,7 +464,8 @@ router.post("/register-google", async(req, res) => {
         },
     });
 });
-router.post("/login-google", async(req, res) => {
+
+router.post("/login-google", async (req, res) => {
     const { tokenId } = req.body;
     console.log(tokenId);
     const result = await client.verifyIdToken({
