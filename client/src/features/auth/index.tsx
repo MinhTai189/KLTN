@@ -1,4 +1,5 @@
 import { Container, makeStyles } from '@material-ui/core';
+import { Forward30TwoTone } from '@material-ui/icons';
 import axiosClient from 'api/axiosClient';
 import { useAppDispatch } from 'app/hooks';
 import axios from 'axios';
@@ -95,9 +96,18 @@ export default function Auth() {
 
     const handleSubmitRegister = async (data: RegisterData) => {
         try {
-            await axiosClient.post('/register', data)
-            history.push('/auth/login');
+            setLoading(true)
+            const { confirmPassword, ...dataRegister } = data
 
+            if (formAvatar) {
+                const reponse: Response<any> = await axiosClient.post('/uploads', formAvatar, { headers: { "Content-type": "multipart/form-data" } })
+                dataRegister.avatarUrl = reponse.data
+            }
+
+            await axiosClient.post('/register', dataRegister)
+
+            toast.success("Đã đăng ký thành công. Hãy dùng tài khoản mới để đăng nhập!")
+            history.push('/auth/login');
             setLoading(false)
         }
         catch (err: any) {
@@ -128,7 +138,8 @@ export default function Auth() {
             setErrAvatar('Kích thước ảnh không được vượt quá 500KB')
         } else {
             const form = new FormData();
-            form.append('avatar', files[0])
+            form.append('file', files[0])
+            form.append('folder', 'user-avatar')
             setFormAvatar(form)
             setErrAvatar('')
         }

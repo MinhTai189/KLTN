@@ -209,9 +209,9 @@ router.patch("/users/:id", verifyToken, async (req, res) => {
                 .json({ success: true, message: "Đã thay đổi mật khẩu thành công!" });
         } else {
             newDataUser = {};
-            const { name, school, district, province, results } = req.body;
+            const { name, school, district, province, avatarUrl: avatar } = req.body;
             if (!name &&
-                typeof results === "undefined" &&
+                typeof avatarUrl === "undefined" &&
                 !school &&
                 !district &&
                 !province
@@ -225,14 +225,10 @@ router.patch("/users/:id", verifyToken, async (req, res) => {
                 newDataUser.name = name;
                 newDataUser.unsignedName = removeVietNameseTones(name);
             }
-            if (results) {
-                if (results.length == 1) {
-                    const avatarUrl = {
-                        url: results[0].url,
-                        public_id: results[0].public_id,
-                    };
-                    newDataUser.avatarUrl = avatarUrl;
-                }
+            if (avatarUrl) {
+
+                newDataUser.avatarUrl = avatarUrl;
+
             }
             if (school) newDataUser.school = school;
             if (district) newDataUser.district = district;
@@ -258,19 +254,19 @@ router.patch("/users/:id", verifyToken, async (req, res) => {
         try {
             newDataUser = {};
 
-            const { name, school, district, province, isAdmin, email, credit } =
+            const { name, school, district, province, isAdmin, email, credit, avatarUrl } =
                 req.body;
 
             if (
-                typeof results === "undefined" &&
+                avatarUrl === undefined &&
                 !name &&
                 !school &&
                 !district &&
                 !province &&
                 !email &&
                 !results &&
-                typeof credit === "undefined" &&
-                typeof isAdmin === "undefined"
+                credit === undefined &&
+                isAdmin === undefined
             )
                 return res.status(400).json({
                     success: false,
@@ -280,14 +276,10 @@ router.patch("/users/:id", verifyToken, async (req, res) => {
                 newDataUser.name = name;
                 newDataUser.unsignedName = removeVietNameseTones(name);
             }
-            if (results) {
-                if (results.length > 0) {
-                    const avatarUrl = {
-                        url: results[0].url,
-                        public_id: results[0].public_id,
-                    };
-                    newDataUser.avatarUrl = avatarUrl;
-                }
+            if (avatarUrl) {
+
+                newDataUser.avatarUrl = avatarUrl;
+
             }
             if (school) newDataUser.school = school;
             if (district) newDataUser.district = district;

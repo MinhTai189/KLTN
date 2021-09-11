@@ -171,8 +171,8 @@ router.post("/forgot-password", async (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-    console.log(req.body)
-    const { username, password, name, email, district, province, school } =
+
+    let { username, password, name, email, district, province, school, avatarUrl } =
         req.body;
 
     if (!username || !password)
@@ -198,19 +198,16 @@ router.post("/register", async (req, res) => {
             .status(400)
             .json({ success: false, message: "Tên đăng nhập đã được sử dụng" });
     const checkEmail = await user.findOne({ email });
+
     if (checkEmail)
         return res
             .status(400)
             .json({ success: false, message: "Lỗi! Email đã được sử dụng" });
-    let avatarUrl = {
-        url: "https://res.cloudinary.com/dvl0ntexs/image/upload/v1631273713/man_nki5vb.png",
-    };
-    if (typeof results !== "undefined" && results.length == 1) {
+
+    if (!avatarUrl)
         avatarUrl = {
-            url: results[0].url,
-            public_id: results[0].public_id,
+            url: "https://res.cloudinary.com/dpregsdt9/image/upload/v1631352198/user-avatar/avatar-default_vzl8ur.jpg",
         };
-    }
 
     // Good
     try {
@@ -285,13 +282,13 @@ router.post("/login", async (req, res) => {
         );
 
         refreshTokens.push({ key, refreshToken: newRefreshToken });
-        checkUser = { ...checkUser._doc, avatarUrl: url };
+        const data = { ...checkUser._doc, avatarUrl: url };
         console.log(checkUser);
         res.status(200).json({
             success: true,
             message: "Đăng nhập thành công",
             data: {
-                ...checkUser,
+                ...data,
                 accessToken: newAccessToken,
                 refreshToken: newRefreshToken,
             },
@@ -304,12 +301,14 @@ router.post("/login", async (req, res) => {
     }
 });
 
-router.get("/logout", (req, res) => {
-    const refreshToken = req.headers.authorization;
+router.post("/logout", (req, res) => {
+    const refreshToken = req.body;
+
     if (!refreshTokens)
         return res
             .status(400)
             .json({ success: false, message: "Yêu cầu gửi lên thông tin đăng xuất" });
+
     const check = refreshTokens.find(
         (item) => item.refreshToken === refreshToken
     );
