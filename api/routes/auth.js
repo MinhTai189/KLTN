@@ -300,25 +300,23 @@ router.post("/login", async(req, res) => {
     }
 });
 
-router.post("/logout", (req, res) => {
+router.post("/logout", async(req, res) => {
     const refreshToken = req.body;
 
-    if (!refreshTokens)
+    if (!refreshToken)
         return res
             .status(400)
             .json({ success: false, message: "Yêu cầu gửi lên thông tin đăng xuất" });
 
-    const check = refreshTokens.find(
-        (item) => item.refreshToken === refreshToken
-    );
+    const check = await user.findOne({ refreshToken });
 
     if (!check)
         return res
             .status(400)
             .json({ success: false, message: "Không tìm thấy token" });
-    refreshTokens = refreshTokens.filter((item) => {
-        return item.key !== check.key;
-    });
+
+    check.refreshToken = "";
+    await check.save();
     res.status(200).json({ success: true, message: "Đã đăng xuất" });
 });
 
