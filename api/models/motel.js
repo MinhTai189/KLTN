@@ -35,13 +35,9 @@ const motel = new Schema({
             required: true,
         },
     }, ],
-    districts: {
-        type: Schema.Types.ObjectId,
-        ref: "districts",
-    },
-    province: {
-        type: Schema.Types.ObjectId,
-        ref: "province",
+    address: {
+        type: String,
+        require: true,
     },
     price: {
         type: Number,

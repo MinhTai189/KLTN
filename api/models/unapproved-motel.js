@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const user = require("./user");
 const Schema = mongoose.Schema;
 
-const motel = new Schema({
+const unpprovedMotel = new Schema({
     name: {
         type: String,
         required: true,
@@ -35,13 +35,9 @@ const motel = new Schema({
             required: true,
         },
     }, ],
-    districts: {
-        type: Schema.Types.ObjectId,
-        ref: "districts",
-    },
-    province: {
-        type: Schema.Types.ObjectId,
-        ref: "province",
+    address: {
+        type: String,
+        require: true,
     },
     price: {
         type: Number,
@@ -111,4 +107,4 @@ const motel = new Schema({
     school: [{ type: mongoose.Types.ObjectId, ref: "school" }],
 }, { timestamps: true });
 
-module.exports = mongoose.model("motel", motel);
+module.exports = mongoose.model("unpproved-motel", unpprovedMotel);

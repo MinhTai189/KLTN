@@ -7,7 +7,20 @@ const argon2 = require("argon2");
 const verifyToken = require("../middleware/verifyToken");
 const unapprovedMotel = require("../models/unapproved-motel");
 
-router.get("/motels", verifyToken, (req, res) => {});
+router.get("/motels", (req, res) => {
+    let {
+        _order,
+        _sort,
+        _keysearch,
+        _limit,
+        _page,
+        _namelike,
+        _school,
+        _district,
+        _province,
+        _role,
+    } = req.query;
+});
 router.post("/motels", verifyToken, async(req, res) => {
     let {
         id,
