@@ -6,29 +6,120 @@ const removeVietNameseTones = require("../middleware/removeVietnameseTones");
 const argon2 = require("argon2");
 const verifyToken = require("../middleware/verifyToken");
 const unapprovedMotel = require("../models/unapproved-motel");
+const { assign } = require("nodemailer/lib/shared");
 
-router.get("/motels", (req, res) => {
-    let {
-        _order,
-        _sort,
-        _keysearch,
-        _limit,
-        _page,
-        _namelike,
-        _school,
-        _district,
-        _province,
-        _role,
-    } = req.query;
+router.get("/", async(req, res) => {
+    let { _order, _sort, _keysearch, _limit, _page, _owner } = req.query;
+    const keySearchs = [
+        { unsignedName: new RegExp(_keysearch, "i") },
+        {
+            unsignedName: new RegExp("^" + _keysearch, "i"),
+        },
+        {
+            unsignedName: new RegExp(_keysearch + "$", "i"),
+        },
+
+        { address: new RegExp(_keysearch, "i") },
+        {
+            address: new RegExp("^" + _keysearch, "i"),
+        },
+        {
+            address: new RegExp(_keysearch + "$", "i"),
+        },
+    ];
+    if (_keysearch)
+        var listMotel = await motel.find({ $or: keySearchs }).populate("owner");
+    else var listMotel = await motel.find({}).populate("owner");
+    if (_owner)
+        listMotel = listMotel.filter((item) => {
+            item.owner._id === _owner;
+        });
+    if (_order && _sort)
+        switch (_sort) {
+            case "createdat":
+                if (_order === "asc")
+                    listMotel = listMotel.sort(
+                        (motel1, motel2) =>
+                        new Date(motel1.createdAt) - new Date(motel2.createdAt)
+                    );
+                else if (_order === "desc")
+                    listMotel = listMotel.sort(
+                        (motel1, motel2) =>
+                        new Date(motel2.createdAt) - new Date(motel1.createdAt)
+                    );
+                break;
+            case "price":
+                if (_order === "asc")
+                    listMotel = listMotel.sort(
+                        (motel1, motel2) => motel1.price - motel2.price
+                    );
+                else if (_order == "desc") {
+                    listMotel = listMotel.sort(
+                        (motel1, motel2) => motel2.price - motel1.price
+                    );
+                }
+                break;
+            case "mark":
+                if (_order === "asc")
+                    listMotel = listMotel.sort(
+                        (motel1, motel2) => motel1.mark - motel2.mark
+                    );
+                else if (_order == "desc") {
+                    listMotel = listMotel.sort(
+                        (motel1, motel2) => motel2.mark - motel1.mark
+                    );
+                }
+
+                break;
+            case "vote":
+                if (_order === "asc")
+                    listMotel = listMotel.sort(
+                        (motel1, motel2) => motel1.vote - motel2.vote
+                    );
+                else if (_order == "desc") {
+                    listMotel = listMotel.sort(
+                        (motel1, motel2) => motel2.vote - motel1.vote
+                    );
+                }
+
+                break;
+            case "rate":
+                if (_order === "asc")
+                    listMotel = listMotel.sort(
+                        (motel1, motel2) => motel1.rate.length - motel2.rate.length
+                    );
+                else if (_order == "desc") {
+                    listMotel = listMotel.sort(
+                        (motel1, motel2) => motel2.rate.length - motel1.rate.length
+                    );
+                }
+
+                break;
+            default:
+                break;
+        }
+    _page = parseInt(_page);
+    _limit = parseInt(_limit);
+    if (_page && _limit)
+        listMotel = listMotel.slice(
+            _limit * (_page - 1),
+            _limit + _limit * (_page - 1)
+        );
+
+    return res.status(200).json({
+        success: true,
+        message: "Thành công",
+        data: listMotel,
+        pagination: { _page, _limit, _totalRows: listMotel.length },
+    });
 });
-router.post("/motels", verifyToken, async(req, res) => {
+router.post("/", verifyToken, async(req, res) => {
     let {
         id,
         name,
         thumbnail,
         images,
-        district,
-        province,
+        address,
         price,
         desc,
         room,
@@ -36,6 +127,7 @@ router.post("/motels", verifyToken, async(req, res) => {
         area,
         status,
     } = req.body;
+
     if (id) {
         if (req.user.isAdmin == false)
             return res
@@ -52,8 +144,7 @@ router.post("/motels", verifyToken, async(req, res) => {
             unsignedName: checkMotel.unsignedName,
             thumbnail: checkMotel.thumbnail,
             images: checkMotel.images,
-            district: checkMotel.district,
-            province: checkMotel.province,
+            address: checkMotel.address,
             price: checkMotel.price,
             desc: checkMotel.desc,
             room: checkMotel.room,
@@ -90,7 +181,7 @@ router.post("/motels", verifyToken, async(req, res) => {
         return res
             .status(400)
             .json({ success: false, message: "Vui lòng cung cấp tên nhà trọ" });
-    if (!district || !province || district === "" || province === "")
+    if (!address || address === "")
         return res
             .status(400)
             .json({ success: false, message: "Vui lòng cung cấp địa chỉ nhà trọ" });
@@ -134,8 +225,7 @@ router.post("/motels", verifyToken, async(req, res) => {
             unsignedName: removeVietNameseTones(name),
             thumbnail,
             images,
-            district,
-            province,
+            address,
             price,
             desc,
             room,
@@ -168,8 +258,7 @@ router.post("/motels", verifyToken, async(req, res) => {
             unsignedName: removeVietNameseTones(name),
             thumbnail,
             images,
-            district,
-            province,
+            address,
             price,
             desc,
             room,
@@ -198,3 +287,4 @@ router.post("/motels", verifyToken, async(req, res) => {
         }
     }
 });
+module.exports = router;

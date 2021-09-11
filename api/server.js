@@ -6,6 +6,7 @@ const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const schoolDataRouter = require("./routes/school-data");
 const uploadRouter = require("./routes/upload");
+const motelRouter = require("./routes/motel");
 const fileUpload = require("express-fileupload");
 const Mongoose = require("mongoose");
 
@@ -19,15 +20,15 @@ const corsOpts = {
     ],
 };
 
-const connectDB = async () => {
+const connectDB = async() => {
     try {
         await Mongoose.connect(
             `mongodb+srv://${process.env.MONGO_CONNECT_USERNAME}:${process.env.MONGO_CONNECT_PASSWORD}@kltn.v3vrk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`, {
-            //  useCreateIndex: true,
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            //  useFindAndModify: false,
-        }
+                //  useCreateIndex: true,
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+                //  useFindAndModify: false,
+            }
         );
         console.log("db ok");
     } catch (error) {
@@ -48,3 +49,4 @@ app.use("/api/", authRouter);
 app.use("/api/", schoolDataRouter);
 app.use("/api/", userRouter);
 app.use("/api/", uploadRouter);
+app.use("/api/motels", motelRouter);

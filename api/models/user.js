@@ -56,6 +56,9 @@ const UserSchema = new Schema({
     school: {
         type: String,
     },
+    refreshToken: {
+        type: String,
+    },
 }, { timestamps: true });
 
 module.exports = mongoose.model("user", UserSchema);

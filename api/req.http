@@ -21,8 +21,8 @@ Content-Type: application/json
 //Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzM1NTFmZTI1Zjc4ZTEyOTA5YzFlYSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3NTQwNzksImV4cCI6MTYzMDc1NDY3OX0.frCvIwZSF4kIEZHPDKww0z2yDVFOWxwXxMPoIquMbLg
 
  {
-    "username":"maideptraivocung",
-    "password":"12345"
+    "username":"admin",
+    "password":"123456"
      //"accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3MTc4NDYsImV4cCI6MTYzMDcxNzkwNn0.sNtYRra6sUjZZkOikAyhlY8FdbXTwTksePSBNLjoRLI"
  }
 
@@ -60,7 +60,7 @@ POST http://localhost:5000/api/refresh-token
 Content-Type: application/json
 
 {
-    "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzM1NTFmZTI1Zjc4ZTEyOTA5YzFlYSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3NTgxMzl9.y2aih0S0nPtJtGv74InFRD_8pBPKzMW6-H7BX59Itws"
+    "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTM2MjQ3NH0.kJf-zFofe7kM-6q4S1gxHhnEK-69_AcmlE9AIBBnvWk"
 } 
 ###
 
@@ -100,14 +100,14 @@ GET  http://localhost:5000/api/districts
 ###
 POST http://localhost:5000/api/motels
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzllNGIzYzg5NTdhOGU5ODEwNTg5NCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTIzODY2MSwiZXhwIjoxNjMxMjM5MjYxfQ.JsVakaV2Xu5aYNcRltJpWVDMXNFQNNMvEfzbKcSCI5o
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTM2NDYyNCwiZXhwIjoxNjMxMzY1MjI0fQ.RRfGBJrqUouAstZT0te0eFqALieQYlsaHWGQGkpjv4o
 
 {
     "name":"dadawdw", 
-    "images":["d","l"], 
-    "district":"6139d5d6d02c8be6b208804f", 
-    "province":"6139d5d6d02c8be6b208801a", 
-    "price":300000, 
+    "images":[{"url":"dasdsa","public_id":"asdasd"}], 
+    "address":"dit me", 
+     "thumbnail":{"url":"dasdsa","public_id":"asdasd"},
+    "price":600000, 
     "desc":"dsaasdw", 
     "room":20,
     "contact":{"zalo":"0987654321"},
