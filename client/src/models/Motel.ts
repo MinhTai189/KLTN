@@ -1,6 +1,7 @@
-import { District, Province, School, User } from 'models';
+import { District, Province } from 'models';
 
 export interface Motel {
+  _id: string;
   name: string;
   district: District;
   province: Province;
@@ -14,8 +15,28 @@ export interface Motel {
   vote?: number;
   rate?: any[];
   mark?: number;
-  editor?: User;
-  school: School;
+  editor?: Owner;
+  school: string[];
+  owner: Owner;
+  address: string;
+  price: number;
+  createAt?: string;
+  updateAt?: string;
+
+  [key: string]: any;
+}
+
+export interface MotelDataTable {
+  key: string;
+  number: number;
+  address: string;
+  name: string;
+  status: boolean;
+  room: number;
+  area: string;
+  vote: number;
+  mark: number;
+  price: string;
 }
 
 interface Contact {
@@ -28,4 +49,10 @@ interface Contact {
 interface Area {
   length: number;
   width: number;
+}
+
+interface Owner {
+  avatarUrl: string;
+  name: string;
+  _id: string;
 }

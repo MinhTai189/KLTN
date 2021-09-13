@@ -8,8 +8,10 @@ const verifyToken = require("../middleware/verifyToken");
 const unapprovedMotel = require("../models/unapproved-motel");
 const { assign } = require("nodemailer/lib/shared");
 
-router.get("/", async(req, res) => {
+router.get("/", async (req, res) => {
     let { _order, _sort, _keysearch, _limit, _page, _owner } = req.query;
+    let totalRows = 0;
+
     const keySearchs = [
         { unsignedName: new RegExp(_keysearch, "i") },
         {
@@ -49,12 +51,12 @@ router.get("/", async(req, res) => {
                 if (_order === "asc")
                     listMotel = listMotel.sort(
                         (motel1, motel2) =>
-                        new Date(motel1.createdAt) - new Date(motel2.createdAt)
+                            new Date(motel1.createdAt) - new Date(motel2.createdAt)
                     );
                 else if (_order === "desc")
                     listMotel = listMotel.sort(
                         (motel1, motel2) =>
-                        new Date(motel2.createdAt) - new Date(motel1.createdAt)
+                            new Date(motel2.createdAt) - new Date(motel1.createdAt)
                     );
                 break;
             case "price":
@@ -107,13 +109,22 @@ router.get("/", async(req, res) => {
             default:
                 break;
         }
-    _page = parseInt(_page);
-    _limit = parseInt(_limit);
-    if (_page && _limit)
+
+    totalRows = listMotel.length
+
+    if (_page && _limit) {
+        _page = parseInt(_page);
+        _limit = parseInt(_limit);
+
         listMotel = listMotel.slice(
             _limit * (_page - 1),
             _limit + _limit * (_page - 1)
         );
+    } else {
+        _page = 1;
+        _limit = listMotel.length
+    }
+
     let newData = [];
     for (let i = 0; i < listMotel.length; i++) {
         let ownerData;
@@ -148,14 +159,17 @@ router.get("/", async(req, res) => {
         });
     }
 
+
+
     return res.status(200).json({
         success: true,
         message: "Thành công",
         data: newData,
-        pagination: { _page, _limit, _totalRows: listMotel.length },
+        pagination: { _page, _limit, _totalRows: totalRows },
     });
 });
-router.post("/", verifyToken, async(req, res) => {
+
+router.post("/", verifyToken, async (req, res) => {
     let {
         id,
         name,

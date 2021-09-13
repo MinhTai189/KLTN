@@ -1,4 +1,4 @@
-import { Switch, Route, useRouteMatch } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 import UserListPage from './pages/UserListPage'
 
 const Users = () => {

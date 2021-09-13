@@ -6,3 +6,4 @@ export * from './handleString';
 export * from './history';
 export * from './setToken';
 export * from './handleProvince';
+export * from './roundMarkMotel';

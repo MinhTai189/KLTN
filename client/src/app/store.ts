@@ -6,6 +6,7 @@ import {
 } from '@reduxjs/toolkit';
 import { connectRouter, routerMiddleware } from 'connected-react-router';
 import authReducer from 'features/auth/authSlice';
+import motelReducer from 'features/motels/motelSlice';
 import userReducer from 'features/users/usersSlice';
 import createSagaMiddleware from 'redux-saga';
 import { history } from 'utils';
@@ -14,6 +15,7 @@ import rootSaga from './rootSaga';
 const reducer = combineReducers({
   auth: authReducer,
   users: userReducer,
+  motels: motelReducer,
   router: connectRouter(history),
 });
 const sagaMiddleware = createSagaMiddleware();
