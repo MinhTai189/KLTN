@@ -82,7 +82,7 @@ const unpprovedMotel = new Schema({
         },
     }, ],
     room: [{
-        opitinal: {
+        optional: {
             type: Array,
         },
         amount: {

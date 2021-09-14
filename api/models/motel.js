@@ -57,7 +57,7 @@ const motel = new Schema({
         },
     },
     room: [{
-        opitinal: {
+        optional: {
             type: Array,
         },
         amount: {

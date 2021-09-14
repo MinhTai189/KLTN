@@ -21,8 +21,8 @@ Content-Type: application/json
 //Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzM1NTFmZTI1Zjc4ZTEyOTA5YzFlYSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3NTQwNzksImV4cCI6MTYzMDc1NDY3OX0.frCvIwZSF4kIEZHPDKww0z2yDVFOWxwXxMPoIquMbLg
 
  {
-    "username":"deptrainhat",
-    "password":"admin"
+    "username":"admin",
+    "password":"123456"
      //"accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3MTc4NDYsImV4cCI6MTYzMDcxNzkwNn0.sNtYRra6sUjZZkOikAyhlY8FdbXTwTksePSBNLjoRLI"
  }
 
@@ -97,20 +97,29 @@ GET  http://localhost:5000/api/districts
 ###
 POST http://localhost:5000/api/motels
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2YyODM0MGEwZjY4ZDQxYzAwMWIxYyIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzE1MjkwNTAsImV4cCI6MTYzMTUyOTY1MH0.Ml466Xa1jpTHe_mU6VOzbH3fowZfI2CFN1QABWVMRJc
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTYxMjYyNiwiZXhwIjoxNjMxNjEzMjI2fQ.DC7fFKviXxqNRhfE1kkgq56jy9LQ00Ja_Wanvh_S5LI
 
 {
-    "name":"Nhà trọ Dũng", 
+    "name":"NGUYEN TAN MAI qua dep trai", 
     "images":[{"url":"https://res.cloudinary.com/dpregsdt9/image/upload/v1631509899/motel/thiet-ke-phong-tro-3_hilstc.jpg","public_id":"motel/thiet-ke-phong-tro-3_hilstc"}], 
     "address":"C45P+HQF, Nhị Mỹ, Cai Lậy, Tiền Giang", 
-     "thumbnail":{"url":"https://res.cloudinary.com/dpregsdt9/image/upload/v1631509940/motel/phong_tro_nho_12m_iyxoqg.jpg","public_id":"motel/phong_tro_nho_12m_iyxoqg"},
-    "price":600000, 
+    "thumbnail":{"url":"https://res.cloudinary.com/dpregsdt9/image/upload/v1631509940/motel/phong_tro_nho_12m_iyxoqg.jpg","public_id":"motel/phong_tro_nho_12m_iyxoqg"},
+    "room":[{
+        "area":{
+            "width":3,
+            "length":4
+        },
+        "optional":["ML"],
+        "total":10,
+        "remain":4,
+        "price":500000
+    }],
     "desc":"Gara ô tô phía ngoài có mái che, có thể chứa được 4 xe ô tô, thuận tiện cho quá trình đi lại. Mảng tường ở tầng 1 được ốp đá mang lại sự chắc chắn, mạnh mẽ cho ngôi nhà.<br/><br/> Hệ thống cửa được làm từ những ô kính lớn, đặc biệt là khoảng giữa nhà là khoảng không gian thông tầng mảng tường được thay bằng cửa kính tạo không gian mở, giúp ngôi nhà thông sáng, mang một vẻ đẹp mỏng manh, tinh tế", 
-    "room":45,
-    "contact":{"zalo":"0987654321"},
-    "area":{"width":4,"length":6},
+    "contact":{"zalo":"0987654321","facebook":"askasduhd"},
     "status":true,
-    "avalaible":6
+    "avalaible":6,
+    "school":["6139d5d6d02c8be6b20880cc"]
 }
+
 ###
 GET http://localhost:5000/api/motels
