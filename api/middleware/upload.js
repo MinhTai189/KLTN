@@ -6,9 +6,9 @@ cloudinary.config({
     api_secret: process.env.CLOUND_API_SECRET,
 });
 
-const upload = async (req, res, next) => {
+const upload = async(req, res, next) => {
     if (!req.files)
-        return res.status(400).json({ success: false, message: "Khong co file" })
+        return res.status(400).json({ success: false, message: "Khong co file" });
     var files;
 
     const f = Object.values(req.files);
@@ -34,19 +34,26 @@ const upload = async (req, res, next) => {
     req.results = [];
     for (let i = 0; i < files.length; i++) {
         try {
-
             files[i].tempFilePath = "./tmp/" + Date.now();
-            fs.writeFile(files[i].tempFilePath, files[i].data, function (err) {
+            fs.writeFile(files[i].tempFilePath, files[i].data, function(err) {
                 if (err) {
-                    console.log(err); return res.status(400).json({ success: false, message: "Xảy ra lỗi trong quá trình tải hình ảnh!" });
+                    console.log(err);
+                    return res.status(400).json({
+                        success: false,
+                        message: "Xảy ra lỗi trong quá trình tải hình ảnh!",
+                    });
                 }
             });
             await cloudinary.v2.uploader.upload(
                 files[i].tempFilePath, { folder: req.body.folder },
-                function (error, result) {
+                function(error, result) {
                     req.results.push({ url: result.url, public_id: result.public_id });
                     fs.unlink(files[i].tempFilePath, (err) => {
-                        return res.status(400).json({ success: false, message: "Xảy ra lỗi trong quá trình tải hình ảnh!" });
+                        if (err)
+                            return res.status(400).json({
+                                success: false,
+                                message: "Xảy ra lỗi trong quá trình tải hình ảnh!",
+                            });
                     });
                 }
             );
@@ -61,14 +68,14 @@ const upload = async (req, res, next) => {
     next();
 };
 
-const unlink = async (public_id) => {
+const unlink = async(public_id) => {
     try {
         let rel;
         await cloudinary.v2.uploader.destroy(public_id, (err, result) => {
             if (err) throw err;
             rel = result;
         });
-        return { success: true, message: "thành công", data: rel };
+        return { success: true, message: "Thành công", data: rel };
     } catch {
         console.log(err);
         return { success: false, message: "Lỗi không xác định" };

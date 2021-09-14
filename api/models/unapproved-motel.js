@@ -39,16 +39,9 @@ const unpprovedMotel = new Schema({
         type: String,
         require: true,
     },
-    price: {
-        type: Number,
-        required: true,
-    },
+
     desc: { type: String },
 
-    room: {
-        type: Number,
-        required: true,
-    },
     contact: {
         Phone: {
             type: String,
@@ -63,14 +56,7 @@ const unpprovedMotel = new Schema({
             type: String,
         },
     },
-    area: {
-        length: {
-            type: Number,
-        },
-        width: {
-            type: Number,
-        },
-    },
+
     status: {
         type: Boolean,
         required: true,
@@ -95,7 +81,24 @@ const unpprovedMotel = new Schema({
             default: Date.now,
         },
     }, ],
-
+    room: [{
+        opitinal: {
+            type: Array,
+        },
+        amount: {
+            type: Number,
+        },
+        price: {
+            type: Number,
+        },
+        area: {
+            width: Number,
+            length: Number,
+        },
+        total: Number,
+        remain: Number,
+        status: Boolean,
+    }, ],
     mark: {
         default: 0,
         type: Number,
@@ -104,7 +107,12 @@ const unpprovedMotel = new Schema({
         type: Schema.Types.ObjectId,
         ref: "user",
     },
+    available: {
+        type: Number,
+    },
+    duplicateUnapproved: [{ type: mongoose.Types.ObjectId, ref: "motel" }],
     school: [{ type: mongoose.Types.ObjectId, ref: "school" }],
+    duplicate: [{ type: mongoose.Types.ObjectId, ref: "motel" }],
 }, { timestamps: true });
 
 module.exports = mongoose.model("unpproved-motel", unpprovedMotel);
