@@ -39,16 +39,9 @@ const motel = new Schema({
         type: String,
         require: true,
     },
-    price: {
-        type: Number,
-        required: true,
-    },
+
     desc: { type: String },
 
-    room: {
-        type: Number,
-        required: true,
-    },
     contact: {
         Phone: {
             type: String,
@@ -63,14 +56,24 @@ const motel = new Schema({
             type: String,
         },
     },
-    area: {
-        length: {
+    room: [{
+        opitinal: {
+            type: Array,
+        },
+        amount: {
             type: Number,
         },
-        width: {
+        price: {
             type: Number,
         },
-    },
+        area: {
+            width: Number,
+            length: Number,
+        },
+        total: Number,
+        remain: Number,
+        status: Boolean,
+    }, ],
     status: {
         type: Boolean,
         required: true,
@@ -103,6 +106,9 @@ const motel = new Schema({
     editor: {
         type: Schema.Types.ObjectId,
         ref: "user",
+    },
+    available: {
+        type: Number,
     },
     school: [{ type: mongoose.Types.ObjectId, ref: "school" }],
 }, { timestamps: true });

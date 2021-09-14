@@ -11,7 +11,7 @@ const { OAuth2 } = google.auth;
 const client = new OAuth2(process.env.SERVICE_CLIENT_ID);
 const removeVietnameseTones = require("../middleware/removeVietnameseTones");
 const axios = require("axios").default;
-let refreshTokens = [];
+const verifyToken = require("../middleware/verifyToken");
 
 router.post("/reset-password", async (req, res) => {
     const { password, token } = req.body;
@@ -281,8 +281,8 @@ router.post("/login", async (req, res) => {
 
         checkUser.refreshToken = newRefreshToken;
         await checkUser.save();
+
         const data = { ...checkUser._doc, avatarUrl: url };
-        console.log(checkUser);
         res.status(200).json({
             success: true,
             message: "Đăng nhập thành công",
@@ -300,20 +300,19 @@ router.post("/login", async (req, res) => {
     }
 });
 
-router.post("/logout", async (req, res) => {
-    const refreshToken = req.body;
 
-    if (!refreshToken)
+router.post("/logout", verifyToken, async (req, res) => {
+    if (!req.user.id)
         return res
             .status(400)
             .json({ success: false, message: "Yêu cầu gửi lên thông tin đăng xuất" });
-
-    const check = await user.findOne({ refreshToken });
+    const id = req.user.id;
+    const check = await user.findById(id);
 
     if (!check)
         return res
             .status(400)
-            .json({ success: false, message: "Không tìm thấy token" });
+            .json({ success: false, message: "Không tìm thấy ngươi dùng" });
 
     check.refreshToken = "";
     await check.save();
