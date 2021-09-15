@@ -1,11 +1,8 @@
 import { Container, makeStyles } from '@material-ui/core';
-import { Forward30TwoTone } from '@material-ui/icons';
 import axiosClient from 'api/axiosClient';
 import { useAppDispatch } from 'app/hooks';
-import axios from 'axios';
 import { Response } from 'models';
 import React, { useState } from 'react';
-import { UseFormSetValue } from 'react-hook-form';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { authActions } from './authSlice';
@@ -100,8 +97,8 @@ export default function Auth() {
             const { confirmPassword, ...dataRegister } = data
 
             if (formAvatar) {
-                const reponse: Response<any> = await axiosClient.post('/uploads', formAvatar, { headers: { "Content-type": "multipart/form-data" } })
-                dataRegister.avatarUrl = reponse.data
+                const response: Response<any> = await axiosClient.post('/uploads', formAvatar, { headers: { "Content-type": "multipart/form-data" } })
+                dataRegister.avatarUrl = response.data
             }
 
             await axiosClient.post('/register', dataRegister)

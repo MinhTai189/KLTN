@@ -6,7 +6,8 @@ cloudinary.config({
     api_secret: process.env.CLOUND_API_SECRET,
 });
 
-const upload = async(req, res, next) => {
+const upload = async (req, res, next) => {
+    console.log(req.files)
     if (!req.files)
         return res.status(400).json({ success: false, message: "Khong co file" });
     var files;
@@ -35,7 +36,7 @@ const upload = async(req, res, next) => {
     for (let i = 0; i < files.length; i++) {
         try {
             files[i].tempFilePath = "./tmp/" + Date.now();
-            fs.writeFile(files[i].tempFilePath, files[i].data, function(err) {
+            fs.writeFile(files[i].tempFilePath, files[i].data, function (err) {
                 if (err) {
                     console.log(err);
                     return res.status(400).json({
@@ -46,7 +47,7 @@ const upload = async(req, res, next) => {
             });
             await cloudinary.v2.uploader.upload(
                 files[i].tempFilePath, { folder: req.body.folder },
-                function(error, result) {
+                function (error, result) {
                     req.results.push({ url: result.url, public_id: result.public_id });
                     fs.unlink(files[i].tempFilePath, (err) => {
                         if (err)
@@ -68,7 +69,7 @@ const upload = async(req, res, next) => {
     next();
 };
 
-const unlink = async(public_id) => {
+const unlink = async (public_id) => {
     try {
         let rel;
         await cloudinary.v2.uploader.destroy(public_id, (err, result) => {

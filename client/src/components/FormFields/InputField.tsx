@@ -1,6 +1,5 @@
 import { TextField } from '@material-ui/core'
-import { Input } from 'antd'
-import React, { InputHTMLAttributes } from 'react'
+import { InputHTMLAttributes } from 'react'
 import { Control, useController } from 'react-hook-form'
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
@@ -8,11 +7,14 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
     label: string;
     name: string;
     control: Control<any>;
+    multiline?: boolean;
+    rows?: number
+    [key: string]: any
 }
 
 
 
-export const InputField = ({ type, label, name, control, ...props }: Props) => {
+export const InputField = ({ type, label, name, control, multiline = false, rows, ...props }: Props) => {
     const { field: { value, onChange, onBlur, ref },
         fieldState: { invalid, error }, } = useController({
             name,
@@ -32,6 +34,9 @@ export const InputField = ({ type, label, name, control, ...props }: Props) => {
             inputRef={ref}
             error={invalid}
             helperText={error?.message}
-            inputProps={props} />
+            inputProps={props}
+            multiline={multiline}
+            rows={rows}
+        />
     )
 }

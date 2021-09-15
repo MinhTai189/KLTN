@@ -50,9 +50,7 @@ export const DropDownInfor = (props: Props) => {
     }
 
     const handleLogout = () => {
-        const { refreshToken } = getToken()
-
-        dispatch(authActions.logout(refreshToken as string))
+        dispatch(authActions.logout())
     }
 
     function ListItemLink(props: ListItemProps<'a', { button?: true }>) {

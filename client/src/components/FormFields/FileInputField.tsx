@@ -5,7 +5,7 @@ interface Props {
     name: string;
     label: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    error: string;
+    error?: string;
     [key: string]: any
 }
 

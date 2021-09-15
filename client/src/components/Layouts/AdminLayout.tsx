@@ -6,7 +6,7 @@ import Motel from 'features/motels'
 import Users from 'features/users'
 import { Switch, Route } from 'react-router-dom'
 
-const { Header, Sider, Content } = Layout
+const { Header, Content } = Layout
 
 export const AdminLayout = () => {
     return (
@@ -17,7 +17,7 @@ export const AdminLayout = () => {
             <Layout>
                 <AdminSider />
 
-                <Content>
+                <Content style={{ background: '#fff' }}>
                     <Switch>
                         <Route path='/admin/dashboard'>
                             <Dashboard />

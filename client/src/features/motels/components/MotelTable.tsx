@@ -33,7 +33,7 @@ export const MotelTable = ({ handleRemove }: Props) => {
                 name: motel.name,
                 address: motel.address,
                 status: motel.status,
-                room: motel.room,
+                // room: motel.room,
                 area: `${motel.area.length * motel.area.width}m²`,
                 vote: motel.vote,
                 mark: roundMark(motel.mark as any),

@@ -55,11 +55,9 @@ function* handleLogin(action: PayloadAction<LoginData>) {
   }
 }
 
-function* handleLogout(action: PayloadAction<string>) {
+function* handleLogout() {
   try {
-    yield axiosClient.post('/logout', {
-      refreshToken: action.payload,
-    });
+    yield axiosClient.post('/logout');
 
     clearToken();
     yield put(authActions.logoutSuccess());

@@ -127,23 +127,25 @@ router.get("/", async (req, res) => {
             default:
                 break;
         }
-    const opitional = _opitional.split(" ");
-    listMotel = listMotel.filter((item) => {
-        function filterRoomType(motel) {
-            let bool = false;
+    if (_opitional) {
+        const opitional = _opitional.split(" ");
+        listMotel = listMotel.filter((item) => {
+            function filterRoomType(motel) {
+                let bool = false;
 
-            for (let j = 0; j < motel.room.length; j++) {
-                let count = 0;
-                for (let i = 0; i < opitional.length; i++) {
-                    if (motel.room[j].opitional.some((item) => item === opitional[i]))
-                        count++;
+                for (let j = 0; j < motel.room.length; j++) {
+                    let count = 0;
+                    for (let i = 0; i < opitional.length; i++) {
+                        if (motel.room[j].opitional.some((item) => item === opitional[i]))
+                            count++;
+                    }
+                    if (count == opitional.length - 1) bool = true;
                 }
-                if (count == opitional.length - 1) bool = true;
+                return bool;
             }
-            return bool;
-        }
-        return filterRoomType(item);
-    });
+            return filterRoomType(item);
+        });
+    }
     _page = parseInt(_page);
     _limit = parseInt(_limit);
     if (_page && _limit) {

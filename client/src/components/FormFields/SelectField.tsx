@@ -3,18 +3,19 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import { School } from 'models';
+import { FieldOption } from 'models';
 import { Control, useController } from 'react-hook-form';
 
 interface Props {
     label: string;
     name: string;
     control: Control<any>;
-    options: Array<School>;
+    options: Array<FieldOption>;
     disabled: boolean;
     defaultValue?: any;
     mt: number;
     mb: number;
+    [key: string]: any
 }
 
 export const SelectField = ({ label, name, control, options, disabled, defaultValue, mb, mt, ...props }: Props) => {
@@ -36,10 +37,11 @@ export const SelectField = ({ label, name, control, options, disabled, defaultVa
                 inputProps={props}
                 error={invalid}
                 defaultValue={defaultValue}
+                {...props}
             >
                 {
-                    options.map(option => (
-                        <MenuItem key={option._id} value={option.codeName}>{option.name}</MenuItem>
+                    options.map((option, index) => (
+                        <MenuItem key={index} value={option.value}>{option.label}</MenuItem>
                     ))
                 }
             </Select>

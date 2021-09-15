@@ -1,29 +1,32 @@
-import { District, Province } from 'models';
-
 export interface Motel {
-  _id: string;
+  _id?: string;
   name: string;
-  district: District;
-  province: Province;
   images: string[];
   thumbnail: string;
+  room: Room[];
   desc: string;
-  room: number;
   contact: Contact;
-  area: Area;
-  status: boolean;
+  status: boolean | string;
+  available: number;
+  school: string[];
   vote?: number;
   rate?: any[];
   mark?: number;
   editor?: Owner;
-  school: string[];
-  owner: Owner;
+  owner?: Owner;
   address: string;
-  price: number;
   createAt?: string;
   updateAt?: string;
 
   [key: string]: any;
+}
+
+export interface Room {
+  area: Area;
+  optional: string[];
+  total: number;
+  remain: number;
+  price: number;
 }
 
 export interface MotelDataTable {
@@ -40,10 +43,10 @@ export interface MotelDataTable {
 }
 
 interface Contact {
-  phone: string;
-  email: string;
-  facebook: string;
-  zalo: string;
+  phone?: string;
+  email?: string;
+  facebook?: string;
+  zalo?: string;
 }
 
 interface Area {

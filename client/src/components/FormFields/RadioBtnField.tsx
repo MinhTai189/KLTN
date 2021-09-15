@@ -1,12 +1,16 @@
 import { FormControl, FormControlLabel, FormLabel, makeStyles, Radio, RadioGroup } from '@material-ui/core'
 import { FieldOption } from 'models'
+import { ChangeEvent } from 'react'
 import { useController, Control } from 'react-hook-form'
 
 interface Props {
     label: string;
     options: FieldOption[];
     control: Control<any>;
-    name: string
+    name: string;
+    handleChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+
+    [key: string]: any
 }
 
 const useStyles = makeStyles({
@@ -21,17 +25,22 @@ const useStyles = makeStyles({
     }
 })
 
-export const RadioBtnField = ({ label, options, control, name, ...props }: Props) => {
+export const RadioBtnField = ({ label, options, control, name, handleChange, ...props }: Props) => {
     const classes = useStyles()
     const { field: { value, onChange } } = useController({
         name,
         control
     })
 
+    const onChangeRadio = (e: ChangeEvent<HTMLInputElement>) => {
+        onChange(e)
+        handleChange && handleChange(e)
+    }
+
     return (
         <FormControl className={classes.root} component="fieldset" size="small" margin="normal">
             <FormLabel component="legend">{label}</FormLabel>
-            <RadioGroup aria-label="gender" name={name} value={value} onChange={onChange} {...props}>
+            <RadioGroup name={name} value={value} onChange={onChangeRadio} {...props}>
                 {options.map((option, index) => (
                     <FormControlLabel key={index} checked={option.value === value} value={option.value} control={<Radio />} label={option.label} />
                 ))}

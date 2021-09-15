@@ -6,10 +6,10 @@ import districtApi from 'api/district'
 import provinceApi from 'api/province'
 import schoolApi from 'api/school'
 import { useProvince } from 'hooks'
-import { District, ListResponse, Province, School } from 'models'
+import { District, FieldOption, ListResponse, Province, School } from 'models'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { removeAccents, removeFirstElement } from 'utils'
+import { mapOptions, removeAccents, removeFirstElement } from 'utils'
 import * as yup from 'yup'
 import { AutoCompleteField, InputField } from '../../../components/FormFields'
 import { SelectField } from '../../../components/FormFields/SelectField'
@@ -45,19 +45,6 @@ const schema = yup.object().shape({
         .required('Hãy chọn đủ Tỉnh, Quận/Huyện/TP và Trường')
 })
 
-const changeNameProvince = (name: string) => {
-    const split: string[] = name.split(' ');
-    const newName: string[] = removeAccents(split[0].toLocaleLowerCase()) === 'tinh' ? removeFirstElement(split) : split;
-    return newName.join(' ');
-}
-
-const mapProvinces = (provinces: Array<Province>) => {
-    return provinces.map(province => ({
-        ...province,
-        name: changeNameProvince(province.name)
-    }))
-}
-
 interface RegisterFBGG {
     email: string;
     province: string;
@@ -79,7 +66,7 @@ const AddiRegister = ({ onSubmit, isLoginGG }: Props) => {
 
     const [district, setDistrict] = useState<District | string>('');
     const [optionsDistrict, setOptionsDistrict] = useState<Array<District>>([]);
-    const [optionsSchool, setOptionsSchool] = useState<Array<School>>([]);
+    const [optionsSchool, setOptionsSchool] = useState<Array<FieldOption>>([]);
 
     const { control, handleSubmit, setValue } = useForm<RegisterFBGG>({
         defaultValues: initialRegisterFBGG,
@@ -106,7 +93,9 @@ const AddiRegister = ({ onSubmit, isLoginGG }: Props) => {
 
             setValue('school', '')
             const response: ListResponse<School> = await schoolApi.getByProDis(province?.codeName as string, value.codeName)
-            setOptionsSchool(response.data);
+            const options = mapOptions.school(response.data)
+
+            setOptionsSchool(options);
         }
     }
 

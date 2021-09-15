@@ -10,7 +10,7 @@ import { SelectField } from 'components/FormFields/SelectField'
 import { District, ListResponse, Province, FieldOption, School, UserUpdate } from 'models'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { mapProvinces } from 'utils'
+import { mapOptions, mapProvinces } from 'utils'
 import * as yup from 'yup'
 
 interface Props {
@@ -68,7 +68,7 @@ export const FormUpdate = ({ showUpdateForm, setShowUpdateForm, onSubmit, userUp
 
     const [district, setDistrict] = useState<District | string>();
     const [optionsDistrict, setOptionsDistrict] = useState<Array<District>>([]);
-    const [optionsSchool, setOptionsSchool] = useState<Array<School>>([]);
+    const [optionsSchool, setOptionsSchool] = useState<Array<FieldOption>>([]);
 
     const [defaultValueSchool, setDefaultValueSchool] = useState<School>()
     const [formLoading, setFormLoading] = useState(false)
@@ -97,8 +97,9 @@ export const FormUpdate = ({ showUpdateForm, setShowUpdateForm, onSubmit, userUp
                     //fetch school list when page is frist render
                     schoolApi.getByProDis(userUpdating.province, userUpdating.district).then((response: ListResponse<School>) => {
                         const listSchool = response.data
+                        const options = mapOptions.school(response.data)
 
-                        setOptionsSchool(listSchool)
+                        setOptionsSchool(options);
 
                         const defaultSchool = listSchool.find(school => school.codeName === userUpdating.school)
                         setDefaultValueSchool(defaultSchool)
@@ -146,7 +147,9 @@ export const FormUpdate = ({ showUpdateForm, setShowUpdateForm, onSubmit, userUp
 
             setFormLoading(true)
             const response: ListResponse<School> = await schoolApi.getByProDis(province?.codeName as string, value.codeName)
-            setOptionsSchool(response.data);
+            const options = mapOptions.school(response.data)
+
+            setOptionsSchool(options);
             setFormLoading(false)
         }
     }

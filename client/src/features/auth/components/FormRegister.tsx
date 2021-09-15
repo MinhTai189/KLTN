@@ -5,10 +5,11 @@ import districtApi from 'api/district'
 import schoolApi from 'api/school'
 import { FileInputField } from 'components/FormFields/FileInputField'
 import { useProvince } from 'hooks'
-import { District, ListResponse, Province, School } from 'models'
+import { District, FieldOption, ListResponse, Province, School } from 'models'
 import React, { ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
+import { mapOptions } from 'utils'
 import * as yup from 'yup'
 import { AutoCompleteField, InputField, InputPasswordField } from '../../../components/FormFields'
 import { SelectField } from '../../../components/FormFields/SelectField'
@@ -114,7 +115,7 @@ function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactE
 
     const [district, setDistrict] = useState<District | string>('');
     const [optionsDistrict, setOptionsDistrict] = useState<Array<District>>([]);
-    const [optionsSchool, setOptionsSchool] = useState<Array<School>>([]);
+    const [optionsSchool, setOptionsSchool] = useState<Array<FieldOption>>([]);
 
     const { control, handleSubmit, setValue } = useForm<RegisterData>({
         defaultValues: initialRegisterData,
@@ -143,7 +144,9 @@ function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactE
             setValue('school', '')
 
             const response: ListResponse<School> = await schoolApi.getByProDis(province?.codeName as string, value.codeName)
-            setOptionsSchool(response.data);
+            const options = mapOptions.school(response.data)
+
+            setOptionsSchool(options);
         }
     }
 

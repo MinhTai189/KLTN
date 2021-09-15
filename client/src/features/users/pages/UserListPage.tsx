@@ -1,9 +1,9 @@
 import { Box, LinearProgress } from "@material-ui/core"
 import { useAppDispatch, useAppSelector } from "app/hooks"
-import { Filter, User, UserDataTable, UserUpdate } from "models"
+import { Filter, UserDataTable, UserUpdate } from "models"
 import { useEffect, useState } from "react"
 import { FormUpdate, Operation, UserTable } from "../components"
-import { selectData, selectFilter, selectLoading, userActions } from "../usersSlice"
+import { selectFilter, selectLoading, userActions } from "../usersSlice"
 
 const UserListPage = () => {
     const dispatch = useAppDispatch()
