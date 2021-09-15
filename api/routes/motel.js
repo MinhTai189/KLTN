@@ -26,10 +26,16 @@ router.delete("/:id", verifyToken, async (req, res) => {
     }
     return res.status(200).json({ success: true, message: "Đã xóa nhà trọ" });
 });
+<<<<<<< HEAD
 
 router.get("/", async (req, res) => {
     let { _order, _sort, _keysearch, _limit, _page, _owner, _opitional } =
         req.query;
+=======
+router.get("/", async(req, res) => {
+    let { _order, _sort, _keysearch, _limit, _page, _owner, _optional } =
+    req.query;
+>>>>>>> 0b1b68bea073ef8dfa07c4deb3bed66c396aca82
     const keySearchs = [
         { unsignedName: new RegExp(_keysearch, "i") },
         {
@@ -127,19 +133,21 @@ router.get("/", async (req, res) => {
             default:
                 break;
         }
-    if (_opitional) {
-        const opitional = _opitional.split(" ");
+
+    if (_optional) {
+        const optional = _optional.split(" ");
         listMotel = listMotel.filter((item) => {
             function filterRoomType(motel) {
                 let bool = false;
 
                 for (let j = 0; j < motel.room.length; j++) {
                     let count = 0;
-                    for (let i = 0; i < opitional.length; i++) {
-                        if (motel.room[j].opitional.some((item) => item === opitional[i]))
+
+                    for (let i = 0; i < optional.length; i++) {
+                        if (motel.room[j].optional.some((item) => item === optional[i]))
                             count++;
                     }
-                    if (count == opitional.length - 1) bool = true;
+                    if (count == optional.length - 1) bool = true;
                 }
                 return bool;
             }
@@ -274,18 +282,12 @@ router.post("/", verifyToken, async (req, res) => {
         return res
             .status(400)
             .json({ success: false, message: "Vui lòng cung cấp địa chỉ nhà trọ" });
-    if (!price)
-        return res
-            .status(400)
-            .json({ success: false, message: "Vui lòng cung cấp giá nhà trọ" });
+
     if (!desc)
         return res
             .status(400)
             .json({ success: false, message: "Vui lòng cung cấp một vài mô tả" });
-    if (!room)
-        return res
-            .status(400)
-            .json({ success: false, message: "Vui lòng cung cấp số phòng nhà trọ" });
+
     if (!contact ||
         (!contact.phone && !contact.email && !contact.facbook && !contact.zalo)
     )
@@ -293,14 +295,7 @@ router.post("/", verifyToken, async (req, res) => {
             success: false,
             message: "Vui lòng cung cấp ít nhất một cách liên lạc nhà trọ",
         });
-    if (!area.length ||
-        !area.width ||
-        typeof area.length !== "number" ||
-        typeof area.width !== "number"
-    )
-        return res
-            .status(400)
-            .json({ success: false, message: "Vui lòng cung cấp diện tích nhà trọ" });
+
     if (typeof status == "undefined")
         return res.status(400).json({
             success: false,
@@ -343,6 +338,7 @@ router.post("/", verifyToken, async (req, res) => {
                     return res.status(400).json({
                         success: false,
                         message: "Vui lòng xem xét lại, có vẻ đã tồn tại nhà trọ này rồi",
+                        data: duplicateCheck.motel,
                     });
                 }
             }
@@ -478,7 +474,7 @@ const checkUnapproved = async (name, schools) => {
     findMotel.forEach((item) => {
         d.push(item._id);
     });
-    if (findMotel) return { dup: true, motel: d };
+    if (findMotel.length > 0) return { dup: true, motel: d };
     else return { dup: false };
 };
 const check = async (name, schools) => {
@@ -503,7 +499,7 @@ const check = async (name, schools) => {
     findMotel.forEach((item) => {
         d.push(item._id);
     });
-    if (findMotel) return { dup: true, motel: d };
+    if (findMotel.length > 0) return { dup: true, motel: d };
     else return { dup: false };
 };
 module.exports = router;
