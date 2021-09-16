@@ -18,7 +18,7 @@ router.post("/uploads", upload.upload, async(req, res) => {
 });
 router.delete("/uploads/:public_id", async(req, res) => {
     const public_id = req.params.public_id;
-    const unlink = await upload.unlink(id);
+    const unlink = await upload.unlink(public_id);
     if (unlink.success)
         res.status(200).json({ success: true, message: "Đã xóa file" });
     else

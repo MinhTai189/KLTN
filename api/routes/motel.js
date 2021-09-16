@@ -7,10 +7,7 @@ const argon2 = require("argon2");
 const verifyToken = require("../middleware/verifyToken");
 const unapprovedMotel = require("../models/unapproved-motel");
 const upload = require("../middleware/upload");
-const { rawListeners } = require("../models/user");
-
-
-router.delete("/:id", verifyToken, async (req, res) => {
+router.delete("/:id", verifyToken, async(req, res) => {
     if (req.user.isAdmin != true)
         return res
             .status(405)
@@ -20,22 +17,12 @@ router.delete("/:id", verifyToken, async (req, res) => {
         return res
             .status(400)
             .json({ success: false, message: "Không có nhà trọ" });
-    await upload.unlink(checkMotel.thumbnail.public_id);
-    for (let i = 0; i < checkMotel.images.length; i++) {
-        await upload.unlink(checkMotel.images[i].public_id);
-    }
+    await unlinkImageMotel(thumbnail, images);
     return res.status(200).json({ success: true, message: "Đã xóa nhà trọ" });
 });
-<<<<<<< HEAD
-
-router.get("/", async (req, res) => {
-    let { _order, _sort, _keysearch, _limit, _page, _owner, _opitional } =
-        req.query;
-=======
 router.get("/", async(req, res) => {
     let { _order, _sort, _keysearch, _limit, _page, _owner, _optional } =
     req.query;
->>>>>>> 0b1b68bea073ef8dfa07c4deb3bed66c396aca82
     const keySearchs = [
         { unsignedName: new RegExp(_keysearch, "i") },
         {
@@ -75,12 +62,12 @@ router.get("/", async(req, res) => {
                 if (_order === "asc")
                     listMotel = listMotel.sort(
                         (motel1, motel2) =>
-                            new Date(motel1.createdAt) - new Date(motel2.createdAt)
+                        new Date(motel1.createdAt) - new Date(motel2.createdAt)
                     );
                 else if (_order === "desc")
                     listMotel = listMotel.sort(
                         (motel1, motel2) =>
-                            new Date(motel2.createdAt) - new Date(motel1.createdAt)
+                        new Date(motel2.createdAt) - new Date(motel1.createdAt)
                     );
                 break;
             case "price":
@@ -133,7 +120,6 @@ router.get("/", async(req, res) => {
             default:
                 break;
         }
-
     if (_optional) {
         const optional = _optional.split(" ");
         listMotel = listMotel.filter((item) => {
@@ -142,12 +128,11 @@ router.get("/", async(req, res) => {
 
                 for (let j = 0; j < motel.room.length; j++) {
                     let count = 0;
-
                     for (let i = 0; i < optional.length; i++) {
                         if (motel.room[j].optional.some((item) => item === optional[i]))
                             count++;
                     }
-                    if (count == optional.length - 1) bool = true;
+                    if (count == optional.length) bool = true;
                 }
                 return bool;
             }
@@ -156,16 +141,11 @@ router.get("/", async(req, res) => {
     }
     _page = parseInt(_page);
     _limit = parseInt(_limit);
-    if (_page && _limit) {
+    if (_page && _limit)
         listMotel = listMotel.slice(
             _limit * (_page - 1),
             _limit + _limit * (_page - 1)
         );
-    } else {
-        _page = 1;
-        _limit = listMotel.length
-    }
-
     let newData = [];
     for (let i = 0; i < listMotel.length; i++) {
         let ownerData;
@@ -199,7 +179,6 @@ router.get("/", async(req, res) => {
             images: imagesUrl,
         });
     }
-
     let page, limit;
     if (_page && _limit) page = _page;
     limit = _limit;
@@ -210,8 +189,14 @@ router.get("/", async(req, res) => {
         pagination: { _page: page, _limit: limit, _totalRows: totalRows },
     });
 });
-
-router.post("/", verifyToken, async (req, res) => {
+const unlinkImageMotel = async(thumbnail, images) => {
+    await upload.unlink(thumbnail.public_id);
+    if (images != undefined)
+        for (let i = 0; i < images.length; i++) {
+            await upload.unlink(images[i].public_id);
+        }
+};
+router.post("/", verifyToken, async(req, res) => {
     let {
         id,
         name,
@@ -270,43 +255,55 @@ router.post("/", verifyToken, async (req, res) => {
             });
         }
     }
-    if (!thumbnail)
+    if (!thumbnail) {
         return res
             .status(400)
             .json({ success: false, message: "Vui lòng cung cấp ảnh tiêu đề" });
-    if (!name || name === "")
+    }
+    if (!name || name === "") {
+        await unlinkImageMotel(thumbnail, images);
         return res
             .status(400)
             .json({ success: false, message: "Vui lòng cung cấp tên nhà trọ" });
-    if (!address || address === "")
+    }
+    if (!address || address === "") {
+        await unlinkImageMotel(thumbnail, images);
         return res
             .status(400)
             .json({ success: false, message: "Vui lòng cung cấp địa chỉ nhà trọ" });
+    }
 
-    if (!desc)
+    if (!desc) {
+        await unlinkImageMotel(thumbnail, images);
         return res
             .status(400)
             .json({ success: false, message: "Vui lòng cung cấp một vài mô tả" });
+    }
 
     if (!contact ||
         (!contact.phone && !contact.email && !contact.facbook && !contact.zalo)
-    )
+    ) {
+        await unlinkImageMotel(thumbnail, images);
         return res.status(400).json({
             success: false,
             message: "Vui lòng cung cấp ít nhất một cách liên lạc nhà trọ",
         });
-
-    if (typeof status == "undefined")
+    }
+    if (typeof status == "undefined") {
+        await unlinkImageMotel(thumbnail, images);
         return res.status(400).json({
             success: false,
             message: "Vui lòng cho biết còn phòng trống hay không",
         });
+    }
     if (!images) images = [];
-    if (!room)
+    if (!room) {
+        await unlinkImageMotel(thumbnail, images);
         return res.status(400).json({
             success: false,
             message: "Vui lòng cho biết ít nhất một loại phòng ở nhà trọ",
         });
+    }
     const checkUserPost = await user.findById(req.user.id).select("credit");
     if (req.user.isAdmin == true || checkUserPost.credit >= 100) {
         const newMotel = new motel({
@@ -335,6 +332,7 @@ router.post("/", verifyToken, async (req, res) => {
             );
             if (duplicateCheck.dup == true) {
                 if (req.user.isAdmin == true) {
+                    await unlinkImageMotel(thumbnail, images);
                     return res.status(400).json({
                         success: false,
                         message: "Vui lòng xem xét lại, có vẻ đã tồn tại nhà trọ này rồi",
@@ -378,6 +376,7 @@ router.post("/", verifyToken, async (req, res) => {
             });
         } catch (err) {
             console.log(err);
+            await unlinkImageMotel(thumbnail, images);
             return res.status(500).json({
                 success: false,
                 message: "Vui lòng thử lại",
@@ -425,6 +424,7 @@ router.post("/", verifyToken, async (req, res) => {
             });
         } catch (err) {
             console.log(err);
+            await unlinkImageMotel(thumbnail, images);
             return res.status(500).json({
                 success: false,
                 message: "Vui lòng thử lại",
@@ -432,7 +432,7 @@ router.post("/", verifyToken, async (req, res) => {
         }
     }
 });
-router.get("/:id", async (req, res) => {
+router.get("/:id", async(req, res) => {
     const id = req.params.id;
     const findMotel = await motel.findById(id);
     if (!findMotel)
@@ -452,21 +452,21 @@ router.get("/:id", async (req, res) => {
         .status(200)
         .json({ success: true, message: "Thành công", data: responseMotel });
 });
-const checkUnapproved = async (name, schools) => {
+const checkUnapproved = async(name, schools) => {
     const findMotel = await unapprovedMotel
         .find({
             $and: [{
-                $or: [{
-                    unsignedName: new RegExp(
-                        removeVietNameseTones(name).replace(/nha tro /g, ""),
-                        "i"
-                    ),
-                },
+                    $or: [{
+                            unsignedName: new RegExp(
+                                removeVietNameseTones(name).replace(/nha tro /g, ""),
+                                "i"
+                            ),
+                        },
 
-                { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
-                ],
-            },
-            { $in: { school: schools } },
+                        { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
+                    ],
+                },
+                { $in: { school: schools } },
             ],
         })
         .select("_id");
@@ -477,21 +477,21 @@ const checkUnapproved = async (name, schools) => {
     if (findMotel.length > 0) return { dup: true, motel: d };
     else return { dup: false };
 };
-const check = async (name, schools) => {
+const check = async(name, schools) => {
     const findMotel = await motel
         .find({
             $and: [{
-                $or: [{
-                    unsignedName: new RegExp(
-                        removeVietNameseTones(name).replace(/nha tro /g, ""),
-                        "i"
-                    ),
-                },
+                    $or: [{
+                            unsignedName: new RegExp(
+                                removeVietNameseTones(name).replace(/nha tro /g, ""),
+                                "i"
+                            ),
+                        },
 
-                { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
-                ],
-            },
-            { $in: { school: schools } },
+                        { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
+                    ],
+                },
+                { $in: { school: schools } },
             ],
         })
         .select("_id");
