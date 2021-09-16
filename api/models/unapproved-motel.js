@@ -83,7 +83,30 @@ const unpprovedMotel = new Schema({
     }, ],
     room: [{
         optional: {
-            type: Array,
+            //Có giường thường
+            GIUONG: { type: Boolean, required: true },
+            //Có máy lạnh =>
+            MAYLANH: { type: Boolean, required: true },
+            //Có quạt =>
+            QUAT: { type: Boolean, required: true },
+            //Có gác =>
+            GAC: { type: Boolean, required: true },
+            // Chung chủ =>
+            CHUNGCHU: { type: Boolean, required: true },
+            //Trên lầu =>
+            LAU: { type: Boolean, required: true },
+            //Có giường tầng =>
+            GIUONGTANG: { type: Boolean, required: true },
+            //Có nhà xe =>
+            NHAXE: { type: Boolean, required: true },
+            //Có camera =>
+            CAMERA: { type: Boolean, required: true },
+            //Co Wifi =>
+            WIFI: { type: Boolean, required: true },
+            //Có dung cu vệ sinh
+            DUNGCUVESINH: { type: Boolean, required: true },
+            //Khác =>
+            KHAC: { type: Boolean, required: true },
         },
         amount: {
             type: Number,

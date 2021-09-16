@@ -21,7 +21,7 @@ router.delete("/:id", verifyToken, async(req, res) => {
     return res.status(200).json({ success: true, message: "Đã xóa nhà trọ" });
 });
 router.get("/", async(req, res) => {
-    let { _order, _sort, _keysearch, _limit, _page, _owner, _optional } =
+    let { _order, _sort, _keysearch, _limit, _page, _owner, _optional, _school } =
     req.query;
     const keySearchs = [
         { unsignedName: new RegExp(_keysearch, "i") },
@@ -40,18 +40,35 @@ router.get("/", async(req, res) => {
             address: new RegExp(_keysearch + "$", "i"),
         },
     ];
+    if (_school) var _schools = _school.split(" ");
     if (_keysearch)
-        var listMotel = await motel
-            .find({ $or: keySearchs })
-            .populate("owner", "name avatarUrl _id")
-            .populate("editor", "name avatarUrl _id");
-    else
-        var listMotel = await motel
-            .find({})
-            .populate("owner")
-            .populate("owner", "name avatarUrl _id")
-            .populate("editor", "name avatarUrl _id");
-    const totalRows = listMotel.length;
+        if (_school)
+            var listMotel = await motel
+                .find({ $or: keySearchs, school: { $in: _schools } })
+                .populate("school")
+                .populate("owner", "name avatarUrl _id")
+                .populate("editor", "name avatarUrl _id");
+        else
+            var listMotel = await motel
+                .find({ $or: keySearchs })
+                .populate("school")
+                .populate("owner", "name avatarUrl _id")
+                .populate("editor", "name avatarUrl _id");
+    else {
+        if (_school)
+            var listMotel = await motel
+                .find({ school: { $in: _schools } })
+                .populate("school")
+                .populate("owner", "name avatarUrl _id")
+                .populate("editor", "name avatarUrl _id");
+        else
+            var listMotel = await motel
+                .find({})
+                .populate("school")
+                .populate("owner", "name avatarUrl _id")
+                .populate("editor", "name avatarUrl _id");
+    }
+
     if (_owner)
         listMotel = listMotel.filter((item) => {
             item.owner._id === _owner;
@@ -121,24 +138,30 @@ router.get("/", async(req, res) => {
                 break;
         }
     if (_optional) {
-        const optional = _optional.split(" ");
+        const _optionals = _optional.split(" ");
+
         listMotel = listMotel.filter((item) => {
             function filterRoomType(motel) {
                 let bool = false;
 
                 for (let j = 0; j < motel.room.length; j++) {
                     let count = 0;
-                    for (let i = 0; i < optional.length; i++) {
-                        if (motel.room[j].optional.some((item) => item === optional[i]))
-                            count++;
+                    for (let i = 0; i < _optionals.length; i++) {
+                        if (motel.room[j].optional[_optionals[i]] == true) count++;
                     }
-                    if (count == optional.length) bool = true;
+                    if (count == _optionals.length) {
+                        bool = true;
+                        break;
+                    }
                 }
+
                 return bool;
             }
+
             return filterRoomType(item);
         });
     }
+    const totalRows = listMotel.length;
     _page = parseInt(_page);
     _limit = parseInt(_limit);
     if (_page && _limit)
@@ -190,7 +213,7 @@ router.get("/", async(req, res) => {
     });
 });
 const unlinkImageMotel = async(thumbnail, images) => {
-    await upload.unlink(thumbnail.public_id);
+    if (thumbnail != undefined) await upload.unlink(thumbnail.public_id);
     if (images != undefined)
         for (let i = 0; i < images.length; i++) {
             await upload.unlink(images[i].public_id);
@@ -303,6 +326,36 @@ router.post("/", verifyToken, async(req, res) => {
             success: false,
             message: "Vui lòng cho biết ít nhất một loại phòng ở nhà trọ",
         });
+    }
+    if (room) {
+        if (room.optional) {
+            if (
+                typeof room.optional.GIUONG !== "boolean" ||
+                typeof room.optional.MAYLANH !== "boolean" ||
+                typeof room.optional.QUAT !== "boolean" ||
+                typeof room.optional.GAC !== "boolean" ||
+                typeof room.optional.CHUNGCHU !== "boolean" ||
+                typeof room.optional.LAU !== "boolean" ||
+                typeof room.optional.GIUONGTANG !== "boolean" ||
+                typeof room.optional.NHAXE !== "boolean" ||
+                typeof room.optional.CAMERA !== "boolean" ||
+                typeof room.optional.WIFI !== "boolean" ||
+                typeof room.optional.DUNGCUVESINH !== "boolean" ||
+                typeof room.amount !== "number" ||
+                typeof room.price !== "number" ||
+                typeof room.area.width !== "number" ||
+                typeof room.area.length !== "number" ||
+                typeof room.total !== "number" ||
+                typeof room.remain !== "number" ||
+                typeof room.status !== "boolean"
+            ) {
+                await unlinkImageMotel(thumbnail, images);
+                return res.status(400).json({
+                    success: false,
+                    message: "Thuộc tính phòng trọ bị sai",
+                });
+            }
+        }
     }
     const checkUserPost = await user.findById(req.user.id).select("credit");
     if (req.user.isAdmin == true || checkUserPost.credit >= 100) {
