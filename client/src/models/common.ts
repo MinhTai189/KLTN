@@ -36,3 +36,8 @@ export interface FieldOption {
   value: string;
   label: string;
 }
+
+export interface UploadResponse {
+  url: string;
+  public_id: string;
+}

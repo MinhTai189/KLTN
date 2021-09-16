@@ -7,7 +7,7 @@ const argon2 = require("argon2");
 const verifyToken = require("../middleware/verifyToken");
 const unapprovedMotel = require("../models/unapproved-motel");
 const upload = require("../middleware/upload");
-router.delete("/:id", verifyToken, async(req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
     if (req.user.isAdmin != true)
         return res
             .status(405)
@@ -20,9 +20,9 @@ router.delete("/:id", verifyToken, async(req, res) => {
     await unlinkImageMotel(thumbnail, images);
     return res.status(200).json({ success: true, message: "Đã xóa nhà trọ" });
 });
-router.get("/", async(req, res) => {
+router.get("/", async (req, res) => {
     let { _order, _sort, _keysearch, _limit, _page, _owner, _optional, _school } =
-    req.query;
+        req.query;
     const keySearchs = [
         { unsignedName: new RegExp(_keysearch, "i") },
         {
@@ -79,12 +79,12 @@ router.get("/", async(req, res) => {
                 if (_order === "asc")
                     listMotel = listMotel.sort(
                         (motel1, motel2) =>
-                        new Date(motel1.createdAt) - new Date(motel2.createdAt)
+                            new Date(motel1.createdAt) - new Date(motel2.createdAt)
                     );
                 else if (_order === "desc")
                     listMotel = listMotel.sort(
                         (motel1, motel2) =>
-                        new Date(motel2.createdAt) - new Date(motel1.createdAt)
+                            new Date(motel2.createdAt) - new Date(motel1.createdAt)
                     );
                 break;
             case "price":
@@ -202,9 +202,12 @@ router.get("/", async(req, res) => {
             images: imagesUrl,
         });
     }
-    let page, limit;
-    if (_page && _limit) page = _page;
-    limit = _limit;
+    let page = 1, limit = totalRows;
+    if (_page && _limit) {
+        page = _page;
+        limit = _limit;
+    }
+
     return res.status(200).json({
         success: true,
         message: "Thành công",
@@ -212,14 +215,14 @@ router.get("/", async(req, res) => {
         pagination: { _page: page, _limit: limit, _totalRows: totalRows },
     });
 });
-const unlinkImageMotel = async(thumbnail, images) => {
+const unlinkImageMotel = async (thumbnail, images) => {
     if (thumbnail != undefined) await upload.unlink(thumbnail.public_id);
     if (images != undefined)
         for (let i = 0; i < images.length; i++) {
             await upload.unlink(images[i].public_id);
         }
 };
-router.post("/", verifyToken, async(req, res) => {
+router.post("/", verifyToken, async (req, res) => {
     let {
         id,
         name,
@@ -330,17 +333,6 @@ router.post("/", verifyToken, async(req, res) => {
     if (room) {
         if (room.optional) {
             if (
-                typeof room.optional.GIUONG !== "boolean" ||
-                typeof room.optional.MAYLANH !== "boolean" ||
-                typeof room.optional.QUAT !== "boolean" ||
-                typeof room.optional.GAC !== "boolean" ||
-                typeof room.optional.CHUNGCHU !== "boolean" ||
-                typeof room.optional.LAU !== "boolean" ||
-                typeof room.optional.GIUONGTANG !== "boolean" ||
-                typeof room.optional.NHAXE !== "boolean" ||
-                typeof room.optional.CAMERA !== "boolean" ||
-                typeof room.optional.WIFI !== "boolean" ||
-                typeof room.optional.DUNGCUVESINH !== "boolean" ||
                 typeof room.amount !== "number" ||
                 typeof room.price !== "number" ||
                 typeof room.area.width !== "number" ||
@@ -356,7 +348,29 @@ router.post("/", verifyToken, async(req, res) => {
                 });
             }
         }
+        for (let j = 0; j < room.length; j++) {
+            let optional = {
+                wifi: false,
+                ml: false,
+                gac: false,
+                nx: false,
+                camera: false,
+                quat: false,
+                tl: false,
+                giuong: false,
+                gt: false,
+                cc: false,
+                dcvs: false,
+            };
+
+            for (let i = 0; i < room[j].optional.length; i++) {
+                optional[room[j].optional[i]] = true;
+            }
+            room[j].optional = optional;
+        }
     }
+    console.log(room);
+
     const checkUserPost = await user.findById(req.user.id).select("credit");
     if (req.user.isAdmin == true || checkUserPost.credit >= 100) {
         const newMotel = new motel({
@@ -485,7 +499,7 @@ router.post("/", verifyToken, async(req, res) => {
         }
     }
 });
-router.get("/:id", async(req, res) => {
+router.get("/:id", async (req, res) => {
     const id = req.params.id;
     const findMotel = await motel.findById(id);
     if (!findMotel)
@@ -505,21 +519,21 @@ router.get("/:id", async(req, res) => {
         .status(200)
         .json({ success: true, message: "Thành công", data: responseMotel });
 });
-const checkUnapproved = async(name, schools) => {
+const checkUnapproved = async (name, schools) => {
     const findMotel = await unapprovedMotel
         .find({
             $and: [{
-                    $or: [{
-                            unsignedName: new RegExp(
-                                removeVietNameseTones(name).replace(/nha tro /g, ""),
-                                "i"
-                            ),
-                        },
-
-                        { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
-                    ],
+                $or: [{
+                    unsignedName: new RegExp(
+                        removeVietNameseTones(name).replace(/nha tro /g, ""),
+                        "i"
+                    ),
                 },
-                { $in: { school: schools } },
+
+                { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
+                ],
+            },
+            { $in: { school: schools } },
             ],
         })
         .select("_id");
@@ -530,21 +544,21 @@ const checkUnapproved = async(name, schools) => {
     if (findMotel.length > 0) return { dup: true, motel: d };
     else return { dup: false };
 };
-const check = async(name, schools) => {
+const check = async (name, schools) => {
     const findMotel = await motel
         .find({
             $and: [{
-                    $or: [{
-                            unsignedName: new RegExp(
-                                removeVietNameseTones(name).replace(/nha tro /g, ""),
-                                "i"
-                            ),
-                        },
-
-                        { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
-                    ],
+                $or: [{
+                    unsignedName: new RegExp(
+                        removeVietNameseTones(name).replace(/nha tro /g, ""),
+                        "i"
+                    ),
                 },
-                { $in: { school: schools } },
+
+                { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
+                ],
+            },
+            { $in: { school: schools } },
             ],
         })
         .select("_id");

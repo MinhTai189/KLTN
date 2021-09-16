@@ -41,6 +41,17 @@ const motelSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    addMotel: (state, action: PayloadAction<Motel>) => {
+      state.loading = true;
+    },
+    addMotelSuccess: (state) => {
+      state.loading = false;
+      state.filter = { ...state.filter };
+    },
+    addMotelFailed: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
     setFilter: (state, action: PayloadAction<Filter>) => {
       state.filter = action.payload;
     },

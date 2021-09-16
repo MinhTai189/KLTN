@@ -1,8 +1,10 @@
+import { UploadResponse } from 'models';
+
 export interface Motel {
   _id?: string;
   name: string;
-  images: string[];
-  thumbnail: string;
+  images: UploadResponse[] | FormData | string;
+  thumbnail: UploadResponse | FormData | string;
   room: Room[];
   desc: string;
   contact: Contact;

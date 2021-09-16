@@ -1,9 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Box, Button, Container, Link, Theme, Typography } from '@material-ui/core'
+import { Box, Button, CircularProgress, Container, Link, Theme, Typography } from '@material-ui/core'
 import { Email, Facebook, Phone } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/styles'
 import schoolApi from 'api/school'
+import { useAppSelector } from 'app/hooks'
 import { AutoCompleteField, CheckboxGroup, InputField } from 'components/FormFields'
 import { FileInputField } from 'components/FormFields/FileInputField'
 import { InputFieldIcon } from 'components/FormFields/InputFieldIcon'
@@ -15,6 +16,7 @@ import { toast } from 'react-toastify'
 import { checkSizeImg } from 'utils'
 import * as yup from 'yup'
 import { ReactComponent as Zalo } from '../../../assets/images/zalo.svg'
+import { selectLoadingMotel } from '../motelSlice'
 
 interface Props {
     handleAddMotel: (data: any) => void;
@@ -101,6 +103,10 @@ const checkboxOptions: Array<FieldOption> = [
         label: 'Chung chủ',
         value: 'cc'
     },
+    {
+        label: 'Dụng cụ vệ sinh',
+        value: 'dcvs'
+    }
 ]
 
 const initialCheckbox: any = {
@@ -113,7 +119,8 @@ const initialCheckbox: any = {
     tl: false,
     giuong: false,
     gt: false,
-    cc: false
+    cc: false,
+    dcvs: false
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -221,6 +228,8 @@ const schema = yup.object().shape({
 
 export const AddForm = ({ handleAddMotel, handleUploadImages, handleUploadThumbnail }: Props) => {
     const classes = useStyles()
+
+    const loading = useAppSelector(selectLoadingMotel)
     const { control, handleSubmit, setValue, formState: { errors }, setError } = useForm<Motel>({
         defaultValues: initialMotel,
         resolver: yupResolver(schema),
@@ -249,6 +258,8 @@ export const AddForm = ({ handleAddMotel, handleUploadImages, handleUploadThumbn
     }, [])
 
     const handleChangeRadio = (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.value === 'no')
+            setValue('available', 0)
         setStatus(e.target.value)
     }
 
@@ -391,7 +402,10 @@ export const AddForm = ({ handleAddMotel, handleUploadImages, handleUploadThumbn
                     ))}
 
                     <Box my={3}>
-                        <Button variant='contained' size='large' color='primary' type='submit' fullWidth>Xác nhận</Button>
+                        <Button variant='contained' size='large' color='primary' type='submit' fullWidth disabled={loading}>
+                            {loading && <><CircularProgress color='secondary' size={20} /> &nbsp;</>}
+                            Xác nhận
+                        </Button>
                     </Box>
                 </form>
             </Box>

@@ -34,7 +34,7 @@ const motel = new Schema({
             type: String,
             required: true,
         },
-    }, ],
+    },],
     address: {
         type: String,
         require: true,
@@ -58,30 +58,18 @@ const motel = new Schema({
     },
     room: [{
         optional: {
-            //Có giường thường
-            GIUONG: { type: Boolean, required: true },
-            //Có máy lạnh =>
-            MAYLANH: { type: Boolean, required: true },
-            //Có quạt =>
-            QUAT: { type: Boolean, required: true },
-            //Có gác =>
-            GAC: { type: Boolean, required: true },
-            // Chung chủ =>
-            CHUNGCHU: { type: Boolean, required: true },
-            //Trên lầu =>
-            LAU: { type: Boolean, required: true },
-            //Có giường tầng =>
-            GIUONGTANG: { type: Boolean, required: true },
-            //Có nhà xe =>
-            NHAXE: { type: Boolean, required: true },
-            //Có camera =>
-            CAMERA: { type: Boolean, required: true },
-            //Co Wifi =>
-            WIFI: { type: Boolean, required: true },
-            //Có dung cu vệ sinh
-            DUNGCUVESINH: { type: Boolean, required: true },
-            //Khác =>
-            KHAC: { type: Boolean, required: true },
+            wifi: { type: Boolean, required: true },
+            ml: { type: Boolean, required: true },
+            gac: { type: Boolean, required: true },
+            nx: { type: Boolean, required: true },
+            camera: { type: Boolean, required: true },
+            quat: { type: Boolean, required: true },
+            tl: { type: Boolean, required: true },
+            giuong: { type: Boolean, required: true },
+            gt: { type: Boolean, required: true },
+            cc: { type: Boolean, required: true },
+            dcvs: { type: Boolean, required: true },
+
         },
         amount: {
             type: Number,
@@ -96,7 +84,7 @@ const motel = new Schema({
         total: Number,
         remain: Number,
         status: Boolean,
-    }, ],
+    },],
     status: {
         type: Boolean,
         required: true,
@@ -120,7 +108,7 @@ const motel = new Schema({
             type: Date,
             default: Date.now,
         },
-    }, ],
+    },],
 
     mark: {
         default: 0,
