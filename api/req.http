@@ -148,3 +148,5 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 
 ###
 GET http://localhost:5000/api/motels?_school=6139d5d6d02c8be6b20880cc
+###
+GET http://localhost:5000/api/motels/schools

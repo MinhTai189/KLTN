@@ -10,6 +10,10 @@ const school = new Schema({
         type: String,
         required: true,
     },
+    nameDistricts: {
+        type: String,
+        required: true,
+    },
     name: {
         type: String,
         required: true,

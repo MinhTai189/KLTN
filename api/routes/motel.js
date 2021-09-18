@@ -1,13 +1,62 @@
 const express = require("express");
 const router = express.Router();
+const school = require("../models/school");
+
 const motel = require("../models/motel");
 const user = require("../models/user");
 const removeVietNameseTones = require("../middleware/removeVietnameseTones");
-const argon2 = require("argon2");
 const verifyToken = require("../middleware/verifyToken");
 const unapprovedMotel = require("../models/unapproved-motel");
 const upload = require("../middleware/upload");
-router.delete("/:id", verifyToken, async (req, res) => {
+
+router.get("/schools", async(req, res) => {
+    const { _nameLike } = req.query;
+    if (_nameLike)
+        var keySearchs = [
+            { codeName: new RegExp(_nameLike.replace(/ /g, "_"), "i") },
+            {
+                codeName: new RegExp("^" + _nameLike.replace(/ /g, "_"), "i"),
+            },
+            {
+                codeName: new RegExp(_nameLike.replace(/ /g, "_") + "$", "i"),
+            },
+        ];
+    if (_nameLike) var schools = await school.find({ $or: keySearchs });
+    else var schools = await school.find({});
+    const motels = await motel.find({}).select("_id thumbnail school");
+    let data = [];
+    for (let i = 0; i < schools.length; i++) {
+        const getMotelOfSchool = motels.filter((item) => {
+            const condition = (motel) => {
+                let bool = false;
+
+                motel.school.forEach((s) => {
+                    if (JSON.stringify(s) === JSON.stringify(schools[i]._id)) {
+                        bool = true;
+                        return;
+                    }
+                });
+                return bool;
+            };
+            return condition(item);
+        });
+
+        let motelsData = [];
+        for (let j = 0; j < getMotelOfSchool.length; j++) {
+            const thumbnail = getMotelOfSchool[j].thumbnail.url;
+            motelsData.push({ thumbnail: thumbnail, _id: motels[j]._id });
+        }
+        data.push({
+            motels: motelsData,
+            district: schools[i].nameDistricts,
+            _id: schools[i]._id,
+            name: schools[i].name,
+            codeName: schools[i].codeName,
+        });
+    }
+    res.send(data);
+});
+router.delete("/:id", verifyToken, async(req, res) => {
     if (req.user.isAdmin != true)
         return res
             .status(405)
@@ -20,9 +69,18 @@ router.delete("/:id", verifyToken, async (req, res) => {
     await unlinkImageMotel(thumbnail, images);
     return res.status(200).json({ success: true, message: "Đã xóa nhà trọ" });
 });
-router.get("/", async (req, res) => {
-    let { _order, _sort, _keysearch, _limit, _page, _owner, _optional, _school } =
-        req.query;
+router.get("/", async(req, res) => {
+    let {
+        _order,
+        _sort,
+        _keysearch,
+        _limit,
+        _page,
+        _owner,
+        _optional,
+        _school,
+        _status,
+    } = req.query;
     const keySearchs = [
         { unsignedName: new RegExp(_keysearch, "i") },
         {
@@ -45,30 +103,36 @@ router.get("/", async (req, res) => {
         if (_school)
             var listMotel = await motel
                 .find({ $or: keySearchs, school: { $in: _schools } })
-                .populate("school")
+                .populate("school", "-nameDistricts")
                 .populate("owner", "name avatarUrl _id")
                 .populate("editor", "name avatarUrl _id");
         else
             var listMotel = await motel
                 .find({ $or: keySearchs })
-                .populate("school")
+                .populate("school", "-nameDistricts")
                 .populate("owner", "name avatarUrl _id")
                 .populate("editor", "name avatarUrl _id");
     else {
         if (_school)
             var listMotel = await motel
                 .find({ school: { $in: _schools } })
-                .populate("school")
+                .populate("school", "-nameDistricts")
                 .populate("owner", "name avatarUrl _id")
                 .populate("editor", "name avatarUrl _id");
         else
             var listMotel = await motel
                 .find({})
-                .populate("school")
+                .populate("school", "-nameDistricts")
                 .populate("owner", "name avatarUrl _id")
                 .populate("editor", "name avatarUrl _id");
     }
-
+    if (
+        _status &&
+        (_status.toLowerCase() === "true" || _status.toLowerCase() === "false")
+    )
+        listMotel = listMotel.filter((item) => {
+            item.status === Boolean(_status.toLowerCase());
+        });
     if (_owner)
         listMotel = listMotel.filter((item) => {
             item.owner._id === _owner;
@@ -79,12 +143,12 @@ router.get("/", async (req, res) => {
                 if (_order === "asc")
                     listMotel = listMotel.sort(
                         (motel1, motel2) =>
-                            new Date(motel1.createdAt) - new Date(motel2.createdAt)
+                        new Date(motel1.createdAt) - new Date(motel2.createdAt)
                     );
                 else if (_order === "desc")
                     listMotel = listMotel.sort(
                         (motel1, motel2) =>
-                            new Date(motel2.createdAt) - new Date(motel1.createdAt)
+                        new Date(motel2.createdAt) - new Date(motel1.createdAt)
                     );
                 break;
             case "price":
@@ -202,7 +266,8 @@ router.get("/", async (req, res) => {
             images: imagesUrl,
         });
     }
-    let page = 1, limit = totalRows;
+    let page = 1,
+        limit = totalRows;
     if (_page && _limit) {
         page = _page;
         limit = _limit;
@@ -215,14 +280,14 @@ router.get("/", async (req, res) => {
         pagination: { _page: page, _limit: limit, _totalRows: totalRows },
     });
 });
-const unlinkImageMotel = async (thumbnail, images) => {
+const unlinkImageMotel = async(thumbnail, images) => {
     if (thumbnail != undefined) await upload.unlink(thumbnail.public_id);
     if (images != undefined)
         for (let i = 0; i < images.length; i++) {
             await upload.unlink(images[i].public_id);
         }
 };
-router.post("/", verifyToken, async (req, res) => {
+router.post("/", verifyToken, async(req, res) => {
     let {
         id,
         name,
@@ -369,7 +434,6 @@ router.post("/", verifyToken, async (req, res) => {
             room[j].optional = optional;
         }
     }
-    console.log(room);
 
     const checkUserPost = await user.findById(req.user.id).select("credit");
     if (req.user.isAdmin == true || checkUserPost.credit >= 100) {
@@ -499,7 +563,7 @@ router.post("/", verifyToken, async (req, res) => {
         }
     }
 });
-router.get("/:id", async (req, res) => {
+router.get("/:id", async(req, res) => {
     const id = req.params.id;
     const findMotel = await motel.findById(id);
     if (!findMotel)
@@ -519,21 +583,21 @@ router.get("/:id", async (req, res) => {
         .status(200)
         .json({ success: true, message: "Thành công", data: responseMotel });
 });
-const checkUnapproved = async (name, schools) => {
+const checkUnapproved = async(name, schools) => {
     const findMotel = await unapprovedMotel
         .find({
             $and: [{
-                $or: [{
-                    unsignedName: new RegExp(
-                        removeVietNameseTones(name).replace(/nha tro /g, ""),
-                        "i"
-                    ),
-                },
+                    $or: [{
+                            unsignedName: new RegExp(
+                                removeVietNameseTones(name).replace(/nha tro /g, ""),
+                                "i"
+                            ),
+                        },
 
-                { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
-                ],
-            },
-            { $in: { school: schools } },
+                        { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
+                    ],
+                },
+                { $in: { school: schools } },
             ],
         })
         .select("_id");
@@ -544,21 +608,21 @@ const checkUnapproved = async (name, schools) => {
     if (findMotel.length > 0) return { dup: true, motel: d };
     else return { dup: false };
 };
-const check = async (name, schools) => {
+const check = async(name, schools) => {
     const findMotel = await motel
         .find({
             $and: [{
-                $or: [{
-                    unsignedName: new RegExp(
-                        removeVietNameseTones(name).replace(/nha tro /g, ""),
-                        "i"
-                    ),
-                },
+                    $or: [{
+                            unsignedName: new RegExp(
+                                removeVietNameseTones(name).replace(/nha tro /g, ""),
+                                "i"
+                            ),
+                        },
 
-                { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
-                ],
-            },
-            { $in: { school: schools } },
+                        { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
+                    ],
+                },
+                { $in: { school: schools } },
             ],
         })
         .select("_id");

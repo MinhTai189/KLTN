@@ -43,12 +43,12 @@ router.get("/schools", async(req, res) => {
         if (!codeProvince && !codeDistricts) {
             const school = await School.find({})
                 .select("-codeProvince")
-                .select("-codeDistricts");
+                .select("-codeDistricts -nameDistricts");
             return res.status(200).json({ success: true, data: school });
         }
         const school = await School.find({ codeDistricts, codeProvince })
             .select("-codeProvince")
-            .select("-codeDistricts");
+            .select("-codeDistricts -nameDistricts");
         res.status(200).json({ success: true, data: school });
     } catch (err) {
         res.status(404);
