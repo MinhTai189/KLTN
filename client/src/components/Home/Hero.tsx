@@ -1,15 +1,15 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { Box, makeStyles, Typography } from '@material-ui/core'
 import Background from 'assets/images/background.jpg'
-import { useRef } from 'react'
-import { DropDownSchool } from './DropDownSchool'
-import { gsap } from "gsap";
+import { ChangeEvent, useState } from 'react'
+import { DropDown } from './DropDown'
 
 const useStyles = makeStyles(theme => ({
     root: {
         minHeight: '100vh',
         width: '100vw',
         position: 'relative',
+        overflow: "hidden"
     },
     background: {
         width: '100%',
@@ -23,7 +23,8 @@ const useStyles = makeStyles(theme => ({
         top: '25%',
         transform: 'translateX(-50%)',
         color: '#fff',
-        maxWidth: 750
+        maxWidth: 750,
+        perspective: 500
     },
     question: {
         fontSize: 45,
@@ -77,9 +78,30 @@ const useStyles = makeStyles(theme => ({
 
 export const Hero = () => {
     const classes = useStyles()
+    const [openDropdown, setOpenDropdrow] = useState<boolean | undefined>()
+    const [searchValue, setSearchValue] = useState('')
+
+    const [isFlip, setIsFlip] = useState<boolean | undefined>()
 
     const onClickSearch = () => {
+        setOpenDropdrow(current => {
+            if (current === undefined)
+                return !current
+            else {
+                if (current === true && isFlip === true && searchValue) {
+                    setIsFlip(false)
+                    return current
+                } else if (current === true) {
+                    setSearchValue('')
+                    return false
+                } else return true
+            }
+        })
+    }
 
+    const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearchValue(e.target.value)
+        setOpenDropdrow(true)
     }
 
     return (
@@ -99,11 +121,11 @@ export const Hero = () => {
                     <Box className={classes.inputField}>
                         <span className={classes.icon}><SearchOutlined /></span>
 
-                        <input type="text" name='search' placeholder='Chọn một trường mà bạn muốn tìm nhà trọ gần đó' autoComplete='off' />
+                        <input type="text" name='search' value={searchValue} onChange={onChangeSearch} placeholder='Chọn một trường mà bạn muốn tìm nhà trọ gần đó' autoComplete='off' />
                     </Box>
                 </Box>
 
-                <DropDownSchool />
+                <DropDown openDropdown={openDropdown} isFlip={isFlip} setIsFlip={setIsFlip} />
             </Box>
         </div>
     )

@@ -7,17 +7,16 @@ const Motel = () => {
     return (
         <Switch>
             <Route path='/admin/motels' exact>
-                {/* <MotelListPage /> */}
-                <AddPage />
+                <MotelListPage />
             </Route>
 
             {/* <Route path='/admin/motels/edit/:id'>
                 <AddEditPage />
             </Route> */}
 
-            {/* <Route path='/admin/motels/add'>
+            <Route path='/admin/motels/add'>
                 <AddPage />
-            </Route> */}
+            </Route>
         </Switch>
     )
 }

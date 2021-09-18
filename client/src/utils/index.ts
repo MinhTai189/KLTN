@@ -9,3 +9,4 @@ export * from './handleProvince';
 export * from './roundMarkMotel';
 export * from './checkSizeImg';
 export * from './mapOptions';
+export * from './numberToCurrency';

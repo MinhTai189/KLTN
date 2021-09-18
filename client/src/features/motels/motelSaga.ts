@@ -48,7 +48,12 @@ function* handleAddMotel(action: PayloadAction<Motel>) {
   }
 }
 
+function* handleSearchWithDebounce(action: PayloadAction<Filter>) {
+  yield put(motelActions.setFilter(action.payload));
+}
+
 export default function* motelSaga() {
   yield takeLatest(motelActions.getMotel, handleGetMotel);
   yield takeLatest(motelActions.addMotel, handleAddMotel);
+  yield takeLatest(motelActions.searchWithDebounce, handleSearchWithDebounce);
 }

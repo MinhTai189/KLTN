@@ -55,6 +55,7 @@ const motelSlice = createSlice({
     setFilter: (state, action: PayloadAction<Filter>) => {
       state.filter = action.payload;
     },
+    searchWithDebounce: (state, action: PayloadAction<Filter>) => {},
   },
 });
 

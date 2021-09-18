@@ -31,13 +31,13 @@ export const MotelTable = ({ handleRemove }: Props) => {
                 key: motel._id,
                 number,
                 name: motel.name,
+                owner: motel.owner?.name,
+                available: motel.available,
                 address: motel.address,
                 status: motel.status,
-                // room: motel.room,
-                area: `${motel.area.length * motel.area.width}m²`,
+                amountRoom: motel.room.length,
                 vote: motel.vote,
                 mark: roundMark(motel.mark as any),
-                price: `${motel.price}vnd`,
             } as MotelDataTable
         })
 
@@ -55,14 +55,29 @@ export const MotelTable = ({ handleRemove }: Props) => {
             title: 'STT',
             dataIndex: 'number',
             key: 'number',
+            width: 60
         }, {
-            title: 'Tên',
+            title: 'Tên nhà trọ',
             dataIndex: 'name',
             key: 'name',
+            width: 200
+        }, {
+            title: 'Người đăng',
+            dataIndex: 'owner',
+            key: 'owner',
         }, {
             title: 'Địa chỉ',
             dataIndex: 'address',
             key: 'address',
+            width: 220,
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (school: string) => (
+                <Tooltip placement="topLeft" title={school}>
+                    {school}
+                </Tooltip>
+            ),
         }, {
             title: 'Trạng thái',
             dataIndex: 'status',
@@ -71,28 +86,25 @@ export const MotelTable = ({ handleRemove }: Props) => {
                 if (status) return <CheckCircleFilled style={{ color: '#52c41a', fontSize: 20 }} />
             }
         }, {
-            title: 'Số phòng',
-            dataIndex: 'room',
-            key: 'room',
+            title: 'Loại phòng',
+            dataIndex: 'amountRoom',
+            key: 'amountRoom',
         }, {
-            title: 'Diện tích',
-            dataIndex: 'area',
-            key: 'area',
+            title: 'Phòng trống',
+            dataIndex: 'available',
+            key: 'available',
         }, {
-            title: 'Lượt đánh giá',
+            title: 'Đánh giá',
             dataIndex: 'vote',
             key: 'vote',
         }, {
-            title: 'Đánh giá',
+            title: 'Số sao',
             dataIndex: 'mark',
             key: 'mark',
+            width: 165,
             render: (mark: number) => (
                 <Rate disabled defaultValue={mark} />
             )
-        }, {
-            title: 'Giá thuê',
-            dataIndex: 'price',
-            key: 'price',
         },
         {
             title: 'Hành động',

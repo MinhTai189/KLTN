@@ -36,12 +36,12 @@ export interface MotelDataTable {
   number: number;
   address: string;
   name: string;
+  owner: string;
   status: boolean;
-  room: number;
-  area: string;
   vote: number;
   mark: number;
-  price: string;
+  available: number;
+  amountRoom: number;
 }
 
 interface Contact {
