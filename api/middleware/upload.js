@@ -78,7 +78,7 @@ const unlink = async(public_id) => {
     try {
         let rel;
         await cloudinary.v2.uploader.destroy(public_id, (err, result) => {
-            if (err) throw err;
+            if (err) console.log(err);
             rel = result;
         });
         return { success: true, message: "Thành công", data: rel };
