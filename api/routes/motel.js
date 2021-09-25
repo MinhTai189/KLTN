@@ -41,7 +41,7 @@ router.patch("/:id", verifyToken, async(req, res) => {
     if (name)
         if (typeof name === "string") motelUpdate.name = name;
     const oldThumbnail = motelUpdate.thumbnail;
-    console.log("dawhdwad");
+
     if (thumbnail)
         if (
             typeof thumbnail.url === "string" &&
@@ -67,14 +67,17 @@ router.patch("/:id", verifyToken, async(req, res) => {
     if (typeof available === "number") motelUpdate.available = available;
     const oldImages = motelUpdate.images;
     if (Array.isArray(images) == true) {
-        let bool = true;
-        for (let i = 0; i < images.length; i++) {
-            if (!images[i].public_id && !images[i].url) {
-                bool = false;
-                return;
+        for (let j = 0; j < oldImages.length; j++) {
+            let count = 0;
+            for (let i = 0; i < images.length; i++) {
+                if (
+                    oldImages[j].public_id !== images[i].public_id &&
+                    oldImages[j].url !== images[i].url
+                )
+                    count++;
             }
+            if (count == images.length) motelUpdate.images = images;
         }
-        if (bool == true) motelUpdate.images = images;
     }
     if (req.user.isAdmin == true) {
         try {
@@ -231,13 +234,49 @@ router.get("/", async(req, res) => {
                 .populate("owner", "name avatarUrl _id")
                 .populate("editor", "name avatarUrl _id");
     }
+    if (_keysearch) {
+        const addMotelUser = await user
+            .find({
+                $or: [
+                    { unsignedName: new RegExp(_keysearch, "i") },
+                    {
+                        unsignedName: new RegExp("^" + _keysearch, "i"),
+                    },
+                    {
+                        unsignedName: new RegExp(_keysearch + "$", "i"),
+                    },
+                ],
+            })
+            .select("_id");
+        let addMotelUser2 = await motel
+            .find({})
+            .populate("school", "-nameDistricts")
+            .populate("rate.user", "-refreshToken")
+            .populate("owner", "name avatarUrl _id")
+            .populate("editor", "name avatarUrl _id");
+        addMotelUser.forEach((item) => {
+            addMotelUser2.forEach((item2) => {
+                if (JSON.stringify(item._id) === JSON.stringify(item2.owner._id)) {
+                    if (
+                        listMotel.some((motel) => {
+                            JSON.stringify(motel.owner._id) === JSON.stringify(item._id);
+                        })
+                    ) {} else {
+                        listMotel.push(item2);
+                    }
+                }
+            });
+        });
+    }
+
     if (
         _status &&
         (_status.toLowerCase() === "true" || _status.toLowerCase() === "false")
-    )
+    ) {
         listMotel = listMotel.filter((item) => {
-            item.status === Boolean(_status.toLowerCase());
+            return String(item.status) == _status.toLowerCase();
         });
+    }
     if (_owner)
         listMotel = listMotel.filter((item) => {
             item.owner._id === _owner;
@@ -344,6 +383,7 @@ router.get("/", async(req, res) => {
         let ownerData;
         let editorData;
         let imagesUrl = [];
+
         for (let j = 0; j < listMotel[i].rate.length; j++) {
             const userNewData = {
                 _id: listMotel[i].rate[j].user._id,
