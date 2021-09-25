@@ -34,7 +34,7 @@ const unpprovedMotel = new Schema({
             type: String,
             required: true,
         },
-    },],
+    }, ],
     address: {
         type: String,
         require: true,
@@ -43,7 +43,7 @@ const unpprovedMotel = new Schema({
     desc: { type: String },
 
     contact: {
-        Phone: {
+        phone: {
             type: String,
         },
         email: {
@@ -80,7 +80,7 @@ const unpprovedMotel = new Schema({
             type: Date,
             default: Date.now,
         },
-    },],
+    }, ],
     room: [{
         optional: {
             wifi: { type: Boolean, required: true },
@@ -94,7 +94,6 @@ const unpprovedMotel = new Schema({
             gt: { type: Boolean, required: true },
             cc: { type: Boolean, required: true },
             dcvs: { type: Boolean, required: true },
-
         },
         amount: {
             type: Number,
@@ -109,7 +108,7 @@ const unpprovedMotel = new Schema({
         total: Number,
         remain: Number,
         status: Boolean,
-    },],
+    }, ],
     mark: {
         default: 0,
         type: Number,

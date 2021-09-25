@@ -1,14 +1,115 @@
 const express = require("express");
 const router = express.Router();
 const school = require("../models/school");
-
 const motel = require("../models/motel");
 const user = require("../models/user");
 const removeVietNameseTones = require("../middleware/removeVietnameseTones");
 const verifyToken = require("../middleware/verifyToken");
 const unapprovedMotel = require("../models/unapproved-motel");
 const upload = require("../middleware/upload");
+router.patch("/:id", verifyToken, async (req, res) => {
+    const motelUpdate = await motel.findById(req.params.id).select("-room -rate");
+    if (!motelUpdate)
+        return res
+            .status(404)
+            .json({ success: true, message: "Không tìm thấy nhà trọ" });
+    let {
+        name,
+        thumbnail,
+        images,
+        address,
+        desc,
+        contact,
+        status,
+        school,
+        available,
+    } = req.body;
+    if (!name &&
+        !thumbnail &&
+        !images &&
+        !address &&
+        !desc &&
+        !contact &&
+        typeof status === "undefined" &&
+        !school &&
+        !available
+    )
+        return res
+            .status(400)
+            .json({ success: false, message: "Không tìm thấy dữ liệu cần cập nhật" });
 
+    if (name)
+        if (typeof name === "string") motelUpdate.name = name;
+    const oldThumbnail = motelUpdate.thumbnail;
+    console.log("dawhdwad");
+    if (thumbnail)
+        if (
+            typeof thumbnail.url === "string" &&
+            typeof thumbnail.public_id === "string" &&
+            thumbnail.url !== motelUpdate.thumbnail.url &&
+            thumbnail.public_id !== motelUpdate.thumbnail.public_id
+        )
+            motelUpdate.thumbnail = thumbnail;
+    if (address)
+        if (typeof address === "string") motelUpdate.address = address;
+    if (desc)
+        if (typeof desc === "string") motelUpdate.desc = desc;
+    if (contact)
+        if (
+            typeof contact.phone === "string" ||
+            typeof contact.zalo === "string" ||
+            typeof contact.email === "string" ||
+            typeof contact.facebook === "string"
+        )
+            motelUpdate.contact = contact;
+    if (typeof status === "boolean") motelUpdate.status = status;
+    if (Array.isArray(school) == true) motelUpdate.school = school;
+    if (typeof available === "number") motelUpdate.available = available;
+    const oldImages = motelUpdate.images;
+    if (Array.isArray(images) == true) {
+        let bool = true;
+        for (let i = 0; i < images.length; i++) {
+            if (!images[i].public_id && !images[i].url) {
+                bool = false;
+                return;
+            }
+        }
+        if (bool == true) motelUpdate.images = images;
+    }
+    if (req.user.isAdmin == true) {
+        try {
+            await motelUpdate.save();
+            if (thumbnail)
+                if (
+                    typeof thumbnail.url === "string" &&
+                    typeof thumbnail.public_id === "string" &&
+                    thumbnail.url !== motelUpdate.thumbnail.url &&
+                    thumbnail.public_id !== motelUpdate.thumbnail.public_id
+                )
+                    await upload.unlink(oldThumbnail.public_id);
+            if (images)
+                for (let i = 0; i < oldImages.length; i++) {
+                    let bool = false;
+                    for (let j = 0; j < motelUpdate.images.length; j++) {
+                        if (
+                            motelUpdate.images[j].url === oldImages[i].url &&
+                            motelUpdate.images[j].public_id === oldImages[i].public_id
+                        ) {
+                            bool = true;
+                            break;
+                        }
+                        if (bool == false) await upload.unlink(oldImages[i].public_id);
+                    }
+                }
+            res
+                .status(200)
+                .json({ success: true, message: "Đã cập nhật thành công" });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({ success: false, message: "Lỗi khong xác định" });
+        }
+    }
+});
 router.get("/schools", async (req, res) => {
     const { _nameLike } = req.query;
     if (_nameLike)
@@ -54,11 +155,7 @@ router.get("/schools", async (req, res) => {
             codeName: schools[i].codeName,
         });
     }
-    res.status(200).json({
-        success: true,
-        message: 'Thành công',
-        data
-    });
+    res.status(200).json({ success: true, message: "Thành công", data: data });
 });
 
 router.delete("/:id", verifyToken, async (req, res) => {
@@ -110,12 +207,14 @@ router.get("/", async (req, res) => {
             var listMotel = await motel
                 .find({ $or: keySearchs, school: { $in: _schools } })
                 .populate("school", "-nameDistricts")
+                .populate("rate.user", "-refreshToken")
                 .populate("owner", "name avatarUrl _id")
                 .populate("editor", "name avatarUrl _id");
         else
             var listMotel = await motel
                 .find({ $or: keySearchs })
                 .populate("school", "-nameDistricts")
+                .populate("rate.user", "-refreshToken")
                 .populate("owner", "name avatarUrl _id")
                 .populate("editor", "name avatarUrl _id");
     else {
@@ -123,12 +222,14 @@ router.get("/", async (req, res) => {
             var listMotel = await motel
                 .find({ school: { $in: _schools } })
                 .populate("school", "-nameDistricts")
+                .populate("rate.user", "-refreshToken")
                 .populate("owner", "name avatarUrl _id")
                 .populate("editor", "name avatarUrl _id");
         else
             var listMotel = await motel
                 .find({})
                 .populate("school", "-nameDistricts")
+                .populate("rate.user", "-refreshToken")
                 .populate("owner", "name avatarUrl _id")
                 .populate("editor", "name avatarUrl _id");
     }
@@ -238,9 +339,19 @@ router.get("/", async (req, res) => {
         );
     let newData = [];
     for (let i = 0; i < listMotel.length; i++) {
+        let rateData = [];
         let ownerData;
         let editorData;
         let imagesUrl = [];
+        for (let j = 0; j < listMotel[i].rate.length; j++) {
+            const userNewData = {
+                _id: listMotel[i].rate[j].user._id,
+                avatarUrl: listMotel[i].rate[j].user.avatarUrl.url,
+                credit: listMotel[i].rate[j].user.credit,
+                isAdmin: listMotel[i].rate[j].user.isAdmin,
+            };
+            rateData.push({ ...listMotel[i].rate[j]._doc, user: userNewData });
+        }
         if (listMotel[i].owner) {
             const avatarUrl = listMotel[i].owner.avatarUrl.url;
             ownerData = {
@@ -267,6 +378,7 @@ router.get("/", async (req, res) => {
             editor: editorData,
             thumbnail: thumbnailUrl,
             images: imagesUrl,
+            rate: rateData,
         });
     }
     let page = 1,
@@ -570,7 +682,9 @@ router.post("/", verifyToken, async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     const id = req.params.id;
-    const findMotel = await motel.findById(id);
+    const findMotel = await motel
+        .findById(id)
+        .populate("rate.user", "avatarUrl name _id isAdmin");
     if (!findMotel)
         return res
             .status(400)
@@ -579,8 +693,19 @@ router.get("/:id", async (req, res) => {
     findMotel.images.forEach((image) => {
         images.push(image.url);
     });
+    let newRate = [];
+    for (let i = 0; i < findMotel.rate.length; i++) {
+        const userRate = {
+            name: findMotel.rate[i].user.name,
+            isAdmin: findMotel.rate[i].user.isAdmin,
+            _id: findMotel.rate[i]._id,
+            avatarUrl: findMotel.rate[i].user.avatarUrl.url,
+        };
+        newRate.push({ ...findMotel.rate[i]._doc, user: userRate });
+    }
     const responseMotel = {
-        ...findMotel,
+        ...findMotel._doc,
+        rate: newRate,
         thumbnail: findMotel.thumbnail.url,
         images: images,
     };

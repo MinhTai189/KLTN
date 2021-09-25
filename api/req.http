@@ -150,3 +150,41 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 GET http://localhost:5000/api/motels?_school=6139d5d6d02c8be6b20880cc
 ###
 GET http://localhost:5000/api/motels/schools
+###
+POST http://localhost:5000/api/motels/rates/6145d3d6c74fc7d6fd42b263
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjE0NDY4NiwiZXhwIjoxNjMyMTQ1Mjg2fQ.By15H6YciL8lbeuNQ-pivieqIpxszomxT5cIU45fWKg
+
+{
+    "content":"Tui rất thích nhà trọ này",
+    "star":5
+}
+###
+PATCH http://localhost:5000/api/motels/rates/6145d3d6c74fc7d6fd42b263/61468c6b3d558bfe08a13ac9/
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjAxMzM4MSwiZXhwIjoxNjMyMDEzOTgxfQ.iLn1dnjqdGAf-sEQvIHr3ceymy8aHi1SNOrfc27uV2Q
+
+{
+    "content":"Tui rất thích nhà trọ này à nha ",
+    "star":5
+}
+###
+DELETE  http://localhost:5000/api/motels/rates/6145d3d6c74fc7d6fd42b263/61468c6b3d558bfe08a13ac9
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjAyMjUxMiwiZXhwIjoxNjMyMDIzMTEyfQ.-SZha78wf4nnAShyAkmNXoiq6mZtl1pAoFTX2Y4-25w
+###
+PATCH http://localhost:5000/api/motels/rooms/6145d3d6c74fc7d6fd42b263/6145d3d6c74fc7d6fd42b265
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjE0NTU4MCwiZXhwIjoxNjMyMTQ2MTgwfQ.h62gC4GT9EiJOmSZArCBr3fhdHkU5ZUo_6A9quj6i7c
+
+{
+    "optional":["cc","gt"]
+}
+###
+PATCH http://localhost:5000/api/motels/6143186b8414cbba3f1b8e13
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjE4NDg4MSwiZXhwIjoxNjMyMTg1NDgxfQ.01Nhp3G7ZoH5qEukHk-6uSJk5ZbVM0SBIaU-orfjeZU
+
+{
+    "images":[{"url":"dadwdawdwad","public_id":"hell"}]
+}
