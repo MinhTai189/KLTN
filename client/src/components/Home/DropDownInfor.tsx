@@ -1,10 +1,9 @@
-import { Avatar, Box, makeStyles, List, ListItem, ListItemText, Divider, ListItemIcon, ListItemProps } from '@material-ui/core'
-import { useAppDispatch, useAppSelector } from 'app/hooks'
+import { Avatar, Box, Divider, List, ListItem, ListItemIcon, ListItemProps, ListItemText, makeStyles } from '@material-ui/core'
 import { ExitToApp } from '@material-ui/icons'
+import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { authActions, selectCurrentUser } from 'features/auth/authSlice'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getToken } from 'utils'
 
 interface Props {
 

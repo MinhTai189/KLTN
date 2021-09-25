@@ -27,7 +27,6 @@ const AddPage = () => {
     }
 
     const handleUploadImages = (images: any) => {
-
         const formData = new FormData()
         for (let i = 0; i < images.length; i++) {
             formData.append('file', images[i])

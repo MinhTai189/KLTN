@@ -4,6 +4,7 @@ import { Alert, Form, Modal, Spin } from 'antd'
 import districtApi from 'api/district'
 import provinceApi from 'api/province'
 import schoolApi from 'api/school'
+import { useAppSelector } from 'app/hooks'
 import { AutoCompleteField, InputField } from 'components/FormFields'
 import { RadioBtnField } from 'components/FormFields/RadioBtnField'
 import { SelectField } from 'components/FormFields/SelectField'
@@ -12,6 +13,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { mapOptions, mapProvinces } from 'utils'
 import * as yup from 'yup'
+import { selectLoading } from '../usersSlice'
 
 interface Props {
     showUpdateForm: boolean;
@@ -61,6 +63,7 @@ export const FormUpdate = ({ showUpdateForm, setShowUpdateForm, onSubmit, userUp
         defaultValues: userUpdating,
         resolver: yupResolver(schema),
     })
+    const loading = useAppSelector(selectLoading)
     const [form] = Form.useForm();
 
     const [province, setProvince] = useState<Province>();
@@ -156,12 +159,12 @@ export const FormUpdate = ({ showUpdateForm, setShowUpdateForm, onSubmit, userUp
 
     const handleOkBtn = () => {
         form.submit()
-        setShowUpdateForm(false)
     }
 
     return (
         <Form onFinish={handleSubmit(onSubmit)} form={form}>
-            <Modal title="Chỉnh sửa thông tin tài khoản" visible={showUpdateForm} onCancel={() => setShowUpdateForm(false)} onOk={handleOkBtn} okButtonProps={{ htmlType: 'submit' }}>
+            <Modal title="Chỉnh sửa thông tin tài khoản" visible={showUpdateForm} onCancel={() => setShowUpdateForm(false)} onOk={handleOkBtn} okButtonProps={{ htmlType: 'submit' }}
+                confirmLoading={loading} okText='Cập nhật' cancelText='Hủy'>
                 <Box>
                     <Spin spinning={formLoading} size='large'>
                         {isErrForm && <Alert message='Đã xảy ra lỗi! Hãy tắt form và mở lại!' type='error' />}

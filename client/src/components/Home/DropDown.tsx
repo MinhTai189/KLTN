@@ -2,14 +2,17 @@ import { Box, IconButton, Theme, Typography } from '@material-ui/core'
 import { ArrowBack } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import { gsap } from 'gsap'
-import { useEffect, useRef } from 'react'
+import { SchoolDropdown } from 'models'
+import { useEffect, useRef, useState } from 'react'
 import { numberToCurrency } from 'utils'
 import { MotelRows, SchoolRows } from '.'
+import { VariableSizeList as List } from 'react-window';
 
 interface Props {
     openDropdown: boolean | undefined;
     isFlip: boolean | undefined;
     setIsFlip: (e: boolean | undefined) => void
+    schoolList: Array<SchoolDropdown>
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -30,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         padding: '4px 0',
         marginTop: 4,
         overflowX: 'hidden',
-        overflowY: 'scroll',
+        overflowY: 'auto',
         perspective: 500,
 
         "&::-webkit-scrollbar": {
@@ -62,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-export const DropDown = ({ openDropdown, isFlip, setIsFlip }: Props) => {
+export const DropDown = ({ openDropdown, isFlip, setIsFlip, schoolList }: Props) => {
     const classes = useStyles()
     const ref = useRef()
     const childRef = gsap.utils.selector(ref)
@@ -99,13 +102,52 @@ export const DropDown = ({ openDropdown, isFlip, setIsFlip }: Props) => {
         }
     }, [isFlip])
 
-    const onClickRows = () => {
+    const onClickRows = (codeName: string, school: string) => {
+        console.log({ codeName, school });
         setIsFlip(true)
     }
 
     const onClickBack = () => {
         setIsFlip(false)
     }
+
+    // const rows: any = schoolList.map((item, index) => {
+    //     const imgUrls = item.motels.map(motel => motel.thumbnail)
+    //     const amountMotel = item.motels.length
+    //     const classFlip = index <= 7 ? 'rows' : ''
+
+    //     return (
+    //         <SchoolRows
+    //             classFlip={classFlip}
+    //             key={index}
+    //             codeName={item.codeName}
+    //             imgUrls={imgUrls}
+    //             onClickRows={onClickRows}
+    //             school={item.name}
+    //             district={item.district}
+    //             amountMotel={amountMotel}
+    //         />
+    //     )
+    // })
+
+    const Row = ({ index, style }: { index: number, style: any }) => {
+        const imgUrls = schoolList[index].motels.map(motel => motel.thumbnail)
+        const amountMotel = schoolList[index].motels.length
+        const classFlip = index <= 7 ? 'rows' : ''
+
+        return <SchoolRows
+            styleRows={style}
+            classFlip={classFlip}
+            key={index}
+            codeName={schoolList[index].codeName}
+            imgUrls={imgUrls}
+            onClickRows={onClickRows}
+            school={schoolList[index].name}
+            district={schoolList[index].district}
+            amountMotel={amountMotel}
+        />
+    };
+
 
     return (
         <div className={classes.root} ref={ref as any}>
@@ -130,15 +172,14 @@ export const DropDown = ({ openDropdown, isFlip, setIsFlip }: Props) => {
             </div>
 
             <div className={`${classes.box} box1`}>
-                {new Array(10).fill(null).map(() => (
-                    <SchoolRows
-                        imgUrls={new Array(3).fill('https://i.imgur.com/rBjvLob.jpeg')}
-                        onClickRows={onClickRows}
-                        school='Truong dai hoc Tien Giang'
-                        district='Than Cuu Nghia'
-                        amountMotel={18}
-                    />
-                ))}
+                {/* <List
+                    height={300}
+                    itemCount={schoolList.length}
+                    width={600}
+                    itemSize={() => 100}
+                >
+                    {Row}
+                </List> */}
             </div>
         </div>
     )

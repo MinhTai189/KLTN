@@ -24,6 +24,7 @@ const UserListPage = () => {
         }
 
         dispatch(userActions.updateUser(temp))
+        setShowUpdateForm(false)
     }
 
     const handleRemove = (record: UserDataTable) => {

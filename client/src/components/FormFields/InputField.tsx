@@ -8,13 +8,14 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
     name: string;
     control: Control<any>;
     multiline?: boolean;
-    rows?: number
+    rows?: number;
+    sizeField?: "medium" | "small" | undefined;
     [key: string]: any
 }
 
 
 
-export const InputField = ({ type, label, name, control, multiline = false, rows, ...props }: Props) => {
+export const InputField = ({ type, label, name, control, multiline = false, rows, sizeField = 'medium', ...props }: Props) => {
     const { field: { value, onChange, onBlur, ref },
         fieldState: { invalid, error }, } = useController({
             name,
@@ -37,6 +38,7 @@ export const InputField = ({ type, label, name, control, multiline = false, rows
             inputProps={props}
             multiline={multiline}
             rows={rows}
+            size={sizeField}
         />
     )
 }

@@ -53,8 +53,8 @@ export const Operation = ({ handleSearch, handleFilter, handleClearFilter }: Pro
 
     const onClickClearFilter = (e: any) => {
         handleClearFilter()
-        setSearchData('')
 
+        setSearchData('')
         setProvinceData('')
         setDistrictData('')
         setSchoolData('')

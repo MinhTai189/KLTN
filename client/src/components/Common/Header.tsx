@@ -8,16 +8,30 @@ import { Link } from 'react-router-dom';
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            flexGrow: 1,
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            zIndex: 199,
+            width: '100vw',
         },
-        toolbar: {
-            justifyContent: 'flex-end'
+        nav: {
+            display: 'flex',
+            alignItems: 'center',
+            padding: '8px 0',
+            height: 60
         },
-        btn: {
-            borderRadius: 15,
+        logo: {
+            width: 30,
+            height: 30
+        },
+        navLinks: {
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            listStyle: 'none',
 
-            "& a": {
-                color: 'inherit'
+            "& li": {
+                padding: '0 8px'
             }
         }
     }),
@@ -29,16 +43,23 @@ export const Header = () => {
 
     return (
         <div className={classes.root}>
-            <AppBar position="static">
-                <Toolbar className={classes.toolbar}>
-                    {currentUser?.avatarUrl ?
-                        <DropDownInfor />
-                        : <Button className={classes.btn} color='secondary' variant="contained">
-                            <Link to='/auth/login'>Đăng nhập</Link>
-                        </Button>
-                    }
-                </Toolbar>
-            </AppBar>
+            <nav className={`${classes.nav} container`}>
+                <img className={classes.logo} src="https://cdn.thukyluat.vn/nhch-images//CauHoi_Hinh/9eb6abaa-8cda-456c-ad66-26ba4da23ffe.jpg" alt="logo" />
+
+                <ul className={classes.navLinks}>
+                    <li>Trang Chủ</li>
+                    <li>Trang chủ</li>
+                    <li>Trang chủ</li>
+                    <li>Trang chủ</li>
+                </ul>
+
+                {currentUser?.avatarUrl ?
+                    <DropDownInfor />
+                    : <Button color='secondary' variant="contained">
+                        <Link to='/auth/login'>Đăng nhập</Link>
+                    </Button>
+                }
+            </nav>
         </div>
     );
 }

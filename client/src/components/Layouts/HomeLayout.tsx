@@ -20,7 +20,7 @@ export const HomeLayout = () => {
 
     return (
         <>
-            {/* <Header /> */}
+            <Header />
             <Hero />
             {/* list motel */}
             {/* find motel */}

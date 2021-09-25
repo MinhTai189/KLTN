@@ -22,6 +22,7 @@ export interface Filter {
   _province?: string;
   _role?: string;
   _keysearch?: string;
+  _status?: boolean | string;
 
   [key: string]: any;
 }

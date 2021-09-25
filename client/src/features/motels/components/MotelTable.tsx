@@ -8,10 +8,11 @@ import { roundMark } from 'utils'
 import { motelActions, selectDataMotel, selectFilterMotel, selectLoadingMotel, selectPaginationMotel } from '../motelSlice'
 
 interface Props {
-    handleRemove: (record: MotelDataTable) => void
+    handleRemove: (record: MotelDataTable) => void;
+    onClickEditMotel: (record: MotelDataTable) => void
 }
 
-export const MotelTable = ({ handleRemove }: Props) => {
+export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
     const motelData = useAppSelector(selectDataMotel)
     const pagination = useAppSelector(selectPaginationMotel)
     const filter = useAppSelector(selectFilterMotel)
@@ -141,7 +142,7 @@ export const MotelTable = ({ handleRemove }: Props) => {
     }
 
     const onClickEditBtn = (record: MotelDataTable) => {
-        history.push(`/admin/motels/edit/${record.key}`)
+        onClickEditMotel(record)
     }
 
     return (
@@ -151,6 +152,7 @@ export const MotelTable = ({ handleRemove }: Props) => {
             pagination={paginationTB}
             loading={loading}
             onChange={handleChangeTable}
+            scroll={{ x: 1300 }}
         />
     )
 }

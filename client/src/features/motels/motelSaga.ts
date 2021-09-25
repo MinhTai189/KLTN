@@ -3,7 +3,14 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import axiosClient from 'api/axiosClient';
 import { motelApi } from 'api/motel';
 import { uploadApi } from 'api/upload';
-import { Filter, ListResponse, Motel, Response, UploadResponse } from 'models';
+import {
+  Filter,
+  ListResponse,
+  Motel,
+  MotelOnly,
+  Response,
+  UploadResponse,
+} from 'models';
 import { toast } from 'react-toastify';
 import { motelActions } from './motelSlice';
 
@@ -48,6 +55,26 @@ function* handleAddMotel(action: PayloadAction<Motel>) {
   }
 }
 
+function* handleUpdateMotel(action: PayloadAction<MotelOnly>) {
+  try {
+    yield call(motelApi.updateMotel, action.payload);
+    yield put(motelActions.updateMotelSuccess());
+  } catch (err: any) {
+    yield call(toast.error, err.response.data.message);
+    yield put(motelActions.updateMotelFailed(err.response.data.message));
+  }
+}
+
+function* handleRemoveMotel(action: PayloadAction<string>) {
+  try {
+    yield call(motelApi.removeMotel, action.payload);
+    yield put(motelActions.removeMotelSuccess());
+  } catch (err: any) {
+    yield call(toast.error, err.response.data.message);
+    yield put(motelActions.removeMotelFailed(err.response.data.message));
+  }
+}
+
 function* handleSearchWithDebounce(action: PayloadAction<Filter>) {
   yield put(motelActions.setFilter(action.payload));
 }
@@ -55,5 +82,7 @@ function* handleSearchWithDebounce(action: PayloadAction<Filter>) {
 export default function* motelSaga() {
   yield takeLatest(motelActions.getMotel, handleGetMotel);
   yield takeLatest(motelActions.addMotel, handleAddMotel);
+  yield takeLatest(motelActions.updateMotel, handleUpdateMotel);
+  yield takeLatest(motelActions.removeMotel, handleRemoveMotel);
   yield takeLatest(motelActions.searchWithDebounce, handleSearchWithDebounce);
 }

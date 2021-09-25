@@ -24,6 +24,7 @@ export interface Motel {
 }
 
 export interface Room {
+  _id?: string;
   area: Area;
   optional: string[];
   total: number;
@@ -31,10 +32,22 @@ export interface Room {
   price: number;
 }
 
+export interface MotelOnly {
+  _id?: string;
+  name: string;
+  images: UploadResponse[] | FormData | string;
+  thumbnail: UploadResponse | FormData | string;
+  desc: string;
+  contact: Contact;
+  status: boolean | string;
+  available: number;
+  school: string[];
+  address: string;
+}
+
 export interface MotelDataTable {
   key: string;
   number: number;
-  address: string;
   name: string;
   owner: string;
   status: boolean;
@@ -42,6 +55,7 @@ export interface MotelDataTable {
   mark: number;
   available: number;
   amountRoom: number;
+  address: string;
 }
 
 interface Contact {

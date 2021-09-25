@@ -158,12 +158,14 @@ const schema = yup.object().shape({
         .string()
         .strict()
         .trim('Tên không được chứa khoảng trắng ở đầu và cuối')
-        .max(50, 'Tối đa 70 ký tự'),
+        .max(50, 'Tối đa 70 ký tự')
+        .required('Hãy thêm tên nhà trọ'),
     address: yup
         .string()
         .strict()
         .trim('Địa chỉ không được chứa khoảng trắng ở đầu và cuối')
-        .max(50, 'Tối đa 150 ký tự'),
+        .max(50, 'Tối đa 150 ký tự')
+        .required('Hãy thêm địa chỉ'),
     desc: yup
         .string()
         .required('Hãy viết một ít mô tả về nhà trọ của bạn. Giúp cho mọi người tìm kiếm nhà trọ chính xác hơn')
@@ -387,10 +389,9 @@ export const AddForm = ({ handleAddMotel, handleUploadImages, handleUploadThumbn
                                         </Box>
                                     </Box>
 
-                                    <InputField key={field.id} name={`room.${index}.total`} label='Số lượng phòng' type='number' min={0} max={99} control={control} required />
-                                    <InputField key={field.id} name={`room.${index}.remain`} label='Số lượng phòng trống' type='number' min={0} max={99} control={control} required />
+                                    <InputField key={field.id} name={`room.${index}.total`} label='Số lượng phòng' type='number' min={0} max={99} step={1} control={control} required />
+                                    <InputField key={field.id} name={`room.${index}.remain`} label='Số lượng phòng trống' type='number' min={0} max={99} step={1} control={control} required />
                                     <InputField key={field.id} name={`room.${index}.price`} label='Giá thuê' type='number' min={0} max={99000000} step={10000} control={control} required />
-
 
                                     <CheckboxGroup key={field.id} label='Thông tin bổ sung' initialState={initialCheckbox} name={`room.${index}.optional`} control={control} options={checkboxOptions} />
                                 </Box>

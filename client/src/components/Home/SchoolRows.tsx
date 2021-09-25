@@ -4,10 +4,13 @@ import { makeStyles } from '@material-ui/styles'
 
 interface Props {
     imgUrls: string[]
-    onClickRows: () => void
+    onClickRows: (codeName: string, name: string) => void
     school: string
     district: string
     amountMotel: number
+    codeName: string
+    classFlip: string
+    styleRows?: any
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -82,11 +85,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-export const SchoolRows = ({ imgUrls, onClickRows, school, district, amountMotel }: Props) => {
+export const SchoolRows = ({ imgUrls, onClickRows, school, district, amountMotel, codeName, classFlip, styleRows }: Props) => {
     const classes = useStyles()
 
     return (
-        <Box className={`${classes.root} rows align-center`} onClick={onClickRows}>
+        <Box className={`${classes.root} ${classFlip} align-center`} style={styleRows} onClick={() => onClickRows(codeName, school)}>
             <Box className={classes.col1}>
                 <Typography>
                     {school}
@@ -101,11 +104,11 @@ export const SchoolRows = ({ imgUrls, onClickRows, school, district, amountMotel
 
 
             <Box className={classes.col3}>
-                <Box className={classes.imgs}>
+                {/* <Box className={classes.imgs}>
                     {imgUrls.map((url, index) => (
                         <img key={index} src={url} alt='motel' />
                     ))}
-                </Box>
+                </Box> */}
 
                 <Box className={classes.amount}>
                     <Home />

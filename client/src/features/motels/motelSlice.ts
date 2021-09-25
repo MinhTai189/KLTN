@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import { Filter, ListResponse, Motel, Pagination } from 'models';
+import { Filter, ListResponse, Motel, MotelOnly, Pagination } from 'models';
 
 interface MotelState {
   loading: boolean;
@@ -52,6 +52,28 @@ const motelSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    updateMotel: (state, action: PayloadAction<MotelOnly>) => {
+      state.loading = true;
+    },
+    updateMotelSuccess: (state) => {
+      state.loading = false;
+      state.filter = { ...state.filter };
+    },
+    updateMotelFailed: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    removeMotel(state, action: PayloadAction<string>) {
+      state.loading = true;
+    },
+    removeMotelSuccess(state) {
+      state.loading = false;
+      state.filter = { ...state.filter };
+    },
+    removeMotelFailed(state, action: PayloadAction<string>) {
+      state.error = action.payload;
+      state.loading = false;
+    },
     setFilter: (state, action: PayloadAction<Filter>) => {
       state.filter = action.payload;
     },
@@ -68,6 +90,27 @@ export const selectDataMotel = (state: RootState) => state.motels.data;
 export const selectFilterMotel = (state: RootState) => state.motels.filter;
 export const selectPaginationMotel = (state: RootState) =>
   state.motels.pagination;
+
+export const selectMotelSplited = createSelector(
+  selectDataMotel,
+  (dataMotel: Array<Motel>) => {
+    return dataMotel.map((motel) => ({
+      motel: {
+        _id: motel._id,
+        name: motel.name,
+        images: motel.images,
+        thumbnail: motel.thumbnail,
+        desc: motel.desc,
+        contact: motel.contact,
+        status: motel.status === true ? 'yes' : 'no',
+        available: motel.available,
+        school: motel.school,
+        address: motel.address,
+      },
+      room: motel.room,
+    }));
+  }
+);
 
 //reducer
 const motelReducer = motelSlice.reducer;
