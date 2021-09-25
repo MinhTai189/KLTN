@@ -38,8 +38,12 @@ router.patch("/:id", verifyToken, async(req, res) => {
             .status(400)
             .json({ success: false, message: "Không tìm thấy dữ liệu cần cập nhật" });
 
-    if (name)
-        if (typeof name === "string") motelUpdate.name = name;
+    if (name) {
+        if (typeof name === "string") {
+            motelUpdate.name = name;
+            motelUpdate.unsignedName = removeVietNameseTones(name);
+        }
+    }
     const oldThumbnail = motelUpdate.thumbnail;
 
     if (thumbnail)
@@ -81,6 +85,7 @@ router.patch("/:id", verifyToken, async(req, res) => {
     }
     if (req.user.isAdmin == true) {
         try {
+            motelUpdate.editor = req.user.id;
             await motelUpdate.save();
             if (thumbnail)
                 if (
@@ -294,15 +299,16 @@ router.get("/", async(req, res) => {
                         (motel1, motel2) =>
                         new Date(motel2.createdAt) - new Date(motel1.createdAt)
                     );
+
                 break;
-            case "price":
+            case "room":
                 if (_order === "asc")
                     listMotel = listMotel.sort(
-                        (motel1, motel2) => motel1.price - motel2.price
+                        (motel1, motel2) => motel1.room.length - motel2.room.length
                     );
                 else if (_order == "desc") {
                     listMotel = listMotel.sort(
-                        (motel1, motel2) => motel2.price - motel1.price
+                        (motel1, motel2) => motel2.room.length - motel1.room.length
                     );
                 }
                 break;

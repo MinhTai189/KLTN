@@ -183,9 +183,8 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 ###
 PATCH http://localhost:5000/api/motels/614542cf9f478425c2c07317
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjU2NzAxOSwiZXhwIjoxNjMyNTY3NjE5fQ.mAx6Xxt-hnB8usN7M9T2zmgVwPVygTNkwkzqB7JUq8U
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjU2ODA2NiwiZXhwIjoxNjMyNTY4NjY2fQ.unr3GP3bvLlJvYUgjogXWcbu3YqZGNGKKbOiPG6j-Bw
 
 {
-    "images":[
-            {"url":"hello","public_id":"hello"} ]
+    "available":12
 }
