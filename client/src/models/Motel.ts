@@ -35,8 +35,8 @@ export interface Room {
 export interface MotelOnly {
   _id?: string;
   name: string;
-  images: UploadResponse[] | FormData | string;
   thumbnail: UploadResponse | FormData | string;
+  images: any;
   desc: string;
   contact: Contact;
   status: boolean | string;

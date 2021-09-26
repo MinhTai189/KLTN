@@ -57,7 +57,25 @@ function* handleAddMotel(action: PayloadAction<Motel>) {
 
 function* handleUpdateMotel(action: PayloadAction<MotelOnly>) {
   try {
-    yield call(motelApi.updateMotel, action.payload);
+    const dataUpdate = action.payload;
+
+    if (typeof action.payload.thumbnail !== 'string') {
+      const response: Response<any> = yield call(
+        uploadApi.byFormData,
+        action.payload.thumbnail
+      );
+      dataUpdate.thumbnail = response.data;
+    }
+
+    if (action.payload.images.new) {
+      const response: ListResponse<any> = yield call(
+        uploadApi.byFormData,
+        action.payload.images.new
+      );
+      dataUpdate.images.new = response.data;
+    }
+
+    yield call(motelApi.updateMotel, dataUpdate);
     yield put(motelActions.updateMotelSuccess());
   } catch (err: any) {
     yield call(toast.error, err.response.data.message);

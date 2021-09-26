@@ -75,15 +75,15 @@ const MotelListPage = () => {
             formImages.new.append('folder', data.name)
         }
 
-        // data = {
-        //     ...data,
-        //     status: typeof data.status !== 'boolean' ? data.status === 'yes' ? true : false : data.status,
-        //     thumbnail: formThumbnail,
-        //     images: formImages
-        // }
+        data = {
+            ...data,
+            status: typeof data.status !== 'boolean' ? data.status === 'yes' ? true : false : data.status,
+            thumbnail: formThumbnail ? formThumbnail : data.thumbnail,
+            images: formImages ? formImages : data.images
+        }
 
+        dispatch(motelActions.updateMotel(data))
         setShowUpdateForm(false)
-        console.log('update', data);
     }
 
     const handleUpdateRoom = (data: Room) => {

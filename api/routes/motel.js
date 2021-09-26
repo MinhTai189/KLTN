@@ -7,6 +7,7 @@ const removeVietNameseTones = require("../middleware/removeVietnameseTones");
 const verifyToken = require("../middleware/verifyToken");
 const unapprovedMotel = require("../models/unapproved-motel");
 const upload = require("../middleware/upload");
+
 router.patch("/:id", verifyToken, async (req, res) => {
     const motelUpdate = await motel.findById(req.params.id).select("-room -rate");
     if (!motelUpdate)
@@ -41,7 +42,7 @@ router.patch("/:id", verifyToken, async (req, res) => {
     if (name)
         if (typeof name === "string") motelUpdate.name = name;
     const oldThumbnail = motelUpdate.thumbnail;
-    console.log("dawhdwad");
+
     if (thumbnail)
         if (
             typeof thumbnail.url === "string" &&
