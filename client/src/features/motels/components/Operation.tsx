@@ -31,6 +31,7 @@ export const Operation = ({ handleSearch, handleFilter, handleClearFilter }: Pro
     const [createdAtSortValue, setCreatedAtSortValue] = useState((filter._order && filter._sort === 'createdat') ? `${filter._sort}.${filter._order}` : undefined)
     const [markSortValue, setMarkSortValue] = useState((filter._order && filter._sort === 'mark') ? `${filter._sort}.${filter._order}` : undefined)
     const [voteSortValue, setVoteSortValue] = useState((filter._order && filter._sort === 'vote') ? `${filter._sort}.${filter._order}` : undefined)
+    const [roomSortValue, setRoomSortValue] = useState((filter._order && filter._sort === 'room') ? `${filter._sort}.${filter._order}` : undefined)
 
     const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
         setSearchData(e.target.value)
@@ -50,6 +51,7 @@ export const Operation = ({ handleSearch, handleFilter, handleClearFilter }: Pro
         setCreatedAtSortValue(undefined)
         setMarkSortValue(undefined)
         setVoteSortValue(undefined)
+        setRoomSortValue(undefined)
     }
 
     const onClickAdd = () => {
@@ -65,17 +67,25 @@ export const Operation = ({ handleSearch, handleFilter, handleClearFilter }: Pro
                     setCreatedAtSortValue(e)
                     setMarkSortValue(undefined)
                     setVoteSortValue(undefined)
+                    setRoomSortValue(undefined)
                     break;
                 case 'mark':
                     setMarkSortValue(e)
                     setCreatedAtSortValue(undefined)
                     setVoteSortValue(undefined)
+                    setRoomSortValue(undefined)
                     break;
                 case 'vote':
                     setVoteSortValue(e)
                     setCreatedAtSortValue(undefined)
                     setMarkSortValue(undefined)
+                    setRoomSortValue(undefined)
                     break;
+                case 'room':
+                    setRoomSortValue(e)
+                    setVoteSortValue(undefined)
+                    setCreatedAtSortValue(undefined)
+                    setMarkSortValue(undefined)
             }
         } else {
             setCreatedAtSortValue(e)
@@ -88,19 +98,31 @@ export const Operation = ({ handleSearch, handleFilter, handleClearFilter }: Pro
 
     return (
         <Grid container spacing={1}>
-            <Grid item sm={12} md={3}>
-                <Tooltip title="Nhập vào từ khóa để tìm kiếm">
-                    <Input className={classes.fullWidth} size='large' placeholder="Nhập từ khóa tìm kiếm" value={searchData} onChange={onChangeSearch} allowClear prefix={<SearchOutlined />} />
-                </Tooltip>
-            </Grid>
-
-            <Grid item sm={12} md={7}>
+            <Grid item sm={12} md={4}>
                 <Grid container spacing={1}>
-                    <Grid item sm={12} md={3}>
+                    <Grid item sm={12} md={7}>
+                        <Tooltip title="Nhập vào từ khóa để tìm kiếm">
+                            <Input className={classes.fullWidth} size='large' placeholder="Nhập từ khóa tìm kiếm" value={searchData} onChange={onChangeSearch} allowClear prefix={<SearchOutlined />} />
+                        </Tooltip>
+                    </Grid>
+                    <Grid item sm={12} md={5}>
                         <Tooltip title="Lọc nhà trọ còn phòng/hết phòng">
                             <Select className={classes.fullWidth} allowClear onChange={(e: any) => handleFilter(e, '_status')} value={filter._status as string} placeholder="Còn phòng/Hết phòng" size='large'>
                                 <Option value='true'>Còn phòng</Option>
                                 <Option value='false'>Hết phòng</Option>
+                            </Select>
+                        </Tooltip>
+                    </Grid>
+                </Grid>
+            </Grid>
+
+            <Grid item sm={12} md={6}>
+                <Grid container spacing={1}>
+                    <Grid item sm={12} md={3}>
+                        <Tooltip title="Sắp xếp tăng/giảm dần số phòng trọ">
+                            <Select className={classes.fullWidth} allowClear onChange={(e: any) => onChangeSortSelect(e, '_sort')} value={roomSortValue} placeholder="Số lượng phòng trọ" size='large'>
+                                <Option value='room.asc'>Sắp xếp tăng dần</Option>
+                                <Option value='room.desc'>Sắp xếp giảm dần</Option>
                             </Select>
                         </Tooltip>
                     </Grid>

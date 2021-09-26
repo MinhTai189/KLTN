@@ -242,11 +242,6 @@ router.get("/", async (req, res) => {
                 .populate("owner", "name avatarUrl _id")
                 .populate("editor", "name avatarUrl _id");
     }
-<<<<<<< HEAD
-    if (_status && typeof _status === 'boolean')
-        listMotel = listMotel.filter((item) => {
-            item.status === _status;
-=======
     if (_keysearch) {
         const addMotelUser = await user
             .find({
@@ -274,7 +269,7 @@ router.get("/", async (req, res) => {
                         listMotel.some((motel) => {
                             JSON.stringify(motel.owner._id) === JSON.stringify(item._id);
                         })
-                    ) {} else {
+                    ) { } else {
                         listMotel.push(item2);
                     }
                 }
@@ -288,7 +283,6 @@ router.get("/", async (req, res) => {
     ) {
         listMotel = listMotel.filter((item) => {
             return String(item.status) == _status.toLowerCase();
->>>>>>> 03cf2ffafa791c1bbab32aa87ee9bdee0bfa1003
         });
     }
     if (_owner)

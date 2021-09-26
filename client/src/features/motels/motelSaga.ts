@@ -72,8 +72,10 @@ function* handleUpdateMotel(action: PayloadAction<MotelOnly>) {
         uploadApi.byFormData,
         action.payload.images.new
       );
-      dataUpdate.images.new = response.data;
+      dataUpdate.images = [...dataUpdate.images.old, ...response.data];
     }
+
+    console.log({ dataUpdate });
 
     yield call(motelApi.updateMotel, dataUpdate);
     yield put(motelActions.updateMotelSuccess());
