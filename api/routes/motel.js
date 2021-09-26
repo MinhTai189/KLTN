@@ -39,8 +39,12 @@ router.patch("/:id", verifyToken, async (req, res) => {
             .status(400)
             .json({ success: false, message: "Không tìm thấy dữ liệu cần cập nhật" });
 
-    if (name)
-        if (typeof name === "string") motelUpdate.name = name;
+    if (name) {
+        if (typeof name === "string") {
+            motelUpdate.name = name;
+            motelUpdate.unsignedName = removeVietNameseTones(name);
+        }
+    }
     const oldThumbnail = motelUpdate.thumbnail;
 
     if (thumbnail)
@@ -68,17 +72,21 @@ router.patch("/:id", verifyToken, async (req, res) => {
     if (typeof available === "number") motelUpdate.available = available;
     const oldImages = motelUpdate.images;
     if (Array.isArray(images) == true) {
-        let bool = true;
-        for (let i = 0; i < images.length; i++) {
-            if (!images[i].public_id && !images[i].url) {
-                bool = false;
-                return;
+        for (let j = 0; j < oldImages.length; j++) {
+            let count = 0;
+            for (let i = 0; i < images.length; i++) {
+                if (
+                    oldImages[j].public_id !== images[i].public_id &&
+                    oldImages[j].url !== images[i].url
+                )
+                    count++;
             }
+            if (count == images.length) motelUpdate.images = images;
         }
-        if (bool == true) motelUpdate.images = images;
     }
     if (req.user.isAdmin == true) {
         try {
+            motelUpdate.editor = req.user.id;
             await motelUpdate.save();
             if (thumbnail)
                 if (
@@ -234,10 +242,55 @@ router.get("/", async (req, res) => {
                 .populate("owner", "name avatarUrl _id")
                 .populate("editor", "name avatarUrl _id");
     }
+<<<<<<< HEAD
     if (_status && typeof _status === 'boolean')
         listMotel = listMotel.filter((item) => {
             item.status === _status;
+=======
+    if (_keysearch) {
+        const addMotelUser = await user
+            .find({
+                $or: [
+                    { unsignedName: new RegExp(_keysearch, "i") },
+                    {
+                        unsignedName: new RegExp("^" + _keysearch, "i"),
+                    },
+                    {
+                        unsignedName: new RegExp(_keysearch + "$", "i"),
+                    },
+                ],
+            })
+            .select("_id");
+        let addMotelUser2 = await motel
+            .find({})
+            .populate("school", "-nameDistricts")
+            .populate("rate.user", "-refreshToken")
+            .populate("owner", "name avatarUrl _id")
+            .populate("editor", "name avatarUrl _id");
+        addMotelUser.forEach((item) => {
+            addMotelUser2.forEach((item2) => {
+                if (JSON.stringify(item._id) === JSON.stringify(item2.owner._id)) {
+                    if (
+                        listMotel.some((motel) => {
+                            JSON.stringify(motel.owner._id) === JSON.stringify(item._id);
+                        })
+                    ) {} else {
+                        listMotel.push(item2);
+                    }
+                }
+            });
         });
+    }
+
+    if (
+        _status &&
+        (_status.toLowerCase() === "true" || _status.toLowerCase() === "false")
+    ) {
+        listMotel = listMotel.filter((item) => {
+            return String(item.status) == _status.toLowerCase();
+>>>>>>> 03cf2ffafa791c1bbab32aa87ee9bdee0bfa1003
+        });
+    }
     if (_owner)
         listMotel = listMotel.filter((item) => {
             item.owner._id === _owner;
@@ -255,15 +308,16 @@ router.get("/", async (req, res) => {
                         (motel1, motel2) =>
                             new Date(motel2.createdAt) - new Date(motel1.createdAt)
                     );
+
                 break;
-            case "price":
+            case "room":
                 if (_order === "asc")
                     listMotel = listMotel.sort(
-                        (motel1, motel2) => motel1.price - motel2.price
+                        (motel1, motel2) => motel1.room.length - motel2.room.length
                     );
                 else if (_order == "desc") {
                     listMotel = listMotel.sort(
-                        (motel1, motel2) => motel2.price - motel1.price
+                        (motel1, motel2) => motel2.room.length - motel1.room.length
                     );
                 }
                 break;
@@ -344,6 +398,7 @@ router.get("/", async (req, res) => {
         let ownerData;
         let editorData;
         let imagesUrl = [];
+
         for (let j = 0; j < listMotel[i].rate.length; j++) {
             const userNewData = {
                 _id: listMotel[i].rate[j].user._id,

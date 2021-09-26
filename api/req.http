@@ -149,7 +149,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 ###
 GET http://localhost:5000/api/motels?_school=6139d5d6d02c8be6b20880cc
 ###
-GET http://localhost:5000/api/motels/schools
+GET http://localhost:5000/api/motels/?_keysearch=ad
 ###
 POST http://localhost:5000/api/motels/rates/6145d3d6c74fc7d6fd42b263
 Content-Type: application/json
@@ -181,10 +181,10 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
     "optional":["cc","gt"]
 }
 ###
-PATCH http://localhost:5000/api/motels/6143186b8414cbba3f1b8e13
+PATCH http://localhost:5000/api/motels/614542cf9f478425c2c07317
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjE4NDg4MSwiZXhwIjoxNjMyMTg1NDgxfQ.01Nhp3G7ZoH5qEukHk-6uSJk5ZbVM0SBIaU-orfjeZU
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjU2ODA2NiwiZXhwIjoxNjMyNTY4NjY2fQ.unr3GP3bvLlJvYUgjogXWcbu3YqZGNGKKbOiPG6j-Bw
 
 {
-    "images":[{"url":"dadwdawdwad","public_id":"hell"}]
+    "available":12
 }
