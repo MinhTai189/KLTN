@@ -1,9 +1,9 @@
-import { AppBar, Button, createStyles, makeStyles, Theme, Toolbar } from '@material-ui/core';
-import { useAppSelector } from 'app/hooks';
-import { DropDownInfor } from '../Home';
-import { selectCurrentUser } from 'features/auth/authSlice';
+import { Button, createStyles, makeStyles, Theme } from '@material-ui/core';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { authActions, selectCurrentUser } from 'features/auth/authSlice';
 import { User } from 'models';
 import { Link } from 'react-router-dom';
+import { DropDownInfor } from '../Home';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export const Header = () => {
     const classes = useStyles();
     const currentUser: User = useAppSelector(selectCurrentUser)
+    const dispatch = useAppDispatch()
 
     return (
         <div className={classes.root}>
@@ -56,7 +57,7 @@ export const Header = () => {
                 {currentUser?.avatarUrl ?
                     <DropDownInfor />
                     : <Button color='secondary' variant="contained">
-                        <Link to='/auth/login'>Đăng nhập</Link>
+                        <Link to='/auth/login' onClick={() => dispatch(authActions.loginFailed(''))}>Đăng nhập</Link>
                     </Button>
                 }
             </nav>

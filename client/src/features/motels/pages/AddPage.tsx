@@ -10,6 +10,14 @@ const AddPage = () => {
     const dispatch = useAppDispatch()
 
     const handleAddMotel = async (data: Motel) => {
+        if (formThumbnail) {
+            formThumbnail.append('folder', data.name)
+        }
+
+        if (formImages) {
+            formImages.append('folder', data.name)
+        }
+
         data = {
             ...data,
             status: data.status === 'yes' ? true : false,

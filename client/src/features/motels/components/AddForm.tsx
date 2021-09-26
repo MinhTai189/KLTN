@@ -149,6 +149,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         "& > div": {
             overflow: 'hidden',
             maxHeight: 200,
+            outline: '1px solid #000',
         }
     }
 }))

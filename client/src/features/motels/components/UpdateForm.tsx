@@ -1,9 +1,11 @@
 import { Theme } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { Button, Form, Modal, Space } from 'antd'
+import { useAppSelector } from 'app/hooks'
 import { MotelOnly, Room } from 'models'
 import { useEffect, useState } from 'react'
 import { UpdateMotelModal } from '.'
+import { selectLoadingMotel } from '../motelSlice'
 import { UpdateRoomModal } from './UpdateRoomModal'
 
 
@@ -25,13 +27,8 @@ interface ChangeRoom {
     data: Room;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-    root: {},
-}))
-
 
 export const UpdateForm = ({ showUpdateForm, setShowUpdateForm, selectedMotelUpdate, handleUpdateMotel, handleUploadThumbnail, handleUploadImages, selectedRoomUpdate, handleUpdateRoom }: Props) => {
-    const classes = useStyles()
     const [clickModal, setClickModal] = useState('')
     const [changeRoom, setChangeRoom] = useState<ChangeRoom>({
         current: 0,
@@ -41,6 +38,7 @@ export const UpdateForm = ({ showUpdateForm, setShowUpdateForm, selectedMotelUpd
     })
 
     const [title, setTitle] = useState('Chọn một dữ liệu muốn chỉnh sửa')
+    const loading = useAppSelector(selectLoadingMotel)
 
     const nextRoomUpdate = () => {
         setChangeRoom((old) => {
@@ -82,6 +80,7 @@ export const UpdateForm = ({ showUpdateForm, setShowUpdateForm, selectedMotelUpd
             cancelText='Hủy'
             onCancel={handleCancel}
             destroyOnClose={true}
+            confirmLoading={loading}
         >
             {clickModal === '' && <Space direction='vertical' size='large' style={{ width: '100%' }}>
                 <Button size='large' block type='primary' onClick={() => onClickSelectUpdate('motel')}>Chỉnh sửa thông tin nhà trọ</Button>

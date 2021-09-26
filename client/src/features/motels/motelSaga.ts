@@ -1,4 +1,4 @@
-import { call, put, takeLatest } from '@redux-saga/core/effects';
+import { call, put, take, takeLatest } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import axiosClient from 'api/axiosClient';
 import { motelApi } from 'api/motel';
@@ -9,6 +9,7 @@ import {
   Motel,
   MotelOnly,
   Response,
+  Room,
   UploadResponse,
 } from 'models';
 import { toast } from 'react-toastify';
@@ -72,13 +73,15 @@ function* handleUpdateMotel(action: PayloadAction<MotelOnly>) {
         uploadApi.byFormData,
         action.payload.images.new
       );
-      dataUpdate.images = [...dataUpdate.images.old, ...response.data];
+      dataUpdate.images = Array.isArray(response.data)
+        ? [...dataUpdate.images.old, ...response.data]
+        : [...dataUpdate.images.old, response.data];
     }
-
-    console.log({ dataUpdate });
 
     yield call(motelApi.updateMotel, dataUpdate);
     yield put(motelActions.updateMotelSuccess());
+
+    yield call(toast.success, 'Đã cập nhật dữ liệu thành công!');
   } catch (err: any) {
     yield call(toast.error, err.response.data.message);
     yield put(motelActions.updateMotelFailed(err.response.data.message));
@@ -88,7 +91,10 @@ function* handleUpdateMotel(action: PayloadAction<MotelOnly>) {
 function* handleRemoveMotel(action: PayloadAction<string>) {
   try {
     yield call(motelApi.removeMotel, action.payload);
+
     yield put(motelActions.removeMotelSuccess());
+
+    yield call(toast.success, 'Đã xóa dữ liệu thành công!');
   } catch (err: any) {
     yield call(toast.error, err.response.data.message);
     yield put(motelActions.removeMotelFailed(err.response.data.message));
@@ -99,10 +105,23 @@ function* handleSearchWithDebounce(action: PayloadAction<Filter>) {
   yield put(motelActions.setFilter(action.payload));
 }
 
+function* handleUpdateRoom(action: PayloadAction<Room>) {
+  try {
+    yield call(motelApi.updateRoom, action.payload);
+
+    yield call(toast.success, 'Đã cập nhật dữ liệu thành công!');
+  } catch (err: any) {
+    yield call(toast.error, err.response.data.message);
+    yield put(motelActions.updateRoomFailed(err.response.data.message));
+  }
+}
+
 export default function* motelSaga() {
   yield takeLatest(motelActions.getMotel, handleGetMotel);
   yield takeLatest(motelActions.addMotel, handleAddMotel);
   yield takeLatest(motelActions.updateMotel, handleUpdateMotel);
   yield takeLatest(motelActions.removeMotel, handleRemoveMotel);
   yield takeLatest(motelActions.searchWithDebounce, handleSearchWithDebounce);
+
+  yield takeLatest(motelActions.updateRoom, handleUpdateRoom);
 }

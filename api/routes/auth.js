@@ -13,7 +13,7 @@ const removeVietnameseTones = require("../middleware/removeVietnameseTones");
 const axios = require("axios").default;
 const verifyToken = require("../middleware/verifyToken");
 
-router.post("/reset-password", async(req, res) => {
+router.post("/reset-password", async (req, res) => {
     const { password, token } = req.body;
     let data;
     JWT.verify(token, process.env.forgotPasswordToken, (err, dataUser) => {
@@ -41,9 +41,9 @@ router.post("/reset-password", async(req, res) => {
     }
 });
 
-router.post("/refresh-token", async(req, res) => {
+router.post("/refresh-token", async (req, res) => {
     const { refreshToken } = req.body;
-
+    console.log(refreshToken);
     const check = await user.findOne({ refreshToken });
 
     if (!check)
@@ -53,8 +53,8 @@ router.post("/refresh-token", async(req, res) => {
 
     const accessToken = JWT.sign({ id: check._id, isAdmin: check.isAdmin },
         process.env.accessToken, {
-            expiresIn: "10m",
-        }
+        expiresIn: "10m",
+    }
     );
 
     const key = uuid.v4();
@@ -75,7 +75,7 @@ router.post("/refresh-token", async(req, res) => {
     });
 });
 
-router.post("/forgot-password", async(req, res) => {
+router.post("/forgot-password", async (req, res) => {
     //Route quên mật khẩu, nhận mail, xác thực
     const { email } = req.body; //lấy email
     const User = await user.findOne({ email: email });
@@ -149,7 +149,7 @@ router.post("/forgot-password", async(req, res) => {
       </div>
       </div></div>`,
     };
-    transporter.sendMail(mainOptions, function(err, info) {
+    transporter.sendMail(mainOptions, function (err, info) {
         //tiến hành gửi mail
         if (err) {
             return res.status(400).json({ error: err });
@@ -161,11 +161,11 @@ router.post("/forgot-password", async(req, res) => {
     });
 });
 
-const unlinkAvatar = async(avatarUrl) => {
+const unlinkAvatar = async (avatarUrl) => {
     if (avatarUrl)
         if (avatarUrl.public_id) await upload.unlink(avatarUrl.public_id);
 };
-router.post("/register", async(req, res) => {
+router.post("/register", async (req, res) => {
     let {
         username,
         password,
@@ -253,7 +253,7 @@ router.post("/register", async(req, res) => {
 });
 
 //đăng nhập
-router.post("/login", async(req, res) => {
+router.post("/login", async (req, res) => {
     const { username, password } = req.body;
     const { authorization } = req.headers;
     let userID = undefined;
@@ -274,14 +274,15 @@ router.post("/login", async(req, res) => {
                     .status(404)
                     .json({ success: false, message: "Mật khẩu bị sai" });
         } else {
-            JWT.verify(authorization, process.env.accessToken, async(err, data) => {
-                if (err)
-                    return res
-                        .status(401)
-                        .json({ success: false, message: "Token hết hạn" });
+            const userData = JWT.verify(authorization, process.env.accessToken);
 
-                userID = data.id;
-            });
+            if (!userData)
+                return res
+                    .status(401)
+                    .json({ success: false, message: "Token hết hạn" });
+
+            userID = userData.id;
+
         }
 
         if (userID) checkUser = await user.findById(userID).select("-unsignedName");
@@ -298,7 +299,7 @@ router.post("/login", async(req, res) => {
         checkUser.refreshToken = newRefreshToken;
         await checkUser.save();
 
-        const data = {...checkUser._doc, avatarUrl: url };
+        const data = { ...checkUser._doc, avatarUrl: url };
         res.status(200).json({
             success: true,
             message: "Đăng nhập thành công",
@@ -316,7 +317,7 @@ router.post("/login", async(req, res) => {
     }
 });
 
-router.post("/logout", verifyToken, async(req, res) => {
+router.post("/logout", verifyToken, async (req, res) => {
     if (!req.user.id)
         return res
             .status(400)
@@ -334,7 +335,7 @@ router.post("/logout", verifyToken, async(req, res) => {
     res.status(200).json({ success: true, message: "Đã đăng xuất" });
 });
 
-router.post("/register-facebook", async(req, res) => {
+router.post("/register-facebook", async (req, res) => {
     const { accessToken, userID, email, district, school, province } = req.body;
     const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
     &access_token=${accessToken}`;
@@ -386,7 +387,7 @@ router.post("/register-facebook", async(req, res) => {
     });
 });
 
-router.post("/login-facebook", async(req, res) => {
+router.post("/login-facebook", async (req, res) => {
     const { accessToken, userID } = req.body;
 
     const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
@@ -419,7 +420,7 @@ router.post("/login-facebook", async(req, res) => {
     });
 });
 
-router.post("/register-google", async(req, res) => {
+router.post("/register-google", async (req, res) => {
     const { tokenId, school, district, province } = req.body;
 
     const result = await client.verifyIdToken({
@@ -469,7 +470,7 @@ router.post("/register-google", async(req, res) => {
     });
 });
 
-router.post("/login-google", async(req, res) => {
+router.post("/login-google", async (req, res) => {
     const { tokenId } = req.body;
     console.log(tokenId);
     const result = await client.verifyIdToken({

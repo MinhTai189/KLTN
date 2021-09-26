@@ -25,6 +25,7 @@ export interface Motel {
 
 export interface Room {
   _id?: string;
+  idMotel?: string;
   area: Area;
   optional: string[];
   total: number;

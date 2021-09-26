@@ -6,15 +6,15 @@ cloudinary.config({
     api_secret: process.env.CLOUND_API_SECRET,
 });
 
-const upload = async(req, res, next) => {
-    console.log(req.body);
+const upload = async (req, res, next) => {
+    console.log(req.files);
     if (!req.files)
         return res.status(400).json({ success: false, message: "Khong co file" });
     var files;
 
     const f = Object.values(req.files);
 
-    if (f[0].constructor.name === "Array") files = [...f[0]];
+    if (f[0].constructor.name === "Array") { files = [...f[0]]; }
     else if (f[0].constructor.name === "Object") files = f;
 
     if (!files || files.length == 0)
@@ -37,7 +37,7 @@ const upload = async(req, res, next) => {
     for (let i = 0; i < files.length; i++) {
         try {
             files[i].tempFilePath = "./tmp/" + Date.now();
-            await fs.writeFile(files[i].tempFilePath, files[i].data, function(err) {
+            await fs.writeFile(files[i].tempFilePath, files[i].data, function (err) {
                 if (err) {
                     console.log(err);
                     return res.status(400).json({
@@ -49,7 +49,7 @@ const upload = async(req, res, next) => {
 
             await cloudinary.v2.uploader.upload(
                 files[i].tempFilePath, { folder: req.body.folder },
-                function(error, result) {
+                function (error, result) {
                     if (error) console.log(error);
                     if (result) {
                         req.results.push({ url: result.url, public_id: result.public_id });
@@ -74,7 +74,7 @@ const upload = async(req, res, next) => {
     next();
 };
 
-const unlink = async(public_id) => {
+const unlink = async (public_id) => {
     try {
         let rel;
         await cloudinary.v2.uploader.destroy(public_id, (err, result) => {

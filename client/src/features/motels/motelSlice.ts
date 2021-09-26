@@ -1,6 +1,13 @@
 import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import { Filter, ListResponse, Motel, MotelOnly, Pagination } from 'models';
+import {
+  Filter,
+  ListResponse,
+  Motel,
+  MotelOnly,
+  Pagination,
+  Room,
+} from 'models';
 
 interface MotelState {
   loading: boolean;
@@ -78,6 +85,17 @@ const motelSlice = createSlice({
       state.filter = action.payload;
     },
     searchWithDebounce: (state, action: PayloadAction<Filter>) => {},
+    updateRoom: (state, action: PayloadAction<Room>) => {
+      state.loading = true;
+    },
+    updateRoomSuccess: (state) => {
+      state.loading = false;
+      state.filter = { ...state.filter };
+    },
+    updateRoomFailed: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 

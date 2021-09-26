@@ -5,6 +5,7 @@ import {
   Response,
   SchoolDropdown,
   MotelOnly,
+  Room,
 } from 'models';
 import axiosClient from './axiosClient';
 
@@ -21,9 +22,9 @@ export const motelApi = {
     const url = '/motels';
     return axiosClient.post(url, params);
   },
-  updateMotel: (params: MotelOnly): Promise<any> => {
-    const url = `/motels/${params._id}`;
-    return axiosClient.patch(url, { params });
+  updateMotel: (data: MotelOnly): Promise<any> => {
+    const url = `/motels/${data._id}`;
+    return axiosClient.patch(url, data);
   },
   removeMotel: (id: string): Promise<any> => {
     const url = `/motels/${id}`;
@@ -32,5 +33,9 @@ export const motelApi = {
   getDropdownList: (): Promise<ListResponse<SchoolDropdown>> => {
     const url = '/motels/schools';
     return axiosClient.get(url);
+  },
+  updateRoom: (data: Room): Promise<any> => {
+    const url = `/motels/room/${data.idMotel}/${data._id}`;
+    return axiosClient.patch(url, data);
   },
 };

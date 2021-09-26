@@ -16,7 +16,7 @@ const MotelListPage = () => {
 
     const [selectedRoomUpdate, setSelectRoomUpdate] = useState<Array<Room>>()
     const [formThumbnail, setFormThumbnail] = useState<FormData>()
-    const [formImages, setFormImages] = useState<{ old: string[]; new: FormData | undefined }>({ old: [], new: undefined })
+    const [formImages, setFormImages] = useState<{ old: string[]; new: FormData | undefined } | undefined>(undefined)
 
     useEffect(() => {
         dispatch(motelActions.getMotel(filter))
@@ -67,12 +67,12 @@ const MotelListPage = () => {
     const handleUpdateMotel = (data: MotelOnly) => {
         //upload thumbnail
         if (formThumbnail) {
-            formThumbnail.append('folder', data.name)
+            formThumbnail.append('folder', data._id as string)
         }
 
         //upload images
-        if (formImages.new) {
-            formImages.new.append('folder', data.name)
+        if (formImages && formImages.new) {
+            formImages.new.append('folder', data._id as string)
         }
 
         data = {
@@ -87,7 +87,7 @@ const MotelListPage = () => {
     }
 
     const handleUpdateRoom = (data: Room) => {
-        console.log({ data })
+
     }
 
     const handleRemove = (record: MotelDataTable) => {
@@ -107,23 +107,25 @@ const MotelListPage = () => {
             else arr.new.push(file)
             return arr
         }, { old: [], new: [] })
+        let isRead = false
 
         const form = new FormData()
 
         if (filesSplit.new.length > 0) {
+            isRead = true
             filesSplit.new.forEach(file => {
                 form.append('files', file)
             })
         }
 
-        setFormImages({ ...filesSplit, new: form })
+        setFormImages({ ...filesSplit, new: isRead ? form : undefined })
     }
 
     const onClickEditMotel = (record: MotelDataTable) => {
         const dataMotelUpdate = dataMotelSplited.filter(motel => motel.motel._id === record.key)
 
-        setSelectMotelUpdate(dataMotelUpdate[0]?.motel)
-        setSelectRoomUpdate(dataMotelUpdate[0]?.room)
+        setSelectMotelUpdate(dataMotelUpdate[0].motel)
+        setSelectRoomUpdate({ ...dataMotelUpdate[0].room, idMotel: dataMotelUpdate[0].motel._id } as any)
         setShowUpdateForm(true)
     }
 
