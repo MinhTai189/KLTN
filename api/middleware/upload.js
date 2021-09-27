@@ -1,4 +1,5 @@
 const cloudinary = require("cloudinary");
+const { resolveSoa } = require("dns");
 fs = require("fs");
 cloudinary.config({
     cloud_name: process.env.CLOUND_NAME,
@@ -6,16 +7,16 @@ cloudinary.config({
     api_secret: process.env.CLOUND_API_SECRET,
 });
 
-const upload = async (req, res, next) => {
-    console.log(req.files);
+const upload = async(req, res, next) => {
     if (!req.files)
         return res.status(400).json({ success: false, message: "Khong co file" });
     var files;
 
     const f = Object.values(req.files);
 
-    if (f[0].constructor.name === "Array") { files = [...f[0]]; }
-    else if (f[0].constructor.name === "Object") files = f;
+    if (f[0].constructor.name === "Array") {
+        files = [...f[0]];
+    } else if (f[0].constructor.name === "Object") files = f;
 
     if (!files || files.length == 0)
         return res.status(400).json({ success: false, message: "Không có file" });
@@ -37,7 +38,7 @@ const upload = async (req, res, next) => {
     for (let i = 0; i < files.length; i++) {
         try {
             files[i].tempFilePath = "./tmp/" + Date.now();
-            await fs.writeFile(files[i].tempFilePath, files[i].data, function (err) {
+            await fs.writeFile(files[i].tempFilePath, files[i].data, function(err) {
                 if (err) {
                     console.log(err);
                     return res.status(400).json({
@@ -49,7 +50,7 @@ const upload = async (req, res, next) => {
 
             await cloudinary.v2.uploader.upload(
                 files[i].tempFilePath, { folder: req.body.folder },
-                function (error, result) {
+                function(error, result) {
                     if (error) console.log(error);
                     if (result) {
                         req.results.push({ url: result.url, public_id: result.public_id });
@@ -74,7 +75,7 @@ const upload = async (req, res, next) => {
     next();
 };
 
-const unlink = async (public_id) => {
+const unlink = async(public_id) => {
     try {
         let rel;
         await cloudinary.v2.uploader.destroy(public_id, (err, result) => {
@@ -87,4 +88,19 @@ const unlink = async (public_id) => {
         return { success: false, message: "Lỗi không xác định" };
     }
 };
-module.exports = { upload, unlink };
+const rename = async(public_id, newPublic_id) => {
+    let res;
+    await cloudinary.v2.uploader.rename(
+        public_id,
+        newPublic_id,
+        (err, result) => {
+            if (err) {
+                console.log(err);
+                res = undefined;
+            } else res = result;
+        }
+    );
+    if (res == undefined) return { success: false };
+    else return { success: true, data: res };
+};
+module.exports = { upload, unlink, rename };

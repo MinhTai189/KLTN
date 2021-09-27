@@ -8,7 +8,7 @@ const verifyToken = require("../middleware/verifyToken");
 const unapprovedMotel = require("../models/unapproved-motel");
 const upload = require("../middleware/upload");
 
-router.patch("/:id", verifyToken, async (req, res) => {
+router.patch("/:id", verifyToken, async(req, res) => {
     const motelUpdate = await motel.findById(req.params.id).select("-room -rate");
     if (!motelUpdate)
         return res
@@ -49,10 +49,7 @@ router.patch("/:id", verifyToken, async (req, res) => {
     const oldThumbnail = motelUpdate.thumbnail;
 
     if (thumbnail)
-        if (
-            typeof thumbnail === "object"
-        )
-            motelUpdate.thumbnail = thumbnail;
+        if (typeof thumbnail === "object") motelUpdate.thumbnail = thumbnail;
     if (address)
         if (typeof address === "string") motelUpdate.address = address;
     if (desc)
@@ -74,10 +71,9 @@ router.patch("/:id", verifyToken, async (req, res) => {
 
     if (Array.isArray(images) == true) {
         for (let i = 0; i < images.length; i++) {
-            (typeof images[i] === 'string')
-                ? oldImage.push(images[i])
-                : newImage.push(images[i])
-
+            typeof images[i] === "string" ?
+                oldImage.push(images[i]) :
+                newImage.push(images[i]);
         }
     }
     if (req.user.isAdmin == true) {
@@ -90,26 +86,25 @@ router.patch("/:id", verifyToken, async (req, res) => {
 
             if (Array.isArray(images))
                 var removeImages = oldImages.reduce((arr, image) => {
-                    if (!oldImage.includes(image.url))
-                        arr.push(image)
-                    return arr
-                }, [])
+                    if (!oldImage.includes(image.url)) arr.push(image);
+                    return arr;
+                }, []);
 
             for (let i = 0; i < removeImages.length; i++) {
                 await upload.unlink(removeImages[i].public_id);
             }
 
-            oldImages = oldImages.filter(image => {
-                let result = true
-                removeImages.forEach(remove => {
+            oldImages = oldImages.filter((image) => {
+                let result = true;
+                removeImages.forEach((remove) => {
                     if (remove.url === image.url) {
-                        result = false
-                        return
+                        result = false;
+                        return;
                     }
-                })
-                return result
-            })
-            oldImages = [...oldImages, ...newImage]
+                });
+                return result;
+            });
+            oldImages = [...oldImages, ...newImage];
             motelUpdate.images = oldImages;
             await motelUpdate.save();
             res
@@ -121,7 +116,7 @@ router.patch("/:id", verifyToken, async (req, res) => {
         }
     }
 });
-router.get("/schools", async (req, res) => {
+router.get("/schools", async(req, res) => {
     const { _nameLike } = req.query;
     if (_nameLike)
         var keySearchs = [
@@ -169,7 +164,7 @@ router.get("/schools", async (req, res) => {
     res.status(200).json({ success: true, message: "Thành công", data: data });
 });
 
-router.delete("/:id", verifyToken, async (req, res) => {
+router.delete("/:id", verifyToken, async(req, res) => {
     if (!req.params.id)
         return res
             .status(400)
@@ -192,7 +187,7 @@ router.delete("/:id", verifyToken, async (req, res) => {
     return res.status(200).json({ success: true, message: "Đã xóa nhà trọ" });
 });
 
-router.get("/", async (req, res) => {
+router.get("/", async(req, res) => {
     let {
         _order,
         _sort,
@@ -280,7 +275,7 @@ router.get("/", async (req, res) => {
                         listMotel.some((motel) => {
                             JSON.stringify(motel.owner._id) === JSON.stringify(item._id);
                         })
-                    ) { } else {
+                    ) {} else {
                         listMotel.push(item2);
                     }
                 }
@@ -306,12 +301,12 @@ router.get("/", async (req, res) => {
                 if (_order === "asc")
                     listMotel = listMotel.sort(
                         (motel1, motel2) =>
-                            new Date(motel1.createdAt) - new Date(motel2.createdAt)
+                        new Date(motel1.createdAt) - new Date(motel2.createdAt)
                     );
                 else if (_order === "desc")
                     listMotel = listMotel.sort(
                         (motel1, motel2) =>
-                            new Date(motel2.createdAt) - new Date(motel1.createdAt)
+                        new Date(motel2.createdAt) - new Date(motel1.createdAt)
                     );
 
                 break;
@@ -411,7 +406,7 @@ router.get("/", async (req, res) => {
                 credit: listMotel[i].rate[j].user.credit,
                 isAdmin: listMotel[i].rate[j].user.isAdmin,
             };
-            rateData.push({ ...listMotel[i].rate[j]._doc, user: userNewData });
+            rateData.push({...listMotel[i].rate[j]._doc, user: userNewData });
         }
         if (listMotel[i].owner) {
             const avatarUrl = listMotel[i].owner.avatarUrl.url;
@@ -456,7 +451,7 @@ router.get("/", async (req, res) => {
         pagination: { _page: page, _limit: limit, _totalRows: totalRows },
     });
 });
-const unlinkImageMotel = async (thumbnail, images) => {
+const unlinkImageMotel = async(thumbnail, images) => {
     if (thumbnail != undefined) await upload.unlink(thumbnail.public_id);
     if (images != undefined)
         for (let i = 0; i < images.length; i++) {
@@ -464,7 +459,7 @@ const unlinkImageMotel = async (thumbnail, images) => {
         }
 };
 
-router.post("/", verifyToken, async (req, res) => {
+router.post("/", verifyToken, async(req, res) => {
     let {
         id,
         name,
@@ -494,7 +489,7 @@ router.post("/", verifyToken, async (req, res) => {
             name: checkMotel.name,
             unsignedName: checkMotel.unsignedName,
             thumbnail: checkMotel.thumbnail,
-            images: checkMotel.images,
+            images: [],
             address: checkMotel.address,
             desc: checkMotel.desc,
             room: checkMotel.room,
@@ -509,6 +504,43 @@ router.post("/", verifyToken, async (req, res) => {
             available: checkMotel.available,
         });
         try {
+            for (let i = 0; i < checkMotel.images.length; i++) {
+                const renameImage = await upload.rename(
+                    checkMotel.images[i].public_id,
+                    newMotel._id +
+                    "/" +
+                    checkMotel.images[i].public_id.substr(
+                        checkMotel.images[i].public_id.indexOf("/") + 1
+                    )
+                );
+                if (renameImage.success)
+                    newMotel.images.push({
+                        public_id: renameImage.data.public_id,
+                        url: renameImage.data.url,
+                    });
+                else {
+                    return res.status(400).json({ message: "Lỗi hình", success: false });
+                }
+            }
+            const renameThumbnail = await upload.rename(
+                checkMotel.thumbnail.public_id,
+                newMotel._id +
+                "/" +
+                checkMotel.thumbnail.public_id.substr(
+                    checkMotel.thumbnail.public_id.indexOf("/") + 1
+                )
+            );
+            if (renameThumbnail.success)
+                newMotel.thumbnail = {
+                    public_id: renameThumbnail.data.public_id,
+                    url: renameThumbnail.data.url,
+                };
+            else {
+                return res
+                    .status(400)
+                    .json({ success: false, message: "Lỗi hình ảnh" });
+            }
+
             await newMotel.save();
             return res.status(200).json({
                 success: true,
@@ -565,6 +597,8 @@ router.post("/", verifyToken, async (req, res) => {
         });
     }
     if (!images) images = [];
+    if (images)
+        if (!Array.isArray(images)) images = [images];
     if (!room) {
         await unlinkImageMotel(thumbnail, images);
         return res.status(400).json({
@@ -614,11 +648,12 @@ router.post("/", verifyToken, async (req, res) => {
 
     const checkUserPost = await user.findById(req.user.id).select("credit");
     if (req.user.isAdmin == true || checkUserPost.credit >= 100) {
+        console.log(images);
         const newMotel = new motel({
             name,
             unsignedName: removeVietNameseTones(name),
             thumbnail,
-            images,
+            images: [],
             address,
             desc,
             room,
@@ -632,6 +667,47 @@ router.post("/", verifyToken, async (req, res) => {
             editor: req.user.id,
             available,
         });
+        for (let i = 0; i < images.length; i++) {
+            const renameImage = await upload.rename(
+                images[i].public_id,
+                newMotel._id +
+                "/" +
+                images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
+            );
+            if (renameImage.success == true)
+                newMotel.images.push({
+                    public_id: renameImage.data.public_id,
+                    url: renameImage.data.url,
+                });
+            else {
+                for (let j = 0; j < newMotel.images.length; j++) {
+                    await upload.unlink(newMotel.images[j].public_id);
+                }
+                for (let j = i; j < images.length; j++) {
+                    await upload.unlink(images[j].public_id);
+                }
+                await upload.unlink(thumbnail.public_id);
+                return res
+                    .status(400)
+                    .json({ success: false, message: "Lỗi hình ảnh nhà trọ" });
+            }
+        }
+        const renameThumbnail = await upload.rename(
+            thumbnail.public_id,
+            newMotel._id +
+            "/" +
+            thumbnail.public_id.substr(thumbnail.public_id.indexOf("/") + 1)
+        );
+        if (renameThumbnail.success)
+            newMotel.thumbnail = {
+                public_id: renameThumbnail.data.public_id,
+                url: renameThumbnail.data.url,
+            };
+        else {
+            unlinkImageMotel(thumbnail, newMotel.images);
+            return res.status(400).json({ success: false, message: "Lỗi hình ảnh" });
+        }
+
         try {
             const duplicateCheck = await check(newMotel.name, newMotel.school);
             const duplicateUnapprovedCheck = await checkUnapproved(
@@ -640,7 +716,7 @@ router.post("/", verifyToken, async (req, res) => {
             );
             if (duplicateCheck.dup == true) {
                 if (req.user.isAdmin == true) {
-                    await unlinkImageMotel(thumbnail, images);
+                    await unlinkImageMotel(newMotel.thumbnail, newMotel.images);
                     return res.status(400).json({
                         success: false,
                         message: "Vui lòng xem xét lại, có vẻ đã tồn tại nhà trọ này rồi",
@@ -677,6 +753,7 @@ router.post("/", verifyToken, async (req, res) => {
                     message: "Thêm thành công, nhưng nhà trọ này dường như đã có từ trước, vui lòng chờ chúng tôi xem xét",
                 });
             }
+
             await newMotel.save();
             return res.status(200).json({
                 success: true,
@@ -684,7 +761,7 @@ router.post("/", verifyToken, async (req, res) => {
             });
         } catch (err) {
             console.log(err);
-            await unlinkImageMotel(thumbnail, images);
+            await unlinkImageMotel(newMotel.thumbnail, newMotel.images);
             return res.status(500).json({
                 success: false,
                 message: "Vui lòng thử lại",
@@ -741,7 +818,7 @@ router.post("/", verifyToken, async (req, res) => {
     }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", async(req, res) => {
     const id = req.params.id;
     const findMotel = await motel
         .findById(id)
@@ -762,7 +839,7 @@ router.get("/:id", async (req, res) => {
             _id: findMotel.rate[i]._id,
             avatarUrl: findMotel.rate[i].user.avatarUrl.url,
         };
-        newRate.push({ ...findMotel.rate[i]._doc, user: userRate });
+        newRate.push({...findMotel.rate[i]._doc, user: userRate });
     }
     const responseMotel = {
         ...findMotel._doc,
@@ -775,21 +852,21 @@ router.get("/:id", async (req, res) => {
         .json({ success: true, message: "Thành công", data: responseMotel });
 });
 
-const checkUnapproved = async (name, schools) => {
+const checkUnapproved = async(name, schools) => {
     const findMotel = await unapprovedMotel
         .find({
             $and: [{
-                $or: [{
-                    unsignedName: new RegExp(
-                        removeVietNameseTones(name).replace(/nha tro /g, ""),
-                        "i"
-                    ),
-                },
+                    $or: [{
+                            unsignedName: new RegExp(
+                                removeVietNameseTones(name).replace(/nha tro /g, ""),
+                                "i"
+                            ),
+                        },
 
-                { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
-                ],
-            },
-            { $in: { school: schools } },
+                        { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
+                    ],
+                },
+                { $in: { school: schools } },
             ],
         })
         .select("_id");
@@ -800,21 +877,21 @@ const checkUnapproved = async (name, schools) => {
     if (findMotel.length > 0) return { dup: true, motel: d };
     else return { dup: false };
 };
-const check = async (name, schools) => {
+const check = async(name, schools) => {
     const findMotel = await motel
         .find({
             $and: [{
-                $or: [{
-                    unsignedName: new RegExp(
-                        removeVietNameseTones(name).replace(/nha tro /g, ""),
-                        "i"
-                    ),
-                },
+                    $or: [{
+                            unsignedName: new RegExp(
+                                removeVietNameseTones(name).replace(/nha tro /g, ""),
+                                "i"
+                            ),
+                        },
 
-                { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
-                ],
-            },
-            { $in: { school: schools } },
+                        { unsignedName: new RegExp(removeVietNameseTones(name), "i") },
+                    ],
+                },
+                { $in: { school: schools } },
             ],
         })
         .select("_id");
