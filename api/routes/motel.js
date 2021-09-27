@@ -555,31 +555,55 @@ router.post("/", verifyToken, async(req, res) => {
             });
         }
     }
-    if (!thumbnail) {
+    if (typeof thumbnail === "undefined") {
         return res
             .status(400)
             .json({ success: false, message: "Vui lòng cung cấp ảnh tiêu đề" });
     }
-    if (!name || name === "") {
+    if (thumbnail)
+        if (
+            typeof thumbnail.url !== "string" ||
+            typeof thumbnail.public_id !== "string"
+        )
+            return res
+                .status(400)
+                .json({ success: false, message: "Vui lòng cung cấp ảnh tiêu đề" });
+    if (typeof name !== "string") {
         await unlinkImageMotel(thumbnail, images);
         return res
             .status(400)
             .json({ success: false, message: "Vui lòng cung cấp tên nhà trọ" });
     }
-    if (!address || address === "") {
+    if (name === "") {
+        await unlinkImageMotel(thumbnail, images);
+        return res
+            .status(400)
+            .json({ success: false, message: "Vui lòng cung cấp tên nhà trọ" });
+    }
+    if (!address) {
         await unlinkImageMotel(thumbnail, images);
         return res
             .status(400)
             .json({ success: false, message: "Vui lòng cung cấp địa chỉ nhà trọ" });
     }
-
+    if (address === "") {
+        await unlinkImageMotel(thumbnail, images);
+        return res
+            .status(400)
+            .json({ success: false, message: "Vui lòng cung cấp địa chỉ nhà trọ" });
+    }
     if (!desc) {
         await unlinkImageMotel(thumbnail, images);
         return res
             .status(400)
             .json({ success: false, message: "Vui lòng cung cấp một vài mô tả" });
     }
-
+    if (desc === "") {
+        await unlinkImageMotel(thumbnail, images);
+        return res
+            .status(400)
+            .json({ success: false, message: "Vui lòng cung cấp một vài mô tả" });
+    }
     if (!contact ||
         (!contact.phone && !contact.email && !contact.facbook && !contact.zalo)
     ) {
@@ -589,7 +613,7 @@ router.post("/", verifyToken, async(req, res) => {
             message: "Vui lòng cung cấp ít nhất một cách liên lạc nhà trọ",
         });
     }
-    if (typeof status == "undefined") {
+    if (typeof status !== "boolean") {
         await unlinkImageMotel(thumbnail, images);
         return res.status(400).json({
             success: false,
@@ -648,7 +672,6 @@ router.post("/", verifyToken, async(req, res) => {
 
     const checkUserPost = await user.findById(req.user.id).select("credit");
     if (req.user.isAdmin == true || checkUserPost.credit >= 100) {
-        console.log(images);
         const newMotel = new motel({
             name,
             unsignedName: removeVietNameseTones(name),
@@ -680,12 +703,12 @@ router.post("/", verifyToken, async(req, res) => {
                     url: renameImage.data.url,
                 });
             else {
-                for (let j = 0; j < newMotel.images.length; j++) {
+                for (let j = 0; j < newMotel.images.length; j++)
                     await upload.unlink(newMotel.images[j].public_id);
-                }
-                for (let j = i; j < images.length; j++) {
+
+                for (let j = i; j < images.length; j++)
                     await upload.unlink(images[j].public_id);
-                }
+
                 await upload.unlink(thumbnail.public_id);
                 return res
                     .status(400)
