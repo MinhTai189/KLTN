@@ -100,6 +100,10 @@ const rename = async(public_id, newPublic_id) => {
             } else res = result;
         }
     );
+    const folderToDelete = public_id.split("/");
+    cloudinary.v2.api.delete_folder(folderToDelete[0], async(err, result) => {
+        if (err) throw err;
+    });
     if (res == undefined) return { success: false };
     else return { success: true, data: res };
 };
