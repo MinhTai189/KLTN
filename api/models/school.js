@@ -23,6 +23,9 @@ const school = new Schema({
         required: true,
         unique: true,
     },
+    logo: {
+        type: String,
+    },
 });
 
 module.exports = mongoose.model("school", school);

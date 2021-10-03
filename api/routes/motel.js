@@ -398,7 +398,24 @@ router.get("/", async(req, res) => {
         let ownerData;
         let editorData;
         let imagesUrl = [];
-
+        let optional = {
+            wifi: false,
+            ml: false,
+            gac: false,
+            nx: false,
+            camera: false,
+            quat: false,
+            tl: false,
+            giuong: false,
+            gt: false,
+            cc: false,
+            dcvs: false,
+        };
+        for (let j = 0; j < listMotel[i].room.length; j++)
+            for (const property in listMotel[i].room[j].optional) {
+                if (listMotel[i].room[j].optional[property] == true)
+                    optional[property] = true;
+            }
         for (let j = 0; j < listMotel[i].rate.length; j++) {
             const userNewData = {
                 _id: listMotel[i].rate[j].user._id,
@@ -435,6 +452,7 @@ router.get("/", async(req, res) => {
             thumbnail: thumbnailUrl,
             images: imagesUrl,
             rate: rateData,
+            optional,
         });
     }
     let page = 1,
@@ -845,7 +863,8 @@ router.get("/:id", async(req, res) => {
     const id = req.params.id;
     const findMotel = await motel
         .findById(id)
-        .populate("rate.user", "avatarUrl name _id isAdmin");
+        .populate("rate.user", "avatarUrl name _id isAdmin")
+        .populate("school", "-nameDistricts");
     if (!findMotel)
         return res
             .status(400)
@@ -864,11 +883,31 @@ router.get("/:id", async(req, res) => {
         };
         newRate.push({...findMotel.rate[i]._doc, user: userRate });
     }
+    let optional = {
+        wifi: false,
+        ml: false,
+        gac: false,
+        nx: false,
+        camera: false,
+        quat: false,
+        tl: false,
+        giuong: false,
+        gt: false,
+        cc: false,
+        dcvs: false,
+    };
+
+    for (let i = 0; i < findMotel.room.length; i++)
+        for (const property in findMotel.room[i].optional) {
+            if (findMotel.room[i].optional[property] == true)
+                optional[property] = true;
+        }
     const responseMotel = {
         ...findMotel._doc,
         rate: newRate,
         thumbnail: findMotel.thumbnail.url,
         images: images,
+        optional,
     };
     res
         .status(200)
