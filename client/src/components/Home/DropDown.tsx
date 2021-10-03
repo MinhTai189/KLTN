@@ -111,25 +111,6 @@ export const DropDown = ({ openDropdown, isFlip, setIsFlip, schoolList }: Props)
         setIsFlip(false)
     }
 
-    // const rows: any = schoolList.map((item, index) => {
-    //     const imgUrls = item.motels.map(motel => motel.thumbnail)
-    //     const amountMotel = item.motels.length
-    //     const classFlip = index <= 7 ? 'rows' : ''
-
-    //     return (
-    //         <SchoolRows
-    //             classFlip={classFlip}
-    //             key={index}
-    //             codeName={item.codeName}
-    //             imgUrls={imgUrls}
-    //             onClickRows={onClickRows}
-    //             school={item.name}
-    //             district={item.district}
-    //             amountMotel={amountMotel}
-    //         />
-    //     )
-    // })
-
     const Row = ({ index, style }: { index: number, style: any }) => {
         const imgUrls = schoolList[index].motels.map(motel => motel.thumbnail)
         const amountMotel = schoolList[index].motels.length

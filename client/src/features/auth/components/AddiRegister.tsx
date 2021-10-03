@@ -5,6 +5,7 @@ import { Alert } from '@material-ui/lab'
 import districtApi from 'api/district'
 import provinceApi from 'api/province'
 import schoolApi from 'api/school'
+import { ButtonCustom } from 'components/Common/Button'
 import { useProvince } from 'hooks'
 import { District, FieldOption, ListResponse, Province, School } from 'models'
 import { useEffect, useState } from 'react'
@@ -25,8 +26,9 @@ const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
         maxWidth: 600,
-        padding: theme.spacing(2, 4),
-        backgroundColor: '#fff'
+        padding: theme.spacing(3, 4),
+        backgroundColor: '#fff',
+        outline: `7px solid ${theme.palette.primary.main}`
     },
 }))
 
@@ -117,9 +119,9 @@ const AddiRegister = ({ onSubmit, isLoginGG }: Props) => {
                     <SelectField label='Trường*' name='school' control={control} disabled={optionsSchool.length === 0 ? true : false} options={optionsSchool} mt={16} mb={8} />
 
                     <Box my={2}>
-                        <Button type='submit' variant='contained' color="primary" size='large' fullWidth>
+                        <ButtonCustom type='submit' sizeBtn='xlarge' fullWidth>
                             Đăng ký
-                        </Button>
+                        </ButtonCustom>
                     </Box>
                 </form>
             </Box>

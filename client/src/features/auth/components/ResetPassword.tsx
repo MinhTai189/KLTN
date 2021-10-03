@@ -1,7 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Box, Button, CircularProgress, makeStyles } from '@material-ui/core'
+import { Box, CircularProgress, makeStyles } from '@material-ui/core'
 import { Lock } from '@material-ui/icons'
 import axiosClient from 'api/axiosClient'
+import { ButtonCustom } from 'components/Common/Button'
 import { InputPasswordField } from 'components/FormFields'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -20,8 +21,9 @@ const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
         maxWidth: 500,
-        padding: theme.spacing(2, 4),
-        backgroundColor: '#fff'
+        padding: theme.spacing(3, 4),
+        backgroundColor: '#fff',
+        outline: `7px solid ${theme.palette.primary.main}`
     },
 }))
 
@@ -82,10 +84,10 @@ const ResetPassword = () => {
                     <InputPasswordField name='confirmPassword' control={control} label='Xác nhận mật khẩu' labelWidth={140} required={true} />
 
                     <Box my={2}>
-                        <Button type='submit' variant='contained' fullWidth color='primary' size="large" disabled={loading}>
+                        <ButtonCustom type='submit' fullWidth sizeBtn="xlarge" disabled={loading}>
                             {loading && <><CircularProgress color='secondary' size={20} /> &nbsp;</>}
                             Xác nhận
-                        </Button>
+                        </ButtonCustom>
                     </Box>
                 </form>
             </Box>

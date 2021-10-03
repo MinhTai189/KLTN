@@ -9,8 +9,9 @@ import { DropDown } from './DropDown'
 
 const useStyles = makeStyles(theme => ({
     root: {
-        minHeight: '100vh',
-        width: '100vw',
+        height: '100vh',
+        minHeight: 750,
+        width: '100%',
         position: 'relative',
         overflow: "hidden"
     },
@@ -18,7 +19,6 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         height: '100%',
         objectFit: 'cover',
-        position: 'absolute'
     },
     hero: {
         position: 'absolute',
@@ -26,16 +26,19 @@ const useStyles = makeStyles(theme => ({
         top: '25%',
         transform: 'translateX(-50%)',
         color: '#fff',
-        maxWidth: 750,
+        width: '100%',
+        maxWidth: 650,
         perspective: 500
     },
     question: {
-        fontSize: 45,
+        fontSize: 40,
         fontWeight: 500,
     },
     para: {
-        fontSize: 20,
-        margin: '16px 0',
+        fontSize: 15,
+        margin: '4px auto 32px',
+        width: '100%',
+        maxWidth: 600
     },
     search: {
         width: '100%',
@@ -50,7 +53,7 @@ const useStyles = makeStyles(theme => ({
         position: 'relative',
         "& > input": {
             width: '100%',
-            height: 50,
+            height: 45,
             border: 'none',
             outline: 'none',
             paddingLeft: 50,
@@ -66,15 +69,56 @@ const useStyles = makeStyles(theme => ({
     icon: {
         position: 'absolute',
         left: 0,
-        width: 50,
-        height: 50,
+        width: 45,
+        height: 45,
         display: 'grid',
         placeItems: 'center',
 
         "& svg": {
             fill: theme.palette.primary.main,
-            width: 30,
-            height: 30
+            width: 24,
+            height: 24
+        }
+    },
+    scrollDown: {
+        position: 'absolute',
+        width: 25,
+        height: 25,
+        background: 'transparent',
+        borderStyle: 'solid',
+        borderColor: theme.palette.primary.main,
+        borderWidth: '0 0.2em 0.2em 0',
+        cursor: 'pointer',
+        borderRadius: 2,
+        left: '50%',
+        transform: 'translate(-50%, 0) rotate(45deg)',
+        animation: '$scrollDown 1.5s ease-in-out infinite',
+
+        '&.scroll-1': {
+            bottom: 10,
+            animationDelay: '0.2s',
+        },
+
+        '&.scroll-2': {
+            bottom: 20,
+            animationDelay: '0.1s',
+        },
+        '&.scroll-3': {
+            bottom: 30,
+        },
+    },
+    "@keyframes scrollDown": {
+        "0%": {
+            transform: 'translate(-50% ,20%) rotate(45deg)',
+            opacity: 0.7,
+        },
+        '50%': {
+            transform: 'translate(-50% ,0%) rotate(45deg)',
+            opacity: 0.2,
+        },
+        '100%': {
+            transform: 'translate(-50%, 20%) rotate(45deg)',
+            opacity: 0.7,
         }
     }
 }))
@@ -136,6 +180,13 @@ export const Hero = () => {
         setOpenDropdrow(true)
     }
 
+    const handleScrollDown = () => {
+        window.scrollTo({
+            left: 0,
+            top: 600,
+        })
+    }
+
     return (
         <div className={classes.root}>
             <img className={classes.background} src={Background} alt="back ground" />
@@ -159,6 +210,10 @@ export const Hero = () => {
 
                 <DropDown openDropdown={openDropdown} isFlip={isFlip} setIsFlip={setIsFlip} schoolList={schoolList} />
             </Box>
+
+            <span className={`${classes.scrollDown} scroll-1`} onClick={handleScrollDown}></span>
+            <span className={`${classes.scrollDown} scroll-2`} onClick={handleScrollDown}></span>
+            <span className={`${classes.scrollDown} scroll-3`} onClick={handleScrollDown}></span>
         </div>
     )
 }

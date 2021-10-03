@@ -9,12 +9,12 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center',
     },
     icon: {
-        width: 55,
-        height: 55,
+        width: 45,
+        height: 45,
         display: 'grid',
         placeItems: 'center',
-        backgroundColor: theme.palette.secondary.main,
-        borderRadius: '50%',
+        // backgroundColor: theme.palette.secondary.main,
+        border: `5px solid ${theme.palette.primary.main}`,
         marginBottom: theme.spacing(1)
     }
 }))

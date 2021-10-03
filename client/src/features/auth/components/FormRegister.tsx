@@ -3,6 +3,7 @@ import { Box, Button, CircularProgress, Grid, makeStyles, Typography } from '@ma
 import { PersonOutline } from '@material-ui/icons'
 import districtApi from 'api/district'
 import schoolApi from 'api/school'
+import { ButtonCustom } from 'components/Common/Button'
 import { FileInputField } from 'components/FormFields/FileInputField'
 import { useProvince } from 'hooks'
 import { District, FieldOption, ListResponse, Province, School } from 'models'
@@ -40,8 +41,9 @@ const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
         maxWidth: 800,
-        padding: theme.spacing(2, 4),
-        backgroundColor: '#fff'
+        padding: theme.spacing(3, 4),
+        backgroundColor: '#fff',
+        outline: `7px solid ${theme.palette.primary.main}`
     },
     grid: {
         padding: theme.spacing(1),
@@ -188,7 +190,7 @@ function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactE
                                     </Grid>
                                 </Grid>
 
-                                <SelectField label='Trường*' name='school' control={control} disabled={optionsSchool.length === 0 ? true : false} options={optionsSchool} mt={26} mb={8} />
+                                <SelectField label='Trường*' name='school' control={control} disabled={optionsSchool.length === 0 ? true : false} options={optionsSchool} mt={19} mb={8} />
 
                                 <FileInputField name='avatarUrl' onChange={onChange} label='Ảnh đại diện' accept='.png, .jpg, .jpeg' error={errAvatar} />
                             </Box>
@@ -196,10 +198,10 @@ function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactE
                     </Grid>
 
                     <Box mt={2}>
-                        <Button type='submit' variant='contained' color="primary" size='large' fullWidth disabled={loading || !!errAvatar}>
+                        <ButtonCustom type='submit' sizeBtn='xlarge' fullWidth disabled={loading || !!errAvatar}>
                             {loading && <><CircularProgress color='secondary' size={20} /> &nbsp;</>}
                             Đăng ký
-                        </Button>
+                        </ButtonCustom>
                     </Box>
                 </form>
 

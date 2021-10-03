@@ -13,6 +13,7 @@ import { LoginData } from '../models'
 import Header from './Header'
 import { useGoogleLogin, useGoogleLogout } from '@toxa23/react-google-login'
 import useFacebook from "react-easy-facebook";
+import { ButtonCustom } from 'components/Common/Button'
 
 interface Props {
     onSubmit: (data: LoginData) => void;
@@ -30,8 +31,9 @@ const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
         maxWidth: 500,
-        padding: theme.spacing(2, 4),
+        padding: theme.spacing(3, 4),
         backgroundColor: '#fff',
+        outline: `7px solid ${theme.palette.primary.main}`
     },
     wrap: {
         display: 'flex',
@@ -113,10 +115,10 @@ function FormLogin({ onSubmit, setRememberMe, onSuccessGG, onSuccessFB }: Props)
                     </Box>
 
                     <Box mt={1}>
-                        <Button type="submit" size="large" variant="contained" color="primary" fullWidth >
+                        <ButtonCustom type="submit" sizeBtn="xlarge" fullWidth >
                             {loading && <><CircularProgress color='secondary' size={20} /> &nbsp;</>}
                             Đăng nhập
-                        </Button>
+                        </ButtonCustom>
                     </Box>
                 </form>
 

@@ -1,5 +1,6 @@
 import { Box, Button, CircularProgress, makeStyles } from '@material-ui/core'
 import { AlternateEmail } from '@material-ui/icons'
+import { ButtonCustom } from 'components/Common/Button'
 import { InputField } from 'components/FormFields'
 import { useForm } from 'react-hook-form'
 import { ForgotPasswordData } from '../models'
@@ -18,8 +19,9 @@ const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
         maxWidth: 500,
-        padding: theme.spacing(2, 4),
-        backgroundColor: '#fff'
+        padding: theme.spacing(3, 4),
+        backgroundColor: '#fff',
+        outline: `7px solid ${theme.palette.primary.main}`
     },
 }))
 
@@ -38,10 +40,10 @@ const ForgotPasswork = ({ onSubmit, loading }: Props) => {
                     <InputField type="email" control={control} name='email' label='Email' required={true} />
 
                     <Box my={2}>
-                        <Button type="submit" variant='contained' fullWidth color='primary' size="large" disabled={loading}>
+                        <ButtonCustom type="submit" fullWidth sizeBtn="xlarge" disabled={loading}>
                             {loading && <><CircularProgress color='secondary' size={20} /> &nbsp;</>}
                             Xác nhận
-                        </Button>
+                        </ButtonCustom>
                     </Box>
                 </form>
             </Box>

@@ -2,7 +2,8 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import axiosClient from 'api/axiosClient';
 import { push } from 'connected-react-router';
 import { Response, User } from 'models';
-import { put, takeLatest } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
+import { put, takeLatest, call } from 'redux-saga/effects';
 import { clearToken, getToken } from 'utils';
 import { authActions } from './authSlice';
 import { LoginData } from './models';
@@ -62,7 +63,7 @@ function* handleLogout() {
     clearToken();
     yield put(authActions.logoutSuccess());
   } catch (err: any) {
-    console.log('Xảy ra lỗi trong qua trình đăng xuất', err.message);
+    yield call(toast.error, err.reponse.data.message);
   }
 }
 

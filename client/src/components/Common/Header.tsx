@@ -4,6 +4,12 @@ import { authActions, selectCurrentUser } from 'features/auth/authSlice';
 import { User } from 'models';
 import { Link } from 'react-router-dom';
 import { DropDownInfor } from '../Home';
+import Logo from 'assets/images/logo.png'
+import { ButtonCustom } from './Button';
+
+interface Props {
+    isChangeNav: boolean
+}
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -13,52 +19,71 @@ const useStyles = makeStyles((theme: Theme) =>
             left: 0,
             zIndex: 199,
             width: '100vw',
+            transition: 'all 300ms ease'
         },
         nav: {
             display: 'flex',
             alignItems: 'center',
-            padding: '8px 0',
-            height: 60
+            padding: '12px 0',
+            transition: 'all 300ms ease'
         },
         logo: {
-            width: 30,
-            height: 30
+            width: 50,
+            height: 50
         },
         navLinks: {
             height: '100%',
             display: 'flex',
+            justifyContent: 'center',
             alignItems: 'center',
             listStyle: 'none',
+            flex: 1,
+            margin: 0,
 
             "& li": {
-                padding: '0 8px'
+                color: 'white',
+                cursor: 'pointer',
+                padding: '0 12px',
+                fontSize: 14,
+                background: 'transparent',
+                border: `3px solid transparent`,
+                transition: `.3s all`,
+
+                "&:hover, &.active": {
+                    color: theme.palette.secondary.main,
+                    background: 'white',
+                    border: `3px solid ${theme.palette.secondary.main}`,
+                },
+
             }
         }
     }),
 );
 
-export const Header = () => {
+export const Header = ({ isChangeNav }: Props) => {
     const classes = useStyles();
     const currentUser: User = useAppSelector(selectCurrentUser)
     const dispatch = useAppDispatch()
 
     return (
-        <div className={classes.root}>
-            <nav className={`${classes.nav} container`}>
-                <img className={classes.logo} src="https://cdn.thukyluat.vn/nhch-images//CauHoi_Hinh/9eb6abaa-8cda-456c-ad66-26ba4da23ffe.jpg" alt="logo" />
+        <div className={classes.root} style={isChangeNav ? { backgroundImage: 'linear-gradient(#000 0%, #2d3436 74%)' } : {}}>
+            <nav className={`${classes.nav} container`} style={isChangeNav ? { padding: '4px 0' } : {}}>
+                <img className={classes.logo} src={Logo} alt="logo" />
 
                 <ul className={classes.navLinks}>
                     <li>Trang Chủ</li>
                     <li>Trang chủ</li>
+                    <li>Trang chủ</li>
+                    <li className='active'>Trang chủ</li>
                     <li>Trang chủ</li>
                     <li>Trang chủ</li>
                 </ul>
 
                 {currentUser?.avatarUrl ?
                     <DropDownInfor />
-                    : <Button color='secondary' variant="contained">
+                    : <ButtonCustom sizeBtn='large'>
                         <Link to='/auth/login' onClick={() => dispatch(authActions.loginFailed(''))}>Đăng nhập</Link>
-                    </Button>
+                    </ButtonCustom>
                 }
             </nav>
         </div>

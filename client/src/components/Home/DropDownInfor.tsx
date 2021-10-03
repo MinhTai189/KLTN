@@ -17,19 +17,25 @@ const useStyles = makeStyles(theme => ({
     },
     avatar: {
         boxShadow: theme.shadows[5],
-        transition: '.3s',
+        outline: `3px solid ${theme.palette.primary.main}`,
+        overflow: 'hidden',
+        transition: `.3s ${theme.transitions.easing.easeIn}`,
+        width: 30,
+        height: 30,
 
         "&:hover": {
-            border: '1px solid'
+            transform: 'scale(1.03)',
+            boxShadow: theme.shadows[8]
         }
     },
     dropdown: {
         position: 'absolute',
         background: theme.palette.background.default,
         right: 0,
-        top: '110%',
-        width: 200,
+        top: '130%',
+        width: 250,
         boxShadow: theme.shadows[7],
+        border: `5px solid ${theme.palette.primary.main}`,
 
         "& a": {
             color: 'inherit'
