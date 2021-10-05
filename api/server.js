@@ -9,6 +9,7 @@ const uploadRouter = require("./routes/upload");
 const motelRouter = require("./routes/motel");
 const roomRouter = require("./routes/room");
 const rateRouter = require("./routes/rate");
+const favoriteRouter = require("./routes/favorite");
 const fileUpload = require("express-fileupload");
 const Mongoose = require("mongoose");
 
@@ -54,3 +55,4 @@ app.use("/api/", uploadRouter);
 app.use("/api/motels", motelRouter);
 app.use("/api/motels/rooms", roomRouter);
 app.use("/api/motels/rates", rateRouter);
+app.use("/api/users/favorites", favoriteRouter);

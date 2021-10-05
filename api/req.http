@@ -151,9 +151,9 @@ GET http://localhost:5000/api/motels?_school=6139d5d6d02c8be6b20880cc
 ###
 GET http://localhost:5000/api/motels/?_keysearch=ad
 ###
-POST http://localhost:5000/api/motels/rates/6151b192ee752c4055dc2731
+POST http://localhost:5000/api/motels/rates/615a9f13dc19793cda17890f
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzIxNjg0OSwiZXhwIjoxNjMzMjE3NDQ5fQ.XgaGL2gQwFFXk-haVbBvkXAYK7P22M5Yk3FBAjAcbpA
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzMzODc3NiwiZXhwIjoxNjMzMzM5Mzc2fQ.rJ6nqJLbC5SxmOYfmLDHr3PK-Aji7HoYkRSTmVBaXws
 
 {
     "content":"Tui rất thích nhà trọ này",
@@ -162,7 +162,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 ###
 PATCH http://localhost:5000/api/motels/rates/6145d3d6c74fc7d6fd42b263/61468c6b3d558bfe08a13ac9/
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzIxNjg0OSwiZXhwIjoxNjMzMjE3NDQ5fQ.XgaGL2gQwFFXk-haVbBvkXAYK7P22M5Yk3FBAjAcbpA
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzMzODc3NiwiZXhwIjoxNjMzMzM5Mzc2fQ.rJ6nqJLbC5SxmOYfmLDHr3PK-Aji7HoYkRSTmVBaXws
 
 {
     "content":"Tui rất thích nhà trọ này à nha ",
@@ -173,12 +173,13 @@ DELETE  http://localhost:5000/api/motels/rates/6145d3d6c74fc7d6fd42b263/61468c6b
 Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjAyMjUxMiwiZXhwIjoxNjMyMDIzMTEyfQ.-SZha78wf4nnAShyAkmNXoiq6mZtl1pAoFTX2Y4-25w
 ###
-PATCH http://localhost:5000/api/motels/rooms/6145d3d6c74fc7d6fd42b263/6145d3d6c74fc7d6fd42b265
+PATCH http://localhost:5000/api/motels/rooms/615a9f13dc19793cda17890f/615a9f13dc19793cda178911
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjE0NTU4MCwiZXhwIjoxNjMyMTQ2MTgwfQ.h62gC4GT9EiJOmSZArCBr3fhdHkU5ZUo_6A9quj6i7c
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzMzNzEzMCwiZXhwIjoxNjMzMzM3NzMwfQ.pBOfB1B1lMNXQHISMXwE92XXE1Jdne8xwv4oKIVBu9w
 
 {
-    "optional":["cc","gt"]
+    "optional":["wifi","ml","cc","gt","dcvs"],
+    "area":{"width":5,"length":3}
 }
 ###
 PATCH http://localhost:5000/api/motels/614542cf9f478425c2c07317
@@ -188,3 +189,9 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 {
     "available":12
 }
+###
+POST http://localhost:5000/api/users/favorites/615a9f13dc19793cda17890f
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzQyNTExNSwiZXhwIjoxNjMzNDI1NzE1fQ.tSrR6X4RfvqLiBAzsETHcxNDz1TzS91I2Meq7R607Iw
+
+{}
