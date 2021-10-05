@@ -7,7 +7,86 @@ const removeVietNameseTones = require("../middleware/removeVietnameseTones");
 const verifyToken = require("../middleware/verifyToken");
 const unapprovedMotel = require("../models/unapproved-motel");
 const upload = require("../middleware/upload");
+const shuffle = require("../middleware/shuffle");
+router.get("/randoms", async(req, res) => {
+    let listMotel = await motel
+        .find({})
+        .populate("school", "-nameDistricts")
+        .populate("rate.user", "-refreshToken")
+        .populate("owner", "name avatarUrl _id")
+        .populate("editor", "name avatarUrl _id");
+    listMotel = shuffle(listMotel);
 
+    if (req.query._limit)
+        if (!isNaN(parseInt(req.query._limit)))
+            listMotel = listMotel.slice(0, parseInt(req.query._limit));
+    let newData = [];
+
+    for (let i = 0; i < listMotel.length; i++) {
+        let rateData = [];
+        let ownerData;
+        let editorData;
+        let imagesUrl = [];
+        let optional = {
+            wifi: false,
+            ml: false,
+            gac: false,
+            nx: false,
+            camera: false,
+            quat: false,
+            tl: false,
+            giuong: false,
+            gt: false,
+            cc: false,
+            dcvs: false,
+        };
+        for (let j = 0; j < listMotel[i].room.length; j++)
+            for (const property in listMotel[i].room[j].optional) {
+                if (listMotel[i].room[j].optional[property] == true)
+                    optional[property] = true;
+            }
+
+        for (let j = 0; j < listMotel[i].rate.length; j++) {
+            const userNewData = {
+                _id: listMotel[i].rate[j].user._id,
+                avatarUrl: listMotel[i].rate[j].user.avatarUrl.url,
+                credit: listMotel[i].rate[j].user.credit,
+                isAdmin: listMotel[i].rate[j].user.isAdmin,
+            };
+            rateData.push({...listMotel[i].rate[j]._doc, user: userNewData });
+        }
+        if (listMotel[i].owner) {
+            const avatarUrl = listMotel[i].owner.avatarUrl.url;
+            ownerData = {
+                avatarUrl,
+                name: listMotel[i].owner.name,
+                _id: listMotel[i].owner._id,
+            };
+        } else ownerData = null;
+        if (listMotel[i].editor) {
+            const avatarUrl = listMotel[i].editor.avatarUrl.url;
+            editorData = {
+                avatarUrl,
+                name: listMotel[i].editor.name,
+                _id: listMotel[i].editor._id,
+            };
+        } else editorData = null;
+        let thumbnailUrl = listMotel[i].thumbnail.url;
+        listMotel[i].images.forEach((image) => {
+            imagesUrl.push(image.url);
+        });
+        newData.push({
+            ...listMotel[i]._doc,
+            owner: ownerData,
+            editor: editorData,
+            thumbnail: thumbnailUrl,
+            images: imagesUrl,
+            rate: rateData,
+            optional,
+        });
+    }
+    res.status(200).json({ success: true, message: "Thành Công", data: newData });
+});
 router.patch("/:id", verifyToken, async(req, res) => {
     const motelUpdate = await motel.findById(req.params.id).select("-room -rate");
     if (!motelUpdate)

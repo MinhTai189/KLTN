@@ -1,5 +1,5 @@
 const cloudinary = require("cloudinary");
-const { resolveSoa } = require("dns");
+
 fs = require("fs");
 cloudinary.config({
     cloud_name: process.env.CLOUND_NAME,
@@ -37,7 +37,11 @@ const upload = async(req, res, next) => {
     req.results = [];
     for (let i = 0; i < files.length; i++) {
         try {
-            files[i].tempFilePath = "./tmp/" + Date.now();
+            files[i].tempFilePath =
+                "./tmp/" +
+                Date.now() +
+                "." +
+                files[i].mimetype.substr(files[i].mimetype.indexOf("/") + 1);
             await fs.writeFile(files[i].tempFilePath, files[i].data, function(err) {
                 if (err) {
                     console.log(err);
@@ -47,7 +51,7 @@ const upload = async(req, res, next) => {
                     });
                 }
             });
-
+            console.log(files[i].tempFilePath);
             await cloudinary.v2.uploader.upload(
                 files[i].tempFilePath, { folder: req.body.folder },
                 function(error, result) {
@@ -65,6 +69,7 @@ const upload = async(req, res, next) => {
                 }
             );
         } catch (err) {
+            console.log(err);
             for (let i = 0; i < req.results.length; i++) {
                 await unlink(req.results[i].public_id);
             }
@@ -100,6 +105,10 @@ const rename = async(public_id, newPublic_id) => {
             } else res = result;
         }
     );
+    const folderToDelete = public_id.split("/");
+    cloudinary.v2.api.delete_folder(folderToDelete[0], async(err, result) => {
+        if (err) throw err;
+    });
     if (res == undefined) return { success: false };
     else return { success: true, data: res };
 };
