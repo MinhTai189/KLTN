@@ -27,6 +27,7 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
     useEffect(() => {
         const newData = motelData.map((motel, index) => {
             const number = index + 1;
+            const mark: number[] = roundMark(motel.mark as any) || [0, 0]
 
             return {
                 key: motel._id,
@@ -38,7 +39,7 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
                 status: motel.status,
                 amountRoom: motel.room.length,
                 vote: motel.vote,
-                mark: roundMark(motel.mark as any),
+                mark: mark[0] + mark[1],
             } as MotelDataTable
         })
 

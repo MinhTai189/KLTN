@@ -1,0 +1,6 @@
+
+@baseUrl = http://localhost:5000/api/motels
+
+# @name getRandoms
+GET {{baseUrl}}/randoms
+Content-Type: application/json

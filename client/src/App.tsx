@@ -3,6 +3,7 @@ import 'antd/dist/antd.css';
 import { AdminRoute, NotFound } from 'components/Common';
 import { AdminLayout } from 'components/Layouts';
 import HomePage from 'pages/Home/HomePage';
+import MotelDetailPage from 'pages/MotelDetailPage';
 import { Route, Switch } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import { themeMUI } from 'utils';
@@ -15,6 +16,10 @@ function App() {
       <Switch>
         <Route path="/" exact>
           <HomePage />
+        </Route>
+
+        <Route path="/motels/:id">
+          <MotelDetailPage />
         </Route>
 
         <Route path="/auth">

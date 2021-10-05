@@ -1,11 +1,36 @@
 import { makeStyles, Theme, Tooltip } from '@material-ui/core'
-import { FavoriteBorder, Settings, Star } from '@material-ui/icons'
+import { AcUnit, Build, CallMerge, Favorite, FavoriteBorder, Group, HorizontalSplit, Hotel, Motorcycle, Star, StarBorder, StarHalf, Toys, TrendingUp, Videocam, Wifi } from '@material-ui/icons'
+import { useAppSelector } from 'app/hooks'
 import Motel from 'assets/images/motel.jpg'
-import School from 'assets/images/school.png'
 import { ButtonCustom } from 'components/Common/Button'
+import { selectCurrentUser } from 'features/auth/authSlice'
+import { Motel as MotelModel, School, User } from 'models'
+import { ReactElement, useEffect } from 'react'
+import { useHistory } from 'react-router'
+import { roundMark } from 'utils'
+import { getPriceMotel } from 'utils/getPriceMotel'
 
 interface Props {
+    motelData: MotelModel
+}
 
+interface Optional {
+    title: string;
+    icon: ReactElement
+}
+
+interface ObjectOptional {
+    wifi: Optional;
+    ml: Optional;
+    gac: Optional;
+    nx: Optional;
+    camera: Optional;
+    quat: Optional;
+    tl: Optional;
+    giuong: Optional;
+    gt: Optional;
+    cc: Optional;
+    dcvs: Optional
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -84,7 +109,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
                 "& .MuiSvgIcon-root": {
                     width: 11,
-                    height: 11,
                     color: 'white'
                 }
             }
@@ -189,7 +213,6 @@ const useStyles = makeStyles((theme: Theme) => ({
                 display: 'flex',
 
                 "& img": {
-                    width: 22,
                     height: 22,
 
                     "&:not(:last-child)": {
@@ -201,29 +224,86 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-const optionalIcons = {
-
+const optionalIcons: any = {
+    wifi: {
+        title: 'Wifi',
+        icon: <Wifi />
+    },
+    ml: {
+        title: 'Máy lạnh',
+        icon: <AcUnit />
+    },
+    gac: {
+        title: 'Gác',
+        icon: <CallMerge />
+    },
+    nx: {
+        title: 'Nhà xe',
+        icon: <Motorcycle />
+    },
+    camera: {
+        title: 'Camera an ninh',
+        icon: <Videocam />
+    },
+    quat: {
+        title: 'Quạt',
+        icon: <Toys />
+    },
+    tl: {
+        title: 'Phòng trên lầu',
+        icon: <TrendingUp />
+    },
+    giuong: {
+        title: 'Giường sẵn',
+        icon: <Hotel />
+    },
+    gt: {
+        title: 'Giường tầng',
+        icon: <HorizontalSplit />
+    },
+    cc: {
+        title: 'Ở cùng',
+        icon: <Group />
+    },
+    dcvs: {
+        title: 'Dụng cụ vệ sinh',
+        icon: <Build />
+    },
 }
 
-export const ItemMotel = (props: Props) => {
+export const ItemMotel = ({ motelData }: Props) => {
     const classes = useStyles()
+    const { _id, thumbnail, optional, name, room, desc, school, status, mark } = motelData
+    const currentUser: User = useAppSelector(selectCurrentUser)
+    const history = useHistory()
+
+    let optionalKeys: string[] = Object.keys(optional as any)
+    let optionalValues: boolean[] = Object.values(optional as any)
+    let markToStar = roundMark(mark as number) || [0, 0]
+
+    const onClickDetail = () => {
+        history.push(`/motels/${_id}`)
+    }
 
     return (
         <li className={classes.root}>
             <div className={classes.top}>
-                <img className='thumbnail' src={Motel} alt="motel image" />
+                <img className={thumbnail as string} src={Motel} alt="motel image" />
 
                 <div className={`${classes.cover} cover`}></div>
 
                 <div className={classes.topLeft}>
                     <ul className="listOptional">
-                        {new Array(7).fill(12).map((_, index) => {
+                        {optionalValues.length > 0 && optionalValues.map((value, index) => {
                             const delay = 0.3 + 0.07 * (index + 1)
+                            if (value === false) return;
+
+                            const key = optionalKeys[index]
 
                             return (
-                                <Tooltip title="Máy lạnh">
+                                <Tooltip key={index} title={optionalIcons[key].title}>
                                     <span className="items" style={{ transitionDelay: `${delay}s` }}>
-                                        <Settings />
+                                        {optionalIcons[key].icon}
                                     </span>
                                 </Tooltip>
                             )
@@ -233,35 +313,46 @@ export const ItemMotel = (props: Props) => {
 
                 <div className={classes.topRight}>
                     <span className="favorite">
-                        <FavoriteBorder />
+                        {currentUser && currentUser.favorite && currentUser.favorite.includes(_id as string)
+                            ? <Favorite />
+                            : <FavoriteBorder />}
                     </span>
 
                     <ul className="stars">
-                        {new Array(5).fill('1').map(() => (
-                            <Star />
-                        ))}
+                        {new Array(5).fill('1').map((_, index) => {
+                            if (markToStar[0] > 0) {
+                                markToStar[0] = markToStar[0] - 1
+                                return <Star />
+                            } else if (markToStar[1] !== 0) {
+                                markToStar[1] = 0
+                                return <StarHalf />
+                            }
+                            return <StarBorder />
+                        })}
                     </ul>
 
-                    <small className="status">Trống</small>
+                    <small className="status" style={{ background: status ? '#19BB0B' : '#c90404' }}>{status ? 'Trống' : 'Đầy'}</small>
                 </div>
             </div>
 
             <div className={classes.bottom}>
                 <div className="top">
                     <div className="info">
-                        <h3 className="name">Nhà trọ Minh Tài</h3>
-                        <span className="price">1,2tr-1,5tr/tháng</span>
+                        <h3 className="name">{name}</h3>
+                        <span className="price">{`${getPriceMotel(room)}/tháng`}</span>
                     </div>
 
-                    <p className="desc">Of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing...</p>
+                    <p className="desc">{desc.slice(0, 250) + '...'}</p>
                 </div>
 
                 <div className="rowBottom">
-                    <ButtonCustom>Xem chi tiết</ButtonCustom>
+                    <ButtonCustom onClick={onClickDetail}>Xem chi tiết</ButtonCustom>
 
                     <ul className="schools">
-                        {new Array(5).fill(1).map(() => (
-                            <img src={School} alt="school logo" />
+                        {school.map((item: any, index: number) => (
+                            <Tooltip key={index} title={item.name}>
+                                <img src={item.logo} alt="school logo" />
+                            </Tooltip>
                         ))}
                     </ul>
                 </div>

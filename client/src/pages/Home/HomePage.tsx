@@ -3,6 +3,7 @@ import { Header } from 'components/Common';
 import { Hero } from 'components/Home';
 import { authActions, selectIsLogged } from 'features/auth/authSlice';
 import { ListMotel } from 'features/motels/components';
+import { motelActions } from 'features/motels/motelSlice';
 import { useEffect, useState } from 'react';
 
 const HomePage = () => {
@@ -24,6 +25,12 @@ const HomePage = () => {
         window.addEventListener('scroll', () => {
             window.scrollY >= 90 ? setIsChangeNav(true) : window.scrollY === 0 && setIsChangeNav(false)
         })
+
+        //fetch motel data
+        dispatch(motelActions.getMotel({
+            _page: 1,
+            _limit: 6
+        }))
 
         return () => {
             window.removeEventListener('scroll', () => { })

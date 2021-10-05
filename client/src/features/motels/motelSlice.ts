@@ -39,6 +39,9 @@ const motelSlice = createSlice({
     getMotel: (state, action: PayloadAction<Filter>) => {
       state.loading = true;
     },
+    getMotelRandom: (state, action: PayloadAction<Filter>) => {
+      state.loading = true;
+    },
     getMotelSuccess: (state, action: PayloadAction<ListResponse<Motel>>) => {
       state.loading = false;
       state.data = action.payload.data;

@@ -18,6 +18,14 @@ export const motelApi = {
     const url = '/motels';
     return axiosClient.get(url, { params });
   },
+  getMotelRandom: (params: Filter): Promise<ListResponse<Motel>> => {
+    const url = '/motels/randoms';
+    return axiosClient.get(url, { params });
+  },
+  getMotelById: (id: string): Promise<Response<Motel>> => {
+    const url = `$/motels/${id}}`;
+    return axiosClient.get(url);
+  },
   addMotel: (params: Motel): Promise<Response<any>> => {
     const url = '/motels';
     return axiosClient.post(url, params);

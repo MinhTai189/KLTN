@@ -1,6 +1,5 @@
 import { call, put, take, takeLatest } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import axiosClient from 'api/axiosClient';
 import { motelApi } from 'api/motel';
 import { uploadApi } from 'api/upload';
 import {
@@ -19,6 +18,20 @@ function* handleGetMotel(action: PayloadAction<Filter>) {
   try {
     const response: ListResponse<Motel> = yield call(
       motelApi.getMotel,
+      action.payload
+    );
+
+    yield put(motelActions.getMotelSuccess(response));
+  } catch (err: any) {
+    yield call(toast.error, err.response.data.message);
+    yield put(motelActions.getMotelFailed(err.response.data.message));
+  }
+}
+
+function* handleGetMotelRandom(action: PayloadAction<Filter>) {
+  try {
+    const response: ListResponse<Motel> = yield call(
+      motelApi.getMotelRandom,
       action.payload
     );
 
@@ -118,6 +131,7 @@ function* handleUpdateRoom(action: PayloadAction<Room>) {
 
 export default function* motelSaga() {
   yield takeLatest(motelActions.getMotel, handleGetMotel);
+  yield takeLatest(motelActions.getMotelRandom, handleGetMotelRandom);
   yield takeLatest(motelActions.addMotel, handleAddMotel);
   yield takeLatest(motelActions.updateMotel, handleUpdateMotel);
   yield takeLatest(motelActions.removeMotel, handleRemoveMotel);

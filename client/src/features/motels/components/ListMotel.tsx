@@ -1,9 +1,10 @@
 import { Theme } from '@material-ui/core'
-import Logo from 'assets/images/logo-white.png'
 import { makeStyles } from '@material-ui/styles'
-import { ItemMotel } from '.'
+import { useAppSelector } from 'app/hooks'
+import Logo from 'assets/images/logo-white.png'
 import { ButtonCustom } from 'components/Common/Button'
-import zIndex from '@material-ui/core/styles/zIndex'
+import { ItemMotel } from '.'
+import { selectDataMotel } from '../motelSlice'
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {},
@@ -69,6 +70,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const ListMotel = () => {
     const classes = useStyles()
+    const listMotel = useAppSelector(selectDataMotel)
 
     return (
         <>
@@ -80,8 +82,8 @@ export const ListMotel = () => {
                 </h2>
 
                 <ul className={classes.listMotel}>
-                    {new Array(6).fill(1).map(() => (
-                        <ItemMotel />
+                    {listMotel.map((motel, index) => (
+                        <ItemMotel key={index} motelData={motel} />
                     ))}
                 </ul>
             </div>

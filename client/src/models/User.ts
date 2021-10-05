@@ -9,6 +9,7 @@ export interface User {
   district: string;
   province: string;
   school: string;
+  favorite?: string[];
   createdAt?: string;
   updatedAt?: string;
   accessToken?: string;

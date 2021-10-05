@@ -1,4 +1,4 @@
-import { UploadResponse } from 'models';
+import { School, UploadResponse } from 'models';
 
 export interface Motel {
   _id?: string;
@@ -10,13 +10,14 @@ export interface Motel {
   contact: Contact;
   status: boolean | string;
   available: number;
-  school: string[];
+  school: any;
   vote?: number;
   rate?: any[];
   mark?: number;
   editor?: Owner;
   owner?: Owner;
   address: string;
+  optional?: Optional;
   createAt?: string;
   updateAt?: string;
 
@@ -75,4 +76,18 @@ interface Owner {
   avatarUrl: string;
   name: string;
   _id: string;
+}
+
+interface Optional {
+  wifi: boolean;
+  ml: boolean;
+  gac: boolean;
+  nx: boolean;
+  camera: boolean;
+  quat: boolean;
+  tl: boolean;
+  giuong: boolean;
+  gt: boolean;
+  cc: boolean;
+  dcvs: boolean;
 }
