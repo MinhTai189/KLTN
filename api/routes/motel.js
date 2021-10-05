@@ -13,8 +13,8 @@ router.get("/randoms", async (req, res) => {
         .find({})
         .populate("school", "-nameDistricts")
         .populate("rate.user", "-refreshToken")
-        .populate("owner", "name avatarUrl _id")
-        .populate("editor", "name avatarUrl _id");
+        .populate("owner", "name avatarUrl _id isAdmin")
+        .populate("editor.user", "name avatarUrl _id isAdmin");
     listMotel = shuffle(listMotel);
 
     if (req.query._limit)
@@ -25,7 +25,7 @@ router.get("/randoms", async (req, res) => {
     for (let i = 0; i < listMotel.length; i++) {
         let rateData = [];
         let ownerData;
-        let editorData;
+        let editorData = [];
         let imagesUrl = [];
         let optional = {
             wifi: false,
@@ -49,6 +49,7 @@ router.get("/randoms", async (req, res) => {
         for (let j = 0; j < listMotel[i].rate.length; j++) {
             const userNewData = {
                 _id: listMotel[i].rate[j].user._id,
+                name: listMotel[i].rate[j].user.name,
                 avatarUrl: listMotel[i].rate[j].user.avatarUrl.url,
                 credit: listMotel[i].rate[j].user.credit,
                 isAdmin: listMotel[i].rate[j].user.isAdmin,
@@ -61,16 +62,26 @@ router.get("/randoms", async (req, res) => {
                 avatarUrl,
                 name: listMotel[i].owner.name,
                 _id: listMotel[i].owner._id,
+                isAdmin: listMotel[i].owner.isAdmin,
             };
         } else ownerData = null;
-        if (listMotel[i].editor) {
-            const avatarUrl = listMotel[i].editor.avatarUrl.url;
-            editorData = {
-                avatarUrl,
-                name: listMotel[i].editor.name,
-                _id: listMotel[i].editor._id,
-            };
-        } else editorData = null;
+        if (Array.isArray(listMotel[i].editor)) {
+            for (let j = 0; j < listMotel[i].editor.length; j++) {
+                let editorDataUser;
+                const avatarUrl = listMotel[i].editor[j].user.avatarUrl.url;
+                editorDataUser = {
+                    avatarUrl,
+                    name: listMotel[i].editor[j].user.name,
+                    _id: listMotel[i].editor[j].user._id,
+                    isAdmin: listMotel[i].editor[j].user.isAdmin,
+                };
+                editorData.push({
+                    user: editorDataUser,
+                    edited: listMotel[i].editor[j].edited,
+                    createdAt: listMotel[i].editor[j].createdAt,
+                });
+            }
+        }
         let thumbnailUrl = listMotel[i].thumbnail.url;
         listMotel[i].images.forEach((image) => {
             imagesUrl.push(image.url);
@@ -119,6 +130,56 @@ router.patch("/:id", verifyToken, async (req, res) => {
         return res
             .status(400)
             .json({ success: false, message: "Không tìm thấy dữ liệu cần cập nhật" });
+    let edited = "Chỉnh sửa nhà trọ: ";
+    if (typeof name === "string")
+        if (motelUpdate.name != name) edited += "tên nhà trọ";
+
+    if (thumbnail.public_id)
+        if (thumbnail.url != motelUpdate.thumbnail.url)
+            if (edited === "Chỉnh sửa nhà trọ: ") edited += "ảnh bìa";
+            else edited += ", ảnh bìa";
+    if (typeof address === "string")
+        if (address != motelUpdate.address)
+            if (edited === "Chỉnh sửa nhà trọ: ") edited += "địa chỉ";
+            else edited += ", địa chỉ";
+    if (typeof desc === "string")
+        if (desc != motelUpdate.desc)
+            if (edited === "Chỉnh sửa nhà trọ: ") edited += "giới thiệu";
+            else edited += ", giới thiệu";
+    if (contact)
+        if (
+            typeof contact.phone === "string" ||
+            typeof contact.zalo === "string" ||
+            typeof contact.email === "string" ||
+            typeof contact.facebook === "string"
+        )
+            if (
+                motelUpdate.contact.zalo != contact.zalo ||
+                motelUpdate.contact.phone != contact.phone ||
+                motelUpdate.contact.facebook != contact.facebook ||
+                motelUpdate.contact.email != contact.email
+            )
+                if (edited === "Chỉnh sửa nhà trọ: ") edited += "thông tin liên hệ";
+                else edited += ", thông tin liên hệ";
+    if (typeof status === "boolean")
+        if (motelUpdate.status != status)
+            if (edited === "Chỉnh sửa nhà trọ: ") edited += "trang thái";
+            else edited += ", trạng thái";
+    if (typeof available === "number")
+        if (available != motelUpdate.available)
+            if (edited === "Chỉnh sửa nhà trọ: ") edited += "phòng trống";
+            else edited += ", phòng trống";
+
+    if (Array.isArray(school))
+        for (let i = 0; i < school.length; i++) {
+            if (!motelUpdate.school.some((item) => {
+                    JSON.stringify(item) === JSON.stringify(school[i]._id);
+                })) {
+                if (edited === "Chỉnh sửa nhà trọ: ") edited += "lân cận";
+                else edited += ", lân cận";
+                break;
+            }
+        }
 
     if (name) {
         if (typeof name === "string") {
@@ -126,12 +187,17 @@ router.patch("/:id", verifyToken, async (req, res) => {
             motelUpdate.unsignedName = removeVietNameseTones(name);
         }
     }
-    const oldThumbnail = motelUpdate.thumbnail;
+
+    const oldThumbnail = motelUpdate.thumbnail.public_id;
 
     if (thumbnail)
-        if (typeof thumbnail === "object") motelUpdate.thumbnail = thumbnail;
+        if (typeof thumbnail === "object") {
+            motelUpdate.thumbnail = thumbnail;
+        }
     if (address)
-        if (typeof address === "string") motelUpdate.address = address;
+        if (typeof address === "string") {
+            motelUpdate.address = address;
+        }
     if (desc)
         if (typeof desc === "string") motelUpdate.desc = desc;
     if (contact)
@@ -140,11 +206,18 @@ router.patch("/:id", verifyToken, async (req, res) => {
             typeof contact.zalo === "string" ||
             typeof contact.email === "string" ||
             typeof contact.facebook === "string"
-        )
+        ) {
             motelUpdate.contact = contact;
-    if (typeof status === "boolean") motelUpdate.status = status;
-    if (Array.isArray(school) == true) motelUpdate.school = school;
-    if (typeof available === "number") motelUpdate.available = available;
+        }
+    if (typeof status === "boolean") {
+        motelUpdate.status = status;
+    }
+    if (Array.isArray(school) == true) {
+        motelUpdate.school = school;
+    }
+    if (typeof available === "number") {
+        motelUpdate.available = available;
+    }
     let oldImages = motelUpdate.images;
     let newImage = [];
     let oldImage = [];
@@ -156,13 +229,19 @@ router.patch("/:id", verifyToken, async (req, res) => {
                 newImage.push(images[i]);
         }
     }
+    if (newImage.length > 0)
+        if (edited === "Chỉnh sửa nhà trọ: ") edited += "hình ảnh";
+        else edited += ", hình ảnh";
     if (req.user.isAdmin == true) {
         try {
-            motelUpdate.editor = req.user.id;
-
+            if (motelUpdate.editor.length >= 3) motelUpdate.editor.shift();
+            motelUpdate.editor.push({
+                user: req.user.id,
+                edited: edited,
+                createdAt: Date.now(),
+            });
             if (thumbnail)
-                if (typeof thumbnail === "object")
-                    await upload.unlink(oldThumbnail.public_id);
+                if (typeof thumbnail === "object") await upload.unlink(oldThumbnail);
 
             if (Array.isArray(images))
                 var removeImages = oldImages.reduce((arr, image) => {
@@ -304,30 +383,30 @@ router.get("/", async (req, res) => {
                 .find({ $or: keySearchs, school: { $in: _schools } })
                 .populate("school", "-nameDistricts")
                 .populate("rate.user", "-refreshToken")
-                .populate("owner", "name avatarUrl _id")
-                .populate("editor", "name avatarUrl _id");
+                .populate("owner", "name avatarUrl _id isAdmin")
+                .populate("editor.user", "name avatarUrl _id isAdmin");
         else
             var listMotel = await motel
                 .find({ $or: keySearchs })
                 .populate("school", "-nameDistricts")
                 .populate("rate.user", "-refreshToken")
-                .populate("owner", "name avatarUrl _id")
-                .populate("editor", "name avatarUrl _id");
+                .populate("owner", "name avatarUrl _id isAdmin")
+                .populate("editor.user", "name avatarUrl _id isAdmin");
     else {
         if (_school)
             var listMotel = await motel
                 .find({ school: { $in: _schools } })
                 .populate("school", "-nameDistricts")
                 .populate("rate.user", "-refreshToken")
-                .populate("owner", "name avatarUrl _id")
-                .populate("editor", "name avatarUrl _id");
+                .populate("owner", "name avatarUrl _id isAdmin")
+                .populate("editor.user", "name avatarUrl _id isAdmin");
         else
             var listMotel = await motel
                 .find({})
                 .populate("school", "-nameDistricts")
                 .populate("rate.user", "-refreshToken")
-                .populate("owner", "name avatarUrl _id")
-                .populate("editor", "name avatarUrl _id");
+                .populate("owner", "name avatarUrl _id isAdmin")
+                .populate("editor.user", "name avatarUrl _id isAdmin");
     }
     if (_keysearch) {
         const addMotelUser = await user
@@ -347,8 +426,8 @@ router.get("/", async (req, res) => {
             .find({})
             .populate("school", "-nameDistricts")
             .populate("rate.user", "-refreshToken")
-            .populate("owner", "name avatarUrl _id")
-            .populate("editor", "name avatarUrl _id");
+            .populate("owner", "name avatarUrl _id isAdmin")
+            .populate("editor.user", "name avatarUrl _id isAdmin");
         addMotelUser.forEach((item) => {
             addMotelUser2.forEach((item2) => {
                 if (JSON.stringify(item._id) === JSON.stringify(item2.owner._id)) {
@@ -477,7 +556,7 @@ router.get("/", async (req, res) => {
     for (let i = 0; i < listMotel.length; i++) {
         let rateData = [];
         let ownerData;
-        let editorData;
+        let editorData = [];
         let imagesUrl = [];
         let optional = {
             wifi: false,
@@ -500,6 +579,7 @@ router.get("/", async (req, res) => {
         for (let j = 0; j < listMotel[i].rate.length; j++) {
             const userNewData = {
                 _id: listMotel[i].rate[j].user._id,
+                name: listMotel[i].rate[j].user.name,
                 avatarUrl: listMotel[i].rate[j].user.avatarUrl.url,
                 credit: listMotel[i].rate[j].user.credit,
                 isAdmin: listMotel[i].rate[j].user.isAdmin,
@@ -512,16 +592,26 @@ router.get("/", async (req, res) => {
                 avatarUrl,
                 name: listMotel[i].owner.name,
                 _id: listMotel[i].owner._id,
+                isAdmin: listMotel[i].owner.isAdmin,
             };
         } else ownerData = null;
-        if (listMotel[i].editor) {
-            const avatarUrl = listMotel[i].editor.avatarUrl.url;
-            editorData = {
-                avatarUrl,
-                name: listMotel[i].editor.name,
-                _id: listMotel[i].editor._id,
-            };
-        } else editorData = null;
+        if (Array.isArray(listMotel[i].editor)) {
+            for (let j = 0; j < listMotel[i].editor.length; j++) {
+                let editorDataUser;
+                const avatarUrl = listMotel[i].editor[j].user.avatarUrl.url;
+                editorDataUser = {
+                    avatarUrl,
+                    name: listMotel[i].editor[j].user.name,
+                    _id: listMotel[i].editor[j].user._id,
+                    isAdmin: listMotel[i].editor[j].user.isAdmin,
+                };
+                editorData.push({
+                    user: editorDataUser,
+                    edited: listMotel[i].editor[j].edited,
+                    createdAt: listMotel[i].editor[j].createdAt,
+                });
+            }
+        }
         let thumbnailUrl = listMotel[i].thumbnail.url;
         listMotel[i].images.forEach((image) => {
             imagesUrl.push(image.url);
@@ -599,7 +689,7 @@ router.post("/", verifyToken, async (req, res) => {
             mark: checkMotel.mark,
             school: checkMotel.school,
             owner: checkMotel.owner,
-            editor: checkMotel.editor,
+            editor: [],
             available: checkMotel.available,
         });
         try {
@@ -786,7 +876,7 @@ router.post("/", verifyToken, async (req, res) => {
             mark: undefined,
             school,
             owner: req.user.id,
-            editor: req.user.id,
+            editor: [],
             available,
         });
         for (let i = 0; i < images.length; i++) {
@@ -861,7 +951,7 @@ router.post("/", verifyToken, async (req, res) => {
                 mark: undefined,
                 school,
                 owner: req.user.id,
-                editor: req.user.id,
+                editor: [],
                 available,
             });
             if (duplicateCheck.dup == true)
@@ -905,7 +995,7 @@ router.post("/", verifyToken, async (req, res) => {
             mark: undefined,
             school,
             owner: req.user.id,
-            editor: req.user.id,
+            editor: [],
             available,
         });
         try {
@@ -945,7 +1035,9 @@ router.get("/:id", async (req, res) => {
     const findMotel = await motel
         .findById(id)
         .populate("rate.user", "avatarUrl name _id isAdmin")
-        .populate("school", "-nameDistricts");
+        .populate("school", "-nameDistricts")
+        .populate("owner", "name avatarUrl _id isAdmin")
+        .populate("editor.user", "name avatarUrl _id isAdmin");
     if (!findMotel)
         return res
             .status(400)
@@ -961,6 +1053,7 @@ router.get("/:id", async (req, res) => {
             isAdmin: findMotel.rate[i].user.isAdmin,
             _id: findMotel.rate[i]._id,
             avatarUrl: findMotel.rate[i].user.avatarUrl.url,
+            credit: findMotel.rate[i].user.name,
         };
         newRate.push({ ...findMotel.rate[i]._doc, user: userRate });
     }
@@ -983,12 +1076,36 @@ router.get("/:id", async (req, res) => {
             if (findMotel.room[i].optional[property] == true)
                 optional[property] = true;
         }
+    let owner = {
+        avatarUrl: findMotel.owner.avatarUrl.url,
+        name: findMotel.owner.name,
+        isAdmin: findMotel.owner.isAdmin,
+        _id: findMotel.owner.id,
+    };
+    let editorData = [];
+    for (let i = 0; i < findMotel.edited.length; i++) {
+        let editorDataUser;
+        const avatarUrl = findMotel.editor[i].user.avatarUrl.url;
+        editorDataUser = {
+            avatarUrl,
+            name: findMotel.editor[i].user.name,
+            _id: findMotel.editor[i].user._id,
+            isAdmin: findMotel.editor[i].user.isAdmin,
+        };
+        editorData.push({
+            user: editorDataUser,
+            edited: findMotel.editor[i].edited,
+            createdAt: findMotel.editor[i].createdAt,
+        });
+    }
     const responseMotel = {
         ...findMotel._doc,
         rate: newRate,
         thumbnail: findMotel.thumbnail.url,
         images: images,
         optional,
+        owner,
+        editor: editorData,
     };
     res
         .status(200)

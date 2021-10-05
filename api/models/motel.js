@@ -113,10 +113,11 @@ const motel = new Schema({
         default: 0,
         type: Number,
     },
-    editor: {
-        type: Schema.Types.ObjectId,
-        ref: "user",
-    },
+    editor: [{
+        user: { type: Schema.Types.ObjectId, ref: "user" },
+        edited: String,
+        createdAt: Date,
+    }, ],
     available: {
         type: Number,
     },
