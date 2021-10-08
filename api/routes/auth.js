@@ -274,12 +274,19 @@ router.post("/login", async(req, res) => {
                     .status(404)
                     .json({ success: false, message: "Mật khẩu bị sai" });
         } else {
-            const userData = JWT.verify(authorization, process.env.accessToken);
-            if (!userData)
-                return res
-                    .status(401)
-                    .json({ success: false, message: "Token hết hạn" });
-
+            let userData;
+            try {
+                userData = JWT.verify(authorization, process.env.accessToken);
+            } catch (err) {
+                if (err.name === "TokenExpiredError")
+                    return res
+                        .status(401)
+                        .json({ success: false, message: "Token hết hạn" });
+                else
+                    return res
+                        .status(500)
+                        .json({ success: false, message: "Lỗi không xác định" });
+            }
             userID = userData.id;
         }
 

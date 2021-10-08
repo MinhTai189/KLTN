@@ -18,12 +18,12 @@ GET http://localhost:5000/api/
 ###
 POST http://localhost:5000/api/login
 Content-Type: application/json
-//Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMzM1NTFmZTI1Zjc4ZTEyOTA5YzFlYSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3NTQwNzksImV4cCI6MTYzMDc1NDY3OX0.frCvIwZSF4kIEZHPDKww0z2yDVFOWxwXxMPoIquMbLg
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzUxMDA1NywiZXhwIjoxNjMzNTEwMDg3fQ.kQbrkkPsBRA3n5U8tmdZiU-DllvRjt8spB-_YQkX2e8
 
  {
-    "username":"admin",
-    "password":"123456"
-     //"accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMmNjMjIwMDUyNzRkNjg1ZWRiZTRkNyIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzA3MTc4NDYsImV4cCI6MTYzMDcxNzkwNn0.sNtYRra6sUjZZkOikAyhlY8FdbXTwTksePSBNLjoRLI"
+    //"username":"admin",
+    //"password":"123456"
+    // "accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzUwOTAyOCwiZXhwIjoxNjMzNTA5NjI4fQ.B9QIlEO7J2BV56XL2K7qItHPW9_GOBPtvTr0tCSXCSE"
  }
 
 ###
@@ -190,7 +190,13 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
     "available":12
 }
 ###
-POST http://localhost:5000/api/users/favorites/615a9f13dc19793cda17890f
+POST http://localhost:5000/api/users/favorites/614542cf9f478425c2c07317
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzQyNTExNSwiZXhwIjoxNjMzNDI1NzE1fQ.tSrR6X4RfvqLiBAzsETHcxNDz1TzS91I2Meq7R607Iw
+
+{}
+###
+POST http://localhost:5000/api/users/favorites/614542cf9f478425c2c07317
 Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzQyNTExNSwiZXhwIjoxNjMzNDI1NzE1fQ.tSrR6X4RfvqLiBAzsETHcxNDz1TzS91I2Meq7R607Iw
 
