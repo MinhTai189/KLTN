@@ -153,14 +153,14 @@ export const DropDown = ({ openDropdown, isFlip, setIsFlip, schoolList }: Props)
             </div>
 
             <div className={`${classes.box} box1`}>
-                {/* <List
+                <List
                     height={300}
                     itemCount={schoolList.length}
                     width={600}
                     itemSize={() => 100}
                 >
                     {Row}
-                </List> */}
+                </List>
             </div>
         </div>
     )

@@ -1,6 +1,8 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import axiosClient from 'api/axiosClient';
+import { userApi } from 'api/user';
 import { push } from 'connected-react-router';
+import { userActions } from 'features/users/usersSlice';
 import { Response, User } from 'models';
 import { toast } from 'react-toastify';
 import { put, takeLatest, call } from 'redux-saga/effects';
@@ -67,7 +69,31 @@ function* handleLogout() {
   }
 }
 
+function* handleLikeMotel(action: PayloadAction<string>) {
+  try {
+    yield call(userApi.likeMotel, action.payload);
+
+    yield put(authActions.likeMotelSuccess(action.payload));
+  } catch (err: any) {
+    yield put(authActions.likeMotelFailed(err.response.data.massage));
+    yield call(toast.error, err.response.data.massage);
+  }
+}
+
+function* handleUnlikeMotel(action: PayloadAction<string>) {
+  try {
+    yield call(userApi.unlikeMotel, action.payload);
+
+    yield put(authActions.unlikeMotelSuccess(action.payload));
+  } catch (err: any) {
+    yield put(authActions.unlikeMotelFailed(err.response.data.massage));
+    yield call(toast.error, err.response.data.massage);
+  }
+}
+
 export default function* authSaga() {
   yield takeLatest(authActions.login.type, handleLogin);
   yield takeLatest(authActions.logout.type, handleLogout);
+  yield takeLatest(authActions.likeMotel, handleLikeMotel);
+  yield takeLatest(authActions.unlikeMotel, handleUnlikeMotel);
 }

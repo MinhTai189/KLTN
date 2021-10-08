@@ -6,3 +6,8 @@ export * from './UpdateForm';
 export * from './UpdateMotelModal';
 export * from './ListMotel';
 export * from './ItemMotel';
+export * from './AlbumMotel';
+export * from './InforOnwerUp';
+export * from './InforMotelDetail';
+export * from './InforRoomDetail';
+export * from './BoxInfo';

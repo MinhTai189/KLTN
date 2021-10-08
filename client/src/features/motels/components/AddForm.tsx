@@ -15,7 +15,7 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { checkSizeImg } from 'utils'
 import * as yup from 'yup'
-import { ReactComponent as Zalo } from '../../../assets/images/zalo.svg'
+import { ReactComponent as Zalo } from 'assets/images/zalo.svg'
 import { selectLoadingMotel } from '../motelSlice'
 
 interface Props {

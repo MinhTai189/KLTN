@@ -37,6 +37,39 @@ const authSlice = createSlice({
       state.isLogged = false;
       state.currentUser = undefined;
     },
+    likeMotel(state, action: PayloadAction<string>) {
+      state.loading = true;
+    },
+    likeMotelSuccess(state, action: PayloadAction<string>) {
+      const favoriteMotel = state.currentUser?.favorite || [];
+
+      state.loading = false;
+      state.currentUser = {
+        ...state.currentUser,
+        favorite: [...favoriteMotel, action.payload],
+      } as User;
+    },
+    likeMotelFailed(state, action: PayloadAction<string>) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    unlikeMotel(state, action: PayloadAction<string>) {
+      state.loading = true;
+    },
+    unlikeMotelSuccess(state, action: PayloadAction<string>) {
+      let favoriteMotel = state.currentUser?.favorite || [];
+      favoriteMotel = favoriteMotel.filter((x) => x !== action.payload);
+
+      state.loading = false;
+      state.currentUser = {
+        ...state.currentUser,
+        favorite: favoriteMotel,
+      } as User;
+    },
+    unlikeMotelFailed(state, action: PayloadAction<string>) {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 

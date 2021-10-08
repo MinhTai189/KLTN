@@ -104,11 +104,11 @@ export const SchoolRows = ({ imgUrls, onClickRows, school, district, amountMotel
 
 
             <Box className={classes.col3}>
-                {/* <Box className={classes.imgs}>
+                <Box className={classes.imgs}>
                     {imgUrls.map((url, index) => (
                         <img key={index} src={url} alt='motel' />
                     ))}
-                </Box> */}
+                </Box>
 
                 <Box className={classes.amount}>
                     <Home />

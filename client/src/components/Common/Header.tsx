@@ -1,10 +1,10 @@
-import { Button, createStyles, makeStyles, Theme } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import Logo from 'assets/images/logo.png';
 import { authActions, selectCurrentUser } from 'features/auth/authSlice';
 import { User } from 'models';
 import { Link } from 'react-router-dom';
 import { DropDownInfor } from '../Home';
-import Logo from 'assets/images/logo.png'
 import { ButtonCustom } from './Button';
 
 interface Props {
@@ -18,13 +18,14 @@ const useStyles = makeStyles((theme: Theme) =>
             top: 0,
             left: 0,
             zIndex: 199,
-            width: '100vw',
+            width: '100%',
+            padding: `0 calc((100% - 1200px) / 2)`,
             transition: 'all 300ms ease'
         },
         nav: {
             display: 'flex',
             alignItems: 'center',
-            padding: '12px 0',
+            padding: '12px 16px',
             transition: 'all 300ms ease'
         },
         logo: {
@@ -67,7 +68,7 @@ export const Header = ({ isChangeNav }: Props) => {
 
     return (
         <div className={classes.root} style={isChangeNav ? { backgroundImage: 'linear-gradient(#000 0%, #2d3436 74%)' } : {}}>
-            <nav className={`${classes.nav} container`} style={isChangeNav ? { padding: '4px 0' } : {}}>
+            <nav className={classes.nav} style={isChangeNav ? { padding: '4px 16px' } : {}}>
                 <img className={classes.logo} src={Logo} alt="logo" />
 
                 <ul className={classes.navLinks}>

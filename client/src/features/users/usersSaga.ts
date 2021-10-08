@@ -1,7 +1,8 @@
 import { call, debounce, put, takeLatest } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { userApi } from 'api/user';
-import { Filter, ListResponse, Response, UserUpdate } from 'models';
+import { Filter, ListResponse, UserUpdate } from 'models';
+import { toast } from 'react-toastify';
 import { User } from '../../models';
 import { userActions } from './usersSlice';
 
@@ -15,6 +16,7 @@ function* handleGetUser(action: PayloadAction<Filter>) {
     yield put(userActions.getUserSuccess(reponse));
   } catch (err: any) {
     yield put(userActions.removeUserFailed(err.response.data.massage));
+    yield call(toast.error, err.response.data.massage);
   }
 }
 
@@ -23,8 +25,10 @@ function* handleRemoveUser(action: PayloadAction<string>) {
     yield userApi.removeUser(action.payload);
 
     yield put(userActions.removeUserSuccess(action.payload));
+    yield call(toast.success, 'Xóa tài khoản thành công!');
   } catch (err: any) {
     yield put(userActions.removeUserFailed(err.response.data.massage));
+    yield call(toast.error, err.response.data.massage);
   }
 }
 
@@ -35,8 +39,10 @@ function* handleUpdateUser(action: PayloadAction<UserUpdate>) {
     yield userApi.updateUser(data, key);
 
     yield put(userActions.updateUserSuccess(action.payload));
+    yield call(toast.success, 'Cập nhật tài khoản thành công!');
   } catch (err: any) {
     yield put(userActions.updateUserFailed(err.response.data.massage));
+    yield call(toast.error, err.response.data.massage);
   }
 }
 

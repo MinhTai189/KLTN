@@ -8,7 +8,9 @@ import { useEffect, useState } from 'react';
 
 const HomePage = () => {
     const isLogged = useAppSelector(selectIsLogged)
+    const filter = useAppSelector(selectIsLogged)
     const dispatch = useAppDispatch();
+
     const [isChangeNav, setIsChangeNav] = useState(false)
 
     useEffect(() => {

@@ -2,7 +2,7 @@ import { ThemeProvider } from '@material-ui/core';
 import 'antd/dist/antd.css';
 import { AdminRoute, NotFound } from 'components/Common';
 import { AdminLayout } from 'components/Layouts';
-import HomePage from 'pages/Home/HomePage';
+import HomePage from 'pages/HomePage';
 import MotelDetailPage from 'pages/MotelDetailPage';
 import { Route, Switch } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';

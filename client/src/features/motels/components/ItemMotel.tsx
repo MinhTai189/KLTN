@@ -1,12 +1,13 @@
-import { makeStyles, Theme, Tooltip } from '@material-ui/core'
-import { AcUnit, Build, CallMerge, Favorite, FavoriteBorder, Group, HorizontalSplit, Hotel, Motorcycle, Star, StarBorder, StarHalf, Toys, TrendingUp, Videocam, Wifi } from '@material-ui/icons'
-import { useAppSelector } from 'app/hooks'
+import { CircularProgress, makeStyles, Theme, Tooltip } from '@material-ui/core'
+import { AcUnit, Build, CallMerge, Favorite, FavoriteBorder, FavoriteOutlined, Group, HorizontalSplit, Hotel, Motorcycle, Star, StarBorder, StarHalf, Toys, TrendingUp, Videocam, Wifi } from '@material-ui/icons'
+import { useAppDispatch, useAppSelector } from 'app/hooks'
 import Motel from 'assets/images/motel.jpg'
 import { ButtonCustom } from 'components/Common/Button'
-import { selectCurrentUser } from 'features/auth/authSlice'
-import { Motel as MotelModel, School, User } from 'models'
-import { ReactElement, useEffect } from 'react'
+import { authActions, selectCurrentUser, selectLoading } from 'features/auth/authSlice'
+import { Motel as MotelModel, User } from 'models'
+import { ReactElement, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
+import { toast } from 'react-toastify'
 import { roundMark } from 'utils'
 import { getPriceMotel } from 'utils/getPriceMotel'
 
@@ -275,14 +276,42 @@ export const ItemMotel = ({ motelData }: Props) => {
     const classes = useStyles()
     const { _id, thumbnail, optional, name, room, desc, school, status, mark } = motelData
     const currentUser: User = useAppSelector(selectCurrentUser)
+    const dispatch = useAppDispatch()
+
+    const loading = useAppSelector(selectLoading)
+    const [isLike, setIsLike] = useState(false)
     const history = useHistory()
 
     let optionalKeys: string[] = Object.keys(optional as any)
     let optionalValues: boolean[] = Object.values(optional as any)
     let markToStar = roundMark(mark as number) || [0, 0]
 
+    let indexOptional = 0;
+
+    useEffect(() => {
+        currentUser && setIsLike(checkFavoriteMotel())
+        console.log({ currentUser, isLike })
+    }, [currentUser])
+
     const onClickDetail = () => {
         history.push(`/motels/${_id}`)
+    }
+
+    const handleFavoriteMotel = () => {
+        if (!currentUser) {
+            toast.error('Bạn phải đăng nhập để sử dụng chức năng này!')
+            return;
+        }
+
+        if (isLike) {
+            dispatch(authActions.unlikeMotel(_id as string))
+        } else {
+            dispatch(authActions.likeMotel(_id as string))
+        }
+    }
+
+    const checkFavoriteMotel = (): boolean => {
+        return !!currentUser.favorite && currentUser.favorite.includes(_id as string)
     }
 
     return (
@@ -295,8 +324,9 @@ export const ItemMotel = ({ motelData }: Props) => {
                 <div className={classes.topLeft}>
                     <ul className="listOptional">
                         {optionalValues.length > 0 && optionalValues.map((value, index) => {
-                            const delay = 0.3 + 0.07 * (index + 1)
+                            const delay = 0.3 + 0.07 * (indexOptional + 1)
                             if (value === false) return;
+                            indexOptional++
 
                             const key = optionalKeys[index]
 
@@ -313,21 +343,32 @@ export const ItemMotel = ({ motelData }: Props) => {
 
                 <div className={classes.topRight}>
                     <span className="favorite">
-                        {currentUser && currentUser.favorite && currentUser.favorite.includes(_id as string)
-                            ? <Favorite />
-                            : <FavoriteBorder />}
+                        {!loading ?
+                            isLike
+                                ? <Tooltip title='Thêm nhà trọ vào danh sách yêu thích'>
+                                    <span onClick={handleFavoriteMotel}>
+                                        <Favorite />
+                                    </span>
+                                </Tooltip>
+                                : <Tooltip title='Xóa nhà trọ vào danh sách yêu thích'>
+                                    <span onClick={handleFavoriteMotel}>
+                                        <FavoriteBorder />
+                                    </span>
+                                </Tooltip>
+                            : <CircularProgress color='secondary' size={15} />
+                        }
                     </span>
 
                     <ul className="stars">
                         {new Array(5).fill('1').map((_, index) => {
                             if (markToStar[0] > 0) {
                                 markToStar[0] = markToStar[0] - 1
-                                return <Star />
+                                return <Star key={index} />
                             } else if (markToStar[1] !== 0) {
                                 markToStar[1] = 0
-                                return <StarHalf />
+                                return <StarHalf key={index} />
                             }
-                            return <StarBorder />
+                            return <StarBorder key={index} />
                         })}
                     </ul>
 

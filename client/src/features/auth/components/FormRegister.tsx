@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Box, Button, CircularProgress, Grid, makeStyles, Typography } from '@material-ui/core'
+import { Box, CircularProgress, Grid, makeStyles, Typography } from '@material-ui/core'
 import { PersonOutline } from '@material-ui/icons'
 import districtApi from 'api/district'
 import schoolApi from 'api/school'

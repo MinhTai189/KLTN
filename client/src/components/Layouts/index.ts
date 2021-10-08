@@ -1,2 +1,2 @@
-export * from '../../pages/Home/HomePage';
+export * from '../../pages/HomePage';
 export * from './AdminLayout';
