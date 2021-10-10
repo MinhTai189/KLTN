@@ -85,7 +85,7 @@ router.post("/forgot-password", async(req, res) => {
             .status(401)
             .json({ success: false, message: "Email không tồn tại" });
     }
-    //Cung cấp key (30 phút)
+    //Cung cấp key (10 phút)
     const forgotPasswordToken = JWT.sign({ id: User._id },
         process.env.forgotPasswordToken, { expiresIn: "10m" }
     );
@@ -99,7 +99,7 @@ router.post("/forgot-password", async(req, res) => {
     });
     const mainOptions = {
         // thiết lập đối tượng, nội dung gửi mail
-        from: "Tìm nhà trọ TGU",
+        from: "Nhà trọ Sinh viên",
         to: User.email,
         subject: "Forgot Password",
         text: "",
