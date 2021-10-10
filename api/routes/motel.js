@@ -173,8 +173,8 @@ router.patch("/:id", verifyToken, async (req, res) => {
     if (Array.isArray(school))
         for (let i = 0; i < school.length; i++) {
             if (!motelUpdate.school.some((item) => {
-                    JSON.stringify(item) === JSON.stringify(school[i]._id);
-                })) {
+                JSON.stringify(item) === JSON.stringify(school[i]._id);
+            })) {
                 if (edited === "Chỉnh sửa nhà trọ: ") edited += "lân cận";
                 else edited += ", lân cận";
                 break;
@@ -277,18 +277,18 @@ router.patch("/:id", verifyToken, async (req, res) => {
 });
 
 router.get("/schools", async (req, res) => {
-    const { _nameLike } = req.query;
-    if (_nameLike)
+    const { _namelike } = req.query;
+    if (_namelike)
         var keySearchs = [
-            { codeName: new RegExp(_nameLike.replace(/ /g, "_"), "i") },
+            { codeName: new RegExp(_namelike.replace(/ /g, "_"), "i") },
             {
-                codeName: new RegExp("^" + _nameLike.replace(/ /g, "_"), "i"),
+                codeName: new RegExp("^" + _namelike.replace(/ /g, "_"), "i"),
             },
             {
-                codeName: new RegExp(_nameLike.replace(/ /g, "_") + "$", "i"),
+                codeName: new RegExp(_namelike.replace(/ /g, "_") + "$", "i"),
             },
         ];
-    if (_nameLike) var schools = await school.find({ $or: keySearchs });
+    if (_namelike) var schools = await school.find({ $or: keySearchs });
     else var schools = await school.find({});
     const motels = await motel.find({}).select("_id thumbnail school");
     let data = [];
@@ -1083,7 +1083,7 @@ router.get("/:id", async (req, res) => {
         _id: findMotel.owner.id,
     };
     let editorData = [];
-    for (let i = 0; i < findMotel.edited.length; i++) {
+    for (let i = 0; i < findMotel.editor.length; i++) {
         let editorDataUser;
         const avatarUrl = findMotel.editor[i].user.avatarUrl.url;
         editorDataUser = {

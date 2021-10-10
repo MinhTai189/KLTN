@@ -23,7 +23,7 @@ export const motelApi = {
     return axiosClient.get(url, { params });
   },
   getMotelById: (id: string): Promise<Response<Motel>> => {
-    const url = `$/motels/${id}}`;
+    const url = `/motels/${id}`;
     return axiosClient.get(url);
   },
   addMotel: (params: Motel): Promise<Response<any>> => {
@@ -38,9 +38,9 @@ export const motelApi = {
     const url = `/motels/${id}`;
     return axiosClient.delete(url);
   },
-  getDropdownList: (): Promise<ListResponse<SchoolDropdown>> => {
+  getDropdownList: (params: Filter): Promise<ListResponse<SchoolDropdown>> => {
     const url = '/motels/schools';
-    return axiosClient.get(url);
+    return axiosClient.get(url, { params });
   },
   updateRoom: (data: Room): Promise<any> => {
     const url = `/motels/room/${data.idMotel}/${data._id}`;

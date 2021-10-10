@@ -36,9 +36,9 @@ export const Operation = ({ handleSearch, handleFilter, handleClearFilter }: Pro
     const [creditSortValue, setCreditSelectValue] = useState((filter._order && filter._sort === 'credit') ? `${filter._sort}.${filter._order}` : undefined)
     const [createdAtSortValue, setCreateAtSelectValue] = useState((filter._order && filter._sort === 'createdat') ? `${filter._sort}.${filter._order}` : undefined)
 
-    const { autoCompProvince, loading: loadingProvince } = useProvince()
-    const { autoCompDistrict, loading: loadingDistrict } = useDistrict()
-    const { autoCompSchool, loading: loadingSchool } = useSchool()
+    const { autoCompProvince } = useProvince()
+    const { autoCompDistrict } = useDistrict()
+    const { autoCompSchool } = useSchool()
 
     const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
         setSearchData(e.target.value)

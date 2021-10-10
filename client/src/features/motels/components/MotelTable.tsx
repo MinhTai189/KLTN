@@ -3,7 +3,6 @@ import { Button, Popconfirm, Rate, Space, Table, TablePaginationConfig, Tooltip 
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { MotelDataTable } from 'models'
 import { useEffect, useState } from 'react'
-import { useHistory } from 'react-router'
 import { roundMark } from 'utils'
 import { motelActions, selectDataMotel, selectFilterMotel, selectLoadingMotel, selectPaginationMotel } from '../motelSlice'
 
@@ -19,7 +18,6 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
 
     const loading = useAppSelector(selectLoadingMotel)
     const dispatch = useAppDispatch()
-    const history = useHistory()
 
     const [dataTable, setDataTable] = useState<MotelDataTable[]>([])
     const [paginationTB, setPaginationTB] = useState<TablePaginationConfig>()

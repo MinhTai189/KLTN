@@ -3,7 +3,7 @@ import { School, UploadResponse } from 'models';
 export interface Motel {
   _id?: string;
   name: string;
-  images: UploadResponse[] | FormData | string;
+  images: UploadResponse[] | FormData | string[];
   thumbnail: UploadResponse | FormData | string;
   room: Room[];
   desc: string;
@@ -14,12 +14,12 @@ export interface Motel {
   vote?: number;
   rate?: any[];
   mark?: number;
-  editor?: Owner;
+  editor?: Editor[];
   owner?: Owner;
   address: string;
   optional?: Optional;
-  createAt?: string;
-  updateAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
 
   [key: string]: any;
 }
@@ -60,6 +60,20 @@ export interface MotelDataTable {
   address: string;
 }
 
+export interface Editor {
+  user: Owner;
+  edited: string;
+  createdAt: string;
+}
+
+export interface Owner {
+  avatarUrl: string;
+  name: string;
+  _id: string;
+  isAdmin: boolean;
+  school: School;
+}
+
 interface Contact {
   phone?: string;
   email?: string;
@@ -70,12 +84,6 @@ interface Contact {
 interface Area {
   length: number;
   width: number;
-}
-
-interface Owner {
-  avatarUrl: string;
-  name: string;
-  _id: string;
 }
 
 interface Optional {

@@ -13,3 +13,7 @@ export const removeFirstElement = (arr: Array<any>) => {
     return arr.concat(ele);
   }, []);
 };
+
+export const twoNumber = (number: number) => {
+  return number < 10 ? `0${number}` : number;
+};

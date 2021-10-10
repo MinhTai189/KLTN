@@ -1,8 +1,8 @@
-import { Box, Link, Theme, Typography, Button } from '@material-ui/core'
+import { Box, Button, Link, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { CheckboxGroup, InputField } from 'components/FormFields'
 import { FieldOption, Room } from 'models'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 interface ChangeRoom {

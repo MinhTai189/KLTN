@@ -1,11 +1,18 @@
-import { Box, Theme } from "@material-ui/core"
+import { Box, Theme, Tooltip } from "@material-ui/core"
 import { CardMembership, CloudUpload, Email } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
-import Avatar from 'assets/images/avatar-default.jpg'
 import School from 'assets/images/school.png'
+import { Editor, Owner } from "models"
+import { twoNumber } from "utils"
+
+interface OwnerDetail extends Owner {
+    createdAt: string
+}
 
 interface Props {
     isUpdate?: boolean
+    editor?: Editor
+    owner?: OwnerDetail
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -76,25 +83,28 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-export const BoxInfo = ({ isUpdate = true }: Props) => {
+export const BoxInfo = ({ isUpdate = true, editor, owner }: Props) => {
     const classes = useStyles()
+    const user = editor ? editor.user : owner
+    const createdDate = new Date(editor?.createdAt || owner?.createdAt || '')
+    const date = `${twoNumber(createdDate.getDay())}/${twoNumber(createdDate.getMonth())}/${createdDate.getFullYear()}`
+
     return (
         <Box className={classes.root}>
-            <img className={classes.avatar} src={Avatar} alt="avatar" />
+            <img className={classes.avatar} src={user?.avatarUrl} alt="avatar" />
 
             <Box className={classes.infor}>
                 <div className="top">
-                    <h3 className='name'>Trần Minh Tài</h3>
+                    <h3 className='name'>{user?.name}</h3>
 
                     <small className='position'>Admin</small>
                 </div>
 
-                <p>Đã đăng: 17/07/2021</p>
+                <p>{`${isUpdate ? 'Chỉnh sửa' : 'Đã đăng'}: ${date}`}</p>
             </Box>
 
-            {isUpdate && <Box className={classes.content}>
-                <p>Chỉnh sửa nhà trọ: lân cận, trạng thái, ảnh bìa,...</p>
-                <p>Chỉnh sửa nhà trọ: lân cận, trạng thái, ảnh bìa,...</p>
+            {isUpdate && editor && <Box className={classes.content}>
+                {editor.edited}
             </Box>}
 
             <Box className={classes.controls}>
@@ -102,7 +112,10 @@ export const BoxInfo = ({ isUpdate = true }: Props) => {
                 <span className="control"><Email /></span>
                 <span className="control"><CardMembership /></span>
             </Box>
-            <img className={classes.school} src={School} alt="" />
+
+            <Tooltip title={user?.school.name || ''}>
+                <img className={classes.school} src={user?.avatarUrl} alt="school logo" />
+            </Tooltip>
         </Box>
     )
 }

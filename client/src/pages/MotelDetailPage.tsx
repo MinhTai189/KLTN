@@ -1,21 +1,44 @@
-import { useParams } from 'react-router-dom'
-import { useEffect, useRef } from 'react'
 import { Grid } from '@material-ui/core'
-import { AlbumMotel, InforMotelDetail, InforOnwerUp, InforRoomDetail } from 'features/motels/components'
+import { motelApi } from 'api/motel'
 import { Header } from 'components/Common'
-import { CardItem, Slider } from 'features/rate/components'
+import { AlbumMotel, InforMotelDetail, InforOnwerUp, InforRoomDetail } from 'features/motels/components'
+import { Slider } from 'features/rate/components'
+import { Editor, Motel, MotelOnly, Owner, Response, Room } from 'models'
+import { useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 interface Props {
 
 }
 
+interface OwnerDetail extends Owner {
+    createdAt: string
+}
+
+interface DataMotel {
+    album: string[]
+    room: Room[]
+    motel: MotelOnly | undefined
+    editor: Editor[]
+    owner: OwnerDetail | undefined
+}
+
 const MotelDetailPage = (props: Props) => {
     const { id } = useParams<{ id: string }>()
+    const [dataMotel, setDataMotel] = useState<DataMotel>({
+        album: [],
+        motel: undefined,
+        room: [],
+        editor: [],
+        owner: undefined
+    })
+
     const albumRef = useRef<HTMLElement>()
     const infoRef = useRef<HTMLElement>()
     const roomRef = useRef<HTMLElement>()
 
     useEffect(() => {
+        //scroll page event
         window.addEventListener('scroll', () => {
             if (albumRef.current && infoRef.current && roomRef.current) {
                 const windY = window.scrollY
@@ -34,6 +57,27 @@ const MotelDetailPage = (props: Props) => {
                 }
             }
         })
+
+        //get motel
+        motelApi.getMotelById(id)
+            .then((res: Response<Motel>) => {
+                const { data } = res
+                const { images, thumbnail, editor, owner, createdAt, room, ...motel } = data
+
+                const album: string[] = []
+                album.push(images as any, thumbnail as string)
+
+                console.log({ data })
+
+                setDataMotel({
+                    ...dataMotel,
+                    album,
+                    room,
+                    editor: (editor as Editor[]),
+                    owner: { ...owner, createdAt: (createdAt as string) } as OwnerDetail
+                })
+            })
+            .catch((err: any) => console.log('Get Motel failed', err))
 
         return () => {
             window.removeEventListener('scroll', () => { })
@@ -57,7 +101,7 @@ const MotelDetailPage = (props: Props) => {
                 <Grid container spacing={2}>
                     <Grid item md={9}>
                         <div ref={albumRef as any}>
-                            <AlbumMotel />
+                            {dataMotel.album.length > 0 && <AlbumMotel images={dataMotel.album} />}
                         </div>
 
                         <InforMotelDetail />
@@ -65,13 +109,13 @@ const MotelDetailPage = (props: Props) => {
 
                     <Grid item md={3}>
                         <div ref={infoRef as any}>
-                            <InforOnwerUp />
+                            {/* {dataMotel.owner && dataMotel.editor.length > 0 && <InforOnwerUp editor={dataMotel.editor} owner={dataMotel.owner} />} */}
                         </div>
                     </Grid>
 
                     <Grid item md={12}>
                         <div ref={roomRef as any}>
-                            <InforRoomDetail />
+                            <InforRoomDetail room={dataMotel.room} />
                         </div>
                     </Grid>
                 </Grid>

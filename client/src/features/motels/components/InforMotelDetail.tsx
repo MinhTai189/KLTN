@@ -1,5 +1,4 @@
 import { Box, makeStyles, Theme, Tooltip } from "@material-ui/core"
-import transitions from "@material-ui/core/styles/transitions"
 import { Facebook, Mail, Phone, Star } from "@material-ui/icons"
 import School from 'assets/images/school.png'
 import { ReactComponent as Zalo } from 'assets/images/zalo.svg'

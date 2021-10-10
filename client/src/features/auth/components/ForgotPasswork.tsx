@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, makeStyles } from '@material-ui/core'
+import { Box, CircularProgress, makeStyles } from '@material-ui/core'
 import { AlternateEmail } from '@material-ui/icons'
 import { ButtonCustom } from 'components/Common/Button'
 import { InputField } from 'components/FormFields'

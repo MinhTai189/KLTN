@@ -2,11 +2,10 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import axiosClient from 'api/axiosClient';
 import { userApi } from 'api/user';
 import { push } from 'connected-react-router';
-import { userActions } from 'features/users/usersSlice';
 import { Response, User } from 'models';
 import { toast } from 'react-toastify';
-import { put, takeLatest, call } from 'redux-saga/effects';
-import { clearToken, getToken } from 'utils';
+import { call, put, takeLatest } from 'redux-saga/effects';
+import { clearToken } from 'utils';
 import { authActions } from './authSlice';
 import { LoginData } from './models';
 

@@ -24,9 +24,9 @@ const HomePage = () => {
 
     useEffect(() => {
         // scroll event window for nav
-        window.addEventListener('scroll', () => {
+        window.onscroll = () => {
             window.scrollY >= 90 ? setIsChangeNav(true) : window.scrollY === 0 && setIsChangeNav(false)
-        })
+        }
 
         //fetch motel data
         dispatch(motelActions.getMotel({
@@ -35,9 +35,9 @@ const HomePage = () => {
         }))
 
         return () => {
-            window.removeEventListener('scroll', () => { })
+            window.onscroll = () => { }
         }
-    }, [])
+    }, [filter])
 
     return (
         <>

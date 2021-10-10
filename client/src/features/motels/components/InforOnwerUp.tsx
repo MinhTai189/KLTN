@@ -1,11 +1,16 @@
 import { Box, Theme } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
 import { ButtonCustom } from "components/Common/Button"
-import { classicNameResolver } from "typescript"
+import { Editor, Owner } from "models"
 import { BoxInfo } from '.'
 
-interface Props {
+interface OwnerDetail extends Owner {
+    createdAt: string
+}
 
+interface Props {
+    editor: Editor[]
+    owner: OwnerDetail
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -39,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const InforOnwerUp = (props: Props) => {
+export const InforOnwerUp = ({ editor, owner }: Props) => {
     const classes = useStyles()
 
     return (
@@ -47,13 +52,15 @@ export const InforOnwerUp = (props: Props) => {
             <Box className={classes.wrapper} style={{ marginBottom: 16 }}>
                 <h5 className='title'>Người đăng tin</h5>
 
-                <BoxInfo isUpdate={false} />
+                <BoxInfo isUpdate={false} owner={owner} />
             </Box>
 
             <Box className={classes.wrapper}>
                 <h5 className='title'>Danh sách chỉnh sửa</h5>
 
-                <BoxInfo />
+                {editor.map((item, index) => (
+                    <BoxInfo key={index} editor={item} />
+                ))}
             </Box>
 
             <Box className={classes.btn}>

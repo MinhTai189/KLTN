@@ -1,9 +1,11 @@
 import { TableBody, TableCell, TableContainer, TableHead, TableRow, Table, Theme } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles";
 import { ButtonCustom } from "components/Common/Button";
+import { Room } from "models";
+import { changeRoomToTable } from "utils";
 
 interface Props {
-
+    room: Room[]
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -33,13 +35,11 @@ function createData(name: string, price: string, amount: string, area: string, u
     return { name, price, amount, area, ultilities };
 }
 
-export const InforRoomDetail = (props: Props) => {
+export const InforRoomDetail = ({ room }: Props) => {
     const classes = useStyles()
+    const dataTable = changeRoomToTable(room)
 
-    const rows = [
-        createData('Phòng trọ 1', '850k/tháng', '3/5', '8m²', 'Máy lạnh, Wifi, Nhà xe, Giường'),
-        createData('Phòng trọ 2', '850k/tháng', '3/5', '8m²', 'Máy lạnh, Wifi, Nhà xe, Giường, Camera an ninh, Dụng cụ vệ sinh'),
-    ];
+    console.log(dataTable)
 
     return (
         <TableContainer className={classes.root}>
@@ -55,7 +55,7 @@ export const InforRoomDetail = (props: Props) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {rows.map((row) => (
+                    {/* {rows.map((row) => (
                         <TableRow key={row.name}>
                             <TableCell component="th" scope="row">
                                 {row.name}
@@ -68,7 +68,7 @@ export const InforRoomDetail = (props: Props) => {
                                 <ButtonCustom>Chỉnh sửa</ButtonCustom>
                             </TableCell>
                         </TableRow>
-                    ))}
+                    ))} */}
                 </TableBody>
             </Table>
         </TableContainer>

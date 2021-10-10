@@ -35,7 +35,7 @@ export const CheckboxGroup = ({ label, options, initialState, control, name }: P
     useEffect(() => {
         const arrayData = arrayTrueValue(checkedList)
         onChange(arrayData)
-    }, [checkedList])
+    }, [checkedList, onChange])
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setCheckedList({ ...checkedList, [e.target.name]: e.target.checked })

@@ -1,4 +1,10 @@
-import { call, put, take, takeLatest } from '@redux-saga/core/effects';
+import {
+  call,
+  debounce,
+  put,
+  take,
+  takeLatest,
+} from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { motelApi } from 'api/motel';
 import { uploadApi } from 'api/upload';
@@ -135,7 +141,11 @@ export default function* motelSaga() {
   yield takeLatest(motelActions.addMotel, handleAddMotel);
   yield takeLatest(motelActions.updateMotel, handleUpdateMotel);
   yield takeLatest(motelActions.removeMotel, handleRemoveMotel);
-  yield takeLatest(motelActions.searchWithDebounce, handleSearchWithDebounce);
+  yield debounce(
+    500,
+    motelActions.searchWithDebounce,
+    handleSearchWithDebounce
+  );
 
   yield takeLatest(motelActions.updateRoom, handleUpdateRoom);
 }

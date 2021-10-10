@@ -1,15 +1,10 @@
 import { Box, Theme } from "@material-ui/core"
 import { ArrowBack, ArrowForward, Favorite } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
-import Picture from 'assets/images/motel.jpg'
-import Picture1 from 'assets/images/motel1.jpg'
-import Picture2 from 'assets/images/motel2.jpg'
-import Picture3 from 'assets/images/motel3.jpg'
-import Picture4 from 'assets/images/motel4.jpg'
-import Picture5 from 'assets/images/motel5.jpg'
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 
 interface Props {
+    images: string[]
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -118,12 +113,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const AlbumMotel = (props: Props) => {
+export const AlbumMotel = ({ images }: Props) => {
     const classes = useStyles()
     const [currentImg, setCurrentImg] = useState(0)
     const listImgRef = useRef<HTMLElement>(null)
-
-    const images = [Picture, Picture1, Picture2, Picture3, Picture4, Picture5]
 
     const nextImg = () => {
         setCurrentImg(old => {

@@ -1,5 +1,5 @@
 import { CircularProgress, makeStyles, Theme, Tooltip } from '@material-ui/core'
-import { AcUnit, Build, CallMerge, Favorite, FavoriteBorder, FavoriteOutlined, Group, HorizontalSplit, Hotel, Motorcycle, Star, StarBorder, StarHalf, Toys, TrendingUp, Videocam, Wifi } from '@material-ui/icons'
+import { AcUnit, Build, CallMerge, Favorite, FavoriteBorder, Group, HorizontalSplit, Hotel, Motorcycle, Star, StarBorder, StarHalf, Toys, TrendingUp, Videocam, Wifi } from '@material-ui/icons'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import Motel from 'assets/images/motel.jpg'
 import { ButtonCustom } from 'components/Common/Button'
@@ -13,25 +13,6 @@ import { getPriceMotel } from 'utils/getPriceMotel'
 
 interface Props {
     motelData: MotelModel
-}
-
-interface Optional {
-    title: string;
-    icon: ReactElement
-}
-
-interface ObjectOptional {
-    wifi: Optional;
-    ml: Optional;
-    gac: Optional;
-    nx: Optional;
-    camera: Optional;
-    quat: Optional;
-    tl: Optional;
-    giuong: Optional;
-    gt: Optional;
-    cc: Optional;
-    dcvs: Optional
 }
 
 const useStyles = makeStyles((theme: Theme) => ({

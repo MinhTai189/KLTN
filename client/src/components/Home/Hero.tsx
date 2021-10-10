@@ -1,10 +1,9 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { Box, makeStyles, Typography } from '@material-ui/core'
-import { motelApi } from 'api/motel'
+import { useAppDispatch, useAppSelector } from 'app/hooks'
 import Background from 'assets/images/background.jpg'
-import { SchoolDropdown } from 'models'
+import { schoolActions, selectFilterSchool } from 'features/school/schoolSlice'
 import { ChangeEvent, useEffect, useState } from 'react'
-import { removeAccents } from 'utils'
 import { DropDown } from './DropDown'
 
 const useStyles = makeStyles(theme => ({
@@ -26,8 +25,7 @@ const useStyles = makeStyles(theme => ({
         top: '25%',
         transform: 'translateX(-50%)',
         color: '#fff',
-        width: '100%',
-        maxWidth: 650,
+        width: 650,
         perspective: 500
     },
     question: {
@@ -129,33 +127,19 @@ export const Hero = () => {
     const [searchValue, setSearchValue] = useState('')
 
     const [isFlip, setIsFlip] = useState<boolean | undefined>()
-    const [schoolList, setSchoolList] = useState<Array<SchoolDropdown>>([])
-    const [dataResponse, setDataReponse] = useState<Array<SchoolDropdown>>([])
+    const dispatch = useAppDispatch()
+    const filter = useAppSelector(selectFilterSchool)
+
 
     const handleFilterSearch = (value: string) => {
-        if (schoolList.length > 0) {
-            const filter = removeAccents(value).toUpperCase()
-
-            const filteredData = dataResponse.filter(school => {
-                const name = removeAccents(school.name).toUpperCase()
-
-                return name.includes(filter)
-            })
-
-            setSchoolList(filteredData)
-        }
+        dispatch(schoolActions.searchWithDebounce({
+            _namelike: value.trim()
+        }))
     }
 
     useEffect(() => {
-        motelApi.getDropdownList()
-            .then(res => {
-                setSchoolList(res.data)
-                setDataReponse(res.data)
-            })
-            .catch((err) => {
-                throw err
-            })
-    }, [])
+        dispatch(schoolActions.getSchool(filter))
+    }, [filter])
 
     const onClickSearch = () => {
         setOpenDropdrow(current => {
@@ -175,6 +159,8 @@ export const Hero = () => {
 
     const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target
+
+        handleFilterSearch(value)
 
         setSearchValue(value)
         setOpenDropdrow(true)
@@ -208,7 +194,7 @@ export const Hero = () => {
                     </Box>
                 </Box>
 
-                <DropDown openDropdown={openDropdown} isFlip={isFlip} setIsFlip={setIsFlip} schoolList={schoolList} />
+                <DropDown openDropdown={openDropdown} isFlip={isFlip} setIsFlip={setIsFlip} />
             </Box>
 
             <span className={`${classes.scrollDown} scroll-1`} onClick={handleScrollDown}></span>

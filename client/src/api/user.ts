@@ -1,4 +1,4 @@
-import { Filter, ListResponse, Response, UserUpdate } from 'models';
+import { Filter, ListResponse } from 'models';
 import { User } from 'react-easy-facebook/dist/types';
 import axiosClient from './axiosClient';
 

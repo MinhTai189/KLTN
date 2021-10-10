@@ -1,18 +1,19 @@
 import { Box, IconButton, Theme, Typography } from '@material-ui/core'
 import { ArrowBack } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
+import { useAppSelector } from 'app/hooks'
+import { selectDataSchool } from 'features/school/schoolSlice'
 import { gsap } from 'gsap'
-import { SchoolDropdown } from 'models'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { VariableSizeList as List } from 'react-window'
 import { numberToCurrency } from 'utils'
 import { MotelRows, SchoolRows } from '.'
-import { VariableSizeList as List } from 'react-window';
+import AutoSize from 'react-virtualized-auto-sizer'
 
 interface Props {
     openDropdown: boolean | undefined;
     isFlip: boolean | undefined;
     setIsFlip: (e: boolean | undefined) => void
-    schoolList: Array<SchoolDropdown>
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         height: 0,
         opacity: 0,
         transform: 'translateY(-30px)',
-        perspective: 500
+        perspective: 500,
     },
     box: {
         position: 'absolute',
@@ -32,14 +33,15 @@ const useStyles = makeStyles((theme: Theme) => ({
         border: `4px solid ${theme.palette.primary.main}`,
         padding: '4px 0',
         marginTop: 4,
-        overflowX: 'hidden',
-        overflowY: 'auto',
         perspective: 500,
+        overflowX: 'hidden',
+        overflowY: 'scroll',
 
-        "&::-webkit-scrollbar": {
+        "&::-webkit-scrollbar, & * ::-webkit-scrollbar": {
             width: 0
         }
-    }, nav: {
+    },
+    nav: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -65,8 +67,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-export const DropDown = ({ openDropdown, isFlip, setIsFlip, schoolList }: Props) => {
+export const DropDown = ({ openDropdown, isFlip, setIsFlip }: Props) => {
     const classes = useStyles()
+    const schoolList = useAppSelector(selectDataSchool)
+
     const ref = useRef()
     const childRef = gsap.utils.selector(ref)
 
@@ -103,7 +107,6 @@ export const DropDown = ({ openDropdown, isFlip, setIsFlip, schoolList }: Props)
     }, [isFlip])
 
     const onClickRows = (codeName: string, school: string) => {
-        console.log({ codeName, school });
         setIsFlip(true)
     }
 
@@ -153,14 +156,18 @@ export const DropDown = ({ openDropdown, isFlip, setIsFlip, schoolList }: Props)
             </div>
 
             <div className={`${classes.box} box1`}>
-                <List
-                    height={300}
-                    itemCount={schoolList.length}
-                    width={600}
-                    itemSize={() => 100}
-                >
-                    {Row}
-                </List>
+                <AutoSize>
+                    {({ height, width }: { height: number, width: number }) => (
+                        <List
+                            height={height}
+                            itemCount={schoolList.length}
+                            width={width}
+                            itemSize={() => 100}
+                        >
+                            {Row}
+                        </List>
+                    )}
+                </AutoSize>
             </div>
         </div>
     )
