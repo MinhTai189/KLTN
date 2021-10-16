@@ -1,11 +1,10 @@
 import { CircularProgress, makeStyles, Theme, Tooltip } from '@material-ui/core'
 import { AcUnit, Build, CallMerge, Favorite, FavoriteBorder, Group, HorizontalSplit, Hotel, Motorcycle, Star, StarBorder, StarHalf, Toys, TrendingUp, Videocam, Wifi } from '@material-ui/icons'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
-import Motel from 'assets/images/motel.jpg'
 import { ButtonCustom } from 'components/Common/Button'
 import { authActions, selectCurrentUser, selectLoading } from 'features/auth/authSlice'
 import { Motel as MotelModel, User } from 'models'
-import { ReactElement, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
 import { roundMark } from 'utils'
@@ -198,7 +197,7 @@ const useStyles = makeStyles((theme: Theme) => ({
                     height: 22,
 
                     "&:not(:last-child)": {
-                        marginRight: 4
+                        marginRight: 16
                     }
                 }
             }
@@ -271,7 +270,6 @@ export const ItemMotel = ({ motelData }: Props) => {
 
     useEffect(() => {
         currentUser && setIsLike(checkFavoriteMotel())
-        console.log({ currentUser, isLike })
     }, [currentUser])
 
     const onClickDetail = () => {
@@ -298,7 +296,7 @@ export const ItemMotel = ({ motelData }: Props) => {
     return (
         <li className={classes.root}>
             <div className={classes.top}>
-                <img className={thumbnail as string} src={Motel} alt="motel image" />
+                <img src={thumbnail as string} alt="motel image" />
 
                 <div className={`${classes.cover} cover`}></div>
 
@@ -326,12 +324,12 @@ export const ItemMotel = ({ motelData }: Props) => {
                     <span className="favorite">
                         {!loading ?
                             isLike
-                                ? <Tooltip title='Thêm nhà trọ vào danh sách yêu thích'>
+                                ? <Tooltip title='Xóa nhà trọ vào danh sách yêu thích'>
                                     <span onClick={handleFavoriteMotel}>
                                         <Favorite />
                                     </span>
                                 </Tooltip>
-                                : <Tooltip title='Xóa nhà trọ vào danh sách yêu thích'>
+                                : <Tooltip title='Thêm nhà trọ vào danh sách yêu thích'>
                                     <span onClick={handleFavoriteMotel}>
                                         <FavoriteBorder />
                                     </span>

@@ -9,6 +9,7 @@ interface Props {
     initialState: any;
     control: Control<any>;
     name: string;
+    size?: 'small' | 'medium'
 }
 
 const arrayTrueValue = (data: object) => {
@@ -25,7 +26,7 @@ const arrayTrueValue = (data: object) => {
     return result
 }
 
-export const CheckboxGroup = ({ label, options, initialState, control, name }: Props) => {
+export const CheckboxGroup = ({ label, options, initialState, control, name, size = 'medium' }: Props) => {
     const [checkedList, setCheckedList] = useState<any>(initialState)
     const { field: { onChange } } = useController({
         name,
@@ -48,7 +49,7 @@ export const CheckboxGroup = ({ label, options, initialState, control, name }: P
                 {options.map((option, index) => (
                     <FormControlLabel
                         key={index}
-                        control={<Checkbox checked={checkedList[option.value]} onChange={handleChange} name={option.value} />}
+                        control={<Checkbox checked={checkedList[option.value]} size={size} onChange={handleChange} name={option.value} />}
                         label={option.label}
                     />
                 ))}

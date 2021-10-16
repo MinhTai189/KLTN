@@ -87,7 +87,7 @@ const MotelListPage = () => {
     }
 
     const handleUpdateRoom = (data: Room) => {
-
+        dispatch(motelActions.updateRoom(data))
     }
 
     const handleRemove = (record: MotelDataTable) => {

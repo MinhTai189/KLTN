@@ -56,8 +56,8 @@ export const changeRoomToTable = (rooms: Room[]): RoomTable[] => {
       {
         style: {
           background: room.remain > 0 ? '#19bb0b' : '#c90404',
-          padding: '0 8px',
-          borderRadius: '50%',
+          padding: '4px 12px',
+          borderRadius: 15,
         },
       },
       `${remain}/${total}`
@@ -67,13 +67,20 @@ export const changeRoomToTable = (rooms: Room[]): RoomTable[] => {
     const keys = Object.keys(room.optional);
     const values = Object.values(room.optional);
 
-    const additional = values.reduce((arr: any, item: any, index: any) => {
+    let additional = '';
+    let indexAdditional = 0;
+
+    values.forEach((item: any, index: any) => {
       if (!!item) {
         const key = keys[index] as keyof Optional;
-        arr.push(additionalString[key]);
+
+        if (indexAdditional !== 0) additional += ', ';
+
+        indexAdditional++;
+
+        additional += additionalString[key];
       }
-      return arr;
-    }, []);
+    });
 
     return {
       _id: room._id,
@@ -81,7 +88,7 @@ export const changeRoomToTable = (rooms: Room[]): RoomTable[] => {
       price: `${price}/tháng`,
       status,
       area,
-      additional: additional.join(','),
+      additional,
     } as RoomTable;
   });
 

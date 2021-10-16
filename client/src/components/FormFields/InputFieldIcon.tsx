@@ -1,5 +1,5 @@
-import { FormControl, FormHelperText, InputLabel, OutlinedInput } from '@material-ui/core'
-import React, { ReactElement } from 'react'
+import { FormControl, FormHelperText, InputLabel, OutlinedInput, PropTypes } from '@material-ui/core'
+import { ReactElement } from 'react'
 import { Control, useController } from 'react-hook-form'
 
 interface Props {
@@ -7,12 +7,13 @@ interface Props {
     label: string;
     name: string;
     control: Control<any>;
-    icon: ReactElement
-
+    icon: ReactElement;
+    marginOut?: PropTypes.Margin | undefined
+    marginIn?: 'dense' | 'none'
     [key: string]: any
 }
 
-export const InputFieldIcon = ({ type, label, name, control, icon, ...props }: Props) => {
+export const InputFieldIcon = ({ type, label, name, control, icon, marginOut = 'normal', marginIn = 'none', ...props }: Props) => {
     const { field: { value, onChange, onBlur, ref },
         fieldState: { invalid, error }, } = useController({
             name,
@@ -20,11 +21,11 @@ export const InputFieldIcon = ({ type, label, name, control, icon, ...props }: P
         })
 
     return (
-        <FormControl fullWidth variant="outlined" margin='normal'>
+        <FormControl fullWidth variant="outlined" margin={marginOut}>
             <InputLabel htmlFor="outlined-adornment-amount">{label}</InputLabel>
             <OutlinedInput
                 fullWidth
-                margin="none"
+                margin={marginIn}
                 id="outlined-adornment-amount"
                 type={type}
                 label={label}

@@ -1,10 +1,12 @@
 import { Box, Theme } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
+import { Empty } from 'antd'
+import { Rate } from 'models'
 import { useState } from 'react'
 import { CardItem } from '.'
 
 interface Props {
-
+    listRate: Rate[]
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -16,7 +18,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     controls: {
         marginTop: 0,
-        marginBottom: 80,
         display: 'flex',
         width: '%100',
         justifyContent: 'center',
@@ -74,6 +75,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     wrapper: {
         width: '100%',
+        marginTop: 80,
 
         '& .slider': {
             display: 'flex',
@@ -87,14 +89,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const Slider = (props: Props) => {
+export const Slider = ({ listRate }: Props) => {
     const classes = useStyles()
     const [currentIndex, setCurrentIndex] = useState({ index: 0, direction: 'dnext' })
-    const dataSlider = new Array(10).fill(1)
 
     const nextSlider = () => {
         setCurrentIndex(old => {
-            if (old.index === dataSlider.length - 1)
+            if (old.index === listRate.length - 1)
                 return { index: 0, direction: 'dnext' }
             return { index: old.index + 1, direction: 'dnext' }
         })
@@ -103,7 +104,7 @@ export const Slider = (props: Props) => {
     const prevSlider = () => {
         setCurrentIndex(old => {
             if (old.index === 0)
-                return { index: dataSlider.length - 1, direction: 'dprev' }
+                return { index: listRate.length - 1, direction: 'dprev' }
             return { index: old.index - 1, direction: 'dprev' }
         })
     }
@@ -118,7 +119,7 @@ export const Slider = (props: Props) => {
                 Đánh giá
             </h2>
 
-            <Box className={classes.controls}>
+            {listRate.length > 3 && <Box className={classes.controls}>
                 <div className='btn' onClick={prevSlider}>
                     <span className="btnLeft arrow"></span>
                 </div>
@@ -126,28 +127,43 @@ export const Slider = (props: Props) => {
                 <div className='btn' onClick={nextSlider}>
                     <span className="btnRight arrow"></span>
                 </div>
-            </Box>
+            </Box>}
 
             <Box className={classes.wrapper}>
-                <Box className='slider'>
-                    {dataSlider.map((item, index) => {
-                        const position = currentIndex.index
-                        const direction = currentIndex.direction
+                {listRate.length === 0 ?
+                    <Box>
+                        <Empty description='Nhà trọ hiện không có đánh giá'></Empty>
+                    </Box>
 
-                        const next = position === dataSlider.length - 1 ? 0 : position + 1
-                        const prev = position === 0 ? dataSlider.length - 1 : position - 1
-                        const nNext = next === dataSlider.length - 1 ? 0 : next + 1
-                        const pPrev = prev === 0 ? dataSlider.length - 1 : prev - 1
+                    : <Box className='slider'>
+                        {listRate.map((rate, index) => {
+                            const position = currentIndex.index
+                            const direction = currentIndex.direction
+                            let classCard = ''
 
-                        let classCard = index === position ? 'active' : index === next
-                            ? 'next' : index === prev ? 'prev' : index === nNext && direction === 'dprev'
-                                ? 'nNext' : index === pPrev && direction === 'dnext' ? 'pPrev' : ''
+                            if (listRate.length > 3) {
+                                const next = position === listRate.length - 1 ? 0 : position + 1
+                                const prev = position === 0 ? listRate.length - 1 : position - 1
+                                const nNext = direction === 'dprev' ? next === listRate.length - 1 ? 0 : next + 1 : -1
+                                const pPrev = direction === 'dnext' ? prev === 0 ? listRate.length - 1 : prev - 1 : -1
 
-                        classCard = `${classCard} ${direction}`
+                                classCard = index === position ? 'active' : index === next
+                                    ? 'next' : index === prev ? 'prev' : index === nNext && direction === 'dprev'
+                                        ? 'nNext' : index === pPrev && direction === 'dnext' ? 'pPrev' : ''
 
-                        return <CardItem className={classCard} />
-                    })}
-                </Box>
+                                classCard = `${classCard} ${direction}`
+                            } else {
+                                if (listRate.length === 3) {
+                                    classCard = index === 0 ? 'pPrev' : index === 1 ? 'prev' : 'active'
+                                    classCard = `${classCard} dnext`
+                                } else {
+                                    classCard = 'singular'
+                                }
+                            }
+
+                            return <CardItem className={classCard} dataRate={rate} />
+                        })}
+                    </Box>}
             </Box>
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
         </Box>

@@ -9,11 +9,12 @@ interface Props {
     title: string;
     value?: any;
     error?: string
+    size?: 'medium' | 'small'
 
     [key: string]: any
 }
 
-export const AutoCompleteField = ({ options, onChange, label, disabled = false, title, value, error, ...props }: Props) => {
+export const AutoCompleteField = ({ options, onChange, label, disabled = false, title, value, error, size = 'medium', ...props }: Props) => {
     const useStyles = makeStyles(theme => ({
         root: {
             marginTop: theme.spacing(2),
@@ -38,6 +39,7 @@ export const AutoCompleteField = ({ options, onChange, label, disabled = false, 
         <>
             <Autocomplete
                 className={classes.root}
+                size={size}
                 value={value}
                 options={options}
                 getOptionLabel={(option) => option[title]}

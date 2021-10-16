@@ -6,6 +6,7 @@ interface Props {
     label: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     error?: string;
+    margin?: 'normal' | 'dense' | 'none'
     [key: string]: any
 }
 
@@ -18,14 +19,14 @@ const useStyles = makeStyles({
     }
 })
 
-export const FileInputField = ({ name, label, onChange, error, ...props }: Props) => {
+export const FileInputField = ({ name, label, onChange, error, margin = 'normal', ...props }: Props) => {
     const classes = useStyles()
 
     return (<TextField
         className={classes.root}
         type="file"
         fullWidth
-        margin="normal"
+        margin={margin}
         variant="outlined"
         name={name}
         label={label}

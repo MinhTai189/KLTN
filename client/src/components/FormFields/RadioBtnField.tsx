@@ -9,6 +9,7 @@ interface Props {
     control: Control<any>;
     name: string;
     handleChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+    margin?: 'dense' | 'normal' | 'none'
 
     [key: string]: any
 }
@@ -25,7 +26,7 @@ const useStyles = makeStyles({
     }
 })
 
-export const RadioBtnField = ({ label, options, control, name, handleChange, ...props }: Props) => {
+export const RadioBtnField = ({ label, options, control, name, handleChange, margin = 'normal', ...props }: Props) => {
     const classes = useStyles()
     const { field: { value, onChange } } = useController({
         name,
@@ -38,7 +39,7 @@ export const RadioBtnField = ({ label, options, control, name, handleChange, ...
     }
 
     return (
-        <FormControl className={classes.root} component="fieldset" size="small" margin="normal">
+        <FormControl className={classes.root} component="fieldset" size="small" margin={margin}>
             <FormLabel component="legend">{label}</FormLabel>
             <RadioGroup name={name} value={value} onChange={onChangeRadio} {...props}>
                 {options.map((option, index) => (

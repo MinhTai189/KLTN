@@ -78,6 +78,9 @@ function* handleAddMotel(action: PayloadAction<Motel>) {
 function* handleUpdateMotel(action: PayloadAction<MotelOnly>) {
   try {
     const dataUpdate = action.payload;
+    const successText = action.payload.invalid
+      ? 'Thông tin của bạn đã được lưu. Hãy chờ Người quản trị web xác thực!'
+      : 'Đã cập nhật dữ liệu thành công!';
 
     if (typeof action.payload.thumbnail !== 'string') {
       const response: Response<any> = yield call(
@@ -100,7 +103,7 @@ function* handleUpdateMotel(action: PayloadAction<MotelOnly>) {
     yield call(motelApi.updateMotel, dataUpdate);
     yield put(motelActions.updateMotelSuccess());
 
-    yield call(toast.success, 'Đã cập nhật dữ liệu thành công!');
+    yield call(toast.success, successText);
   } catch (err: any) {
     yield call(toast.error, err.response.data.message);
     yield put(motelActions.updateMotelFailed(err.response.data.message));
@@ -120,19 +123,23 @@ function* handleRemoveMotel(action: PayloadAction<string>) {
   }
 }
 
-function* handleSearchWithDebounce(action: PayloadAction<Filter>) {
-  yield put(motelActions.setFilter(action.payload));
-}
-
 function* handleUpdateRoom(action: PayloadAction<Room>) {
   try {
+    const successText = action.payload.invalid
+      ? 'Thông tin của bạn đã được lưu! Hãy chờ Người quản trị web xác thưc!'
+      : 'Đã cập nhật dữ liệu thành công!';
+
     yield call(motelApi.updateRoom, action.payload);
 
-    yield call(toast.success, 'Đã cập nhật dữ liệu thành công!');
+    yield call(toast.success, successText);
   } catch (err: any) {
     yield call(toast.error, err.response.data.message);
     yield put(motelActions.updateRoomFailed(err.response.data.message));
   }
+}
+
+function* handleSearchWithDebounce(action: PayloadAction<Filter>) {
+  yield put(motelActions.setFilter(action.payload));
 }
 
 export default function* motelSaga() {

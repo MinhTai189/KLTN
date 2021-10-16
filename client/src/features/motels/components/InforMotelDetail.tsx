@@ -1,10 +1,12 @@
 import { Box, makeStyles, Theme, Tooltip } from "@material-ui/core"
-import { Facebook, Mail, Phone, Star } from "@material-ui/icons"
+import { Facebook, Mail, Phone, Star, StarBorder, StarHalf } from "@material-ui/icons"
 import School from 'assets/images/school.png'
 import { ReactComponent as Zalo } from 'assets/images/zalo.svg'
+import { MotelDetail } from "models"
+import { roundMark } from "utils"
 
 interface Props {
-
+    dataMotel: MotelDetail
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -97,30 +99,28 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-export const InforMotelDetail = (props: Props) => {
+export const InforMotelDetail = ({ dataMotel }: Props) => {
     const classes = useStyles()
+    const { _id, name, school, desc, address, mark, contact: { phone, facebook, email, zalo } } = dataMotel
+    let markToStar = roundMark(mark as number) || [0, 0]
 
     return (
         <Box className={classes.root}>
-            <h1 className={classes.name}>Nhà trọ Minh Tài</h1>
+            <h1 className={classes.name}>{name}</h1>
 
             <ul className={classes.schools}>
-                <Tooltip title='Trường đại học Tiền Giang'>
-                    <img src={School} alt="logo school" />
-                </Tooltip>
-                <Tooltip title='Trường đại học Tiền Giang'>
-                    <img src={School} alt="logo school" />
-                </Tooltip>
-                <Tooltip title='Trường đại học Tiền Giang'>
-                    <img src={School} alt="logo school" />
-                </Tooltip>
+                {school.map((item, index) => (
+                    <Tooltip key={index} title={item.name}>
+                        <img src={item.logo} alt="logo school" />
+                    </Tooltip>
+                ))}
             </ul>
 
             <Box className={classes.wrapper}>
                 <h3 className="title">Thông tin mô tả</h3>
 
                 <p className="content">
-                    Bước lên cầu thang lên gác có thể thấy có lối đi chia về hai hướng. Rẽ sang bên trái là phòng của bố mẹ em, còn bên phải là phòng của em trai em. Phòng bố mẹ lớn hơn một chút so với các phòng còn lại, được sơn màu hồng tím nhạt. Bố em sơn màu sơn này vì đó là màu yêu thích của mẹ. Phòng em trai em són màu xanh đậm. Đúng tính chất căn phòng của một cậu bé năng động, căn phòng ấy có đủ loại đồ chơi và hình dán các siêu anh hùng. Trên tầng 3 là phòng của em và hiên nhà, nơi để phơi và giặt quần áo. Em chọn căn phòng trên tầng cao nhất là vì từ đây có thể nhìn ra thành phố, không khí rất thoáng đãng, trong lành.
+                    {desc}
                 </p>
             </Box>
 
@@ -130,16 +130,23 @@ export const InforMotelDetail = (props: Props) => {
                 <div className="row">
                     <span className="label"><b>Địa chỉ:</b></span>
 
-                    <span className="text">123/2, Thân Cửu Nghĩa, Châu Thành, Tiền Giang</span>
+                    <span className="text">{address}</span>
                 </div>
 
                 <div className="row">
                     <span className="label"><b>Điểm đánh giá:</b></span>
 
                     <span className="text">
-                        {new Array(5).fill(1).map((_, index) => (
-                            <Star key={index} />
-                        ))}
+                        {new Array(5).fill(1).map((_, index) => {
+                            if (markToStar[0] > 0) {
+                                markToStar[0] = markToStar[0] - 1
+                                return <Star key={index} />
+                            } else if (markToStar[1] !== 0) {
+                                markToStar[1] = 0
+                                return <StarHalf key={index} />
+                            }
+                            return <StarBorder key={index} />
+                        })}
                     </span>
                 </div>
 
@@ -147,31 +154,31 @@ export const InforMotelDetail = (props: Props) => {
                     <span className="label"><b>Liên hệ:</b></span>
 
                     <div className="contact">
-                        <span className="contact__row">
+                        <span className="contact__row" style={!phone ? { pointerEvents: 'none', opacity: 0.5 } : {}}>
                             <span className='icon'><Phone /></span>
                             <span className="contact__text">
-                                <a href="tel:+84366471931">0366471931</a>
+                                <a href={`tel:+84${phone?.slice(1, phone.length)}`}>{phone || 'Không xác định'}</a>
                             </span>
                         </span>
 
-                        <span className="contact__row">
+                        <span className="contact__row" style={!email ? { pointerEvents: 'none', opacity: 0.5 } : {}}>
                             <span className='icon'><Mail /></span>
                             <span className="contact__text">
-                                <a href="mailto:ktln.110.088@gmail.com">ktln.110.088@gmail.com</a>
+                                <a href={`mailto:${email}`}>{email || 'Không xác định'}</a>
                             </span>
                         </span>
 
-                        <span className="contact__row">
+                        <span className="contact__row" style={!facebook ? { pointerEvents: 'none', opacity: 0.5 } : {}}>
                             <span className='icon'><Facebook /></span>
                             <span className="contact__text">
-                                <a href="">Trần Minh Tài</a>
+                                <a href={facebook}>{facebook ? 'Facebook' : 'Không xác định'}</a>
                             </span>
                         </span>
 
-                        <span className="contact__row">
+                        <span className="contact__row" style={!zalo ? { pointerEvents: 'none', opacity: 0.5 } : {}}>
                             <span className='icon'><Zalo /></span>
                             <span className="contact__text">
-                                <a href="">0366471931</a>
+                                <a href={`https://zalo.me/${zalo}`}>{zalo || 'Không xác định'}</a>
                             </span>
                         </span>
                     </div>

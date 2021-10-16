@@ -1,9 +1,8 @@
 import { Box, Theme, Tooltip } from "@material-ui/core"
 import { CardMembership, CloudUpload, Email } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
-import School from 'assets/images/school.png'
 import { Editor, Owner } from "models"
-import { twoNumber } from "utils"
+import { Link } from 'react-router-dom'
 
 interface OwnerDetail extends Owner {
     createdAt: string
@@ -65,10 +64,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     school: {
         gridArea: 'school',
-        borderRadius: '50%',
         width: 25,
         placeSelf: 'start center',
-        paddingTop: 4
+        paddingTop: 4,
+        objectFit: 'cover'
     },
     controls: {
         gridArea: 'controls',
@@ -87,7 +86,7 @@ export const BoxInfo = ({ isUpdate = true, editor, owner }: Props) => {
     const classes = useStyles()
     const user = editor ? editor.user : owner
     const createdDate = new Date(editor?.createdAt || owner?.createdAt || '')
-    const date = `${twoNumber(createdDate.getDay())}/${twoNumber(createdDate.getMonth())}/${createdDate.getFullYear()}`
+    const date = createdDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
 
     return (
         <Box className={classes.root}>
@@ -108,13 +107,27 @@ export const BoxInfo = ({ isUpdate = true, editor, owner }: Props) => {
             </Box>}
 
             <Box className={classes.controls}>
-                <span className="control"><CloudUpload /></span>
-                <span className="control"><Email /></span>
-                <span className="control"><CardMembership /></span>
+                <span className="control">
+                    <Tooltip title={user?.email || ''}>
+                        <a href={`mailto:${user?.email}`}>
+                            <Email />
+                        </a>
+                    </Tooltip>
+                </span>
+                <span className="control">
+                    <Tooltip title={`${0} bài đăng`}>
+                        <CloudUpload />
+                    </Tooltip>
+                </span>
+                <span className="control">
+                    <Tooltip title={`${user?.credit} điểm`}>
+                        <CardMembership />
+                    </Tooltip>
+                </span>
             </Box>
 
             <Tooltip title={user?.school.name || ''}>
-                <img className={classes.school} src={user?.avatarUrl} alt="school logo" />
+                <img className={classes.school} src={user?.school.logo} alt="school logo" />
             </Tooltip>
         </Box>
     )

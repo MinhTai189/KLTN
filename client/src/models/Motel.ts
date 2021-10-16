@@ -1,4 +1,9 @@
-import { School, UploadResponse } from 'models';
+import { Omit } from '@material-ui/types';
+import {
+  School,
+  UploadResponse,
+  User,
+} from 'models';
 
 export interface Motel {
   _id?: string;
@@ -26,8 +31,8 @@ export interface Motel {
 
 export interface Room {
   _id?: string;
-  idMotel?: string;
   area: Area;
+  invalid?: boolean;
   optional: string[];
   total: number;
   remain: number;
@@ -43,8 +48,16 @@ export interface MotelOnly {
   contact: Contact;
   status: boolean | string;
   available: number;
-  school: string[];
+  school: School[];
   address: string;
+  invalid?: boolean;
+}
+
+export interface MotelDetail extends MotelOnly {
+  mark: number;
+  optional: Optional;
+  vote: number;
+  [key: string]: any;
 }
 
 export interface MotelDataTable {
@@ -71,7 +84,17 @@ export interface Owner {
   name: string;
   _id: string;
   isAdmin: boolean;
+  email: string;
+  credit: number;
   school: School;
+}
+
+export interface Rate {
+  user: User;
+  star: number;
+  content: string;
+  createAt: string;
+  _id: string;
 }
 
 interface Contact {

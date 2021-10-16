@@ -1,50 +1,46 @@
-import { Box, Theme, Button } from '@material-ui/core'
-import { DeleteOutline, Email, Facebook, Phone } from '@material-ui/icons'
-import { makeStyles } from '@material-ui/styles'
-import { Tooltip, Typography } from 'antd'
-import { AutoCompleteField, InputField } from 'components/FormFields'
-import { FileInputField } from 'components/FormFields/FileInputField'
-import { InputFieldIcon } from 'components/FormFields/InputFieldIcon'
-import { RadioBtnField } from 'components/FormFields/RadioBtnField'
-import { ReactComponent as Zalo } from '../../../assets/images/zalo.svg'
+import { yupResolver } from "@hookform/resolvers/yup"
+import { Box, CircularProgress, Theme, Tooltip, Button } from "@material-ui/core"
+import { DeleteOutline, Email, Facebook, Phone } from "@material-ui/icons"
+import { Alert } from "@material-ui/lab"
+import { makeStyles } from "@material-ui/styles"
+import { Space, Typography } from "antd"
+import schoolApi from "api/school"
+import { AutoCompleteField, InputField } from "components/FormFields"
+import { FileInputField } from "components/FormFields/FileInputField"
+import { InputFieldIcon } from "components/FormFields/InputFieldIcon"
+import { RadioBtnField } from "components/FormFields/RadioBtnField"
+import { FieldOption, MotelDetail, MotelOnly, School } from "models"
+import { ChangeEvent, useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "react-toastify"
+import { checkSizeImg } from "utils"
 import * as yup from 'yup'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useForm } from 'react-hook-form'
-import { FieldOption, MotelOnly, School } from 'models'
-import { ChangeEvent, useEffect, useState } from 'react'
-import { checkSizeImg } from 'utils'
-import { toast } from 'react-toastify'
-import schoolApi from 'api/school'
-
+import { ReactComponent as Zalo } from '../../../assets/images/zalo.svg'
 
 interface Props {
-    selectedMotelUpdate: MotelOnly;
-    handleUploadThumbnail: (file: any) => void;
-    handleUploadImages: (files: any) => void;
-    handleUpdateMotel: (data: MotelOnly) => void
+    updateData: MotelOnly
+    onClickUpdateMotel: (data: MotelOnly) => void
+    handleUploadThumbnail: (file: any) => void
+    handleUploadImages: (files: any) => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-    root: {},
+    root: {
+    },
     wrap: {
-        border: '1px solid',
-        padding: theme.spacing(1.5),
-        position: 'relative',
-        borderRadius: 5
+        marginBottom: theme.spacing(1.5)
     },
     titleWrap: {
-        position: 'absolute',
-        left: 6,
-        top: -14,
-        fontSize: 18,
+        fontSize: 14,
+        fontWeight: 600,
         display: 'inline-block',
-        background: '#fff',
-        paddingLeft: 4,
-        paddingRight: 4
+        margin: 0
     },
     imgField: {
         width: '100%',
         paddingTop: 4,
+        paddingBottom: 4,
+        margin: '8px 0',
 
         "& .MuiTypography-root": {
             color: theme.palette.text.secondary
@@ -54,7 +50,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         width: '100%',
         display: 'grid',
         gridTemplateColumns: 'repeat(4, 1fr)',
-        gridGap: 10
+        gridGap: 10,
+        marginTop: 8
     },
     imgWrap: {
         width: '100%',
@@ -82,6 +79,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         width: '100%',
         height: '50%',
         minHeight: 37,
+        maxHeight: 60,
         bottom: 0,
         left: 0,
         display: 'flex',
@@ -152,26 +150,23 @@ const radioOptions: Array<FieldOption> = [
     }
 ]
 
-export const UpdateMotelModal = ({
-    selectedMotelUpdate,
-    handleUploadThumbnail,
-    handleUploadImages,
-    handleUpdateMotel }: Props) => {
+export const EditMotelForm = ({ updateData, onClickUpdateMotel, handleUploadThumbnail, handleUploadImages }: Props) => {
     const classes = useStyles()
     const { handleSubmit, control, setError, formState: { errors }, setValue, getValues } = useForm({
-        defaultValues: selectedMotelUpdate,
+        defaultValues: updateData,
         resolver: yupResolver(schema)
     })
+    const [selectedSchool, setSelectedSchool] = useState<Array<School>>([])
 
+    const [optionsSchool, setOptionsSchool] = useState<Array<School>>([])
     const [status, setStatus] = useState(getValues('status'))
+
     const [selectedThumbnail, setSelectedThumbnail] = useState<any>(getValues('thumbnail'))
     const [selectedImages, setSelectedImages] = useState<any>(getValues('images'))
 
     const [errThumnail, setErrThumbnail] = useState('')
     const [errImages, setErrImages] = useState('')
 
-    const [optionsSchool, setOptionsSchool] = useState<Array<School>>([])
-    const [selectedSchool, setSelectedSchool] = useState<Array<School>>([])
 
     useEffect(() => {
         schoolApi.getAll()
@@ -182,7 +177,11 @@ export const UpdateMotelModal = ({
                 toast.error(err.response?.data.message)
             })
 
-        setSelectedSchool(selectedMotelUpdate.school)
+        //convert status data motel into string
+        const statusMotel = updateData.status ? 'yes' : 'no'
+        setValue('status', statusMotel)
+
+        setSelectedSchool(updateData.school)
     }, [])
 
     const handleSelectSchool = (e: any, value: any) => {
@@ -194,9 +193,10 @@ export const UpdateMotelModal = ({
     const handleChangeRadio = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.value === 'no')
             setValue('available', 0)
-        setStatus(e.target.value)
+        setStatus(e.target.value === 'yes' ? true : false)
     }
 
+    //handle thumbnail
     const handleChangeThumbnail = (e: ChangeEvent<HTMLInputElement>) => {
         if (!checkSizeImg(e.target.files)) {
             setErrThumbnail('Kích thước ảnh không được vượt quá 500KB')
@@ -208,6 +208,12 @@ export const UpdateMotelModal = ({
         }
     }
 
+    const removeThumbnail = () => {
+        setValue('thumbnail', '')
+        setSelectedThumbnail(undefined)
+    }
+
+    //handle images
     const handleChangeImages = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
 
@@ -230,11 +236,6 @@ export const UpdateMotelModal = ({
         }
     }
 
-    const removeThumbnail = () => {
-        setValue('thumbnail', '')
-        setSelectedThumbnail(undefined)
-    }
-
     const removeImages = (index: number) => {
         const imgFiltered = selectedImages.filter((_: any, num: number) => num !== index)
 
@@ -243,34 +244,46 @@ export const UpdateMotelModal = ({
     }
 
     return (
-        <form onSubmit={handleSubmit(handleUpdateMotel)}>
-            <InputField name='name' label='Tên nhà trọ' type='text' control={control} required />
-            <InputField name='address' label='Địa chỉ' type='text' control={control} required />
+        <form onSubmit={handleSubmit(onClickUpdateMotel)}>
+            <Space direction='vertical' style={{ marginBottom: 8 }}>
+                <Alert severity='info'>
+                    Bạn có thể chỉnh sửa lại thông tin của nhà trọ trọ nếu như thông tin không chính xác.
+                </Alert>
 
-            <AutoCompleteField label="Trường học lân cận" title='name' error={errors.school?.message} freeSolo value={selectedSchool} onChange={handleSelectSchool} multiple disabled={optionsSchool.length > 0 ? false : true} options={optionsSchool} />
+                <Alert severity='info'>
+                    Toàn bộ thông tin sau khi chỉnh sửa của bạn sẽ được duyệt thông qua "Người quản trị trang web". Nếu thông tin của bạn được xác thực, Người quản trị trang web sẽ cập nhật lại thông tin hiện tại.
+                </Alert>
+            </Space>
 
-            <InputField name='desc' label='Mô tả nhà trọ' type='text' multiline={true} rows={10} control={control} />
+            <InputField name='name' label='Tên nhà trọ' type='text' margin='dense' control={control} required />
+            <InputField name='address' label='Địa chỉ' type='text' margin='dense' control={control} required />
 
-            <Box className={classes.wrap} mt={3}>
+            <AutoCompleteField label="Trường học lân cận" title='name' error={errors.school?.message} freeSolo value={selectedSchool} onChange={handleSelectSchool} size='small' multiple disabled={optionsSchool.length > 0 ? false : true} options={optionsSchool} />
+
+            <InputField name='desc' label='Mô tả nhà trọ' type='text' multiline={true} rows={10} margin='dense' control={control} />
+
+            <Box className={classes.wrap} my={1}>
                 <Typography className={classes.titleWrap} style={{ fontSize: 16 }}>
                     Thông tin liên hệ
                 </Typography>
 
-                <Box>
-                    <InputFieldIcon name='contact.phone' label='Điện thoại' type="text" control={control} placeholder='0123456789' icon={<Phone />} />
-                    <InputFieldIcon name='contact.email' label='Email' type="email" control={control} placeholder='abc@gmail.com' icon={<Email />} />
-                    <InputFieldIcon name='contact.facebook' label='Facebook' type="text" control={control} placeholder='Gán đường dẫn đến facebook của bạn' icon={<Facebook />} />
-                    <InputFieldIcon name='contact.zalo' label='Zalo' placeholder='Số điện thoại zalo của bạn' type="text" control={control} icon={<Zalo />} />
-                </Box>
+                <div style={{ borderLeft: '1px solid #999', paddingLeft: 8 }}>
+                    <InputFieldIcon name='contact.phone' label='Điện thoại' type="text" marginOut='dense' marginIn='dense' control={control} placeholder='0123456789' icon={<Phone />} />
+                    <InputFieldIcon name='contact.email' label='Email' type="email" marginOut='dense' marginIn='dense' control={control} placeholder='abc@gmail.com' icon={<Email />} />
+                    <InputFieldIcon name='contact.facebook' label='Facebook' type="text" marginOut='dense' marginIn='dense' control={control} placeholder='Gán đường dẫn đến facebook của bạn' icon={<Facebook />} />
+                    <InputFieldIcon name='contact.zalo' label='Zalo' placeholder='Số điện thoại zalo của bạn' type="text" marginOut='dense' marginIn='dense' control={control} icon={<Zalo />} />
+                </div>
             </Box>
 
-            <RadioBtnField name='status' label="Trạng thái" handleChange={handleChangeRadio} options={radioOptions} control={control} />
+            <RadioBtnField name='status' label="Trạng thái" handleChange={handleChangeRadio} options={radioOptions} margin='dense' control={control} />
 
-            {status === 'yes' && <InputField name='available' label='Số phòng trống' type='number' min={0} max={99} control={control} />}
+            {status && <InputField name='available' label='Số phòng trống' type='number' min={0} max={99} margin='dense' control={control} />}
 
             {selectedThumbnail
                 ? <Box className={classes.imgField}>
-                    <Typography>Ảnh giới thiệu</Typography>
+                    <Typography className={classes.titleWrap}>
+                        Ảnh giới thiệu
+                    </Typography>
 
                     <Box className={classes.imgRow} style={{ gridTemplateColumns: '100%' }}>
                         <Box className={classes.imgWrap} style={{ height: 'auto', maxHeight: 200 }}>
@@ -282,14 +295,15 @@ export const UpdateMotelModal = ({
 
                             <img
                                 src={typeof selectedThumbnail === 'string' ? selectedThumbnail : URL.createObjectURL(selectedThumbnail)}
-                                alt="thumbnail" />
+                                alt="thumbnail"
+                            />
                         </Box>
                     </Box>
                 </Box>
-                : <FileInputField name='thumbnail' label="Ảnh giới thiệu" accept='.png, .jpg, .jpeg' error={errThumnail} onChange={handleChangeThumbnail} required />
+                : <FileInputField name='thumbnail' label="Ảnh giới thiệu" accept='.png, .jpg, .jpeg' error={errThumnail} onChange={handleChangeThumbnail} margin='dense' required />
             }
 
-            <FileInputField name='images' label="Ảnh khác" accept='.png, .jpg, .jpeg' error={errImages} onChange={handleChangeImages} multiple={true} />
+            <FileInputField name='images' label="Ảnh khác" accept='.png, .jpg, .jpeg' error={errImages} onChange={handleChangeImages} multiple={true} margin='dense' />
             {selectedImages?.length > 0 &&
                 <Box className={classes.imgRow}>
                     {selectedImages.map((image: any, index: number) => (
@@ -308,8 +322,10 @@ export const UpdateMotelModal = ({
                 </Box>
             }
 
-            <Box my={3}>
-                <Button fullWidth type='submit' variant='contained' color='primary' size='large'>Cập nhật</Button>
+            <Box mt={3}>
+                <Button type='submit' color="primary" variant='outlined' fullWidth>
+                    Cập nhật
+                </Button>
             </Box>
         </form>
     )

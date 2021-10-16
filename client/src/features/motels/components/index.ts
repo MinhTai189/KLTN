@@ -11,3 +11,4 @@ export * from './InforOnwerUp';
 export * from './InforMotelDetail';
 export * from './InforRoomDetail';
 export * from './BoxInfo';
+export * from './EditMotelForm';

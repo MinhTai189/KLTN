@@ -1,7 +1,12 @@
-import { Box, Theme } from "@material-ui/core"
-import { ArrowBack, ArrowForward, Favorite } from "@material-ui/icons"
+import { Box, CircularProgress, Theme, Tooltip } from "@material-ui/core"
+import { ArrowBack, ArrowForward, Favorite, FavoriteBorder } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
-import { useRef, useState } from "react"
+import { useAppDispatch, useAppSelector } from "app/hooks"
+import { authActions, selectCurrentUser, selectLoading } from "features/auth/authSlice"
+import { useEffect, useState } from "react"
+import { useParams } from "react-router"
+import { toast } from "react-toastify"
+import Carousel from 'react-elastic-carousel'
 
 interface Props {
     images: string[]
@@ -10,6 +15,10 @@ interface Props {
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: '100%',
+
+        "& .rec-slider-container": {
+            margin: 0
+        }
     },
     mainImg: {
         width: '100%',
@@ -46,7 +55,8 @@ const useStyles = makeStyles((theme: Theme) => ({
             transition: '300ms all ease',
 
             "& .MuiSvgIcon-root": {
-                fill: '#fff'
+                fill: '#fff',
+                cursor: 'pointer'
             }
         },
 
@@ -115,8 +125,24 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const AlbumMotel = ({ images }: Props) => {
     const classes = useStyles()
+    const { id } = useParams<{ id: string }>()
+
+    console.log({ images })
+
+    const currentUser = useAppSelector(selectCurrentUser)
+    const dispatch = useAppDispatch()
+    const loading = useAppSelector(selectLoading)
+
     const [currentImg, setCurrentImg] = useState(0)
-    const listImgRef = useRef<HTMLElement>(null)
+    const [isLike, setIsLike] = useState(false)
+
+    useEffect(() => {
+        currentUser && setIsLike(checkFavoriteMotel())
+    }, [currentUser])
+
+    const checkFavoriteMotel = (): boolean => {
+        return !!currentUser.favorite && currentUser.favorite.includes(id as string)
+    }
 
     const nextImg = () => {
         setCurrentImg(old => {
@@ -134,19 +160,37 @@ export const AlbumMotel = ({ images }: Props) => {
         })
     }
 
-    // useEffect(() => {
-    //     listImgRef.current?.querySelector(`img:nth-child(${currentImg})`)?.scrollIntoView({
-    //         behavior: 'smooth',
-    //         inline: 'nearest',
-    //         block: 'start'
-    //     })
-    // }, [currentImg])
+    const handleFavoriteMotel = () => {
+        if (!currentUser) {
+            toast.error('Bạn phải đăng nhập để sử dụng chức năng này!')
+            return;
+        }
+
+        if (isLike) {
+            dispatch(authActions.unlikeMotel(id as string))
+        } else {
+            dispatch(authActions.likeMotel(id as string))
+        }
+    }
 
     return (
         <Box className={classes.root}>
             <Box className={classes.mainImg}>
                 <span className='favorite'>
-                    <Favorite />
+                    {!loading ?
+                        isLike
+                            ? <Tooltip title='Xóa nhà trọ vào danh sách yêu thích'>
+                                <span onClick={handleFavoriteMotel}>
+                                    <Favorite />
+                                </span>
+                            </Tooltip>
+                            : <Tooltip title='Thêm nhà trọ vào danh sách yêu thích'>
+                                <span onClick={handleFavoriteMotel}>
+                                    <FavoriteBorder />
+                                </span>
+                            </Tooltip>
+                        : <CircularProgress color='secondary' size={15} />
+                    }
                 </span>
 
                 <img src={images[currentImg]} alt="motel image" />
@@ -160,14 +204,16 @@ export const AlbumMotel = ({ images }: Props) => {
                 </span>
             </Box>
 
-            <div className={classes.listImg} ref={listImgRef as any}>
-                {images.map((image, index) => {
-                    const active = index === currentImg ? 'active' : ''
+            <div className={classes.listImg}>
+                <Carousel itemsToShow={5} isRTL={false} itemPosition={'START'} showEmptySlots={true} showArrows={false} pagination={false}>
+                    {images.map((image, index) => {
+                        const active = index === currentImg ? 'active' : ''
 
-                    return (
-                        <img className={active} src={image} alt="motel image" onClick={() => setCurrentImg(index)} />
-                    )
-                })}
+                        return (
+                            <img className={active} src={image} alt="motel image" onClick={() => setCurrentImg(index)} />
+                        )
+                    })}
+                </Carousel>
             </div>
         </Box>
     )

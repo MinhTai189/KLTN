@@ -1,7 +1,10 @@
 import { Box, Theme } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
+import { useAppSelector } from "app/hooks"
 import { ButtonCustom } from "components/Common/Button"
+import { selectCurrentUser } from "features/auth/authSlice"
 import { Editor, Owner } from "models"
+import { toast } from "react-toastify"
 import { BoxInfo } from '.'
 
 interface OwnerDetail extends Owner {
@@ -11,6 +14,7 @@ interface OwnerDetail extends Owner {
 interface Props {
     editor: Editor[]
     owner: OwnerDetail
+    setOpenModal: (state: boolean) => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -44,8 +48,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const InforOnwerUp = ({ editor, owner }: Props) => {
+export const InforOnwerUp = ({ editor, owner, setOpenModal }: Props) => {
     const classes = useStyles()
+    const currentUser = useAppSelector(selectCurrentUser)
+
+    const handleClickUpdate = () => {
+        if (!currentUser) {
+            toast.error('Bạn phải đăng nhập để có thể sử dụng chức năng này!')
+            return;
+        }
+        setOpenModal(true)
+    }
 
     return (
         <Box className={classes.root}>
@@ -58,13 +71,15 @@ export const InforOnwerUp = ({ editor, owner }: Props) => {
             <Box className={classes.wrapper}>
                 <h5 className='title'>Danh sách chỉnh sửa</h5>
 
-                {editor.map((item, index) => (
+                {editor.length > 0 ? editor.map((item, index) => (
                     <BoxInfo key={index} editor={item} />
-                ))}
+                ))
+                    : <h5 style={{ width: '100%', textAlign: 'center' }}>Không có lịch sử chỉnh sửa...</h5>
+                }
             </Box>
 
             <Box className={classes.btn}>
-                <ButtonCustom>Sửa nhà trọ</ButtonCustom>
+                <ButtonCustom onClick={handleClickUpdate}>Sửa nhà trọ</ButtonCustom>
             </Box>
         </Box>
     )

@@ -69,7 +69,9 @@ export const Header = ({ isChangeNav }: Props) => {
     return (
         <div className={classes.root} style={isChangeNav ? { backgroundImage: 'linear-gradient(#000 0%, #2d3436 74%)' } : {}}>
             <nav className={classes.nav} style={isChangeNav ? { padding: '4px 16px' } : {}}>
-                <img className={classes.logo} src={Logo} alt="logo" />
+                <Link to='/'>
+                    <img className={classes.logo} src={Logo} alt="logo" />
+                </Link>
 
                 <ul className={classes.navLinks}>
                     <li>Trang Chủ</li>

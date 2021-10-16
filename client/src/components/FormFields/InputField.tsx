@@ -10,12 +10,13 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
     multiline?: boolean;
     rows?: number;
     sizeField?: "medium" | "small" | undefined;
+    margin?: 'dense' | 'none' | 'normal';
     [key: string]: any
 }
 
 
 
-export const InputField = ({ type, label, name, control, multiline = false, rows, sizeField = 'medium', ...props }: Props) => {
+export const InputField = ({ type, label, name, control, multiline = false, rows, sizeField = 'medium', margin = 'normal', ...props }: Props) => {
     const { field: { value, onChange, onBlur, ref },
         fieldState: { invalid, error }, } = useController({
             name,
@@ -25,7 +26,7 @@ export const InputField = ({ type, label, name, control, multiline = false, rows
     return (
         <TextField
             fullWidth
-            margin="normal"
+            margin={margin}
             label={label}
             type={type}
             variant="outlined"

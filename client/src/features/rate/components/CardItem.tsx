@@ -2,9 +2,11 @@ import { Box, Theme } from '@material-ui/core'
 import { Star } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import Avatar from 'assets/images/avatar-default.jpg'
+import { Rate } from 'models'
 
 interface Props {
-    className?: string
+    className?: string;
+    dataRate: Rate
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -21,6 +23,15 @@ const useStyles = makeStyles((theme: Theme) => ({
         boxShadow: '0px 0px 11px 5px rgba(0, 0, 0, 0.25)',
         opacity: 0,
         position: 'absolute',
+
+        "&.singular": {
+            opacity: 1,
+            position: 'unset',
+
+            "&:nth-child(2)": {
+                marginLeft: 36
+            }
+        },
 
         "&.active.dnext": {
             opacity: 1,
@@ -98,11 +109,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 
         "& .content": {
             color: '#7B7B7B',
-            marginBottom: 8
+            marginBottom: 8,
+            fontSize: 16
         },
 
         "& .date": {
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: 600
         }
     },
@@ -201,16 +213,20 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-export const CardItem = ({ className = '' }: Props) => {
+export const CardItem = ({ className = '', dataRate }: Props) => {
     const classes = useStyles()
+    const { content, createAt, star, _id, user: { name, avatarUrl, _id: userId } } = dataRate
+
+    const createdDate = new Date(createAt)
+    const date = createdDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: 'numeric', minute: 'numeric' })
 
     return (
         <Box className={`${classes.root} ${className}`}>
             <Box className={classes.top}>
-                <img className='avatar' src={Avatar} alt="avatar" />
+                <img className='avatar' src={avatarUrl} alt="avatar" />
 
                 <ul className="stars">
-                    {new Array(5).fill(1).map((_, index) => (
+                    {new Array(star).fill(1).map((_, index) => (
                         <li>
                             <Star key={index} />
                         </li>
@@ -219,13 +235,13 @@ export const CardItem = ({ className = '' }: Props) => {
             </Box>
 
             <Box className={classes.middle}>
-                <p className='content'>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Impedit unde similique, necessitatibus at perspiciatis doloribus pariatur possimus nam accusantium!</p>
+                <p className='content'>{content}</p>
 
-                <small className='date'>19-08-2021</small>
+                <small className='date'>{date}</small>
             </Box>
 
             <Box className={classes.bottom}>
-                <h5 className='name'>Trần Minh Tài</h5>
+                <h5 className='name'>{name}</h5>
 
                 <small className='position'>Admin</small>
             </Box>
