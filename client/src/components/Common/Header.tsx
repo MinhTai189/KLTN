@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import Logo from 'assets/images/logo.png';
 import { authActions, selectCurrentUser } from 'features/auth/authSlice';
 import { User } from 'models';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { DropDownInfor } from '../Home';
 import { ButtonCustom } from './Button';
@@ -25,12 +26,18 @@ const useStyles = makeStyles((theme: Theme) =>
         nav: {
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'space-between',
             padding: '12px 16px',
             transition: 'all 300ms ease'
         },
         logo: {
             width: 50,
-            height: 50
+            height: 50,
+
+            [theme.breakpoints.down('sm')]: {
+                width: 40,
+                height: 40
+            }
         },
         navLinks: {
             height: '100%',
@@ -56,15 +63,48 @@ const useStyles = makeStyles((theme: Theme) =>
                     border: `3px solid ${theme.palette.secondary.main}`,
                 },
 
+                [theme.breakpoints.down('sm')]: {
+                    padding: '0 4px',
+                    fontSize: 13,
+                }
+            },
+
+            [theme.breakpoints.down('xs')]: {
+                display: 'none'
             }
         }
     }),
 );
 
+const calcSizeBtn = (width: number) => {
+    let size = 'large'
+
+    if (width <= 960)
+        size = 'small'
+
+    return size
+}
+
 export const Header = ({ isChangeNav }: Props) => {
     const classes = useStyles();
     const currentUser: User = useAppSelector(selectCurrentUser)
     const dispatch = useAppDispatch()
+
+    const [sizeBtn, setSizeBtn] = useState<any>('large')
+
+    useEffect(() => {
+        setSizeBtn(calcSizeBtn(window.innerWidth))
+
+        window.addEventListener('resize', () => {
+            const size = calcSizeBtn(window.innerWidth)
+
+            setSizeBtn(size)
+        })
+
+        return () => {
+            window.removeEventListener('resize', () => { })
+        }
+    }, [])
 
     return (
         <div className={classes.root} style={isChangeNav ? { backgroundImage: 'linear-gradient(#000 0%, #2d3436 74%)' } : {}}>
@@ -74,17 +114,16 @@ export const Header = ({ isChangeNav }: Props) => {
                 </Link>
 
                 <ul className={classes.navLinks}>
-                    <li>Trang Chủ</li>
+                    <li className='active'>Trang Chủ</li>
                     <li>Trang chủ</li>
                     <li>Trang chủ</li>
-                    <li className='active'>Trang chủ</li>
-                    <li>Trang chủ</li>
+                    <li >Trang chủ</li>
                     <li>Trang chủ</li>
                 </ul>
 
                 {currentUser?.avatarUrl ?
                     <DropDownInfor />
-                    : <ButtonCustom sizeBtn='large'>
+                    : <ButtonCustom sizeBtn={sizeBtn}>
                         <Link to='/auth/login' onClick={() => dispatch(authActions.loginFailed(''))}>Đăng nhập</Link>
                     </ButtonCustom>
                 }

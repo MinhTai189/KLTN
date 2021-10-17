@@ -6,6 +6,10 @@ import { schoolActions, selectFilterSchool } from 'features/school/schoolSlice'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { DropDown } from './DropDown'
 
+interface Props {
+    hiddenScrollDown: boolean
+}
+
 const useStyles = makeStyles(theme => ({
     root: {
         height: '100vh',
@@ -121,7 +125,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-export const Hero = () => {
+export const Hero = ({ hiddenScrollDown }: Props) => {
     const classes = useStyles()
     const [openDropdown, setOpenDropdrow] = useState<boolean | undefined>()
     const [searchValue, setSearchValue] = useState('')
@@ -197,9 +201,9 @@ export const Hero = () => {
                 <DropDown openDropdown={openDropdown} isFlip={isFlip} setIsFlip={setIsFlip} />
             </Box>
 
-            <span className={`${classes.scrollDown} scroll-1`} onClick={handleScrollDown}></span>
-            <span className={`${classes.scrollDown} scroll-2`} onClick={handleScrollDown}></span>
-            <span className={`${classes.scrollDown} scroll-3`} onClick={handleScrollDown}></span>
+            <span className={`${classes.scrollDown} scroll-1`} style={{ display: hiddenScrollDown ? 'none' : 'inline-block' }} onClick={handleScrollDown}></span>
+            <span className={`${classes.scrollDown} scroll-2`} style={{ display: hiddenScrollDown ? 'none' : 'inline-block' }} onClick={handleScrollDown}></span>
+            <span className={`${classes.scrollDown} scroll-3`} style={{ display: hiddenScrollDown ? 'none' : 'inline-block' }} onClick={handleScrollDown}></span>
         </div>
     )
 }

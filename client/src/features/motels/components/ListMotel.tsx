@@ -40,10 +40,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         }
     },
     listMotel: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        marginTop: 80,
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+        gridGap: '3.5em',
+        marginBlock: 80,
     },
     seeMore: {
         textAlign: 'center',

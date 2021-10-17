@@ -12,10 +12,6 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { motelActions, selectFilterMotel, selectLoadingMotel } from 'features/motels/motelSlice'
 
-interface Props {
-
-}
-
 interface OwnerDetail extends Owner {
     createdAt: string
 }
@@ -30,7 +26,7 @@ interface DataMotel {
     motelUpdate: MotelOnly | undefined
 }
 
-const MotelDetailPage = (props: Props) => {
+const MotelDetailPage = () => {
     const { id } = useParams<{ id: string }>()
     const [dataMotel, setDataMotel] = useState<DataMotel>({
         album: [],
@@ -210,7 +206,7 @@ const MotelDetailPage = (props: Props) => {
             handleUpdateMotel(dataUpdateMotel)
         }
 
-        if (openMotelModal && dataUpdateRoom) {
+        if (openRoomModal && dataUpdateRoom) {
             handleUpdateRoom(dataUpdateRoom)
         }
     }

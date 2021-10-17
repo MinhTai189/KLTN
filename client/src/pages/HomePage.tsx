@@ -12,6 +12,7 @@ const HomePage = () => {
     const dispatch = useAppDispatch();
 
     const [isChangeNav, setIsChangeNav] = useState(false)
+    const [hiddenScrollDown, setHiddenScrollDown] = useState(false)
 
     useEffect(() => {
         function autoLogin() {
@@ -23,26 +24,34 @@ const HomePage = () => {
     }, [dispatch, isLogged])
 
     useEffect(() => {
-        // scroll event window for nav
-        window.onscroll = () => {
-            window.scrollY >= 90 ? setIsChangeNav(true) : window.scrollY === 0 && setIsChangeNav(false)
-        }
-
         //fetch motel data
         dispatch(motelActions.getMotel({
             _page: 1,
             _limit: 6
         }))
+    }, [filter])
+
+    useEffect(() => {
+        // scroll event window for nav
+        window.onscroll = () => {
+            if (window.scrollY >= 90) {
+                setIsChangeNav(true)
+                setHiddenScrollDown(true)
+            } else {
+                window.scrollY === 0 && setIsChangeNav(false)
+                setHiddenScrollDown(false)
+            }
+        }
 
         return () => {
             window.onscroll = () => { }
         }
-    }, [filter])
+    }, [])
 
     return (
         <>
             <Header isChangeNav={isChangeNav} />
-            <Hero />
+            <Hero hiddenScrollDown={hiddenScrollDown} />
             <ListMotel />
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             {/* find motel */}

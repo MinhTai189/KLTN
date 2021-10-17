@@ -16,10 +16,11 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        width: 350,
-        height: 460,
+        width: '100%',
+        maxWidth: 420,
+        height: 470,
+        placeSelf: 'center',
         overflow: 'hidden',
-        marginBottom: 80,
         outline: `5px solid ${theme.palette.primary.main}`,
         boxShadow: '4px 4px 10px 5px #828282',
         transition: 'all 500ms ease',
