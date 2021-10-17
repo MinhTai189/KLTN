@@ -2,10 +2,10 @@ POST http://localhost:5000/api/register
 Content-Type: application/json
 
 {
-"username":"deptrainhat",
-"password":"admin",
+"username":"maideptrai",
+"password":"123456",
 "name":"Nguyễn Tấn Mãi ĐẸP TRAIdddd12dddddddddsss",
-"email":"hihdidddddd12dddddddsddss@gmail.com",
+"email":"5@gmail.com",
 "district":"huyen_chau_thanh",
 "province":"tinh_tien_giang",
 "school":"truong_dai_hoc_tien_giang_tcn"
@@ -21,8 +21,8 @@ Content-Type: application/json
 Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzUxMDA1NywiZXhwIjoxNjMzNTEwMDg3fQ.kQbrkkPsBRA3n5U8tmdZiU-DllvRjt8spB-_YQkX2e8
 
  {
-    //"username":"admin",
-    //"password":"123456"
+    "username":"maideptrai",
+    "password":"123456"
     // "accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzUwOTAyOCwiZXhwIjoxNjMzNTA5NjI4fQ.B9QIlEO7J2BV56XL2K7qItHPW9_GOBPtvTr0tCSXCSE"
  }
 
@@ -173,21 +173,20 @@ DELETE  http://localhost:5000/api/motels/rates/6145d3d6c74fc7d6fd42b263/61468c6b
 Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjAyMjUxMiwiZXhwIjoxNjMyMDIzMTEyfQ.-SZha78wf4nnAShyAkmNXoiq6mZtl1pAoFTX2Y4-25w
 ###
-PATCH http://localhost:5000/api/motels/rooms/615a9f13dc19793cda17890f/615a9f13dc19793cda178911
+DELETE http://localhost:5000/api/motels/rooms/615a9f13dc19793cda17890f/615a9f13dc19793cda178910
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzMzNzEzMCwiZXhwIjoxNjMzMzM3NzMwfQ.pBOfB1B1lMNXQHISMXwE92XXE1Jdne8xwv4oKIVBu9w
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzQ0Mzk5MzMsImV4cCI6MTYzNDQ0MDUzM30.0U6oo8uDcBUEu_1a7Hsyj6oByzUrbxaM7OFVLHfZeak
 
-{
-    "optional":["wifi","ml","cc","gt","dcvs"],
-    "area":{"width":5,"length":3}
-}
+{}
 ###
-PATCH http://localhost:5000/api/motels/614542cf9f478425c2c07317
+PATCH http://localhost:5000/api/motels/615a9f13dc19793cda17890f
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjU2ODA2NiwiZXhwIjoxNjMyNTY4NjY2fQ.unr3GP3bvLlJvYUgjogXWcbu3YqZGNGKKbOiPG6j-Bw
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNDQzODU2NywiZXhwIjoxNjM0NDM5MTY3fQ._3V3lcq67i_4kl9ho0gBl93jRO3dHlSHtYQ8Zpfk6js
 
 {
-    "available":12
+    "id":"616b8f74fa07452efa909289",
+    "thumbnail":{"url":"http://res.cloudinary.com/dpregsdt9/image/upload/v1634439036/615a9f13dc19793cda17890f/odkbgytxvg4og9buhckn.jpg",
+"public_id":"615a9f13dc19793cda17890f/odkbgytxvg4og9buhckn"}
 }
 ###
 POST http://localhost:5000/api/users/favorites/614542cf9f478425c2c07317
