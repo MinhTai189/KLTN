@@ -162,7 +162,7 @@ const MotelDetailPage = () => {
 
     //update data room
     const onClickUpdateRoom = (data: Room) => {
-        setDataUpdateRoom({ ...data, invalid: true })
+        setDataUpdateRoom({ ...data, invalid: true, motelId: id })
 
         setOpenModalConfirm(true)
     }

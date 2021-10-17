@@ -1,9 +1,5 @@
 import { Omit } from '@material-ui/types';
-import {
-  School,
-  UploadResponse,
-  User,
-} from 'models';
+import { School, UploadResponse, User } from 'models';
 
 export interface Motel {
   _id?: string;
@@ -31,6 +27,7 @@ export interface Motel {
 
 export interface Room {
   _id?: string;
+  motelId: string;
   area: Area;
   invalid?: boolean;
   optional: string[];
