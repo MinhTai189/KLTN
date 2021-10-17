@@ -27,7 +27,7 @@ export interface Motel {
 
 export interface Room {
   _id?: string;
-  motelId: string;
+  motelId?: string;
   area: Area;
   invalid?: boolean;
   optional: string[];

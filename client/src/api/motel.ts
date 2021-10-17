@@ -14,33 +14,23 @@ export const motelApi = {
     const url = '/motels';
     return axiosClient.get(url);
   },
-  getMotel: (
-    params: Filter
-  ): Promise<ListResponse<Motel>> => {
+  getMotel: (params: Filter): Promise<ListResponse<Motel>> => {
     const url = '/motels';
     return axiosClient.get(url, { params });
   },
-  getMotelRandom: (
-    params: Filter
-  ): Promise<ListResponse<Motel>> => {
+  getMotelRandom: (params: Filter): Promise<ListResponse<Motel>> => {
     const url = '/motels/randoms';
     return axiosClient.get(url, { params });
   },
-  getMotelById: (
-    id: string
-  ): Promise<Response<Motel>> => {
+  getMotelById: (id: string): Promise<Response<Motel>> => {
     const url = `/motels/${id}`;
     return axiosClient.get(url);
   },
-  addMotel: (
-    params: Motel
-  ): Promise<Response<any>> => {
+  addMotel: (params: Motel): Promise<Response<any>> => {
     const url = '/motels';
     return axiosClient.post(url, params);
   },
-  updateMotel: (
-    data: MotelOnly
-  ): Promise<any> => {
+  updateMotel: (data: MotelOnly): Promise<any> => {
     const url = `/motels/${data._id}`;
     return axiosClient.patch(url, data);
   },
@@ -48,14 +38,12 @@ export const motelApi = {
     const url = `/motels/${id}`;
     return axiosClient.delete(url);
   },
-  getDropdownList: (
-    params: Filter
-  ): Promise<ListResponse<SchoolDropdown>> => {
+  getDropdownList: (params: Filter): Promise<ListResponse<SchoolDropdown>> => {
     const url = '/motels/schools';
     return axiosClient.get(url, { params });
   },
   updateRoom: (data: Room): Promise<any> => {
-    const url = `/motels/room/${data._id}`;
+    const url = `/motels/room/${data.motelId}/${data._id}`;
     return axiosClient.patch(url, data);
   },
 };
