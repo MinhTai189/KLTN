@@ -9,6 +9,11 @@ const unapprovedMotel = require("../models/unapproved-motel");
 const upload = require("../middleware/upload");
 const shuffle = require("../middleware/shuffle");
 const userUpdateMotel = require("../models/user-update-motel");
+const plus = async (idUser) => {
+  const a = await user.findByIdAndUpdate(idUser, { $inc: { motels: 1 } });
+  if (!a) return false;
+  return true;
+};
 router.get("/randoms", async (req, res) => {
   let listMotel = await motel
     .find({})
@@ -424,6 +429,7 @@ router.delete("/:id", verifyToken, async (req, res) => {
     checkMotel.thumbnail,
     checkMotel.images
   );
+
   return res.status(200).json({ success: true, message: "Đã xóa nhà trọ" });
 });
 
@@ -812,12 +818,15 @@ router.post("/", verifyToken, async (req, res) => {
       }
 
       await newMotel.save();
+      await plus(newMotel.owner);
+
       return res.status(200).json({
         success: true,
         message: "duyệt thành công",
       });
     } catch (err) {
       console.log(err);
+      await motel.findByIdAndDelete(newMotel._id);
       await checkMotel.save();
       return res.status(500).json({
         success: false,
@@ -939,7 +948,6 @@ router.post("/", verifyToken, async (req, res) => {
       room[j].optional = optional;
     }
   }
-
   const checkUserPost = await user.findById(req.user.id).select("credit");
   if (req.user.isAdmin == true || checkUserPost.credit >= 100) {
     const newMotel = new motel({
@@ -1049,11 +1057,13 @@ router.post("/", verifyToken, async (req, res) => {
       }
 
       await newMotel.save();
+      await plus(newMotel.owner);
       return res.status(200).json({
         success: true,
         message: "Thêm thành công",
       });
     } catch (err) {
+      await motel.findByIdAndDelete(newMotel._id);
       console.log(err);
       await unlinkImageMotel(newMotel.thumbnail, newMotel.images);
       return res.status(500).json({
@@ -1119,17 +1129,22 @@ router.get("/:id", async (req, res) => {
     .findById(id)
     .populate("rate.user", "avatarUrl name _id isAdmin credit")
     .populate("school", "-nameDistricts")
-    .populate("owner", "name avatarUrl _id isAdmin credit email school")
-    .populate("editor.user", "name avatarUrl _id isAdmin credit email school");
+    .populate("owner", "name avatarUrl _id isAdmin credit email school motels")
+    .populate(
+      "editor.user",
+      "name avatarUrl _id isAdmin credit email school motels"
+    );
 
   if (!findMotel)
     return res
       .status(400)
       .json({ success: false, message: "Không tìm thấy nhà trọ này" });
   let images = [];
+
   findMotel.images.forEach((image) => {
     images.push(image.url);
   });
+
   let newRate = [];
   for (let i = 0; i < findMotel.rate.length; i++) {
     const userRate = {
@@ -1171,6 +1186,7 @@ router.get("/:id", async (req, res) => {
     credit: findMotel.owner.credit,
     email: findMotel.owner.email,
     school: ownerSchool,
+    motels: findMotel.owner.motels,
   };
   let editorData = [];
   for (let i = 0; i < findMotel.editor.length; i++) {
@@ -1187,6 +1203,7 @@ router.get("/:id", async (req, res) => {
       email: findMotel.editor[i].user.email,
       credit: findMotel.editor[i].user.credit,
       school: editorSchool,
+      motels: findMotel.owner.motels,
     };
     editorData.push({
       user: editorDataUser,

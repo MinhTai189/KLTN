@@ -15,7 +15,6 @@ router.post("/:id", verifyToken, async (req, res) => {
 
   if (
     Array.isArray(optional) == false ||
-    typeof amount !== "number" ||
     typeof price !== "number" ||
     typeof area !== "object" ||
     typeof total !== "number" ||
@@ -40,21 +39,17 @@ router.post("/:id", verifyToken, async (req, res) => {
   for (let i = 0; i < optional.length; i++) {
     optionalFixed[optional[i]] = true;
   }
-
   if (req.user.isAdmin == true)
     try {
-      const motelUpdate = await motel.findByIdAndUpdate(id, {
-        room: {
-          $push: {
-            optional: optionalFixed,
-            amount,
-            area,
-            total,
-            remain,
-            status,
-          },
-        },
+      const motelUpdate = await motel.findById(id);
+      motelUpdate.room.push({
+        optional: optionalFixed,
+        area,
+        total,
+        remain,
+        status,
       });
+      await motelUpdate.save();
       let edited = "Thêm phòng trọ mới";
       if (motelUpdate.editor.length >= 3) motelUpdate.editor.shift();
       let editor = [
@@ -71,12 +66,11 @@ router.post("/:id", verifyToken, async (req, res) => {
     }
   else {
     const newRoomAtr = new userUpdateRoom({
-      type: "set",
+      type: "push",
       motel: id,
-      room: idRoom,
+      room: undefined,
       user: req.user.id,
       optional: optionalFixed,
-      amount,
       area,
       total,
       remain,
@@ -120,7 +114,6 @@ router.patch("/:id/:idRoom", verifyToken, async (req, res) => {
 
   if (
     Array.isArray(optional) == false &&
-    typeof amount !== "number" &&
     typeof price !== "number" &&
     typeof area !== "object" &&
     typeof total !== "number" &&
@@ -253,7 +246,6 @@ router.patch("/:id/:idRoom", verifyToken, async (req, res) => {
       room: idRoom,
       user: req.user.id,
       area: newData.area,
-      amount: newData.amount,
       price: newData.price,
       status: newData.status,
       remain: newData.remain,
@@ -322,7 +314,6 @@ router.delete("/:id/:idRoom", verifyToken, async (req, res) => {
       room: idRoom,
       user: req.user.id,
       area: findRoom.area,
-      amount: findRoom.amount,
       price: findRoom.price,
       status: findRoom.status,
       remain: findRoom.remain,
