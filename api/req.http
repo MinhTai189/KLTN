@@ -21,7 +21,7 @@ Content-Type: application/json
 Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzUxMDA1NywiZXhwIjoxNjMzNTEwMDg3fQ.kQbrkkPsBRA3n5U8tmdZiU-DllvRjt8spB-_YQkX2e8
 
  {
-    "username":"maideptrai",
+    "username":"admin",
     "password":"123456"
     // "accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzUwOTAyOCwiZXhwIjoxNjMzNTA5NjI4fQ.B9QIlEO7J2BV56XL2K7qItHPW9_GOBPtvTr0tCSXCSE"
  }
@@ -186,13 +186,13 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 
 {}
 ###
-POST http://localhost:5000/api/motels/rooms/615a9f13dc19793cda17890f
+PATCH http://localhost:5000/api/motels/room/615a9f13dc19793cda17890f/616bf73f6dc85e9c8b24a7b0
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzQ0NjU4ODYsImV4cCI6MTYzNDQ2NjQ4Nn0.Uxap3Sp8PNl6PReWqAhqrlNmg5JskfJ1uR6fXYXXaOI
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNDQ3MDEwNCwiZXhwIjoxNjM0NDcwNzA0fQ.ym-hCIix5y7EGTPMe2y5KD2W_jJyyl7rdEltLJRLDWg
 
 {
 "optional":["wifi","dcvs"],
-"price":10000000,
+"price":100000000,
 "area":{"width":5,"length":10},
 "total":9,
 "remain":7,
