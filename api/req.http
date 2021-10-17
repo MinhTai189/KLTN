@@ -2,10 +2,10 @@ POST http://localhost:5000/api/register
 Content-Type: application/json
 
 {
-"username":"maideptrai",
+"username":"12344",
 "password":"123456",
-"name":"Nguyễn Tấn Mãi ĐẸP TRAIdddd12dddddddddsss",
-"email":"5@gmail.com",
+"name":"Nguyễn",
+"email":"54@gmail.com",
 "district":"huyen_chau_thanh",
 "province":"tinh_tien_giang",
 "school":"truong_dai_hoc_tien_giang_tcn"
@@ -21,7 +21,7 @@ Content-Type: application/json
 Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzUxMDA1NywiZXhwIjoxNjMzNTEwMDg3fQ.kQbrkkPsBRA3n5U8tmdZiU-DllvRjt8spB-_YQkX2e8
 
  {
-    "username":"maideptrai",
+    "username":"admin",
     "password":"123456"
     // "accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzUwOTAyOCwiZXhwIjoxNjMzNTA5NjI4fQ.B9QIlEO7J2BV56XL2K7qItHPW9_GOBPtvTr0tCSXCSE"
  }
@@ -97,10 +97,10 @@ GET  http://localhost:5000/api/districts
 ###
 POST http://localhost:5000/api/motels
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMTc4NzA5OSwiZXhwIjoxNjMxNzg3Njk5fQ.o8H2bqD9lZlmcCW5l9oMg6ZL0K_eIshsUMo9Lm8cTsA
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzQ0NTMwNzcsImV4cCI6MTYzNDQ1MzY3N30.iBKuGDNM95HDEufjj0kdI5G0_a7qil1Av9YcXP_jHAU
 
 {
-    "name":"NGUYEN TAN MAI qua dep trai", 
+    "name":"Nhà trọ Hào", 
     "images":[{"url":"https://res.cloudinary.com/dpregsdt9/image/upload/v1631509899/motel/thiet-ke-phong-tro-3_hilstc.jpg","public_id":"motel/thiet-ke-phong-tro-3_hilstc"}], 
     "address":"C45P+HQF, Nhị Mỹ, Cai Lậy, Tiền Giang", 
     "thumbnail":{"url":"https://res.cloudinary.com/dpregsdt9/image/upload/v1631509940/motel/phong_tro_nho_12m_iyxoqg.jpg","public_id":"motel/phong_tro_nho_12m_iyxoqg"},
@@ -109,32 +109,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
             "width":3,
             "length":4
         },
-        "optional":{
-            //Có giường thường
-            "GIUONG": false,
-            //Có máy lạnh =>
-            "MAYLANH": true,
-            //Có quạt =>
-            "QUAT": false,
-            //Có gác =>
-            "GAC": true,
-            // Chung chủ =>
-            "CHUNGCHU": false,
-            //Trên lầu =>
-            "LAU": true,
-            //Có giường tầng =>
-            "GIUONGTANG": false,
-            //Có nhà xe =>
-            "NHAXE": false,
-            //Có camera =>
-            "CAMERA": false,
-            //Co Wifi =>
-            "WIFI": false,
-            //Có dung cu vệ sinh
-            "DUNGCUVESINH": false,
-            //Khác =>
-            "KHAC": false
-        },
+        "optional":["wifi"],
         "total":10,
         "remain":4,
         "price":500000
@@ -179,14 +154,24 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgw
 
 {}
 ###
-PATCH http://localhost:5000/api/motels/615a9f13dc19793cda17890f
+PATCH http://localhost:5000/api/motels/616bab2b2c462898bae21381
 Content-Type: application/json
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNDQzODU2NywiZXhwIjoxNjM0NDM5MTY3fQ._3V3lcq67i_4kl9ho0gBl93jRO3dHlSHtYQ8Zpfk6js
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNDQ2MjM4NiwiZXhwIjoxNjM0NDYyOTg2fQ.KZraCB5QAGDX02EIQZvDBrhtr-t6RoYVmBoonH_bgVg
 
 {
-    "id":"616b8f74fa07452efa909289",
-    "thumbnail":{"url":"http://res.cloudinary.com/dpregsdt9/image/upload/v1634439036/615a9f13dc19793cda17890f/odkbgytxvg4og9buhckn.jpg",
-"public_id":"615a9f13dc19793cda17890f/odkbgytxvg4og9buhckn"}
+    "id":"616be97d09f7d88656d5bdb8",
+    "name":"Nhà trọ Trần Tín",
+    "images":[
+        "http://res.cloudinary.com/dpregsdt9/image/upload/v1634461671/616bab2b2c462898bae21381/wvls9ergwcujdkjyxyvi.jpg",
+        {"url":"http://res.cloudinary.com/dpregsdt9/image/upload/v1634461671/616bab2b2c462898bae21381/wvls9ergwcujdkjyxyvi.jpg",
+        "public_id":"616bab2b2c462898bae21381/utlmdykv0bubvmujreil"},
+        {"url":"http://res.cloudinary.com/dpregsdt9/image/upload/v1634462085/616bab2b2c462898bae21381/qa3c70ibtv9ror7wqwfq.jpg",
+        "public_id":"616bab2b2c462898bae21381/qa3c70ibtv9ror7wqwfq"},
+        {"url":"http://res.cloudinary.com/dpregsdt9/image/upload/v1634462086/616bab2b2c462898bae21381/fub4z534is4cdqic8yre.jpg",
+        "public_id":"616bab2b2c462898bae21381/fub4z534is4cdqic8yre"}
+
+    ]
+    
 }
 ###
 POST http://localhost:5000/api/users/favorites/614542cf9f478425c2c07317
@@ -200,3 +185,16 @@ Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzQyNTExNSwiZXhwIjoxNjMzNDI1NzE1fQ.tSrR6X4RfvqLiBAzsETHcxNDz1TzS91I2Meq7R607Iw
 
 {}
+###
+PATCH http://localhost:5000/api/motels/room/615a9f13dc19793cda17890f/616bf73f6dc85e9c8b24a7b0
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNDQ3MDEwNCwiZXhwIjoxNjM0NDcwNzA0fQ.ym-hCIix5y7EGTPMe2y5KD2W_jJyyl7rdEltLJRLDWg
+
+{
+"optional":["wifi","dcvs"],
+"price":100000000,
+"area":{"width":5,"length":10},
+"total":9,
+"remain":7,
+"status":true
+}

@@ -1,64 +1,77 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
+const UserSchema = new Schema(
+  {
     username: {
-        type: String,
-        required: true,
-        unique: true,
+      type: String,
+      required: true,
+      unique: true,
     },
     password: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     name: {
-        type: String,
-        require: true,
+      type: String,
+      require: true,
     },
     unsignedName: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     avatarUrl: {
-        url: {
-            type: String,
-            required: true,
-        },
-        public_id: {
-            type: String,
-        },
+      url: {
+        type: String,
+        required: true,
+      },
+      public_id: {
+        type: String,
+      },
     },
 
     credit: {
-        type: Number,
-        default: 0,
+      type: Number,
+      default: 0,
     },
     favorite: {
-        type: Array,
-        default: [],
+      type: Array,
+      default: [],
     },
 
     isAdmin: {
-        type: Boolean,
-        default: false,
+      type: Boolean,
+      default: false,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
+      type: String,
+      required: true,
+      unique: true,
     },
     district: {
-        type: String,
+      type: String,
     },
     province: {
-        type: String,
+      type: String,
     },
     school: {
-        type: String,
+      type: String,
     },
     refreshToken: {
-        type: String,
+      type: String,
     },
-}, { timestamps: true });
+    motels: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    posts: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+  },
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("user", UserSchema);
