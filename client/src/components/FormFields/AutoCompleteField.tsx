@@ -42,7 +42,7 @@ export const AutoCompleteField = ({ options, onChange, label, disabled = false, 
                 size={size}
                 value={value}
                 options={options}
-                getOptionLabel={(option) => option[title]}
+                getOptionLabel={(option) => option[title] || ''}
                 fullWidth
                 disabled={disabled}
                 onChange={onChange}

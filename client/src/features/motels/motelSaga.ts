@@ -125,6 +125,8 @@ function* handleUpdateRoom(action: PayloadAction<Room>) {
 
     yield call(motelApi.updateRoom, action.payload);
 
+    yield put(motelActions.updateRoomSuccess());
+
     yield call(toast.success, successText);
   } catch (err: any) {
     yield call(toast.error, err.response.data.message);

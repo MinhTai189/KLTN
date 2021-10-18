@@ -170,7 +170,8 @@ const MotelDetailPage = () => {
     }
 
     const handleUpdateRoom = (data: Room) => {
-        dispatch(motelActions.updateRoom({ ...data, motelId: id }))
+        console.log({ data })
+        // dispatch(motelActions.updateRoom({ ...data, motelId: id }))
     }
 
     //handle upload images motel

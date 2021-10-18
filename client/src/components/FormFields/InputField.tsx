@@ -1,5 +1,5 @@
 import { TextField } from '@material-ui/core'
-import { InputHTMLAttributes } from 'react'
+import { ChangeEvent, InputHTMLAttributes } from 'react'
 import { Control, useController } from 'react-hook-form'
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
@@ -23,6 +23,10 @@ export const InputField = ({ type, label, name, control, multiline = false, rows
             control
         })
 
+    const onChangeNumberType = (e: ChangeEvent<HTMLInputElement>) => {
+        onChange(parseInt(e.target.value) || '')
+    }
+
     return (
         <TextField
             fullWidth
@@ -31,7 +35,7 @@ export const InputField = ({ type, label, name, control, multiline = false, rows
             type={type}
             variant="outlined"
             value={value}
-            onChange={onChange}
+            onChange={type === 'number' ? onChangeNumberType : onChange}
             onBlur={onBlur}
             inputRef={ref}
             error={invalid}

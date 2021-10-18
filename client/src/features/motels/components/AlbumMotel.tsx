@@ -210,7 +210,7 @@ export const AlbumMotel = ({ images }: Props) => {
                         const active = index === currentImg ? 'active' : ''
 
                         return (
-                            <img className={active} src={image} alt="Tìm nhà trọ sinh viên" onClick={() => setCurrentImg(index)} />
+                            <img key={index.toString()} className={active} src={image} alt="Tìm nhà trọ sinh viên" onClick={() => setCurrentImg(index)} />
                         )
                     })}
                 </Carousel>
