@@ -80,7 +80,7 @@ export const Operation = ({ handleSearch, handleFilter, handleClearFilter }: Pro
 
     const onChangeSortSelect = (e: any, key: string) => {
         if (e) {
-            const [_sort, _order] = e.split('.')
+            const [_sort] = e.split('.')
 
             if (_sort === 'credit') {
                 setCreditSelectValue(e)

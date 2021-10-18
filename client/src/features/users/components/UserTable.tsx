@@ -151,7 +151,7 @@ export const UserTable = ({ setShowUpdateForm, setUserUpdating, handleRemove }: 
             pageSize: pagination._limit,
             total: pagination._totalRows
         })
-    }, [pagination, filter])
+    }, [pagination, filter, userData])
 
     const handleChangeTable = (pagi: TablePaginationConfig) => {
         dispatch(userActions.setFilter({

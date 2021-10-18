@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup"
-import { Box, CircularProgress, Theme, Tooltip, Button } from "@material-ui/core"
+import { Box, Button, Theme, Tooltip } from "@material-ui/core"
 import { DeleteOutline, Email, Facebook, Phone } from "@material-ui/icons"
 import { Alert } from "@material-ui/lab"
 import { makeStyles } from "@material-ui/styles"
@@ -9,7 +9,7 @@ import { AutoCompleteField, InputField } from "components/FormFields"
 import { FileInputField } from "components/FormFields/FileInputField"
 import { InputFieldIcon } from "components/FormFields/InputFieldIcon"
 import { RadioBtnField } from "components/FormFields/RadioBtnField"
-import { FieldOption, MotelDetail, MotelOnly, School } from "models"
+import { FieldOption, MotelOnly, School } from "models"
 import { ChangeEvent, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
@@ -156,7 +156,7 @@ export const EditMotelForm = ({ updateData, onClickUpdateMotel, handleUploadThum
         defaultValues: updateData,
         resolver: yupResolver(schema)
     })
-    const [selectedSchool, setSelectedSchool] = useState<Array<School>>([])
+    const [selectedSchool, setSelectedSchool] = useState<Array<School>>(updateData.school)
 
     const [optionsSchool, setOptionsSchool] = useState<Array<School>>([])
     const [status, setStatus] = useState(getValues('status'))
@@ -181,8 +181,7 @@ export const EditMotelForm = ({ updateData, onClickUpdateMotel, handleUploadThum
         const statusMotel = updateData.status ? 'yes' : 'no'
         setValue('status', statusMotel)
 
-        setSelectedSchool(updateData.school)
-    }, [])
+    }, [setValue, updateData.status])
 
     const handleSelectSchool = (e: any, value: any) => {
         value?.length > 0 && setError('school', { type: '' })
@@ -316,7 +315,7 @@ export const EditMotelForm = ({ updateData, onClickUpdateMotel, handleUploadThum
 
                             <img
                                 src={typeof image === 'string' ? image : URL.createObjectURL(image)}
-                                alt="image" />
+                                alt="Tìm nhà trọ sinh viên" />
                         </Box>
                     ))}
                 </Box>

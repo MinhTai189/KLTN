@@ -1,19 +1,19 @@
-import { Box, Button, CircularProgress, IconButton, makeStyles, Typography } from '@material-ui/core'
+import { Box, CircularProgress, IconButton, makeStyles, Typography } from '@material-ui/core'
 import { LockOpen } from '@material-ui/icons'
 import { Alert } from '@material-ui/lab'
+import { useGoogleLogin, useGoogleLogout } from '@toxa23/react-google-login'
 import { useAppSelector } from 'app/hooks'
+import { ButtonCustom } from 'components/Common/Button'
 import React, { ReactElement, useEffect } from 'react'
+import useFacebook from "react-easy-facebook"
 import { useForm } from 'react-hook-form'
 import { Link } from "react-router-dom"
-import { ReactComponent as Google } from '../../../assets/images/google.svg'
 import { ReactComponent as Facebook } from '../../../assets/images/facebook.svg'
+import { ReactComponent as Google } from '../../../assets/images/google.svg'
 import { CheckboxField, InputField, InputPasswordField } from '../../../components/FormFields'
 import { selectErr, selectLoading } from '../authSlice'
 import { LoginData } from '../models'
 import Header from './Header'
-import { useGoogleLogin, useGoogleLogout } from '@toxa23/react-google-login'
-import useFacebook from "react-easy-facebook";
-import { ButtonCustom } from 'components/Common/Button'
 
 interface Props {
     onSubmit: (data: LoginData) => void;
@@ -98,7 +98,7 @@ function FormLogin({ onSubmit, setRememberMe, onSuccessGG, onSuccessFB }: Props)
             signOut()
             logout()
         }
-    }, [response])
+    }, [response, logout, onSuccessFB, signOut])
 
 
     return (

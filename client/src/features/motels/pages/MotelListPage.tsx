@@ -10,7 +10,7 @@ const MotelListPage = () => {
     const filter = useAppSelector(selectFilterMotel)
     const loading = useAppSelector(selectLoadingMotel)
 
-    const dataMotelSplited: { motel: MotelOnly; room: Room[] }[] = useAppSelector(selectMotelSplited)
+    const dataMotelSplited = useAppSelector(selectMotelSplited)
     const [showUpdateForm, setShowUpdateForm] = useState(false)
     const [selectedMotelUpdate, setSelectMotelUpdate] = useState<MotelOnly>()
 
@@ -87,7 +87,9 @@ const MotelListPage = () => {
     }
 
     const handleUpdateRoom = (data: Room) => {
-        dispatch(motelActions.updateRoom(data))
+        const motelOfRoom = dataMotelSplited.find(item => item.motel.listRoomId.includes(data._id))
+
+        motelOfRoom && dispatch(motelActions.updateRoom({ ...data, motelId: motelOfRoom.motel._id }))
     }
 
     const handleRemove = (record: MotelDataTable) => {
@@ -122,11 +124,13 @@ const MotelListPage = () => {
     }
 
     const onClickEditMotel = (record: MotelDataTable) => {
-        const dataMotelUpdate = dataMotelSplited.filter(motel => motel.motel._id === record.key)
+        const dataMotelUpdate = dataMotelSplited.find(motel => motel.motel._id === record.key)
 
-        setSelectMotelUpdate(dataMotelUpdate[0].motel)
-        setSelectRoomUpdate({ ...dataMotelUpdate[0].room, idMotel: dataMotelUpdate[0].motel._id } as any)
-        setShowUpdateForm(true)
+        if (dataMotelUpdate) {
+            setSelectMotelUpdate(dataMotelUpdate.motel)
+            setSelectRoomUpdate({ ...dataMotelUpdate.room, idMotel: dataMotelUpdate.motel._id } as any)
+            setShowUpdateForm(true)
+        }
     }
 
     return (

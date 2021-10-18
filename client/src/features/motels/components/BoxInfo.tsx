@@ -2,7 +2,6 @@ import { Box, Theme, Tooltip } from "@material-ui/core"
 import { CardMembership, CloudUpload, Email } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
 import { Editor, Owner } from "models"
-import { Link } from 'react-router-dom'
 
 interface OwnerDetail extends Owner {
     createdAt: string

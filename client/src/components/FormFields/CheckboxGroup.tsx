@@ -1,6 +1,6 @@
 import { Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel } from '@material-ui/core'
 import { FieldOption } from 'models'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { Control, useController } from 'react-hook-form'
 
 interface Props {
@@ -33,13 +33,15 @@ export const CheckboxGroup = ({ label, options, initialState, control, name, siz
         control
     })
 
-    useEffect(() => {
-        const arrayData = arrayTrueValue(checkedList)
-        onChange(arrayData)
-    }, [checkedList])
-
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setCheckedList({ ...checkedList, [e.target.name]: e.target.checked })
+        setCheckedList((prev: typeof initialState) => {
+            const data = { ...prev, [e.target.name]: e.target.checked }
+            const arrayData = arrayTrueValue(data)
+
+            onChange(arrayData)
+
+            return data
+        })
     }
 
     return (

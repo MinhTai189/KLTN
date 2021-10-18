@@ -171,7 +171,7 @@ export const UpdateMotelModal = ({
     const [errImages, setErrImages] = useState('')
 
     const [optionsSchool, setOptionsSchool] = useState<Array<School>>([])
-    const [selectedSchool, setSelectedSchool] = useState<Array<School>>([])
+    const [selectedSchool, setSelectedSchool] = useState<Array<School>>(selectedMotelUpdate.school)
 
     useEffect(() => {
         schoolApi.getAll()
@@ -181,8 +181,6 @@ export const UpdateMotelModal = ({
             .catch((err) => {
                 toast.error(err.response?.data.message)
             })
-
-        setSelectedSchool(selectedMotelUpdate.school)
     }, [])
 
     const handleSelectSchool = (e: any, value: any) => {
@@ -302,7 +300,7 @@ export const UpdateMotelModal = ({
 
                             <img
                                 src={typeof image === 'string' ? image : URL.createObjectURL(image)}
-                                alt="image" />
+                                alt="Tìm nhà trọ sinh viên" />
                         </Box>
                     ))}
                 </Box>

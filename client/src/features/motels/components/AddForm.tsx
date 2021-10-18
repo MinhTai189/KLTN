@@ -361,7 +361,7 @@ export const AddForm = ({ handleAddMotel, handleUploadImages, handleUploadThumbn
                             <Box className={classes.imgsWrap}>
                                 {selectedImages && [...selectedImages].map((img, index) => (
                                     <Box component='div'>
-                                        <img key={index} src={URL.createObjectURL(img)} alt='selected image' />
+                                        <img key={index} src={URL.createObjectURL(img)} alt='tìm nhà trọ sinh viên' />
                                     </Box>
                                 ))
                                 }

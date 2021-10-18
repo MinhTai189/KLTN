@@ -1,10 +1,4 @@
-import {
-  call,
-  debounce,
-  put,
-  take,
-  takeLatest,
-} from '@redux-saga/core/effects';
+import { call, debounce, put, takeLatest } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { motelApi } from 'api/motel';
 import { uploadApi } from 'api/upload';

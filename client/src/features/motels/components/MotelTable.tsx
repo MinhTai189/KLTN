@@ -48,7 +48,7 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
             pageSize: pagination._limit,
             total: pagination._totalRows
         })
-    }, [pagination, filter])
+    }, [pagination, filter, motelData])
 
     const columns = [
         {

@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { ButtonCustom } from 'components/Common/Button'
 import { authActions, selectCurrentUser, selectLoading } from 'features/auth/authSlice'
 import { Motel as MotelModel, User } from 'models'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
 import { roundMark } from 'utils'
@@ -269,9 +269,13 @@ export const ItemMotel = ({ motelData }: Props) => {
 
     let indexOptional = 0;
 
+    const checkFavoriteMotel = useCallback((): boolean => {
+        return !!currentUser.favorite && currentUser.favorite.includes(_id as string)
+    }, [_id, currentUser])
+
     useEffect(() => {
         currentUser && setIsLike(checkFavoriteMotel())
-    }, [currentUser])
+    }, [currentUser, checkFavoriteMotel])
 
     const onClickDetail = () => {
         history.push(`/motels/${_id}`)
@@ -290,14 +294,10 @@ export const ItemMotel = ({ motelData }: Props) => {
         }
     }
 
-    const checkFavoriteMotel = (): boolean => {
-        return !!currentUser.favorite && currentUser.favorite.includes(_id as string)
-    }
-
     return (
         <li className={classes.root}>
             <div className={classes.top}>
-                <img src={thumbnail as string} alt="motel image" />
+                <img src={thumbnail as string} alt="Tìm nhà trọ" />
 
                 <div className={`${classes.cover} cover`}></div>
 
@@ -305,7 +305,8 @@ export const ItemMotel = ({ motelData }: Props) => {
                     <ul className="listOptional">
                         {optionalValues.length > 0 && optionalValues.map((value, index) => {
                             const delay = 0.3 + 0.07 * (indexOptional + 1)
-                            if (value === false) return;
+                            if (value === false) return undefined;
+
                             indexOptional++
 
                             const key = optionalKeys[index]

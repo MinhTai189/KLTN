@@ -1,16 +1,16 @@
-import { Box, Grid } from '@material-ui/core'
+import { Grid } from '@material-ui/core'
 import { Modal } from 'antd'
 import { motelApi } from 'api/motel'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { Header } from 'components/Common'
 import { ModalConfirm } from 'components/Common/ModalConfirm'
 import { AlbumMotel, EditMotelForm, InforMotelDetail, InforOnwerUp, InforRoomDetail } from 'features/motels/components'
+import { motelActions, selectFilterMotel, selectLoadingMotel } from 'features/motels/motelSlice'
 import { Slider } from 'features/rate/components'
 import { EditFormRoom } from 'features/room/components'
 import { Editor, Motel, MotelDetail, MotelOnly, Owner, Rate, Response, Room } from 'models'
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { motelActions, selectFilterMotel, selectLoadingMotel } from 'features/motels/motelSlice'
 
 interface OwnerDetail extends Owner {
     createdAt: string
@@ -97,19 +97,21 @@ const MotelDetailPage = () => {
 
                 const { mark, optional, vote, ...motelUpdate } = motel
 
-                setDataMotel({
-                    ...dataMotel,
-                    motel: motelData,
-                    motelUpdate,
-                    album,
-                    room,
-                    editor: (editor as Editor[]),
-                    owner: { ...owner, createdAt: (createdAt as string) } as OwnerDetail,
-                    rate: (rate as Rate[]),
+                setDataMotel((prev: typeof dataMotel) => {
+                    return {
+                        ...prev,
+                        motel: motelData,
+                        motelUpdate,
+                        album,
+                        room,
+                        editor: (editor as Editor[]),
+                        owner: { ...owner, createdAt: (createdAt as string) } as OwnerDetail,
+                        rate: (rate as Rate[]),
+                    }
                 })
             })
             .catch((err: any) => console.log('Get Motel failed', err))
-    }, [filter])
+    }, [filter, id])
 
     useEffect(() => {
         if (loading === false) {
@@ -168,7 +170,7 @@ const MotelDetailPage = () => {
     }
 
     const handleUpdateRoom = (data: Room) => {
-        dispatch(motelActions.updateRoom(data))
+        dispatch(motelActions.updateRoom({ ...data, motelId: id }))
     }
 
     //handle upload images motel

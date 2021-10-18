@@ -1,4 +1,3 @@
-import { Omit } from '@material-ui/types';
 import { School, UploadResponse, User } from 'models';
 
 export interface Motel {

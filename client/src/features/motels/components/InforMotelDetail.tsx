@@ -1,6 +1,5 @@
 import { Box, makeStyles, Theme, Tooltip } from "@material-ui/core"
 import { Facebook, Mail, Phone, Star, StarBorder, StarHalf } from "@material-ui/icons"
-import School from 'assets/images/school.png'
 import { ReactComponent as Zalo } from 'assets/images/zalo.svg'
 import { MotelDetail } from "models"
 import { roundMark } from "utils"
@@ -101,7 +100,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const InforMotelDetail = ({ dataMotel }: Props) => {
     const classes = useStyles()
-    const { _id, name, school, desc, address, mark, contact: { phone, facebook, email, zalo } } = dataMotel
+    const { name, school, desc, address, mark, contact: { phone, facebook, email, zalo } } = dataMotel
     let markToStar = roundMark(mark as number) || [0, 0]
 
     return (

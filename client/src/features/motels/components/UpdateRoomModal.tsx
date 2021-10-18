@@ -2,7 +2,6 @@ import { Box, Button, Link, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { CheckboxGroup, InputField } from 'components/FormFields'
 import { FieldOption, Room } from 'models'
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 interface ChangeRoom {
@@ -115,10 +114,11 @@ const initialCheckbox: any = {
 
 export const UpdateRoomModal = ({ changeRoom, nextRoomUpdate, prevRoomUpdate, handleUpdateRoom }: Props) => {
     const classes = useStyles()
-    const [checkbox, setCheckbox] = useState({ ...initialCheckbox, ...changeRoom.data.optional })
     const { handleSubmit, control, formState: { isDirty } } = useForm({
         defaultValues: changeRoom.data
     })
+
+    const checkbox = { ...initialCheckbox, ...changeRoom.data.optional }
 
     const onClickPrevNext = (type: string) => {
         if (isDirty === true) {

@@ -143,7 +143,7 @@ export const Hero = ({ hiddenScrollDown }: Props) => {
 
     useEffect(() => {
         dispatch(schoolActions.getSchool(filter))
-    }, [filter])
+    }, [filter, dispatch])
 
     const onClickSearch = () => {
         setOpenDropdrow(current => {

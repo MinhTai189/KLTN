@@ -29,8 +29,7 @@ const HomePage = () => {
             _page: 1,
             _limit: 6
         }))
-    }, [filter])
-
+    }, [filter, dispatch])
     useEffect(() => {
         // scroll event window for nav
         window.onscroll = () => {

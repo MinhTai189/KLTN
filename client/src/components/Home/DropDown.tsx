@@ -94,7 +94,7 @@ export const DropDown = ({ openDropdown, isFlip, setIsFlip }: Props) => {
             }
             dropdownBox1.current.reverse()
         }
-    }, [openDropdown])
+    }, [openDropdown, childRef, isFlip, setIsFlip])
 
     useEffect(() => {
         if (isFlip === true) {
@@ -104,7 +104,7 @@ export const DropDown = ({ openDropdown, isFlip, setIsFlip }: Props) => {
             flipBox1.current.reverse()
             flipBox2.current.reverse()
         }
-    }, [isFlip])
+    }, [isFlip, childRef])
 
     const onClickRows = (codeName: string, school: string) => {
         setIsFlip(true)
@@ -144,8 +144,9 @@ export const DropDown = ({ openDropdown, isFlip, setIsFlip }: Props) => {
                     <Typography>Danh sách nhà trọ</Typography>
                 </Box>
 
-                {new Array(4).fill(0).map(() => (
+                {new Array(4).fill(0).map((_, index) => (
                     <MotelRows
+                        key={index.toString()}
                         thumbnail='https://i.imgur.com/rBjvLob.jpeg'
                         name='Nha tro Minh Tai'
                         addr='Than Cuu Nghia'

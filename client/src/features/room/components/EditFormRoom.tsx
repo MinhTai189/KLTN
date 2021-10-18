@@ -1,9 +1,8 @@
-import { Box, CircularProgress, makeStyles, Theme, Button } from "@material-ui/core"
+import { Box, Button, makeStyles, Theme } from "@material-ui/core"
 import { Alert } from "@material-ui/lab"
 import { Space, Typography } from "antd"
 import { CheckboxGroup, InputField } from "components/FormFields"
 import { FieldOption, Room } from "models"
-import { useState } from "react"
 import { useForm } from "react-hook-form"
 
 interface Props {
@@ -95,10 +94,11 @@ const initialCheckbox: any = {
 
 export const EditFormRoom = ({ updateData, onClickUpdateRoom }: Props) => {
     const classes = useStyles()
-    const [checkbox, setCheckbox] = useState({ ...initialCheckbox, ...updateData.optional })
     const { handleSubmit, control } = useForm({
         defaultValues: updateData
     })
+
+    const checkbox = { ...initialCheckbox, ...updateData.optional }
 
     return (
         <form className={classes.root} onSubmit={handleSubmit(onClickUpdateRoom)}>

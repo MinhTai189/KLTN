@@ -1,7 +1,6 @@
 import { Box, Theme } from '@material-ui/core'
 import { Star } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
-import Avatar from 'assets/images/avatar-default.jpg'
 import { Rate } from 'models'
 
 interface Props {
@@ -215,7 +214,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const CardItem = ({ className = '', dataRate }: Props) => {
     const classes = useStyles()
-    const { content, createAt, star, _id, user: { name, avatarUrl, _id: userId } } = dataRate
+    const { content, createAt, star, user: { name, avatarUrl } } = dataRate
 
     const createdDate = new Date(createAt)
     const date = createdDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: 'numeric', minute: 'numeric' })

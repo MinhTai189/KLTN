@@ -124,7 +124,7 @@ export const FormUpdate = ({ showUpdateForm, setShowUpdateForm, onSubmit, userUp
                 setIsErrForm(true)
             });
 
-    }, [])
+    }, [userUpdating.district, userUpdating.province, userUpdating.school])
 
     const handleProvinceSelected = async (e: any, value: Province) => {
         if (value?.codeName) {

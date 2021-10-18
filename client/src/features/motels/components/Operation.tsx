@@ -60,7 +60,7 @@ export const Operation = ({ handleSearch, handleFilter, handleClearFilter }: Pro
 
     const onChangeSortSelect = (e: any, key: string) => {
         if (e) {
-            const [_sort, _order] = e.split('.')
+            const [_sort] = e.split('.')
 
             switch (_sort) {
                 case 'createdat':

@@ -115,21 +115,26 @@ export const selectPaginationMotel = (state: RootState) =>
 export const selectMotelSplited = createSelector(
   selectDataMotel,
   (dataMotel: Array<Motel>) => {
-    return dataMotel.map((motel) => ({
-      motel: {
-        _id: motel._id,
-        name: motel.name,
-        images: motel.images,
-        thumbnail: motel.thumbnail,
-        desc: motel.desc,
-        contact: motel.contact,
-        status: motel.status === true ? 'yes' : 'no',
-        available: motel.available,
-        school: motel.school,
-        address: motel.address,
-      },
-      room: motel.room,
-    }));
+    return dataMotel.map((motel) => {
+      const listRoomId = motel.room.map((room) => room._id);
+
+      return {
+        motel: {
+          _id: motel._id,
+          listRoomId,
+          name: motel.name,
+          images: motel.images,
+          thumbnail: motel.thumbnail,
+          desc: motel.desc,
+          contact: motel.contact,
+          status: motel.status === true ? 'yes' : 'no',
+          available: motel.available,
+          school: motel.school,
+          address: motel.address,
+        },
+        room: motel.room,
+      };
+    });
   }
 );
 

@@ -3,7 +3,7 @@ import { ArrowBack, ArrowForward, Favorite, FavoriteBorder } from "@material-ui/
 import { makeStyles } from "@material-ui/styles"
 import { useAppDispatch, useAppSelector } from "app/hooks"
 import { authActions, selectCurrentUser, selectLoading } from "features/auth/authSlice"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useParams } from "react-router"
 import { toast } from "react-toastify"
 import Carousel from 'react-elastic-carousel'
@@ -127,8 +127,6 @@ export const AlbumMotel = ({ images }: Props) => {
     const classes = useStyles()
     const { id } = useParams<{ id: string }>()
 
-    console.log({ images })
-
     const currentUser = useAppSelector(selectCurrentUser)
     const dispatch = useAppDispatch()
     const loading = useAppSelector(selectLoading)
@@ -136,13 +134,15 @@ export const AlbumMotel = ({ images }: Props) => {
     const [currentImg, setCurrentImg] = useState(0)
     const [isLike, setIsLike] = useState(false)
 
+    const checkFavoriteMotel = useCallback(() => {
+        return !!currentUser.favorite && currentUser.favorite.includes(id as string)
+    },
+        [currentUser, id])
+
     useEffect(() => {
         currentUser && setIsLike(checkFavoriteMotel())
-    }, [currentUser])
+    }, [currentUser, checkFavoriteMotel])
 
-    const checkFavoriteMotel = (): boolean => {
-        return !!currentUser.favorite && currentUser.favorite.includes(id as string)
-    }
 
     const nextImg = () => {
         setCurrentImg(old => {
@@ -193,7 +193,7 @@ export const AlbumMotel = ({ images }: Props) => {
                     }
                 </span>
 
-                <img src={images[currentImg]} alt="motel image" />
+                <img src={images[currentImg]} alt="Tìm nhà trọ sinh viên" />
 
                 <span className="btnNext" onClick={nextImg}>
                     <ArrowForward />
@@ -210,7 +210,7 @@ export const AlbumMotel = ({ images }: Props) => {
                         const active = index === currentImg ? 'active' : ''
 
                         return (
-                            <img className={active} src={image} alt="motel image" onClick={() => setCurrentImg(index)} />
+                            <img className={active} src={image} alt="Tìm nhà trọ sinh viên" onClick={() => setCurrentImg(index)} />
                         )
                     })}
                 </Carousel>
