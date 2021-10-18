@@ -87,6 +87,7 @@ const MotelListPage = () => {
     }
 
     const handleUpdateRoom = (data: Room) => {
+
         const motelOfRoom = dataMotelSplited.find(item => item.motel.listRoomId.includes(data._id))
 
         motelOfRoom && dispatch(motelActions.updateRoom({ ...data, motelId: motelOfRoom.motel._id }))

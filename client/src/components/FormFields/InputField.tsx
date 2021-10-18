@@ -14,8 +14,6 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
     [key: string]: any
 }
 
-
-
 export const InputField = ({ type, label, name, control, multiline = false, rows, sizeField = 'medium', margin = 'normal', ...props }: Props) => {
     const { field: { value, onChange, onBlur, ref },
         fieldState: { invalid, error }, } = useController({
