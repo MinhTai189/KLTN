@@ -11,7 +11,7 @@ router.post("/:id", verifyToken, async (req, res) => {
       message: "Không nhận được nhà trọ cần cập nhật",
     });
   const id = req.params.id;
-  let { optional, amount, price, area, total, remain, status } = req.body;
+  let { optional, price, area, total, remain, status } = req.body;
 
   if (
     Array.isArray(optional) == false ||
@@ -45,9 +45,9 @@ router.post("/:id", verifyToken, async (req, res) => {
       motelUpdate.room.push({
         optional: optionalFixed,
         area,
+        price,
         total,
         remain,
-        status,
       });
       await motelUpdate.save();
       let edited = "Thêm phòng trọ mới";
@@ -72,6 +72,7 @@ router.post("/:id", verifyToken, async (req, res) => {
       user: req.user.id,
       optional: optionalFixed,
       area,
+      price,
       total,
       remain,
       status,
@@ -89,7 +90,7 @@ router.post("/:id", verifyToken, async (req, res) => {
   }
 });
 router.patch("/:id/:idRoom", verifyToken, async (req, res) => {
-  const { optional, amount, price, area, total, remain, status } = req.body;
+  const { optional, price, area, total, remain, status } = req.body;
 
   if (!req.params.id || !req.params.idRoom)
     return res.status(400).json({
@@ -144,9 +145,6 @@ router.patch("/:id/:idRoom", verifyToken, async (req, res) => {
     for (let i = 0; i < optional.length; i++) optionalFixed[optional[i]] = true;
     newData.optional = optionalFixed;
   }
-  if (typeof amount === "number") {
-    newData.amount = amount;
-  }
   if (typeof price === "number") {
     newData.price = price;
   }
@@ -182,11 +180,6 @@ router.patch("/:id/:idRoom", verifyToken, async (req, res) => {
         break;
       }
   }
-  if (typeof amount === "number")
-    if (amount != findRoom.amount)
-      if (edited === "Chỉnh sửa phòng trọ (" + index + "): ")
-        edited += "số lượng phòng";
-      else edited += ", số lượng phòng";
   if (typeof price === "number")
     if (price != findRoom.price)
       if (edited === "Chỉnh sửa phòng trọ (" + index + "): ") edited += "giá";
@@ -223,16 +216,14 @@ router.patch("/:id/:idRoom", verifyToken, async (req, res) => {
         {
           $set: {
             "room.$.area": newData.area,
-            "room.$.amount": newData.amount,
             "room.$.price": newData.price,
-            "room.$.status": newData.status,
             "room.$.remain": newData.remain,
             "room.$.optional": newData.optional,
             "room.$.total": newData.total,
           },
         }
       );
-      await motel.findOneAndUpdate({ _id: id, editor: editedData });
+      await motel.findOneAndUpdate({ _id: id }, { editor: editedData });
       return res.status(200).json({ success: true, message: "Thành công" });
     } catch (err) {
       return res
@@ -315,7 +306,6 @@ router.delete("/:id/:idRoom", verifyToken, async (req, res) => {
       user: req.user.id,
       area: findRoom.area,
       price: findRoom.price,
-      status: findRoom.status,
       remain: findRoom.remain,
       optional: findRoom.optional,
       total: findRoom.total,

@@ -209,7 +209,7 @@ const MotelDetailPage = () => {
         }
 
         if (openRoomModal && dataUpdateRoom) {
-            handleUpdateRoom(dataUpdateRoom)
+            handleUpdateRoom({...dataUpdateRoom, motelId: id})
         }
     }
 
