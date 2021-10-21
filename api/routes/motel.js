@@ -9,6 +9,7 @@ const unapprovedMotel = require("../models/unapproved-motel");
 const upload = require("../middleware/upload");
 const shuffle = require("../middleware/shuffle");
 const userUpdateMotel = require("../models/user-update-motel");
+const JWT = require("jsonwebtoken");
 const plus = async (idUser) => {
   const a = await user.findByIdAndUpdate(idUser, { $inc: { motels: 1 } });
   if (!a) return false;
@@ -1124,6 +1125,15 @@ router.post("/", verifyToken, async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
+  const accessToken = req.headers.authorization;
+  let userAuth = undefined;
+  if (accessToken)
+    JWT.verify(accessToken, process.env.accessToken, (err, data) => {
+      if (err) {
+        console.log("hello world");
+      } else userAuth = data;
+    });
+
   const id = req.params.id;
   const findMotel = await motel
     .findById(id)
@@ -1150,7 +1160,7 @@ router.get("/:id", async (req, res) => {
     const userRate = {
       name: findMotel.rate[i].user.name,
       isAdmin: findMotel.rate[i].user.isAdmin,
-      _id: findMotel.rate[i]._id,
+      _id: findMotel.rate[i].user._id,
       avatarUrl: findMotel.rate[i].user.avatarUrl.url,
       credit: findMotel.rate[i].user.credit,
     };
@@ -1220,6 +1230,29 @@ router.get("/:id", async (req, res) => {
     owner,
     editor: editorData,
   };
+  responseMotel.rate = responseMotel.rate.sort((item1, item2) => {
+    return new Date(item2.createdAt) - new Date(item1.createdAt);
+  });
+  if (userAuth != undefined) {
+    console.log(userAuth);
+    for (let i = 0; i < responseMotel.rate.length; i++) {
+      let check = false;
+      for (let j = i + 1; j < responseMotel.rate.length; j++)
+        if (
+          JSON.stringify(responseMotel.rate[j].user._id) ===
+          JSON.stringify(userAuth.id)
+        ) {
+          const temp = responseMotel.rate[j];
+          responseMotel.rate[j] = responseMotel.rate[i];
+          responseMotel.rate[i] = temp;
+          check = true;
+          break;
+        }
+      if (check == false) {
+        break;
+      }
+    }
+  }
   res
     .status(200)
     .json({ success: true, message: "Thành công", data: responseMotel });

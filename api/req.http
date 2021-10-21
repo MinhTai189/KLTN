@@ -124,7 +124,9 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgw
 ###
 GET http://localhost:5000/api/motels?_school=6139d5d6d02c8be6b20880cc
 ###
-GET http://localhost:5000/api/motels/?_keysearch=ad
+GET http://localhost:5000/api/motels/615a9f13dc19793cda17890f
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNDc3NTIwMCwiZXhwIjoxNjM0Nzc1ODAwfQ.UMCt_mZc0CCU3Lm8P9K-39apRQUvM4_7ExxIi4H_9Sk
 ###
 POST http://localhost:5000/api/motels/rates/615a9f13dc19793cda17890f
 Content-Type: application/json
@@ -198,3 +200,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 "remain":7,
 "status":true
 }
+###
+GET http://localhost:5000/api/motels/rates
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNDc3NjE4NCwiZXhwIjoxNjM0Nzc2Nzg0fQ.M6ZL0ocdV8NKLv5-ie5bmGWbX7nO57q4faid4wRkHGo
