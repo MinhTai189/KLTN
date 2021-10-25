@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: '100%',
         maxWidth: 420,
-        height: 470,
+        height: 500,
         placeSelf: 'center',
         overflow: 'hidden',
         outline: `5px solid ${theme.palette.primary.main}`,

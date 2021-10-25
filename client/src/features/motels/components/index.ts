@@ -12,3 +12,4 @@ export * from './InforMotelDetail';
 export * from './InforRoomDetail';
 export * from './BoxInfo';
 export * from './EditMotelForm';
+export * from './CreatedUser';

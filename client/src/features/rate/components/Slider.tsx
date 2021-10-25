@@ -111,14 +111,6 @@ export const Slider = ({ listRate }: Props) => {
 
     return (
         <Box className={classes.root}>
-            <h2 style={{
-                width: '100%', textAlign: 'center',
-                textTransform: 'uppercase', margin: '120px 0 4px',
-                fontSize: 25
-            }}>
-                Đánh giá
-            </h2>
-
             {listRate.length > 3 && <Box className={classes.controls}>
                 <div className='btn' onClick={prevSlider}>
                     <span className="btnLeft arrow"></span>

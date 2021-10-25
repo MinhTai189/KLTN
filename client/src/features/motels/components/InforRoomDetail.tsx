@@ -1,4 +1,4 @@
-import { TableBody, TableCell, TableContainer, TableHead, TableRow, Table, Theme } from "@material-ui/core"
+import { TableBody, TableCell, TableContainer, TableHead, TableRow, Table, Theme, Paper } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles";
 import { useAppSelector } from "app/hooks";
 import { ButtonCustom } from "components/Common/Button";
@@ -15,14 +15,14 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        borderLeft: '2px solid',
+        marginTop: 16,
 
-        "& .MuiTableCell-head": {
-            fontSize: '0.79rem'
+        '& .MuiTableCell-root': {
+            padding: 12
         },
 
-        "& .MuiTableCell-root": {
-            border: 'none'
+        "& .MuiTableCell-head": {
+            fontSize: '0.7rem'
         },
 
         "& .MuiButton-root": {
@@ -52,16 +52,16 @@ export const InforRoomDetail = ({ room, setOpenRoomModal, handleSelectRoom }: Pr
     }
 
     return (
-        <TableContainer className={classes.root}>
+        <TableContainer className={classes.root} component={Paper}>
             <Table aria-label="simple table">
                 <TableHead>
                     <TableRow>
                         <TableCell></TableCell>
                         <TableCell align="center">Giá thuê</TableCell>
-                        <TableCell align="center">Phòng trống/Tổng phòng</TableCell>
+                        <TableCell align="center">Trống/Tổng phòng</TableCell>
                         <TableCell align="center">Diện tích</TableCell>
-                        <TableCell align="center" style={{ width: 250 }}>Tiện ích bổ sung</TableCell>
-                        <TableCell align="center">Chỉnh sửa phòng trọ</TableCell>
+                        <TableCell align="center" style={{ width: 150 }}>Tiện ích</TableCell>
+                        <TableCell align="center">Hành động</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -75,7 +75,7 @@ export const InforRoomDetail = ({ room, setOpenRoomModal, handleSelectRoom }: Pr
                             <TableCell align="center">{row.area}</TableCell>
                             <TableCell align="left">{row.additional}</TableCell>
                             <TableCell align="center">
-                                <ButtonCustom onClick={() => handleEditClick(row._id)}>Chỉnh sửa</ButtonCustom>
+                                <ButtonCustom sizeBtn='small' onClick={() => handleEditClick(row._id)}>Chỉnh sửa</ButtonCustom>
                             </TableCell>
                         </TableRow>
                     ))}

@@ -2,11 +2,11 @@ import { Grid } from '@material-ui/core'
 import { Modal } from 'antd'
 import { motelApi } from 'api/motel'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
-import { Header } from 'components/Common'
 import { ModalConfirm } from 'components/Common/ModalConfirm'
+import { MainLayout } from 'components/Layouts/MainLayout'
 import { AlbumMotel, EditMotelForm, InforMotelDetail, InforOnwerUp, InforRoomDetail } from 'features/motels/components'
 import { motelActions, selectFilterMotel, selectLoadingMotel } from 'features/motels/motelSlice'
-import { Slider } from 'features/rate/components'
+import { RateSection } from 'features/rate/components'
 import { EditFormRoom } from 'features/room/components'
 import { Editor, Motel, MotelDetail, MotelOnly, Owner, Rate, Response, Room } from 'models'
 import { useEffect, useRef, useState } from 'react'
@@ -54,36 +54,6 @@ const MotelDetailPage = () => {
     const [formThumbnail, setFormThumbnail] = useState<FormData>()
     const [formImages, setFormImages] = useState<{ old: string[]; new: FormData | undefined } | undefined>(undefined)
 
-    const albumRef = useRef<HTMLElement>()
-    const infoRef = useRef<HTMLElement>()
-    const roomRef = useRef<HTMLElement>()
-
-    useEffect(() => {
-        //scroll page event
-        window.addEventListener('scroll', () => {
-            if (albumRef.current && infoRef.current && roomRef.current) {
-                const windY = window.scrollY
-                const albTop = albumRef.current.offsetTop
-                const infoHeight = infoRef.current.clientHeight
-                const roomTop = roomRef.current.offsetTop - 70
-
-                if (windY + 58 >= albTop) {
-                    const y = (windY * 1.02) - albTop + 58
-                    const isScroll = windY + infoHeight < roomTop
-
-                    if (isScroll)
-                        infoRef.current.style.transform = `translateY(${y}px)`
-                } else {
-                    infoRef.current.style.transform = 'translateY(0)'
-                }
-            }
-        })
-
-        return () => {
-            window.removeEventListener('scroll', () => { })
-        }
-    }, [])
-
     useEffect(() => {
         //get motel
         motelApi.getMotelById(id)
@@ -93,7 +63,7 @@ const MotelDetailPage = () => {
 
                 const album: string[] = [(motel.thumbnail as string), ...(motel.images as string[])]
 
-                const motelData = motel as MotelDetail
+                const motelData = { ...motel, amountRate: rate?.length } as MotelDetail
 
                 const { mark, optional, vote, ...motelUpdate } = motel
 
@@ -210,7 +180,7 @@ const MotelDetailPage = () => {
         }
 
         if (openRoomModal && dataUpdateRoom) {
-            handleUpdateRoom({...dataUpdateRoom, motelId: id})
+            handleUpdateRoom({ ...dataUpdateRoom, motelId: id })
         }
     }
 
@@ -219,42 +189,37 @@ const MotelDetailPage = () => {
     }
     return (
         <>
-            <Header isChangeNav={true} />
-
-            <div className="container">
-                <h2
-                    style={{
-                        width: '100%', textAlign: 'center',
-                        textTransform: 'uppercase', margin: '120px 0 48px',
-                        fontSize: 25
-                    }}>
-                    Thông tin chi tiết nhà trọ
-                </h2>
-
-                <Grid container spacing={2}>
-                    <Grid item md={9}>
-                        <div ref={albumRef as any}>
-                            {dataMotel.album.length > 0 && <AlbumMotel images={dataMotel.album} />}
-                        </div>
-
-                        {dataMotel.motel && <InforMotelDetail dataMotel={dataMotel.motel} />}
+            <MainLayout>
+                <Grid container spacing={4} style={{ marginTop: 80 }}>
+                    <Grid item md={5}>
+                        {dataMotel.album.length > 0 &&
+                            <AlbumMotel
+                                images={dataMotel.album}
+                                motelName={dataMotel.motel?.name || ''}
+                            />}
                     </Grid>
 
-                    <Grid item md={3}>
-                        <div ref={infoRef as any}>
-                            {dataMotel.owner && <InforOnwerUp editor={dataMotel.editor} owner={dataMotel.owner} setOpenModal={setOpenMotelModal} />}
-                        </div>
-                    </Grid>
-
-                    <Grid item md={12}>
-                        <div ref={roomRef as any}>
-                            <InforRoomDetail room={dataMotel.room} setOpenRoomModal={setOpenRoomModal} handleSelectRoom={handleSelectRoom} />
-                        </div>
+                    <Grid item md={7}>
+                        {dataMotel.motel &&
+                            <InforMotelDetail
+                                dataMotel={dataMotel.motel}
+                                room={dataMotel.room}
+                                setOpenRoomModal={setOpenRoomModal}
+                                handleSelectRoom={handleSelectRoom}
+                            />}
                     </Grid>
                 </Grid>
 
-                <Slider listRate={dataMotel.rate} />
-            </div>
+                {dataMotel.motel &&
+                    <RateSection
+                        motelId={dataMotel.motel._id as string}
+                        motelName={dataMotel.motel.name}
+                        rateList={dataMotel.rate}
+                    />
+                }
+
+                <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+            </MainLayout>
 
             <Modal title='Chỉnh sửa phòng trọ' visible={openRoomModal} onCancel={handleCloseModal} footer={null}>
                 {roomSelected && <EditFormRoom key={roomSelected._id} updateData={roomSelected} onClickUpdateRoom={onClickUpdateRoom} />}

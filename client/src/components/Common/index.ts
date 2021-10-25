@@ -3,3 +3,7 @@ export * from './NotFound';
 export * from './AdminRoute';
 export * from './Button';
 export * from './ScrollToTop';
+export * from './ButtonSubmit';
+export * from './Modal';
+export * from './ModalConfirm';
+export * from './ModalReport';

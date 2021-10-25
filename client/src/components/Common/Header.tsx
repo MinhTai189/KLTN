@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
             left: 0,
             zIndex: 199,
             width: '100%',
-            padding: `0 calc((100% - 1200px) / 2)`,
+            padding: `0 calc((100% - 1400px) / 2)`,
             transition: 'all 300ms ease'
         },
         nav: {
@@ -107,7 +107,7 @@ export const Header = ({ isChangeNav }: Props) => {
     }, [])
 
     return (
-        <div className={classes.root} style={isChangeNav ? { backgroundImage: 'linear-gradient(#000 0%, #2d3436 74%)' } : {}}>
+        <div className={classes.root} style={isChangeNav ? { background: '#000' } : {}}>
             <nav className={classes.nav} style={isChangeNav ? { padding: '4px 16px' } : {}}>
                 <Link to='/'>
                     <img className={classes.logo} src={Logo} alt="logo" />

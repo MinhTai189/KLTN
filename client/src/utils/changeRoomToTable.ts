@@ -56,14 +56,15 @@ export const changeRoomToTable = (rooms: Room[]): RoomTable[] => {
       {
         style: {
           background: room.remain > 0 ? '#19bb0b' : '#c90404',
-          padding: '4px 12px',
+          padding: '2px 8px',
+          fontSize: 12,
           borderRadius: 15,
         },
       },
       `${remain}/${total}`
     );
 
-    const area = `${room.area.length * room.area.width}m²`;
+    const area = `${room.area.length}m x ${room.area.width}m`;
     const keys = Object.keys(room.optional);
     const values = Object.values(room.optional);
 

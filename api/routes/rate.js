@@ -47,9 +47,7 @@ router.delete("/violates/:id/:idRate", verifyToken, async (req, res) => {
       .status(400)
       .json({ success: false, message: "Không tìm thấy nhà trọ" });
 });
-router.get("/", verifyToken, async (req, res) => {
-  if (req.user.isAdmin == false)
-    res.status(403).json({ success: false, message: "Bạn không có đủ quyền" });
+router.get("/", async (req, res) => {
   try {
     const { _order, _sort, _keysearch, _limit, _page, _role, _user } =
       req.query;
@@ -151,19 +149,19 @@ router.get("/", verifyToken, async (req, res) => {
 });
 
 router.post("/:id", verifyToken, async (req, res) => {
-  let { content, star } = req.body;
+  let { content, star } = req.body.params;
   if (!star)
     return res
       .status(400)
-      .json({ success: false, message: "Không đúng số sao" });
-  if (typeof parseInt(star) !== "number")
+      .json({ success: false, message: "Không tìm thấy số điểm đánh giá!" });
+  if (typeof parseFloat(star) !== "number")
     return res
       .status(400)
-      .json({ success: false, message: "Không đúng số sao" });
-  if (typeof parseInt(star) > 5)
+      .json({ success: false, message: "Điểm đánh giá không hợp lệ!" });
+  if (typeof parseFloat(star) > 5)
     return res
       .status(400)
-      .json({ success: false, message: "Không đúng số sao" });
+      .json({ success: false, message: "Điểm đánh giá không được lớn hơn 5!" });
   const findMotel = await motel.findById(req.params.id);
   if (!findMotel)
     return res

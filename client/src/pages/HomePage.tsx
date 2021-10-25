@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { Header } from 'components/Common';
 import { Hero } from 'components/Home';
+import { MainLayout } from 'components/Layouts/MainLayout';
 import { authActions, selectIsLogged } from 'features/auth/authSlice';
 import { ListMotel } from 'features/motels/components';
 import { motelActions } from 'features/motels/motelSlice';
@@ -25,7 +25,7 @@ const HomePage = () => {
 
     useEffect(() => {
         //fetch motel data
-        dispatch(motelActions.getMotel({
+        dispatch(motelActions.getMotelRandom({
             _page: 1,
             _limit: 6
         }))
@@ -48,14 +48,12 @@ const HomePage = () => {
     }, [])
 
     return (
-        <>
-            <Header isChangeNav={isChangeNav} />
-            <Hero hiddenScrollDown={hiddenScrollDown} />
+        <MainLayout isChangeNav={isChangeNav} hero={<Hero hiddenScrollDown={hiddenScrollDown} />}>
             <ListMotel />
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             {/* find motel */}
             {/* forum */}
-        </>
+        </MainLayout>
     )
 }
 

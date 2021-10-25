@@ -1,70 +1,122 @@
-import { Box, makeStyles, Theme, Tooltip } from "@material-ui/core"
+import { Box, Grid, makeStyles, Paper, Theme, Tooltip, Typography } from "@material-ui/core"
 import { Facebook, Mail, Phone, Star, StarBorder, StarHalf } from "@material-ui/icons"
 import { ReactComponent as Zalo } from 'assets/images/zalo.svg'
-import { MotelDetail } from "models"
-import { roundMark } from "utils"
+import { MotelDetail, Room } from "models"
+import { roundMark, twoNumber } from "utils"
+import { CreatedUser, InforRoomDetail } from "."
 
 interface Props {
     dataMotel: MotelDetail
+    room: Room[]
+    setOpenRoomModal: (state: boolean) => void
+    handleSelectRoom: (id: string) => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: '100%',
+        background: '#f7f7f7',
+        padding: theme.spacing(1, 2)
     },
     name: {
         width: '100%',
-        textAlign: 'center',
-        fontSize: 30,
+        fontSize: '1.3em',
+        fontWeight: 700,
         textTransform: 'uppercase',
         marginBottom: 4,
+        letterSpacing: 2,
+        // color: theme.palette.primary.main
+    },
+    statistics: {
+        display: 'flex',
+        alignItems: 'center',
+        marginBlock: 8,
+        background: '#fff',
+        padding: theme.spacing(0.8, 1.5),
+        borderRadius: 5,
+        boxShadow: theme.shadows[1],
+
+        '& .col': {
+            display: 'flex',
+
+            '& .number': {
+                fontSize: '1.3em',
+                color: '#48a9a6',
+                fontWeight: 400,
+                marginRight: 4,
+                lineHeight: 1,
+                textDecoration: 'underline',
+            },
+
+            '& .stars ': {
+                '& .MuiSvgIcon-root': {
+                    width: '0.65em',
+                    height: '0.65em',
+                    fill: '#666'
+                }
+            },
+
+            '& .text': {
+                fontSize: '0.85em',
+                color: '#666'
+            }
+        },
+
+        '& .divider': {
+            width: 1,
+            height: 20,
+            background: '#ccc',
+            marginInline: 12
+        }
     },
     schools: {
         display: 'flex',
-        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 0,
 
         "& img": {
-            width: 20,
-            height: 20,
+            width: '1.2em',
+            height: '1.2em',
 
             "&:not(:last-child)": {
-                marginRight: 16
+                marginRight: 8
             }
         }
     },
     wrapper: {
         width: '100%',
         maxWidth: 800,
+        marginTop: 16,
 
         "& .title": {
-            fontSize: 22,
+            fontSize: '1.2em',
             marginBottom: 4
         },
 
         "& .content": {
-            fontSize: 17,
+            fontSize: '1em',
+            color: '#333',
         },
 
         "& .row": {
-            marginBottom: 16,
+            marginBottom: 8,
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-end',
+            paddingLeft: 16,
 
             "& .label": {
-                fontSize: 17,
-                lineHeight: 1,
+                fontSize: '1em',
                 marginRight: 8
             },
 
             "& .text": {
-                fontSize: 17,
-                lineHeight: 1.2,
+                fontSize: '0.9em',
             },
 
             "& .contact": {
                 display: 'flex',
                 flexDirection: 'column',
-                borderLeft: '2px solid',
+                borderLeft: '1px solid',
                 paddingLeft: 8,
 
                 "& .contact__row": {
@@ -72,19 +124,24 @@ const useStyles = makeStyles((theme: Theme) => ({
                     alignItems: 'center',
 
                     "&:not(:last-child)": {
-                        marginBottom: 8,
+                        marginBottom: 6,
                     },
 
                     "& .icon": {
                         height: 'fit-content',
-                        marginRight: 8,
+                        marginRight: 4,
                         display: 'grid',
                         placeItems: 'center',
+
+                        '& .MuiSvgIcon-root, & svg': {
+                            width: 18,
+                            height: 18,
+                        },
                     },
 
                     "& .contact__text a": {
-                        fontSize: 16,
-                        color: 'unset',
+                        fontSize: '0.9em',
+                        color: '#333',
                         transitions: '300ms all ease',
 
                         "&:hover": {
@@ -96,24 +153,88 @@ const useStyles = makeStyles((theme: Theme) => ({
             }
         }
     },
+    wrapperInfor: {
+        padding: theme.spacing(0.7),
+        // background: '#dbdbdb',
+    },
 }))
 
-export const InforMotelDetail = ({ dataMotel }: Props) => {
+export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoomModal }: Props) => {
     const classes = useStyles()
-    const { name, school, desc, address, mark, contact: { phone, facebook, email, zalo } } = dataMotel
+    const { name, school, amountRate, desc, address, mark, contact: { phone, facebook, email, zalo } } = dataMotel
     let markToStar = roundMark(mark as number) || [0, 0]
 
     return (
         <Box className={classes.root}>
-            <h1 className={classes.name}>{name}</h1>
+            <div>
+                <Grid container spacing={2}>
+                    <Grid item sm={12} md={8}>
+                        <h1 className={classes.name}>{name}</h1>
 
-            <ul className={classes.schools}>
-                {school.map((item, index) => (
-                    <Tooltip key={index} title={item.name}>
-                        <img src={item.logo} alt="logo school" />
-                    </Tooltip>
-                ))}
-            </ul>
+                        <div className={classes.statistics}>
+                            <div className="col">
+                                <span className="number">
+                                    {mark.toFixed(1)}
+                                </span>
+
+                                <span className="stars">
+                                    {new Array(5).fill(1).map((_, index) => {
+                                        if (markToStar[0] > 0) {
+                                            markToStar[0] = markToStar[0] - 1
+                                            return <Star key={index} />
+                                        } else if (markToStar[1] !== 0) {
+                                            markToStar[1] = 0
+                                            return <StarHalf key={index} />
+                                        }
+                                        return <StarBorder key={index} />
+                                    })}
+                                </span>
+                            </div>
+
+                            <span className='divider'></span>
+
+                            <div className="col">
+                                <span className="number">
+                                    {twoNumber(amountRate)}
+                                </span>
+
+                                <Typography className='text'>
+                                    Đánh giá
+                                </Typography>
+                            </div>
+
+                            <span className='divider'></span>
+
+                            <div className="col">
+                                <span className="number">
+                                    00
+                                </span>
+
+                                <Typography className='text'>
+                                    Chỉnh sửa
+                                </Typography>
+                            </div>
+
+                            <span className='divider'></span>
+
+                            <div className="col">
+                                <ul className={classes.schools}>
+                                    {school.map((item, index) => (
+                                        <Tooltip key={index} title={item.name}>
+                                            <img src={item.logo} alt="logo school" />
+                                        </Tooltip>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </Grid>
+                    <Grid item sm={12} md={4}>
+                        <Paper className={classes.wrapperInfor}>
+                            <CreatedUser />
+                        </Paper>
+                    </Grid>
+                </Grid>
+            </div>
 
             <Box className={classes.wrapper}>
                 <h3 className="title">Thông tin mô tả</h3>
@@ -130,23 +251,6 @@ export const InforMotelDetail = ({ dataMotel }: Props) => {
                     <span className="label"><b>Địa chỉ:</b></span>
 
                     <span className="text">{address}</span>
-                </div>
-
-                <div className="row">
-                    <span className="label"><b>Điểm đánh giá:</b></span>
-
-                    <span className="text">
-                        {new Array(5).fill(1).map((_, index) => {
-                            if (markToStar[0] > 0) {
-                                markToStar[0] = markToStar[0] - 1
-                                return <Star key={index} />
-                            } else if (markToStar[1] !== 0) {
-                                markToStar[1] = 0
-                                return <StarHalf key={index} />
-                            }
-                            return <StarBorder key={index} />
-                        })}
-                    </span>
                 </div>
 
                 <div className="row" style={{ alignItems: 'flex-start' }}>
@@ -183,9 +287,8 @@ export const InforMotelDetail = ({ dataMotel }: Props) => {
                     </div>
                 </div>
 
-                <div className="row">
-                    <span className="label"><b>Thông tin phòng trọ:</b></span>
-                </div>
+                <InforRoomDetail room={room} setOpenRoomModal={setOpenRoomModal} handleSelectRoom={handleSelectRoom} />
+
             </Box>
         </Box>
     )

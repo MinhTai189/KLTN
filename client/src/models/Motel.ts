@@ -1,4 +1,5 @@
-import { School, UploadResponse, User } from 'models';
+import { School, UploadResponse } from 'models';
+import { Rate } from '.';
 
 export interface Motel {
   _id?: string;
@@ -12,7 +13,7 @@ export interface Motel {
   available: number;
   school: any;
   vote?: number;
-  rate?: any[];
+  rate?: Rate[];
   mark?: number;
   editor?: Editor[];
   owner?: Owner;
@@ -52,6 +53,7 @@ export interface MotelOnly {
 export interface MotelDetail extends MotelOnly {
   mark: number;
   optional: Optional;
+  amountRate: number;
   vote: number;
   [key: string]: any;
 }
@@ -83,14 +85,6 @@ export interface Owner {
   email: string;
   credit: number;
   school: School;
-}
-
-export interface Rate {
-  user: User;
-  star: number;
-  content: string;
-  createAt: string;
-  _id: string;
 }
 
 interface Contact {

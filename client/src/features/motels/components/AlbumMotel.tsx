@@ -1,42 +1,36 @@
-import { Box, CircularProgress, Theme, Tooltip } from "@material-ui/core"
-import { ArrowBack, ArrowForward, Favorite, FavoriteBorder } from "@material-ui/icons"
+import { Box, CircularProgress, Grid, Theme, Tooltip, Typography } from "@material-ui/core"
+import { Favorite, FavoriteBorder, NavigateBefore, NavigateNext } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
 import { useAppDispatch, useAppSelector } from "app/hooks"
+import { Modal } from "components/Common"
 import { authActions, selectCurrentUser, selectLoading } from "features/auth/authSlice"
 import { useCallback, useEffect, useState } from "react"
+import Carousel from 'react-elastic-carousel'
 import { useParams } from "react-router"
 import { toast } from "react-toastify"
-import Carousel from 'react-elastic-carousel'
 
 interface Props {
     images: string[]
+    motelName: string
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: '100%',
-
-        "& .rec-slider-container": {
-            margin: 0
-        }
     },
     mainImg: {
         width: '100%',
         height: 400,
         position: 'relative',
-        background: '#232323',
-        border: '3px solid ' + theme.palette.primary.main,
+        background: '#fff',
+        boxShadow: theme.shadows[5],
         overflow: 'hidden',
+        cursor: 'pointer',
 
         "&:hover": {
             "& .favorite": {
                 opacity: 1
             },
-
-            "& .btnNext, & .btnPrev": {
-                opacity: 1,
-                transform: 'translate(0, -50%)',
-            }
         },
 
         "& .favorite": {
@@ -65,65 +59,163 @@ const useStyles = makeStyles((theme: Theme) => ({
             height: '100%',
             objectFit: 'contain',
         },
+    },
+    listImg: {
+        marginTop: 8,
+        boxShadow: theme.shadows[5],
+        padding: '4px 0',
 
-        "& .btnNext, & .btnPrev": {
+        '& .rec-carousel': {
+            position: 'relative',
+        },
+
+        '& .rec-slider-container': {
+            margin: 0
+        },
+
+        '& .rec-arrow': {
             position: 'absolute',
-            top: '50%',
-            opacity: 0,
-            width: 30,
-            height: 30,
-            background: '#ffffff',
-            display: 'grid',
-            placeItems: 'center',
-            cursor: 'pointer',
-            transition: '300ms all ease-in',
+            width: 25,
+            height: 40,
+            lineHeight: 'unset',
+            fontSize: 17,
+            background: 'rgba(0, 0, 0, 0.4)',
+            minWidth: 'unset',
+            borderRadius: 0,
+            border: "none",
+            outline: 'none',
+            boxShadow: 'none',
+            color: '#fff',
 
-            "&:hover": {
-                background: theme.palette.primary.main
+            '&:disabled': {
+                cursor: 'pointer'
+            },
+
+            '&:hover:enabled': {
+                background: 'rgba(0, 0, 0, 0.4)',
+            },
+
+            '&.rec-arrow-right': {
+                right: 0
+            },
+
+            '&.rec-arrow-left': {
+                left: 0,
+                zIndex: 5
             }
         },
 
-        "& .btnNext": {
-            right: 10,
-            transform: 'translate(50px, -50%)',
-        },
-
-        "& .btnPrev": {
-            left: 10,
-            transform: 'translate(-50px, -50%)',
-        },
-    },
-    listImg: {
-        display: 'flex',
-        marginTop: 8,
-        overflowY: 'hidden',
-        overflowX: 'scroll',
-
-        "&::-webkit-scrollbar": {
-            width: 0
-        },
-
         "& img": {
-            width: 150,
-            height: 100,
+            width: '100%',
+            height: 80,
             objectFit: 'cover',
-            border: `3px solid ${theme.palette.primary.main}`,
-            filter: 'brightness(40%)',
             transition: '300ms all',
             flexShrink: 0,
-
-            "&:not(:last-child)": {
-                marginRight: 8
+            cursor: 'pointer',
+            "&.active, &:hover": {
+                border: `3px solid ${theme.palette.primary.main}`,
             },
 
-            "&.active, &:hover": {
-                filter: 'brightness(100%)',
+        }
+    },
+    imgPreviewBox: {
+        width: '90vw',
+        maxWidth: 850
+    },
+    imgPreview: {
+        width: '100%',
+        height: 0,
+        paddingBottom: '100%',
+        position: 'relative',
+
+        '& img': {
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+        },
+
+        '& .btn': {
+            width: '8%',
+            height: '15%',
+            position: 'absolute',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'rgba(0, 0, 0, 0.4)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            cursor: 'pointer',
+
+            '& .MuiSvgIcon-root': {
+                width: '2.5em',
+                height: '2.5em',
+                fill: '#fff'
+            },
+
+            '&.btn-right': {
+                right: 0
+            }
+        }
+    },
+    previewLeftCol: {
+        padding: theme.spacing(2, 0, 0, 1.5),
+
+        '& .name': {
+            fontSize: '1.8em',
+            marginBottom: theme.spacing(1.5),
+            paddingBottom: theme.spacing(0.7),
+            position: 'relative',
+
+            '&::after': {
+                content: '""',
+                position: 'absolute',
+                left: 0,
+                bottom: 0,
+                width: '5em',
+                height: 1,
+                background: theme.palette.secondary.main
+            }
+        },
+
+        '& .listImgs': {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gridGap: 7,
+
+            '& .img': {
+                width: '100%',
+                paddingBottom: '100%',
+                height: 0,
+                position: 'relative',
+                border: '3px solid transparent',
+
+                '& img': {
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    cursor: 'pointer',
+                    transition: '100ms',
+
+                    "&:hover": {
+                        filter: 'brightness(130%)'
+                    }
+                },
+
+                '&.active': {
+                    border: `3px solid ${theme.palette.primary.main}`,
+                }
             }
         }
     }
 }))
 
-export const AlbumMotel = ({ images }: Props) => {
+export const AlbumMotel = ({ images, motelName }: Props) => {
     const classes = useStyles()
     const { id } = useParams<{ id: string }>()
 
@@ -132,7 +224,10 @@ export const AlbumMotel = ({ images }: Props) => {
     const loading = useAppSelector(selectLoading)
 
     const [currentImg, setCurrentImg] = useState(0)
+    const [currentPreviewImg, serCurrentPreviewImg] = useState(0)
+
     const [isLike, setIsLike] = useState(false)
+    const [openPreviewModal, setOpenPreviewModal] = useState(false)
 
     const checkFavoriteMotel = useCallback(() => {
         return !!currentUser.favorite && currentUser.favorite.includes(id as string)
@@ -142,23 +237,6 @@ export const AlbumMotel = ({ images }: Props) => {
     useEffect(() => {
         currentUser && setIsLike(checkFavoriteMotel())
     }, [currentUser, checkFavoriteMotel])
-
-
-    const nextImg = () => {
-        setCurrentImg(old => {
-            if (old === images.length - 1)
-                return 0
-            return old + 1
-        })
-    }
-
-    const prevImg = () => {
-        setCurrentImg(old => {
-            if (old === 0)
-                return images.length - 1
-            return old - 1
-        })
-    }
 
     const handleFavoriteMotel = () => {
         if (!currentUser) {
@@ -171,6 +249,26 @@ export const AlbumMotel = ({ images }: Props) => {
         } else {
             dispatch(authActions.likeMotel(id as string))
         }
+    }
+
+    const hanldeCancelPreviewModal = () => {
+        setOpenPreviewModal(false)
+    }
+
+    const handlePrevPreview = () => {
+        serCurrentPreviewImg(prev => {
+            if (prev <= 0)
+                return images.length - 1
+            return prev - 1
+        })
+    }
+
+    const handleNextPreview = () => {
+        serCurrentPreviewImg(prev => {
+            if (prev >= images.length - 1)
+                return 0
+            return prev + 1
+        })
     }
 
     return (
@@ -193,28 +291,90 @@ export const AlbumMotel = ({ images }: Props) => {
                     }
                 </span>
 
-                <img src={images[currentImg]} alt="Tìm nhà trọ sinh viên" />
-
-                <span className="btnNext" onClick={nextImg}>
-                    <ArrowForward />
-                </span>
-
-                <span className="btnPrev" onClick={prevImg}>
-                    <ArrowBack />
-                </span>
+                <img
+                    src={images[currentImg]}
+                    alt="Tìm nhà trọ sinh viên"
+                    onClick={() => setOpenPreviewModal(true)}
+                />
             </Box>
 
             <div className={classes.listImg}>
-                <Carousel itemsToShow={5} isRTL={false} itemPosition={'START'} showEmptySlots={true} showArrows={false} pagination={false}>
+                <Carousel
+                    itemsToShow={5}
+                    isRTL={false}
+                    pagination={false}
+                    itemPosition='START'
+                    enableSwipe={false}
+                    enableMouseSwipe={false}
+                    itemPadding={[0, 4, 0, 4]}
+                    showEmptySlots={true}
+                >
                     {images.map((image, index) => {
                         const active = index === currentImg ? 'active' : ''
 
                         return (
-                            <img key={index.toString()} className={active} src={image} alt="Tìm nhà trọ sinh viên" onClick={() => setCurrentImg(index)} />
+                            <img
+                                key={index.toString()}
+                                className={active}
+                                src={image}
+                                alt="Tìm nhà trọ sinh viên"
+                                onMouseOver={() => { setCurrentImg(index); serCurrentPreviewImg(index) }}
+                                onClick={() => setOpenPreviewModal(true)}
+                            />
                         )
                     })}
                 </Carousel>
             </div>
+
+            <Modal open={openPreviewModal} onCancel={hanldeCancelPreviewModal} >
+                <Box className={classes.imgPreviewBox}>
+                    <Grid container>
+                        <Grid item sm={12} md={8}>
+                            <Box className={classes.imgPreview}>
+                                <img src={images[currentPreviewImg]} alt='motel image' />
+
+                                <span
+                                    className="btn btn-left"
+                                    onClick={handlePrevPreview}
+                                >
+                                    <NavigateBefore />
+                                </span>
+
+                                <span
+                                    className="btn btn-right"
+                                    onClick={handleNextPreview}
+                                >
+                                    <NavigateNext />
+                                </span>
+                            </Box>
+                        </Grid>
+
+                        <Grid item sm={12} md={4}>
+                            <Box className={classes.previewLeftCol}>
+                                <Typography className='name' variant='h2'>
+                                    {motelName}
+                                </Typography>
+
+                                <div className="listImgs">
+                                    {images.map((img, index) => {
+                                        const active = index === currentPreviewImg ? 'active' : ''
+
+                                        return (
+                                            <div
+                                                key={index}
+                                                className={`img ${active}`}
+                                                onClick={() => serCurrentPreviewImg(index)}
+                                            >
+                                                <img src={img} alt='motel image' />
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </Box>
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Modal>
         </Box>
     )
 }
