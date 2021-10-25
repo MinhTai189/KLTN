@@ -1,4 +1,4 @@
-import { AddaRate, Response } from 'models';
+import { AddaRate, ReportRate, Response } from 'models';
 import axiosClient from './axiosClient';
 
 const rateApi = {
@@ -6,9 +6,9 @@ const rateApi = {
     const url = `/motels/rates/${params.motelId}`;
     return axiosClient.post(url, { params });
   },
-  reportRate: (idRate: string, idMotel: string): Promise<Response<any>> => {
-    const url = `/motels/rates/reports/${idMotel}/${idRate}`;
-    return axiosClient.post(url);
+  reportRate: (params: ReportRate): Promise<Response<any>> => {
+    const url = `/motels/rates/reports`;
+    return axiosClient.post(url, { params });
   },
 };
 

@@ -128,7 +128,11 @@ export const RateSection = ({ motelName, rateList, motelId }: Props) => {
         try {
             setLoading(true)
 
-            await rateApi.reportRate(id, idRateReport)
+            await rateApi.reportRate({
+                rateId: idRateReport,
+                motelId: id,
+                content: contentReport.trim()
+            })
 
             setLoading(false)
             setOpenReportModal(false)

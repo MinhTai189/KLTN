@@ -13,3 +13,9 @@ export interface AddaRate {
   star: number;
   content: string;
 }
+
+export interface ReportRate {
+  motelId: string;
+  rateId: string;
+  content: string;
+}
