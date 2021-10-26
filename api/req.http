@@ -21,7 +21,7 @@ Content-Type: application/json
 Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzUxMDA1NywiZXhwIjoxNjMzNTEwMDg3fQ.kQbrkkPsBRA3n5U8tmdZiU-DllvRjt8spB-_YQkX2e8
 
  {
-    "username":"admin",
+    "username":"maideptrai",
     "password":"123456"
     // "accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzUwOTAyOCwiZXhwIjoxNjMzNTA5NjI4fQ.B9QIlEO7J2BV56XL2K7qItHPW9_GOBPtvTr0tCSXCSE"
  }
@@ -130,11 +130,11 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 ###
 POST http://localhost:5000/api/motels/rates/615a9f13dc19793cda17890f
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzMzODc3NiwiZXhwIjoxNjMzMzM5Mzc2fQ.rJ6nqJLbC5SxmOYfmLDHr3PK-Aji7HoYkRSTmVBaXws
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzUxNzAxMDYsImV4cCI6MTYzNTE3MDcwNn0.Xni5Fs3Rs_IC_rhUdgib9PyG_unEnRri66843MQ7PBY
 
 {
-    "content":"Tui rất thích nhà trọ này",
-    "star":5
+    "params":{"content":"Tui rất thích nhà trọ này",
+    "star":5}
 }
 ###
 PATCH http://localhost:5000/api/motels/rates/6145d3d6c74fc7d6fd42b263/61468c6b3d558bfe08a13ac9/
@@ -146,9 +146,9 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
     "star":5
 }
 ###
-DELETE  http://localhost:5000/api/motels/rates/6145d3d6c74fc7d6fd42b263/61468c6b3d558bfe08a13ac9
+DELETE  http://localhost:5000/api/motels/rates/615a9f13dc19793cda17890f/61714c9d288598c499fb14da
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMjAyMjUxMiwiZXhwIjoxNjMyMDIzMTEyfQ.-SZha78wf4nnAShyAkmNXoiq6mZtl1pAoFTX2Y4-25w
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzUyMDg2MTgsImV4cCI6MTYzNTIwOTIxOH0.jYWBmXZXLh6lJyhdxB2sGwy_BuxgVLJHTroWeyFZso4
 ###
 DELETE http://localhost:5000/api/motels/rooms/615a9f13dc19793cda17890f/615a9f13dc19793cda178910
 Content-Type: application/json
@@ -204,3 +204,53 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 GET http://localhost:5000/api/motels/rates
 Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNDc3NjE4NCwiZXhwIjoxNjM0Nzc2Nzg0fQ.M6ZL0ocdV8NKLv5-ie5bmGWbX7nO57q4faid4wRkHGo
+###
+POST http://localhost:5000/api/posts
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNTE2NzE2MCwiZXhwIjoxNjM1MTY3NzYwfQ.KsaAVYX1rD9GPLJTBlDIdoZzi5R8Z8UYxmDyXwNDfzs
+
+{
+    "subject":"6173ba553c954151dcc8fdf9",
+    "title":"Review nha tro AS",
+    "content":"Để cảnh sát không tìm được mình, bạn hãy cố gắng chặn lối vào nơi bạn đang ẩn nấp. Lý tưởng nhất là có ổ khóa chắc chắn bên trong cánh cửa, và cửa có hướng mở ra ngoài để tên sát nhân không đạp bật vào được. Có lẽ bạn cũng nên chặn cửa bằng các chướng ngại vật khác, chẳng hạn như các đồ nội thất nặng.",
+    "hashTag":["sachse","600"]
+    ,"review":{
+        "cleanup":7,
+        "price":7,
+        "beauty":7,
+        "quiet":7,
+        "road":7
+    }
+}
+###
+PATCH  http://localhost:5000/api/posts/617696c696a8ddd8b7732938
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNTE2MTY5OSwiZXhwIjoxNjM1MTYyMjk5fQ.5hbOCjRZt6Yz7d4kpLH_GVHZKRApiDS7LcW2HpEypkw
+
+{
+    "subject":"6173ba553c954151dcc8fdf9",
+    "title":"Review nha tro Nguyen Tan",
+    "content":"Để cảnh sát không tìm được mình, bạn hãy cố gắng chặn lối vào nơi bạn đang ẩn nấp. Lý tưởng nhất là có ổ khóa chắc chắn bên trong cánh cửa, và cửa có hướng mở ra ngoài để tên sát nhân không đạp bật vào được. Có lẽ bạn cũng nên chặn cửa bằng các chướng ngại vật khác, chẳng hạn như các đồ nội thất nặng.",
+    "hashTag":["sachse","600"]
+    ,"review":{
+        "cleanup":10,
+        "price":7,
+        "beauty":10,
+        "quiet":7,
+        "road":7
+    }
+}
+###
+DELETE  http://localhost:5000/api/posts/617696c696a8ddd8b7732938
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNTE2MjIyNSwiZXhwIjoxNjM1MTYyODI1fQ.6L1XuCuL6qakQBE-ajBuC4YZdO8huANqhx32WA0zAAU
+###
+POST http://localhost:5000/api/motels/rates/reports
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNTE2NDUxNSwiZXhwIjoxNjM1MTY1MTE1fQ.X1v_Df6hPPLfv20gxG9khd-1pcAn7kuAd0ZvreCndCk
+
+{
+    "motelId":"615a9f13dc19793cda17890f",
+    "rateId":"61655a0076bd70071955602a",
+    "content":"Comment này thật mất day"
+}
