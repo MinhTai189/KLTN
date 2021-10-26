@@ -149,7 +149,7 @@ router.get("/", async (req, res) => {
       });
     if (_sort && _order) {
       if (_sort === "createAt") {
-        if (_order === "desc")
+        if (_order === "asc")
           rates = rates.sort((rate1, rate2) => {
             return new Date(rate1.createAt) - new Date(rate2.createAt);
           });
@@ -164,12 +164,13 @@ router.get("/", async (req, res) => {
           });
       }
     }
-    if (_role)
-      if (_role.toLowerCase() === "true" || _role.toLowerCase() === "false")
-        rates = rates.filter((item) => {
-          return item.user.isAdmin.toString() === _role.toLowerCase();
-        });
-
+    if (_role) {
+      let role = false;
+      if (_role.toLowerCase() === "admin") role = true;
+      rates = rates.filter((item) => {
+        return item.user.isAdmin === role;
+      });
+    }
     let limit = rates.length;
     let page = 1;
     let totalRows = rates.length;

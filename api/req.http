@@ -254,3 +254,25 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
     "rateId":"61655a0076bd70071955602a",
     "content":"Comment này thật mất day"
 }
+###
+POST http://localhost:5000/api/comments/6174b0d58637794d1221e6ff
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzUyNTMxNzcsImV4cCI6MTYzNTI1Mzc3N30.la3nUcp3YfaqNiPQIiQISa_ry2kUjjk4LfEXtSeSKDY
+
+{
+    "tag":[],
+    "content":"Comment này thật mất day"
+}
+###
+PATCH http://localhost:5000/api/comments/6177fbc7a377739d27938853
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzUyNTMxNzcsImV4cCI6MTYzNTI1Mzc3N30.la3nUcp3YfaqNiPQIiQISa_ry2kUjjk4LfEXtSeSKDY
+
+{
+    "tag":[],
+    "content":"Bài này thật là hay"
+}
+###
+DELETE http://localhost:5000/api/comments/6177fbc7a377739d27938853
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzUyNTMxNzcsImV4cCI6MTYzNTI1Mzc3N30.la3nUcp3YfaqNiPQIiQISa_ry2kUjjk4LfEXtSeSKDY

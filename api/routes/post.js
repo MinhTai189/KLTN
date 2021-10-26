@@ -63,11 +63,11 @@ router.get("/", async (req, res) => {
       });
     if (_order && _sort)
       if (_sort === "createAt") {
-        if ((_order = "desc"))
+        if ((_order = "asc"))
           responsePosts = responsePosts.sort((post1, post2) => {
             return new Date(post1.createAt) - new Date(post2.createAt);
           });
-        else if ((_order = "asc"))
+        else if ((_order = "desc"))
           responsePosts = responsePosts.sort((post1, post2) => {
             return new Date(post2.createAt) - new Date(post1.createAt);
           });
@@ -115,7 +115,6 @@ router.get("/:id", async (req, res) => {
         success: false,
         message: "Bài viết này chưa được duyệt",
       });
-    const findComment = await commentModel.findOne({ post: findPost._id });
     const ownerSchool = await schoolModel
       .findOne({ codeName: findPost.owner.school })
       .select("-nameDistricts");
@@ -130,8 +129,10 @@ router.get("/:id", async (req, res) => {
       posts: findPost.owner.posts,
     };
     let responsePost = { ...findPost._doc, owner: owner };
-    if (findPost.subject.toString() === "6173ba553c954151dcc8fdf9")
+
+    if (findPost.subject._id.toString() === "6173ba553c954151dcc8fdf9") {
       responsePost.review = await reviewModel.findOne({ post: findPost._id });
+    }
     res.status(200).json({ success: true, data: responsePost });
   } catch (err) {
     console.log(err);

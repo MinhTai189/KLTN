@@ -11,6 +11,7 @@ const roomRouter = require("./routes/room");
 const rateRouter = require("./routes/rate");
 const postRouter = require("./routes/post");
 const favoriteRouter = require("./routes/favorite");
+const commentRouter = require("./routes/comment");
 const fileUpload = require("express-fileupload");
 const Mongoose = require("mongoose");
 
@@ -55,6 +56,7 @@ app.use("/api/", schoolDataRouter);
 app.use("/api/", userRouter);
 app.use("/api/", uploadRouter);
 app.use("/api/posts", postRouter);
+app.use("/api/comments", commentRouter);
 app.use("/api/users/favorites", favoriteRouter);
 app.use("/api/motels/room", roomRouter);
 app.use("/api/motels/rates", rateRouter);
