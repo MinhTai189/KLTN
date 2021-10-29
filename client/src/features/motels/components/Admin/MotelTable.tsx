@@ -1,10 +1,11 @@
 import { CheckCircleFilled, DeleteFilled, EditFilled } from '@ant-design/icons'
+import { Cancel } from '@material-ui/icons'
 import { Button, Popconfirm, Rate, Space, Table, TablePaginationConfig, Tooltip } from 'antd'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { MotelDataTable } from 'models'
 import { useEffect, useState } from 'react'
 import { roundMark } from 'utils'
-import { motelActions, selectDataMotel, selectFilterMotel, selectLoadingMotel, selectPaginationMotel } from '../motelSlice'
+import { motelActions, selectDataMotel, selectFilterMotel, selectLoadingMotel, selectPaginationMotel } from '../../motelSlice'
 
 interface Props {
     handleRemove: (record: MotelDataTable) => void;
@@ -84,6 +85,7 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
             key: 'status',
             render: (status: boolean) => {
                 if (status) return <CheckCircleFilled style={{ color: '#52c41a', fontSize: 20 }} />
+                return <Cancel style={{ color: '#ff4d4f', fontSize: 23 }} />
             }
         }, {
             title: 'Loại phòng',

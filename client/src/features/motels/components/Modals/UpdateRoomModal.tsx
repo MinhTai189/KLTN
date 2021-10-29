@@ -129,6 +129,12 @@ export const UpdateRoomModal = ({ changeRoom, nextRoomUpdate, prevRoomUpdate, ha
                     nextRoomUpdate()
                 }
             }
+        } else {
+            if (type === 'prev') {
+                prevRoomUpdate()
+            } else {
+                nextRoomUpdate()
+            }
         }
     }
 

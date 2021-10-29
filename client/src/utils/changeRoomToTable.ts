@@ -55,7 +55,7 @@ export const changeRoomToTable = (rooms: Room[]): RoomTable[] => {
       'span',
       {
         style: {
-          background: room.remain > 0 ? '#19bb0b' : '#c90404',
+          background: room.remain > 0 ? '#52c41a' : '#ff4d4f',
           padding: '2px 8px',
           fontSize: 12,
           borderRadius: 15,

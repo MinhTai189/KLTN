@@ -16,7 +16,7 @@ import { toast } from 'react-toastify'
 import { checkSizeImg } from 'utils'
 import * as yup from 'yup'
 import { ReactComponent as Zalo } from 'assets/images/zalo.svg'
-import { selectLoadingMotel } from '../motelSlice'
+import { selectLoadingMotel } from '../../motelSlice'
 
 interface Props {
     handleAddMotel: (data: any) => void;

@@ -17,7 +17,7 @@ export interface Filter {
   _order?: string;
   _sort?: string;
   _namelike?: string;
-  _school?: string;
+  _school?: string | string[];
   _district?: string;
   _province?: string;
   _role?: string;

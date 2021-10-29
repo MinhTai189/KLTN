@@ -22,8 +22,10 @@ code {
   padding: 0;
 }
 
-a {
+a,
+a:hover {
   text-decoration: none;
+  color: unset;
 }
 
 ul {

@@ -126,10 +126,11 @@ const MotelListPage = () => {
 
     const onClickEditMotel = (record: MotelDataTable) => {
         const dataMotelUpdate = dataMotelSplited.find(motel => motel.motel._id === record.key)
+        const dataUpdateRoom = dataMotelUpdate?.room.map(room => ({ ...room, motelId: dataMotelUpdate.motel._id }))
 
         if (dataMotelUpdate) {
             setSelectMotelUpdate(dataMotelUpdate.motel)
-            setSelectRoomUpdate({ ...dataMotelUpdate.room, idMotel: dataMotelUpdate.motel._id } as any)
+            setSelectRoomUpdate(dataUpdateRoom)
             setShowUpdateForm(true)
         }
     }
@@ -155,17 +156,18 @@ const MotelListPage = () => {
                 />
             </Box>
 
-            {selectedMotelUpdate && selectedRoomUpdate && <UpdateForm
-                key={selectedMotelUpdate._id}
-                showUpdateForm={showUpdateForm}
-                setShowUpdateForm={setShowUpdateForm}
-                selectedMotelUpdate={selectedMotelUpdate}
-                selectedRoomUpdate={selectedRoomUpdate}
-                handleUploadThumbnail={handleUploadThumbnail}
-                handleUploadImages={handleUploadImages}
-                handleUpdateMotel={handleUpdateMotel}
-                handleUpdateRoom={handleUpdateRoom}
-            />}
+            {selectedMotelUpdate && selectedRoomUpdate &&
+                <UpdateForm
+                    key={selectedMotelUpdate._id}
+                    showUpdateForm={showUpdateForm}
+                    setShowUpdateForm={setShowUpdateForm}
+                    selectedMotelUpdate={selectedMotelUpdate}
+                    selectedRoomUpdate={selectedRoomUpdate}
+                    handleUploadThumbnail={handleUploadThumbnail}
+                    handleUploadImages={handleUploadImages}
+                    handleUpdateMotel={handleUpdateMotel}
+                    handleUpdateRoom={handleUpdateRoom}
+                />}
         </Box>
     )
 }

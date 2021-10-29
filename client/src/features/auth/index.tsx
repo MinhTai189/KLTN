@@ -12,6 +12,7 @@ import FormLogin from './components/FormLogin';
 import FormRegister from './components/FormRegister';
 import ResetPassword from './components/ResetPassword';
 import { AddiRegisterData, ForgotPasswordData, LoginData, RegisterData } from './models';
+import Background from '../../assets/images/background-auth.jpg'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -20,7 +21,17 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        background: "#ccc",
+        background: `url(${Background})`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        position: 'relative',
+
+        '&::after': {
+            content: '""',
+            position: 'absolute',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.1)',
+        }
     },
 }))
 

@@ -7,3 +7,4 @@ export * from './ButtonSubmit';
 export * from './Modal';
 export * from './ModalConfirm';
 export * from './ModalReport';
+export * from './ChipCustom';

@@ -6,12 +6,14 @@ export const getPriceMotel = (data: Room[]) => {
   let minPrice: number | string = Math.min(...prices);
   let maxPrice: number | string = Math.max(...prices);
 
-  minPrice =
-    minPrice >= 1000000 ? `${minPrice / 1000000}m` : `${minPrice / 1000}k`;
-  maxPrice =
-    maxPrice >= 1000000 ? `${maxPrice / 1000000}m` : `${maxPrice / 1000}k`;
+  minPrice = mapPriceMonth(minPrice);
+  maxPrice = mapPriceMonth(maxPrice);
 
   const result = minPrice === maxPrice ? maxPrice : `${minPrice}-${maxPrice}`;
 
   return result;
+};
+
+export const mapPriceMonth = (number: number) => {
+  return number >= 1000000 ? `${number / 1000000}m` : `${number / 1000}k`;
 };

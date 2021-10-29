@@ -21,10 +21,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         width: '100%',
         position: 'relative',
         overflow: 'hidden',
-        height: 0,
-        opacity: 0,
-        transform: 'translateY(-30px)',
-        perspective: 500,
+        display: 'none'
     },
     box: {
         position: 'absolute',
@@ -74,27 +71,18 @@ export const DropDown = ({ openDropdown, isFlip, setIsFlip }: Props) => {
     const ref = useRef()
     const childRef = gsap.utils.selector(ref)
 
-    const dropdownBox1 = useRef<any>()
     const flipBox1 = useRef<any>()
     const flipBox2 = useRef<any>()
 
     useEffect(() => {
-        if (openDropdown === true) {
-            dropdownBox1.current =
-                gsap.timeline()
-                    .fromTo(ref.current as any,
-                        { opacity: 0, y: -30, height: 0, duration: 0 },
-                        { opacity: 1, y: 0, height: 300, duration: 0.7, ease: 'elastic.out(1, 0.3)' })
-                    .fromTo(childRef(".rows"), { opacity: 0, rotateX: 105 }, { opacity: 1, rotateX: 0, duration: 0.5, ease: 'step(3)', stagger: 0.1 })
-        } else if (openDropdown === false) {
+        if (openDropdown === false) {
             if (isFlip === true) {
                 setIsFlip(undefined)
                 flipBox1.current.reverse()
                 flipBox2.current.reverse()
             }
-            dropdownBox1.current.reverse()
         }
-    }, [openDropdown, childRef, isFlip, setIsFlip])
+    }, [openDropdown, isFlip, setIsFlip])
 
     useEffect(() => {
         if (isFlip === true) {
@@ -134,7 +122,11 @@ export const DropDown = ({ openDropdown, isFlip, setIsFlip }: Props) => {
 
 
     return (
-        <div className={classes.root} ref={ref as any}>
+        <div
+            className={classes.root}
+            ref={ref as any}
+            style={{ display: openDropdown ? 'inline-block' : 'none' }}
+        >
             <div className={`${classes.box} box2`}>
                 <Box className={classes.nav}>
                     <IconButton onClick={onClickBack}>

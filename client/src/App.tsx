@@ -4,6 +4,7 @@ import { AdminRoute, NotFound, ScrollToTop } from 'components/Common';
 import { AdminLayout } from 'components/Layouts';
 import HomePage from 'pages/HomePage';
 import MotelDetailPage from 'pages/MotelDetailPage';
+import MotelPage from 'pages/MotelPage';
 import { Route, Switch } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import { themeMUI } from 'utils';
@@ -21,6 +22,10 @@ function App() {
 
           <Route path="/motels/:id">
             <MotelDetailPage />
+          </Route>
+
+          <Route path="/motels">
+            <MotelPage />
           </Route>
 
           <Route path="/auth">

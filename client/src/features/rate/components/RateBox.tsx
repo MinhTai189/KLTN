@@ -95,6 +95,7 @@ const useStyles = makeStyles((theme: Theme) => ({
                     textAlign: 'center',
                     background: '#fff',
                     display: 'none',
+                    zIndex: 10,
 
                     '& .items': {
                         padding: theme.spacing(0.7, 0),

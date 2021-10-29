@@ -1,12 +1,12 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import Logo from 'assets/images/logo.png';
 import { authActions, selectCurrentUser } from 'features/auth/authSlice';
 import { User } from 'models';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { DropDownInfor } from '../Home';
 import { ButtonCustom } from './Button';
+import { Link, useLocation } from 'react-router-dom'
 
 interface Props {
     isChangeNav: boolean
@@ -27,12 +27,12 @@ const useStyles = makeStyles((theme: Theme) =>
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '12px 16px',
+            padding: '16px 16px',
             transition: 'all 300ms ease'
         },
         logo: {
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
 
             [theme.breakpoints.down('sm')]: {
                 width: 40,
@@ -51,16 +51,20 @@ const useStyles = makeStyles((theme: Theme) =>
             "& li": {
                 color: 'white',
                 cursor: 'pointer',
-                padding: '0 12px',
-                fontSize: 14,
+                padding: '4px 16px',
                 background: 'transparent',
-                border: `3px solid transparent`,
                 transition: `.3s all`,
+                borderRadius: 20,
+                textTransform: 'capitalize',
+                marginInline: 4,
+
+                '& .MuiTypography-root': {
+                    fontSize: '0.9em',
+                    letterSpacing: 1,
+                },
 
                 "&:hover, &.active": {
-                    color: theme.palette.secondary.main,
-                    background: 'white',
-                    border: `3px solid ${theme.palette.secondary.main}`,
+                    background: theme.palette.primary.main,
                 },
 
                 [theme.breakpoints.down('sm')]: {
@@ -76,8 +80,31 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
+const routes = [
+    {
+        route: '/',
+        name: 'Trang chủ'
+    },
+    {
+        route: '/motels',
+        name: 'Nhà trọ'
+    },
+    {
+        route: '/forum',
+        name: 'Ở ghép'
+    },
+    {
+        route: '/faq',
+        name: 'Hỏi đáp'
+    },
+    {
+        route: '/',
+        name: 'Diễn đàn'
+    },
+]
+
 const calcSizeBtn = (width: number) => {
-    let size = 'large'
+    let size = 'medium'
 
     if (width <= 960)
         size = 'small'
@@ -90,7 +117,10 @@ export const Header = ({ isChangeNav }: Props) => {
     const currentUser: User = useAppSelector(selectCurrentUser)
     const dispatch = useAppDispatch()
 
+    const location = useLocation()
     const [sizeBtn, setSizeBtn] = useState<any>('large')
+    const [isHoverring, setIsHoverring] = useState(false)
+    const [currentActive, setCurrentActive] = useState(0)
 
     useEffect(() => {
         setSizeBtn(calcSizeBtn(window.innerWidth))
@@ -107,18 +137,31 @@ export const Header = ({ isChangeNav }: Props) => {
     }, [])
 
     return (
-        <div className={classes.root} style={isChangeNav ? { background: '#000' } : {}}>
-            <nav className={classes.nav} style={isChangeNav ? { padding: '4px 16px' } : {}}>
+        <div className={classes.root} style={isChangeNav ? { background: '#1769aa' } : {}}>
+            <nav className={classes.nav} style={isChangeNav ? { padding: '8px 16px' } : {}}>
                 <Link to='/'>
                     <img className={classes.logo} src={Logo} alt="logo" />
                 </Link>
 
-                <ul className={classes.navLinks}>
-                    <li className='active'>Trang Chủ</li>
-                    <li>Trang chủ</li>
-                    <li>Trang chủ</li>
-                    <li >Trang chủ</li>
-                    <li>Trang chủ</li>
+                <ul
+                    className={classes.navLinks}
+                    onMouseLeave={() => setIsHoverring(false)}
+                >
+                    {routes.map((route, index) => {
+                        return (
+                            <li
+                                key={index}
+                                className={!isHoverring && currentActive === index ? 'active' : ''}
+                                onMouseOver={() => setIsHoverring(true)}
+                            >
+                                <Typography>
+                                    <Link to={route.route}>
+                                        {route.name}
+                                    </Link>
+                                </Typography>
+                            </li>
+                        )
+                    })}
                 </ul>
 
                 {currentUser?.avatarUrl ?

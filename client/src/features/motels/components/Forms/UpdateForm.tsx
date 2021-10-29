@@ -2,9 +2,9 @@ import { Button, Modal, Space } from 'antd'
 import { useAppSelector } from 'app/hooks'
 import { MotelOnly, Room } from 'models'
 import { useState } from 'react'
-import { UpdateMotelModal } from '.'
-import { selectLoadingMotel } from '../motelSlice'
-import { UpdateRoomModal } from './UpdateRoomModal'
+import { UpdateMotelModal } from '..'
+import { selectLoadingMotel } from '../../motelSlice'
+import { UpdateRoomModal } from '../Modals/UpdateRoomModal'
 
 
 interface Props {
@@ -31,7 +31,7 @@ export const UpdateForm = ({ showUpdateForm, setShowUpdateForm, selectedMotelUpd
     const [changeRoom, setChangeRoom] = useState<ChangeRoom>({
         current: 0,
         start: true,
-        end: selectedRoomUpdate.length > 0,
+        end: false,
         data: selectedRoomUpdate[0]
     })
 
@@ -40,17 +40,23 @@ export const UpdateForm = ({ showUpdateForm, setShowUpdateForm, selectedMotelUpd
 
     const nextRoomUpdate = () => {
         setChangeRoom((old) => {
-            if (old.current < selectedRoomUpdate.length - 1)
+            if (old.current < selectedRoomUpdate.length - 2)
                 return { ...old, current: old.current + 1, data: selectedRoomUpdate[old.current + 1], start: false }
-            return { ...old, end: true }
+            return { ...old, current: old.current + 1, data: selectedRoomUpdate[old.current + 1], end: true, start: false }
         })
     }
 
     const prevRoomUpdate = () => {
         setChangeRoom((old) => {
-            if (old.current > 0)
-                return { ...old, current: old.current - 1, data: selectedRoomUpdate[old.current - 1], end: false }
-            return { ...old, start: true }
+            if (old.current > 1)
+                return {
+                    ...old, current: old.current - 1, data: selectedRoomUpdate[old.current - 1],
+                    end: false
+                }
+            return {
+                ...old, current: old.current - 1, data: selectedRoomUpdate[old.current - 1],
+                start: true, end: false
+            }
         })
     }
 

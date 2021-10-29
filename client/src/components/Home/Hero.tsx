@@ -44,19 +44,19 @@ const useStyles = makeStyles(theme => ({
     },
     search: {
         width: '100%',
-        padding: theme.spacing(.5),
-        background: theme.palette.primary.main,
-        boxShadow: theme.shadows[10],
         zIndex: 1000,
-        position: 'relative'
+        position: 'relative',
     },
     inputField: {
         width: "100%",
         position: 'relative',
+
         "& > input": {
             width: '100%',
+            borderRadius: 30,
+            border: `5px solid ${theme.palette.primary.main}`,
+            boxShadow: theme.shadows[10],
             height: 45,
-            border: 'none',
             outline: 'none',
             paddingLeft: 50,
             color: theme.palette.text.secondary,
@@ -70,7 +70,7 @@ const useStyles = makeStyles(theme => ({
     },
     icon: {
         position: 'absolute',
-        left: 0,
+        left: 5,
         width: 45,
         height: 45,
         display: 'grid',
@@ -183,7 +183,7 @@ export const Hero = ({ hiddenScrollDown }: Props) => {
 
             <Box className={classes.hero}>
                 <Typography className={classes.question} align='center' variant='h1' color='inherit'>
-                    Bạn đang muốn tìm nhà trọ ?
+                    Bạn đang cần tìm một nhà trọ?
                 </Typography>
 
                 <Typography className={classes.para} align='center'>

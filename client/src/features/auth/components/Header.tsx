@@ -1,5 +1,4 @@
 import { Box, makeStyles, Typography } from '@material-ui/core';
-import React from 'react';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -13,7 +12,6 @@ const useStyles = makeStyles(theme => ({
         height: 45,
         display: 'grid',
         placeItems: 'center',
-        // backgroundColor: theme.palette.secondary.main,
         border: `5px solid ${theme.palette.primary.main}`,
         marginBottom: theme.spacing(1)
     }

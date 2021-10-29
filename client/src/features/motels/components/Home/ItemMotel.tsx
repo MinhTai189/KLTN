@@ -1,4 +1,4 @@
-import { CircularProgress, makeStyles, Theme, Tooltip } from '@material-ui/core'
+import { CircularProgress, makeStyles, Theme, Tooltip, Typography } from '@material-ui/core'
 import { AcUnit, Build, CallMerge, Favorite, FavoriteBorder, Group, HorizontalSplit, Hotel, Motorcycle, Star, StarBorder, StarHalf, Toys, TrendingUp, Videocam, Wifi } from '@material-ui/icons'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { ButtonCustom } from 'components/Common/Button'
@@ -17,24 +17,18 @@ interface Props {
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: '100%',
-        maxWidth: 420,
-        height: 500,
-        placeSelf: 'center',
         overflow: 'hidden',
-        outline: `5px solid ${theme.palette.primary.main}`,
-        boxShadow: '4px 4px 10px 5px #828282',
+        placeSelf: 'center',
+        height: 520,
+        boxShadow: theme.shadows[5],
         transition: 'all 500ms ease',
 
         "&:hover": {
             transform: 'translateY(-10px)',
-            boxShadow: `8px 12px 10px 5px ${theme.palette.primary.main}`,
+            boxShadow: `4px 8px 5px 5px ${theme.palette.primary.light}`,
 
             "& .thumbnail": {
                 transform: 'scale(1.07)'
-            },
-
-            "& .cover": {
-                background: 'rgba(0,0,0,0.5)'
             },
 
             "& .listOptional .items": {
@@ -45,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     top: {
         width: "100%",
-        height: '50%',
+        height: '55%',
         position: 'relative',
         overflow: 'hidden',
 
@@ -59,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     cover: {
         position: 'absolute',
         inset: 0,
-        background: 'rgba(0,0,0,0.4)',
+        background: 'linear-gradient(0deg, rgba(0,0,0,0.9139005944174545) 1%, rgba(0,0,0,0) 26%, rgba(0,0,0,0.19121151878720233) 100%)',
         transition: 'all 500ms ease',
     },
     topLeft: {
@@ -76,7 +70,7 @@ const useStyles = makeStyles((theme: Theme) => ({
                 width: 23,
                 height: 15,
                 opacity: 0,
-                background: theme.palette.primary.main,
+                background: theme.palette.primary.dark,
                 borderRadius: '0 5px 5px 0',
                 display: 'flex',
                 alignItems: 'center',
@@ -108,7 +102,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         "& .favorite": {
             width: 45,
             height: 40,
-            background: theme.palette.primary.main,
+            background: theme.palette.primary.dark,
             borderRadius: '0 0 0 100px',
             display: 'grid',
             placeItems: 'center',
@@ -153,8 +147,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         }
     },
     bottom: {
-        padding: 8,
-        height: '50%',
+        padding: theme.spacing(1.5),
+        height: '45%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -166,9 +160,10 @@ const useStyles = makeStyles((theme: Theme) => ({
             justifyContent: 'space-between',
 
             "& .name": {
-                color: theme.palette.primary.main,
                 margin: 0,
-                fontSize: 17
+                fontSize: 18,
+                fontWeight: 500,
+                color: theme.palette.primary.dark
             },
 
             "& .price": {
@@ -181,7 +176,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         "& .desc": {
             fontSize: 13,
             lineHeight: 1.4,
-            color: '#7C7C7C',
+            color: '#7c7c7c',
             marginTop: 5
         },
 
@@ -299,7 +294,7 @@ export const ItemMotel = ({ motelData }: Props) => {
             <div className={classes.top}>
                 <img src={thumbnail as string} alt="Tìm nhà trọ" />
 
-                <div className={`${classes.cover} cover`}></div>
+                <div className={`${classes.cover}`}></div>
 
                 <div className={classes.topLeft}>
                     <ul className="listOptional">
@@ -360,15 +355,15 @@ export const ItemMotel = ({ motelData }: Props) => {
             <div className={classes.bottom}>
                 <div className="top">
                     <div className="info">
-                        <h3 className="name">{name}</h3>
+                        <Typography className="name" variant='h2'>{name}</Typography>
                         <span className="price">{`${getPriceMotel(room)}/tháng`}</span>
                     </div>
 
-                    <p className="desc">{desc.slice(0, 250) + '...'}</p>
+                    <Typography className="desc">{desc.slice(0, 350) + `${desc.length > 350 ? '...' : ''}`}</Typography>
                 </div>
 
                 <div className="rowBottom">
-                    <ButtonCustom onClick={onClickDetail}>Xem chi tiết</ButtonCustom>
+                    <ButtonCustom onClick={onClickDetail} variant='contained'>Xem chi tiết</ButtonCustom>
 
                     <ul className="schools">
                         {school.map((item: any, index: number) => (

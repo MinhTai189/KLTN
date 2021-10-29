@@ -4,12 +4,12 @@ import { motelApi } from 'api/motel'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { ModalConfirm } from 'components/Common/ModalConfirm'
 import { MainLayout } from 'components/Layouts/MainLayout'
-import { AlbumMotel, EditMotelForm, InforMotelDetail, InforOnwerUp, InforRoomDetail } from 'features/motels/components'
+import { AlbumMotel, EditMotelForm, InforMotelDetail } from 'features/motels/components'
 import { motelActions, selectFilterMotel, selectLoadingMotel } from 'features/motels/motelSlice'
 import { RateSection } from 'features/rate/components'
 import { EditFormRoom } from 'features/room/components'
 import { Editor, Motel, MotelDetail, MotelOnly, Owner, Rate, Response, Room } from 'models'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 interface OwnerDetail extends Owner {
@@ -140,8 +140,7 @@ const MotelDetailPage = () => {
     }
 
     const handleUpdateRoom = (data: Room) => {
-        console.log({ data })
-        // dispatch(motelActions.updateRoom({ ...data, motelId: id }))
+        dispatch(motelActions.updateRoom({ ...data, motelId: id }))
     }
 
     //handle upload images motel
@@ -172,7 +171,6 @@ const MotelDetailPage = () => {
         setFormImages({ ...filesSplit, new: isRead ? form : undefined })
     }
 
-
     //handle confirm modal
     const onOk = () => {
         if (openMotelModal && dataUpdateMotel) {
@@ -190,35 +188,38 @@ const MotelDetailPage = () => {
     return (
         <>
             <MainLayout>
-                <Grid container spacing={4} style={{ marginTop: 80 }}>
-                    <Grid item md={5}>
-                        {dataMotel.album.length > 0 &&
-                            <AlbumMotel
-                                images={dataMotel.album}
-                                motelName={dataMotel.motel?.name || ''}
-                            />}
+                <div className="container">
+                    <Grid container spacing={4} style={{ marginTop: 80 }}>
+                        <Grid item md={5}>
+                            {dataMotel.album.length > 0 &&
+                                <AlbumMotel
+                                    images={dataMotel.album}
+                                    motelName={dataMotel.motel?.name || ''}
+                                />}
+                        </Grid>
+
+                        <Grid item md={7}>
+                            {dataMotel.motel &&
+                                <InforMotelDetail
+                                    dataMotel={dataMotel.motel}
+                                    room={dataMotel.room}
+                                    setOpenRoomModal={setOpenRoomModal}
+                                    handleSelectRoom={handleSelectRoom}
+                                    editor={dataMotel.editor}
+                                />}
+                        </Grid>
                     </Grid>
 
-                    <Grid item md={7}>
-                        {dataMotel.motel &&
-                            <InforMotelDetail
-                                dataMotel={dataMotel.motel}
-                                room={dataMotel.room}
-                                setOpenRoomModal={setOpenRoomModal}
-                                handleSelectRoom={handleSelectRoom}
-                            />}
-                    </Grid>
-                </Grid>
+                    {dataMotel.motel &&
+                        <RateSection
+                            motelId={dataMotel.motel._id as string}
+                            motelName={dataMotel.motel.name}
+                            rateList={dataMotel.rate}
+                        />
+                    }
 
-                {dataMotel.motel &&
-                    <RateSection
-                        motelId={dataMotel.motel._id as string}
-                        motelName={dataMotel.motel.name}
-                        rateList={dataMotel.rate}
-                    />
-                }
-
-                <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+                    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+                </div>
             </MainLayout>
 
             <Modal title='Chỉnh sửa phòng trọ' visible={openRoomModal} onCancel={handleCloseModal} footer={null}>

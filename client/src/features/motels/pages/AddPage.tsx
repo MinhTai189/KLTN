@@ -1,7 +1,7 @@
 import { useAppDispatch } from "app/hooks"
 import { Motel } from "models"
 import { useState } from "react"
-import { AddForm } from "../components/AddForm"
+import { AddForm } from "../components/Forms/AddForm"
 import { motelActions } from "../motelSlice"
 
 const AddPage = () => {

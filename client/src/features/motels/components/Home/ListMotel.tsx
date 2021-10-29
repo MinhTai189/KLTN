@@ -3,8 +3,9 @@ import { makeStyles } from '@material-ui/styles'
 import { useAppSelector } from 'app/hooks'
 import Logo from 'assets/images/logo-white.png'
 import { ButtonCustom } from 'components/Common/Button'
-import { ItemMotel } from '.'
-import { selectDataMotel } from '../motelSlice'
+import { useHistory } from 'react-router'
+import { ItemMotel } from '..'
+import { selectDataMotel } from '../../motelSlice'
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {},
@@ -48,19 +49,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     seeMore: {
         textAlign: 'center',
         marginTop: 16,
-        position: 'relative',
-
-        "&::after": {
-            content: '""',
-            width: '100%',
-            height: 0.5,
-            background: theme.palette.text.primary,
-            top: '50%',
-            left: 0,
-            transform: 'translateY(-50%)',
-            position: 'absolute',
-            zIndex: -1
-        },
 
         "& button": {
             position: 'relative',
@@ -71,28 +59,31 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const ListMotel = () => {
     const classes = useStyles()
     const listMotel = useAppSelector(selectDataMotel)
+    const history = useHistory()
+
+    const hanleSeeMore = () => {
+        history.push('/motels')
+    }
 
     return (
-        <>
-            <div className='container'>
-                <h2 className={classes.title}>
-                    Danh sách nhà trọ
+        <div className='container'>
+            <h2 className={classes.title}>
+                Danh sách nhà trọ
 
-                    <img src={Logo} alt="logo" />
-                </h2>
+                <img src={Logo} alt="logo" />
+            </h2>
 
-                <ul className={classes.listMotel}>
-                    {listMotel.map((motel, index) => (
-                        <ItemMotel key={index} motelData={motel} />
-                    ))}
-                </ul>
-            </div>
+            <ul className={classes.listMotel}>
+                {listMotel.map((motel, index) => (
+                    <ItemMotel key={index} motelData={motel} />
+                ))}
+            </ul>
 
             <div className={classes.seeMore}>
-                <ButtonCustom sizeBtn='large'>
+                <ButtonCustom sizeBtn='large' onClick={hanleSeeMore}>
                     Xem thêm
                 </ButtonCustom>
             </div>
-        </>
+        </div>
     )
 }

@@ -177,7 +177,7 @@ export const Operation = ({ handleSearch, handleFilter, handleClearFilter }: Pro
                             <AutoComplete
                                 onChange={(e: any) => onChangeAutoComp(e, '_school')}
                                 className={classes.margin}
-                                value={schoolData}
+                                value={schoolData as string}
                                 size='large'
                                 options={autoCompSchool}
                                 placeholder="Nhập vào một trường"

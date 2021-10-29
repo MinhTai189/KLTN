@@ -27,7 +27,8 @@ const useStyles = makeStyles(theme => ({
         maxWidth: 600,
         padding: theme.spacing(3, 4),
         backgroundColor: '#fff',
-        outline: `7px solid ${theme.palette.primary.main}`
+        outline: `7px solid ${theme.palette.primary.main}`,
+        zIndex: 10,
     },
 }))
 

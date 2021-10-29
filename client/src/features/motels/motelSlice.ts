@@ -45,7 +45,7 @@ const motelSlice = createSlice({
     getMotelSuccess: (state, action: PayloadAction<ListResponse<Motel>>) => {
       state.loading = false;
       state.data = action.payload.data;
-      state.pagination = action.payload.pagination;
+      state.pagination = action.payload.pagination || state.pagination;
     },
     getMotelFailed: (state, action: PayloadAction<string>) => {
       state.loading = false;

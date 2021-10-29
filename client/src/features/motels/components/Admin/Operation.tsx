@@ -6,7 +6,7 @@ import { Filter } from "models"
 import { ChangeEvent, useState } from "react"
 import { useHistory } from "react-router"
 import { removeAccents } from "utils"
-import { selectFilterMotel } from "../motelSlice"
+import { selectFilterMotel } from "../../motelSlice"
 
 interface Props {
     handleSearch: (filter: Filter) => void;

@@ -48,7 +48,9 @@ const HomePage = () => {
     }, [])
 
     return (
-        <MainLayout isChangeNav={isChangeNav} hero={<Hero hiddenScrollDown={hiddenScrollDown} />}>
+        <MainLayout isChangeNav={isChangeNav}>
+            <Hero hiddenScrollDown={hiddenScrollDown} />
+
             <ListMotel />
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             {/* find motel */}
