@@ -61,7 +61,8 @@ router.get("/randoms", async (req, res) => {
         credit: listMotel[i].rate[j].user.credit,
         isAdmin: listMotel[i].rate[j].user.isAdmin,
       };
-      rateData.push({ ...listMotel[i].rate[j]._doc, user: userNewData });
+      if (listMotel[i].rate[j].valid)
+        rateData.push({ ...listMotel[i].rate[j]._doc, user: userNewData });
     }
     if (listMotel[i].owner) {
       const avatarUrl = listMotel[i].owner.avatarUrl.url;
@@ -497,6 +498,7 @@ router.get("/", async (req, res) => {
         .populate("owner", "name avatarUrl _id isAdmin")
         .populate("editor.user", "name avatarUrl _id isAdmin");
   }
+
   if (_keysearch) {
     const addMotelUser = await user
       .find({
@@ -674,7 +676,8 @@ router.get("/", async (req, res) => {
         credit: listMotel[i].rate[j].user.credit,
         isAdmin: listMotel[i].rate[j].user.isAdmin,
       };
-      rateData.push({ ...listMotel[i].rate[j]._doc, user: userNewData });
+      if (listMotel[i].rate[j].valid)
+        rateData.push({ ...listMotel[i].rate[j]._doc, user: userNewData });
     }
     if (listMotel[i].owner) {
       const avatarUrl = listMotel[i].owner.avatarUrl.url;
@@ -716,6 +719,7 @@ router.get("/", async (req, res) => {
       optional,
     });
   }
+
   let page = 1,
     limit = totalRows;
   if (_page && _limit) {
@@ -1166,7 +1170,8 @@ router.get("/:id", async (req, res) => {
       avatarUrl: findMotel.rate[i].user.avatarUrl.url,
       credit: findMotel.rate[i].user.credit,
     };
-    newRate.push({ ...findMotel.rate[i]._doc, user: userRate });
+    if (findMotel.rate[i].valid)
+      newRate.push({ ...findMotel.rate[i]._doc, user: userRate });
   }
   let optional = {
     wifi: false,

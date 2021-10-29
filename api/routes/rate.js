@@ -1,11 +1,58 @@
 const express = require("express");
 const verifyToken = require("../middleware/verifyToken");
 const motel = require("../models/motel");
+const reportRating = require("../models/report-rating");
 const school = require("../models/school");
 const user = require("../models/user");
 const removeVietNameseTones = require("../middleware/removeVietnameseTones");
 const router = express.Router();
 
+router.post("/reports", verifyToken, async (req, res) => {
+  const { motelId, rateId, content } = req.body;
+  if (typeof motelId !== "string")
+    return res
+      .status(400)
+      .json({ success: false, message: "Thiếu thông tin nhà trọ" });
+  if (typeof rateId !== "string")
+    return res
+      .status(400)
+      .json({ success: false, message: "Thiếu thông tin đánh giá" });
+  if (typeof content !== "string")
+    return res.status(400).json({
+      success: false,
+      message: "Vui lòng viết đầy đủ nội dung tố cáo",
+    });
+  const findMotel = await motel.findById(motelId);
+  if (findMotel) {
+    const rate = findMotel.rate.find(
+      (item) => JSON.stringify(rateId) === JSON.stringify(item._id)
+    );
+    if (!rate)
+      return res
+        .status(400)
+        .json({ success: false, message: "Không tìm thấy đánh giá" });
+    const newReport = new reportRating({
+      motel: motelId,
+      rate: rateId,
+      content: content,
+      user: req.user.id,
+    });
+    try {
+      await newReport.save();
+      return res
+        .status(200)
+        .json({ success: true, message: "Đã báo cáo thành công đánh giá này" });
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Lỗi không xác định!" });
+    }
+  } else
+    return res
+      .status(400)
+      .json({ success: false, message: "Không tìm được nhà trọ" });
+});
 router.delete("/violates/:id/:idRate", verifyToken, async (req, res) => {
   const id = req.params.id;
   const idRate = req.params.idRate;
@@ -49,7 +96,7 @@ router.delete("/violates/:id/:idRate", verifyToken, async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { _order, _sort, _keysearch, _limit, _page, _role, _user } =
+    const { _order, _sort, _keysearch, _limit, _page, _role, _user, _motel } =
       req.query;
     const motelRates = await motel
       .find({})
@@ -73,13 +120,17 @@ router.get("/", async (req, res) => {
           school: ownerSchool,
           motels: motelRates[i].rate[j].user.motels,
         };
-        rates.push({ ...motelRates[i].rate[j]._doc, user: user, motel: mt });
+        if (motelRates[i].rate[j].valid)
+          rates.push({ ...motelRates[i].rate[j]._doc, user: user, motel: mt });
       }
 
     rates = rates.sort((rate1, rate2) => {
       return new Date(rate2.createAt) - new Date(rate1.createAt);
     });
-
+    if (_motel)
+      rates = rates.filter((rate) => {
+        return JSON.stringify(rate.motel._id) === JSON.stringify(_motel);
+      });
     if (_keysearch) {
       rates = rates.filter((item) => {
         return (
@@ -98,7 +149,7 @@ router.get("/", async (req, res) => {
       });
     if (_sort && _order) {
       if (_sort === "createAt") {
-        if (_order === "desc")
+        if (_order === "asc")
           rates = rates.sort((rate1, rate2) => {
             return new Date(rate1.createAt) - new Date(rate2.createAt);
           });
@@ -113,12 +164,13 @@ router.get("/", async (req, res) => {
           });
       }
     }
-    if (_role)
-      if (_role.toLowerCase() === "true" || _role.toLowerCase() === "false")
-        rates = rates.filter((item) => {
-          return item.user.isAdmin.toString() === _role.toLowerCase();
-        });
-
+    if (_role) {
+      let role = false;
+      if (_role.toLowerCase() === "admin") role = true;
+      rates = rates.filter((item) => {
+        return item.user.isAdmin === role;
+      });
+    }
     let limit = rates.length;
     let page = 1;
     let totalRows = rates.length;
@@ -169,13 +221,27 @@ router.post("/:id", verifyToken, async (req, res) => {
       .json({ success: false, message: "Không tìm thấy nhà trọ" });
   else {
     try {
+      const valid = req.user.isAdmin;
+
       await motel.findByIdAndUpdate(req.params.id, {
         $push: {
-          rate: { content, star, createAt: undefined, user: req.user.id },
+          rate: {
+            content,
+            star,
+            createAt: undefined,
+            user: req.user.id,
+            valid: valid,
+          },
         },
         vote: findMotel.vote + star,
         mark: (findMotel.vote + star) / (findMotel.rate.length + 1),
       });
+      if (!req.user.isAdmin)
+        return res.status(200).json({
+          success: true,
+          message:
+            "Đánh giá thành công, hãy chờ người quản trị duyệt thông tin này, xin cảm ơn bạn đã góp ý",
+        });
       res.status(200).json({
         success: true,
         message: "Đánh giá thành công, xin cảm ơn bạn đã góp ý",
