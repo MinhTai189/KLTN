@@ -464,39 +464,21 @@ router.get("/", async (req, res) => {
       address: new RegExp(_keysearch + "$", "i"),
     },
   ];
-
-  console.log({ _school });
-
+  // if (_school) var _schools = _school.split(" ");
   if (_keysearch)
-    if (_school)
-      var listMotel = await motel
-        .find({ $or: keySearchs, school: { $in: _school } })
-        .populate("school", "-nameDistricts")
-        .populate("rate.user", "-refreshToken")
-        .populate("owner", "name avatarUrl _id isAdmin")
-        .populate("editor.user", "name avatarUrl _id isAdmin");
-    else
-      var listMotel = await motel
-        .find({ $or: keySearchs })
-        .populate("school", "-nameDistricts")
-        .populate("rate.user", "-refreshToken")
-        .populate("owner", "name avatarUrl _id isAdmin")
-        .populate("editor.user", "name avatarUrl _id isAdmin");
+    var listMotel = await motel
+      .find({ $or: keySearchs })
+      .populate("school", "-nameDistricts")
+      .populate("rate.user", "-refreshToken")
+      .populate("owner", "name avatarUrl _id isAdmin")
+      .populate("editor.user", "name avatarUrl _id isAdmin");
   else {
-    if (_school)
-      var listMotel = await motel
-        .find({ school: { $in: _school } })
-        .populate("school", "-nameDistricts")
-        .populate("rate.user", "-refreshToken")
-        .populate("owner", "name avatarUrl _id isAdmin")
-        .populate("editor.user", "name avatarUrl _id isAdmin");
-    else
-      var listMotel = await motel
-        .find({})
-        .populate("school", "-nameDistricts")
-        .populate("rate.user", "-refreshToken")
-        .populate("owner", "name avatarUrl _id isAdmin")
-        .populate("editor.user", "name avatarUrl _id isAdmin");
+    var listMotel = await motel
+      .find({})
+      .populate("school", "-nameDistricts")
+      .populate("rate.user", "-refreshToken")
+      .populate("owner", "name avatarUrl _id isAdmin")
+      .populate("editor.user", "name avatarUrl _id isAdmin");
   }
 
   if (_keysearch) {
@@ -534,6 +516,15 @@ router.get("/", async (req, res) => {
       });
     });
   }
+  if (Array.isArray(_school))
+    listMotel = listMotel.filter((item) => {
+      for (let i = 0; i < item.school.length; i++) {
+        for (let j = 0; j < _school.length; j++) {
+          if (item.school[i].codeName === _school[j]) return true;
+        }
+      }
+      return false;
+    });
 
   if (
     _status &&
@@ -791,10 +782,10 @@ router.post("/", verifyToken, async (req, res) => {
         const renameImage = await upload.rename(
           checkMotel.images[i].public_id,
           newMotel._id +
-          "/" +
-          checkMotel.images[i].public_id.substr(
-            checkMotel.images[i].public_id.indexOf("/") + 1
-          )
+            "/" +
+            checkMotel.images[i].public_id.substr(
+              checkMotel.images[i].public_id.indexOf("/") + 1
+            )
         );
         if (renameImage.success)
           newMotel.images.push({
@@ -808,10 +799,10 @@ router.post("/", verifyToken, async (req, res) => {
       const renameThumbnail = await upload.rename(
         checkMotel.thumbnail.public_id,
         newMotel._id +
-        "/" +
-        checkMotel.thumbnail.public_id.substr(
-          checkMotel.thumbnail.public_id.indexOf("/") + 1
-        )
+          "/" +
+          checkMotel.thumbnail.public_id.substr(
+            checkMotel.thumbnail.public_id.indexOf("/") + 1
+          )
       );
       if (renameThumbnail.success)
         newMotel.thumbnail = {
@@ -979,8 +970,8 @@ router.post("/", verifyToken, async (req, res) => {
       const renameImage = await upload.rename(
         images[i].public_id,
         newMotel._id +
-        "/" +
-        images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
+          "/" +
+          images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
       );
       if (renameImage.success == true)
         newMotel.images.push({
@@ -1003,8 +994,8 @@ router.post("/", verifyToken, async (req, res) => {
     const renameThumbnail = await upload.rename(
       thumbnail.public_id,
       newMotel._id +
-      "/" +
-      thumbnail.public_id.substr(thumbnail.public_id.indexOf("/") + 1)
+        "/" +
+        thumbnail.public_id.substr(thumbnail.public_id.indexOf("/") + 1)
     );
     if (renameThumbnail.success)
       newMotel.thumbnail = {
