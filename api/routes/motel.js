@@ -446,6 +446,8 @@ router.get("/", async (req, res) => {
     _optional,
     _school,
     _status,
+    _price,
+    _rate,
   } = req.query;
   const keySearchs = [
     { unsignedName: new RegExp(_keysearch, "i") },
@@ -525,15 +527,29 @@ router.get("/", async (req, res) => {
       }
       return false;
     });
-
-  if (
-    _status &&
-    (_status.toLowerCase() === "true" || _status.toLowerCase() === "false")
-  ) {
-    listMotel = listMotel.filter((item) => {
-      return String(item.status) == _status.toLowerCase();
-    });
-  }
+  if (typeof _status === "string")
+    if (_status.toLowerCase() === "true" || _status.toLowerCase() === "false") {
+      listMotel = listMotel.filter((item) => {
+        return String(item.status) == _status.toLowerCase();
+      });
+    } else {
+      const _statusFilter = _status.split(",");
+      if (
+        _statusFilter[0].toLowerCase() === "true" &&
+        _statusFilter[1].toLowerCase() === "true"
+      ) {
+      } else if (
+        _statusFilter[0].toLowerCase() === "true" ||
+        _statusFilter[1].toLowerCase() === "true"
+      ) {
+        let status;
+        if (_statusFilter[0].toLowerCase() === "true") status = true;
+        else if (_statusFilter[1].toLowerCase() === "true") status = false;
+        listMotel = listMotel.filter((item) => {
+          return item.status == status;
+        });
+      }
+    }
   if (_owner)
     listMotel = listMotel.filter((item) => {
       item.owner._id === _owner;
@@ -603,13 +619,30 @@ router.get("/", async (req, res) => {
       default:
         break;
     }
-  if (_optional) {
-    const _optionals = _optional.split(" ");
 
+  if (typeof _price === "string")
+    listMotel = listMotel.filter((item) => {
+      return (
+        item.room.some((room) => {
+          return room.price >= parseInt(_price.split(",")[0]);
+        }) &&
+        item.room.some((room) => {
+          return room.price <= parseInt(_price.split(",")[1]);
+        })
+      );
+    });
+
+  if (typeof _rate === "string")
+    if (typeof parseInt(_rate) === "number")
+      listMotel = listMotel.filter((item) => {
+        return item.mark >= parseInt(_rate);
+      });
+
+  if (_optional) {
+    const _optionals = _optional.split(",");
     listMotel = listMotel.filter((item) => {
       function filterRoomType(motel) {
         let bool = false;
-
         for (let j = 0; j < motel.room.length; j++) {
           let count = 0;
           for (let i = 0; i < _optionals.length; i++) {
