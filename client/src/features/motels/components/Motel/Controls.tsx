@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
                     '& .MuiAvatar-root': {
                         height: 13,
-                        width: 'auto'
+                        width: 13
                     },
 
                     '& .MuiChip-deleteIcon': {
@@ -116,7 +116,7 @@ const Controls = ({ listLayout, setListLayout, filterSchool, handleFilterMotel }
                         getOptionLabel={(option) => option.name}
                         renderOption={(option: School) => (
                             <>
-                                <Avatar src={option.logo} style={{ width: 20, height: 'auto', marginRight: 8 }} >U</Avatar>
+                                <Avatar src={option.logo} style={{ width: 20, height: 'auto', marginRight: 8, borderRadius: 0 }} >U</Avatar>
                                 <Typography style={{ fontSize: '0.8em' }}>{option.name}</Typography>
                             </>
                         )}

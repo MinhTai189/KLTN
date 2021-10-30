@@ -1,8 +1,8 @@
-import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography, Divider, Box } from '@material-ui/core'
+import { Card, CardActionArea, CardContent, CardMedia, Theme, Typography, Divider, Box, Tooltip, Avatar } from '@material-ui/core'
 import { DateRange, LocalActivity, LocationOn } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import { ChipCustom } from 'components/Common'
-import { Motel } from 'models'
+import { Motel, School } from 'models'
 import { memo } from 'react'
 import { useHistory } from 'react-router'
 import { getColorChip, styleChips } from 'utils'
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         height: 225,
 
         '&.grid': {
-            height: 450,
+            minHeight: 450,
         }
     },
     wrapper: {
@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
         '&.grid': {
             flexDirection: 'column',
+            height: '100%'
         }
     },
     thumbnail: {
@@ -60,6 +61,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
         '& .list-chip': {
             display: 'flex',
+            flexWrap: 'wrap',
             marginBottom: 4,
 
             '& .chip': {
@@ -67,8 +69,26 @@ const useStyles = makeStyles((theme: Theme) => ({
 
                 '&:not(:last-child)': {
                     marginRight: 4
-                }
-            }
+                },
+
+                '&.logos .MuiChip-root': {
+                },
+            },
+
+            '& .schools': {
+                display: 'flex',
+
+                '& .school': {
+                    "&:not(:last-child)": {
+                        marginRight: 8
+                    },
+
+                    '& .MuiAvatar-root': {
+                        width: 13,
+                        height: 13,
+                    }
+                },
+            },
         },
 
         '& .list-infor': {
@@ -108,7 +128,7 @@ const MotelCard = ({ listLayout, dataMotel }: Props) => {
     const classes = useStyles()
     const history = useHistory()
 
-    const { _id, thumbnail, name, status, room, mark, address, createdAt, desc } = dataMotel
+    const { _id, thumbnail, name, status, room, mark, address, createdAt, desc, school } = dataMotel
 
     const createdDate = new Date(createdAt || '')
     const date = createdDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -124,9 +144,24 @@ const MotelCard = ({ listLayout, dataMotel }: Props) => {
         history.push(`/motels/${_id}`)
     }
 
+    const LabelChipSchool = () => {
+        return school.map((school: School) => (
+            <li className='school'>
+                <Tooltip title={school.name}>
+                    <Avatar src={school.logo}>U</Avatar>
+                </Tooltip>
+            </li>
+        ))
+    }
+
     return (
         <Card className={`${classes.root} ${listLayout === 'grid' ? 'grid' : ''}`}>
-            <CardActionArea onClick={handleClickItem}>
+            <CardActionArea
+                style={{
+                    width: '100%',
+                    height: '100%',
+                }}
+                onClick={handleClickItem}>
                 <Box className={`${classes.wrapper} ${listLayout === 'grid' ? 'grid' : ''}`}>
                     <CardMedia
                         className={`${classes.thumbnail} ${listLayout === 'grid' ? 'grid' : ''}`}
@@ -163,6 +198,19 @@ const MotelCard = ({ listLayout, dataMotel }: Props) => {
                                     </li>
                                 )
                             })}
+
+                            <li key={school._id} className='chip logos'>
+                                <ChipCustom
+                                    label={
+                                        <ul className='schools'>
+                                            {LabelChipSchool()}
+                                        </ul>
+                                    }
+                                    size='small'
+                                    color='primary'
+                                    title={school.name}
+                                />
+                            </li>
                         </ul>
 
                         <ul className='list-infor'>

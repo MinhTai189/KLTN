@@ -14,3 +14,4 @@ export * from './MotelDetail/CreatedUser';
 export * from './Motel/ListMotelSection';
 export * from './Motel/MotelItem';
 export * from './Motel/Controls';
+export * from './Motel/FilterSider';

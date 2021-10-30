@@ -6,7 +6,7 @@ import { NoData } from 'components/Common/NoData'
 import { selectDataMotel, selectPaginationMotel } from 'features/motels/motelSlice'
 import { School } from 'models'
 import { ChangeEvent, useState } from 'react'
-import { MotelItem } from '..'
+import { FilterSider, MotelItem } from '..'
 import Controls from './Controls'
 
 interface Props {
@@ -43,14 +43,13 @@ export const ListMotelSection = ({ handleSelectPagination, filterSchool, handleF
     const listMotel = useAppSelector(selectDataMotel)
     const [listLayout, setListLayout] = useState<"grid" | "list">('list')
 
-    const amountPage = Math.ceil(pagination._totalRows / 10)
-
     return (
         <Box className={classes.root} component='section'>
-            <Grid container>
+            <Grid container spacing={2}>
                 <Grid item sm={3}>
-                    this is side bar
+                    <FilterSider />
                 </Grid>
+
                 <Grid item sm={8}>
                     <Controls
                         listLayout={listLayout}
@@ -61,7 +60,7 @@ export const ListMotelSection = ({ handleSelectPagination, filterSchool, handleF
 
                     <Divider />
 
-                    <Box
+                    {listMotel && listMotel.length > 0 ? <Box
                         className={classes.listItem}
                         style={listLayout === 'grid' ?
                             {
@@ -72,22 +71,22 @@ export const ListMotelSection = ({ handleSelectPagination, filterSchool, handleF
                             : {}}
                         mt={2}
                     >
-                        {listMotel && listMotel.length > 0 ? listMotel.map((data, index) => (
+                        {listMotel.map((data, index) => (
                             <div key={data._id} className="item">
                                 <MotelItem dataMotel={data} listLayout={listLayout} />
                             </div>
-                        ))
-                            : <NoData content='Không tìm thấy danh sách nhà trọ' />
-                        }
+                        ))}
                     </Box>
 
-                    {amountPage > 0 && <Box className={classes.pagination} mt={1.5}>
+                        : <NoData content='Không tìm thấy danh sách nhà trọ!!!' />}
+
+                    <Box className={classes.pagination} mt={1.5}>
                         <Pagination
-                            count={amountPage}
+                            count={Math.ceil(pagination._totalRows / pagination._limit)}
                             color="secondary"
                             onChange={handleSelectPagination}
                         />
-                    </Box>}
+                    </Box>
 
                     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
                 </Grid>

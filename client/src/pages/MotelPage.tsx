@@ -14,7 +14,6 @@ const MotelPage = () => {
     useEffect(() => {
         dispatch(motelActions.getMotel({
             ...filter,
-            _page: 1,
             _limit: 10
         }))
     }, [filter])
