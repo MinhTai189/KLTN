@@ -131,7 +131,7 @@ export const FilterSider = (props: Props) => {
             _price: filter.priceRange.join(','),
             _status: filter.status.join(','),
             _rate: filter.rate,
-            __optional: filter.utilities.join(',')
+            _optional: filter.utilities.join(',')
         };
 
         dispatch(motelActions.setFilter({ ...filterMotel, ...newFilter }))
