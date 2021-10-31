@@ -12,13 +12,7 @@ const MotelPage = () => {
     const filter = useAppSelector(selectFilterMotel)
     const listSchool = useAppSelector(selectDataSchool)
 
-    const [filterSchool, setFilterSchool] = useState<(string | School)[]>(() => {
-        if (!filter._school)
-            return []
-
-        const _school = listSchool.filter(x => (filter._school as string[]).includes(x.codeName))
-        return _school
-    })
+    const [filterSchool, setFilterSchool] = useState<(string | School)[]>([])
 
     useEffect(() => {
         dispatch(motelActions.getMotel({
@@ -30,6 +24,13 @@ const MotelPage = () => {
     useEffect(() => {
         if (listSchool.length === 0)
             dispatch(schoolActions.getSchool())
+
+        return () => {
+            dispatch(motelActions.setFilter({
+                _page: 1,
+                _limit: 15,
+            }))
+        }
     }, [])
 
     const handleSelectPagination = (e: ChangeEvent<unknown>, page: number) => {

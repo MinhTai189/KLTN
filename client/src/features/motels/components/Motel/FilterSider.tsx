@@ -78,10 +78,10 @@ export const FilterSider = (props: Props) => {
     const filterMotel = useAppSelector(selectFilterMotel)
 
     const [filter, setFilter] = useState<IFilter>({
-        priceRange: filterMotel._price || [0, 20000000],
-        status: (filterMotel._status as boolean[]) || [true, true],
-        rate: filterMotel._rate || 0,
-        utilities: filterMotel._optional || []
+        priceRange: [0, 20000000],
+        status: [true, true],
+        rate: 0,
+        utilities: []
     })
 
     const handleChangePrice = (event: any, newValue: number | number[]) => {
@@ -132,7 +132,8 @@ export const FilterSider = (props: Props) => {
             _price: filter.priceRange,
             _status: filter.status,
             _optional: filter.utilities,
-            _rate: filter.rate
+            _rate: filter.rate,
+            _page: 1
         }
 
         dispatch(motelActions.setFilter({ ...filterMotel, ...newFilter }))
