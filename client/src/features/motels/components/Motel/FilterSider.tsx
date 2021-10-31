@@ -8,6 +8,7 @@ import { StatusCheckbox } from "./Filter/StatusCheckbox";
 import { Utilities } from './Filter/Utilities'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { motelActions, selectFilterMotel } from 'features/motels/motelSlice'
+import { Filter } from "models";
 
 interface Props {
 
@@ -15,7 +16,7 @@ interface Props {
 
 interface IFilter {
     priceRange: number[],
-    status: [boolean, boolean],
+    status: boolean[],
     rate: number,
     utilities: string[]
 }
@@ -77,10 +78,10 @@ export const FilterSider = (props: Props) => {
     const filterMotel = useAppSelector(selectFilterMotel)
 
     const [filter, setFilter] = useState<IFilter>({
-        priceRange: [0, 20000000],
-        status: [true, true],
-        rate: 0,
-        utilities: []
+        priceRange: filterMotel._price || [0, 20000000],
+        status: (filterMotel._status as boolean[]) || [true, true],
+        rate: filterMotel._rate || 0,
+        utilities: filterMotel._optional || []
     })
 
     const handleChangePrice = (event: any, newValue: number | number[]) => {
@@ -89,11 +90,11 @@ export const FilterSider = (props: Props) => {
 
     const handleChangeStatus = (e: ChangeEvent<HTMLInputElement>) => {
         setFilter(prev => {
-            const status = prev.status
+            const status = [...prev.status]
 
             if (e.target.name === 'available')
                 status[0] = e.target.checked
-            else
+            if (e.target.name === 'unavailable')
                 status[1] = e.target.checked
 
             return { ...prev, status }
@@ -127,12 +128,12 @@ export const FilterSider = (props: Props) => {
     }
 
     const handleFilterMotel = () => {
-        let newFilter = {
-            _price: filter.priceRange.join(','),
-            _status: filter.status.join(','),
-            _rate: filter.rate,
-            _optional: filter.utilities.join(',')
-        };
+        const newFilter = {
+            _price: filter.priceRange,
+            _status: filter.status,
+            _optional: filter.utilities,
+            _rate: filter.rate
+        }
 
         dispatch(motelActions.setFilter({ ...filterMotel, ...newFilter }))
     }

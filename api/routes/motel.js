@@ -449,6 +449,7 @@ router.get("/", async (req, res) => {
     _price,
     _rate,
   } = req.query;
+
   const keySearchs = [
     { unsignedName: new RegExp(_keysearch, "i") },
     {
@@ -533,7 +534,7 @@ router.get("/", async (req, res) => {
         return String(item.status) == _status.toLowerCase();
       });
     } else {
-      const _statusFilter = _status.split(",");
+      const _statusFilter = _status
       if (
         _statusFilter[0].toLowerCase() === "true" &&
         _statusFilter[1].toLowerCase() === "true"
@@ -639,16 +640,15 @@ router.get("/", async (req, res) => {
       });
 
   if (_optional) {
-    const _optionals = _optional.split(",");
     listMotel = listMotel.filter((item) => {
       function filterRoomType(motel) {
         let bool = false;
         for (let j = 0; j < motel.room.length; j++) {
           let count = 0;
-          for (let i = 0; i < _optionals.length; i++) {
-            if (motel.room[j].optional[_optionals[i]] == true) count++;
+          for (let i = 0; i < _optional.length; i++) {
+            if (motel.room[j].optional[_optional[i]] == true) count++;
           }
-          if (count == _optionals.length) {
+          if (count == _optional.length) {
             bool = true;
             break;
           }
@@ -815,10 +815,10 @@ router.post("/", verifyToken, async (req, res) => {
         const renameImage = await upload.rename(
           checkMotel.images[i].public_id,
           newMotel._id +
-            "/" +
-            checkMotel.images[i].public_id.substr(
-              checkMotel.images[i].public_id.indexOf("/") + 1
-            )
+          "/" +
+          checkMotel.images[i].public_id.substr(
+            checkMotel.images[i].public_id.indexOf("/") + 1
+          )
         );
         if (renameImage.success)
           newMotel.images.push({
@@ -832,10 +832,10 @@ router.post("/", verifyToken, async (req, res) => {
       const renameThumbnail = await upload.rename(
         checkMotel.thumbnail.public_id,
         newMotel._id +
-          "/" +
-          checkMotel.thumbnail.public_id.substr(
-            checkMotel.thumbnail.public_id.indexOf("/") + 1
-          )
+        "/" +
+        checkMotel.thumbnail.public_id.substr(
+          checkMotel.thumbnail.public_id.indexOf("/") + 1
+        )
       );
       if (renameThumbnail.success)
         newMotel.thumbnail = {
@@ -1003,8 +1003,8 @@ router.post("/", verifyToken, async (req, res) => {
       const renameImage = await upload.rename(
         images[i].public_id,
         newMotel._id +
-          "/" +
-          images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
+        "/" +
+        images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
       );
       if (renameImage.success == true)
         newMotel.images.push({
@@ -1027,8 +1027,8 @@ router.post("/", verifyToken, async (req, res) => {
     const renameThumbnail = await upload.rename(
       thumbnail.public_id,
       newMotel._id +
-        "/" +
-        thumbnail.public_id.substr(thumbnail.public_id.indexOf("/") + 1)
+      "/" +
+      thumbnail.public_id.substr(thumbnail.public_id.indexOf("/") + 1)
     );
     if (renameThumbnail.success)
       newMotel.thumbnail = {

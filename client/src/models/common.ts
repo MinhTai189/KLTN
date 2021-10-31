@@ -22,7 +22,10 @@ export interface Filter {
   _province?: string;
   _role?: string;
   _keysearch?: string;
-  _status?: boolean | string;
+  _status?: boolean | string | boolean[];
+  _rate?: number;
+  _price?: number[];
+  _optional?: string[];
 
   [key: string]: any;
 }

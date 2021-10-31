@@ -1,10 +1,13 @@
-import { Avatar, Box, Grid, makeStyles, Paper, Theme, Tooltip, Typography, withStyles, Zoom } from "@material-ui/core"
+import { Avatar, Box, Grid, makeStyles, Paper, Theme, Tooltip, Typography, withStyles, Zoom, Divider } from "@material-ui/core"
 import { Facebook, Mail, Phone, Star, StarBorder, StarHalf } from "@material-ui/icons"
+import { useAppSelector } from "app/hooks"
 import { ReactComponent as Zalo } from 'assets/images/zalo.svg'
-import { ChipCustom } from "components/Common"
+import { ButtonCustom, ChipCustom } from "components/Common"
+import { selectCurrentUser } from "features/auth/authSlice"
 import { Editor, MotelDetail, Room } from "models"
 import { useCallback, useEffect, useState } from "react"
 import { Link } from 'react-router-dom'
+import { toast } from "react-toastify"
 import { roundMark, twoNumber } from "utils"
 import { mapPriceMonth } from "utils/getPriceMotel"
 import { getColorChip, styleChips } from 'utils/styleChips'
@@ -13,6 +16,7 @@ import { CreatedUser, InforRoomDetail } from ".."
 interface Props {
     dataMotel: MotelDetail
     room: Room[]
+    setOpenMotelModal: (state: boolean) => void
     setOpenRoomModal: (state: boolean) => void
     handleSelectRoom: (id: string) => void
     editor: Editor[]
@@ -22,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: '100%',
         background: '#f7f7f7',
-        padding: theme.spacing(1, 2)
+        padding: theme.spacing(2)
     },
     name: {
         width: '100%',
@@ -45,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) => ({
             display: 'flex',
 
             '& .number': {
-                fontSize: '1.3em',
+                fontSize: '1.2em',
                 color: theme.palette.primary.main,
                 fontWeight: 400,
                 marginRight: 4,
@@ -55,14 +59,14 @@ const useStyles = makeStyles((theme: Theme) => ({
 
             '& .stars ': {
                 '& .MuiSvgIcon-root': {
-                    width: '0.65em',
-                    height: '0.65em',
+                    width: '0.6em',
+                    height: '0.6em',
                     fill: '#666'
                 }
             },
 
             '& .text': {
-                fontSize: '0.85em',
+                fontSize: '0.8em',
                 color: '#666'
             }
         },
@@ -176,11 +180,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoomModal, editor }: Props) => {
+export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoomModal, editor, setOpenMotelModal }: Props) => {
     const classes = useStyles()
     const { name, school, amountRate, desc, address, mark, status, contact: { phone, facebook, email, zalo } } = dataMotel
     const [listPrice, setListPrice] = useState<string[]>([])
 
+    const currentUser = useAppSelector(selectCurrentUser)
     const getListPrice = useCallback(() => room.map(r => mapPriceMonth(r.price) + '/tháng'), [room])
     let markToStar = roundMark(mark as number) || [0, 0]
 
@@ -284,6 +289,15 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
         setListPrice(getListPrice())
     }, [])
 
+    const handleClickUpdateMotel = () => {
+        if (!currentUser) {
+            toast.error('Bạn phải đăng nhập để có thể sử dụng chức năng này!')
+            return;
+        }
+
+        setOpenMotelModal(true)
+    }
+
     return (
         <Box className={classes.root}>
             <div>
@@ -320,6 +334,18 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
 
                                 <Typography className='text'>
                                     Đánh giá
+                                </Typography>
+                            </div>
+
+                            <span className='divider'></span>
+
+                            <div className="col">
+                                <span className="number">
+                                    {twoNumber(editor.length)}
+                                </span>
+
+                                <Typography className='text'>
+                                    Yêu thích
                                 </Typography>
                             </div>
 
@@ -408,6 +434,19 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
                     <Grid item sm={12} md={4}>
                         <Paper className={classes.wrapperInfor}>
                             <CreatedUser />
+
+                            <Divider style={{ marginTop: 4, marginBottom: 4 }} />
+
+                            <Box>
+                                <ButtonCustom
+                                    style={{ borderRadius: 0 }}
+                                    sizeBtn='small'
+                                    fullWidth
+                                    onClick={handleClickUpdateMotel}
+                                >
+                                    Chỉnh sửa nhà trọ
+                                </ButtonCustom>
+                            </Box>
                         </Paper>
                     </Grid>
                 </Grid>
@@ -465,7 +504,6 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
                 </div>
 
                 <InforRoomDetail room={room} setOpenRoomModal={setOpenRoomModal} handleSelectRoom={handleSelectRoom} />
-
             </Box>
         </Box>
     )

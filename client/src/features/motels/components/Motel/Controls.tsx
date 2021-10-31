@@ -2,7 +2,8 @@ import { Avatar, Box, Chip, TextField, Theme, Tooltip, Typography } from '@mater
 import { ViewColumn, ViewList } from '@material-ui/icons'
 import { Autocomplete } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/styles'
-import { useSchool } from 'hooks'
+import { useAppSelector } from 'app/hooks'
+import { selectDataSchool, selectLoadingSchool } from 'features/school/schoolSlice'
 import { School } from 'models'
 import { ChangeEvent, ComponentType, HTMLAttributes, memo } from 'react'
 import ListboxComponent from './ListboxComponent'
@@ -97,7 +98,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Controls = ({ listLayout, setListLayout, filterSchool, handleFilterMotel }: Props) => {
     const classes = useStyles()
-    const { optionsSchool, loading } = useSchool()
+    const listSchool = useAppSelector(selectDataSchool)
+    const loading = useAppSelector(selectLoadingSchool)
 
     return (
         <Box className={classes.root}>
@@ -111,7 +113,7 @@ const Controls = ({ listLayout, setListLayout, filterSchool, handleFilterMotel }
                         freeSolo
                         limitTags={3}
                         loading={loading}
-                        options={optionsSchool}
+                        options={listSchool}
                         ListboxComponent={ListboxComponent as ComponentType<HTMLAttributes<HTMLElement>>}
                         getOptionLabel={(option) => option.name}
                         renderOption={(option: School) => (

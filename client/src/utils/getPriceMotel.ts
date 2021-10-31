@@ -15,5 +15,5 @@ export const getPriceMotel = (data: Room[]) => {
 };
 
 export const mapPriceMonth = (number: number) => {
-  return number >= 1000000 ? `${number / 1000000}m` : `${number / 1000}k`;
+  return number >= 1000000 ? `${number / 1000000}tr` : `${number / 1000}k`;
 };

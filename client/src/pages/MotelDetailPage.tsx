@@ -203,6 +203,7 @@ const MotelDetailPage = () => {
                                 <InforMotelDetail
                                     dataMotel={dataMotel.motel}
                                     room={dataMotel.room}
+                                    setOpenMotelModal={setOpenMotelModal}
                                     setOpenRoomModal={setOpenRoomModal}
                                     handleSelectRoom={handleSelectRoom}
                                     editor={dataMotel.editor}

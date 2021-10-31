@@ -2,9 +2,8 @@ import { SearchOutlined } from '@ant-design/icons'
 import { Box, makeStyles, Typography } from '@material-ui/core'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import Background from 'assets/images/background.jpg'
-import { schoolActions, selectFilterSchool } from 'features/school/schoolSlice'
-import { ChangeEvent, useEffect, useState } from 'react'
-import { DropDown } from './DropDown'
+import { ChangeEvent, useState } from 'react'
+// import { DropDown } from './DropDown'
 
 interface Props {
     hiddenScrollDown: boolean
@@ -132,18 +131,17 @@ export const Hero = ({ hiddenScrollDown }: Props) => {
 
     const [isFlip, setIsFlip] = useState<boolean | undefined>()
     const dispatch = useAppDispatch()
-    const filter = useAppSelector(selectFilterSchool)
 
 
-    const handleFilterSearch = (value: string) => {
-        dispatch(schoolActions.searchWithDebounce({
-            _namelike: value.trim()
-        }))
-    }
+    // const handleFilterSearch = (value: string) => {
+    //     dispatch(schoolActions.searchWithDebounce({
+    //         _namelike: value.trim()
+    //     }))
+    // }
 
-    useEffect(() => {
-        dispatch(schoolActions.getSchool(filter))
-    }, [filter, dispatch])
+    // useEffect(() => {
+    //     dispatch(schoolActions.getSchool(filter))
+    // }, [filter, dispatch])
 
     const onClickSearch = () => {
         setOpenDropdrow(current => {
@@ -161,14 +159,14 @@ export const Hero = ({ hiddenScrollDown }: Props) => {
         })
     }
 
-    const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
-        const { value } = e.target
+    // const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    //     const { value } = e.target
 
-        handleFilterSearch(value)
+    //     handleFilterSearch(value)
 
-        setSearchValue(value)
-        setOpenDropdrow(true)
-    }
+    //     setSearchValue(value)
+    //     setOpenDropdrow(true)
+    // }
 
     const handleScrollDown = () => {
         window.scrollTo({
@@ -194,11 +192,11 @@ export const Hero = ({ hiddenScrollDown }: Props) => {
                     <Box className={classes.inputField}>
                         <span className={classes.icon}><SearchOutlined /></span>
 
-                        <input type="text" name='search' value={searchValue} onChange={onChangeSearch} placeholder='Chọn một trường mà bạn muốn tìm nhà trọ gần đó' autoComplete='off' />
+                        <input type="text" name='search' value={searchValue} placeholder='Chọn một trường mà bạn muốn tìm nhà trọ gần đó' autoComplete='off' />
                     </Box>
                 </Box>
 
-                <DropDown openDropdown={openDropdown} isFlip={isFlip} setIsFlip={setIsFlip} />
+                {/* <DropDown openDropdown={openDropdown} isFlip={isFlip} setIsFlip={setIsFlip} /> */}
             </Box>
 
             <span className={`${classes.scrollDown} scroll-1`} style={{ display: hiddenScrollDown ? 'none' : 'inline-block' }} onClick={handleScrollDown}></span>

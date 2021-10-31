@@ -2,6 +2,7 @@ import { Room } from 'models';
 import { ReactElement } from 'react';
 import React from 'react';
 import { twoNumber } from 'utils';
+import { mapPriceMonth } from './getPriceMotel';
 
 interface RoomTable {
   _id: string;
@@ -42,10 +43,7 @@ const additionalString: Optional = {
 
 export const changeRoomToTable = (rooms: Room[]): RoomTable[] => {
   const result: RoomTable[] = rooms.map((room, index) => {
-    const price =
-      room.price >= 1000000
-        ? `${room.price / 1000000}m`
-        : `${room.price / 1000}k`;
+    const price = mapPriceMonth(room.price);
 
     // 9 => 09
     const remain = twoNumber(room.remain);

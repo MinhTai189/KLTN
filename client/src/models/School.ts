@@ -6,11 +6,3 @@ export interface School {
 
   [key: string]: any;
 }
-
-export interface SchoolDropdown {
-  motels: { thumbnail: string; _id: string }[];
-  district: string;
-  _id: string;
-  name: string;
-  codeName: string;
-}
