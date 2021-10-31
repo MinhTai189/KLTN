@@ -183,7 +183,7 @@ router.get("/", async (req, res) => {
         limit = parseInt(_limit);
         page = parseInt(_page);
       }
-    rates = rates.slice((page - 1) * limit, limit);
+    rates = rates.slice((page - 1) * limit, limit * page);
     res.status(200).json({
       success: true,
       message: "Thành công",

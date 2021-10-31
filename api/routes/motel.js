@@ -24,9 +24,6 @@ router.get("/randoms", async (req, res) => {
     .populate("editor.user", "name avatarUrl _id isAdmin");
   listMotel = shuffle(listMotel);
 
-  if (req.query._limit)
-    if (!isNaN(parseInt(req.query._limit)))
-      listMotel = listMotel.slice(0, parseInt(req.query._limit));
   let newData = [];
 
   for (let i = 0; i < listMotel.length; i++) {
@@ -104,7 +101,25 @@ router.get("/randoms", async (req, res) => {
       optional,
     });
   }
-  res.status(200).json({ success: true, message: "Thành Công", data: newData });
+  let limit = listMotel.length;
+  let page = 1;
+  let totalRows = listMotel.length;
+  if (req.query._limit && req.query._page) {
+    if (
+      !isNaN(parseInt(req.query._limit)) &&
+      !isNaN(parseInt(req.query._page))
+    ) {
+      limit = parseInt(req.query._limit);
+      page = parseInt(req.query._page);
+      newData = newData.slice((page - 1) * limit, limit * page);
+    }
+  }
+  res.status(200).json({
+    success: true,
+    message: "Thành Công",
+    data: newData,
+    pagination: { _totalRows: totalRows, _page: page, _limit: limit },
+  });
 });
 
 router.patch("/:id", verifyToken, async (req, res) => {
@@ -528,29 +543,26 @@ router.get("/", async (req, res) => {
       }
       return false;
     });
-  if (typeof _status === "string")
-    if (_status.toLowerCase() === "true" || _status.toLowerCase() === "false") {
+  if (typeof _status === "string") {
+    if (_status.toLowerCase() === "true" || _status.toLowerCase() === "false")
       listMotel = listMotel.filter((item) => {
         return String(item.status) == _status.toLowerCase();
       });
-    } else {
-      const _statusFilter = _status
-      if (
-        _statusFilter[0].toLowerCase() === "true" &&
-        _statusFilter[1].toLowerCase() === "true"
-      ) {
-      } else if (
-        _statusFilter[0].toLowerCase() === "true" ||
-        _statusFilter[1].toLowerCase() === "true"
-      ) {
-        let status;
-        if (_statusFilter[0].toLowerCase() === "true") status = true;
-        else if (_statusFilter[1].toLowerCase() === "true") status = false;
+  } else if (Array.isArray(_status)) {
+    if (
+      typeof _status[0] !== "undefined" &&
+      typeof _status[1] !== "undefined"
+    ) {
+      if (_status[0].toLowerCase() === "false")
         listMotel = listMotel.filter((item) => {
-          return item.status == status;
+          return item.status == false;
         });
-      }
+      if (_status[1].toLowerCase() === "false")
+        listMotel = listMotel.filter((item) => {
+          return item.status == true;
+        });
     }
+  }
   if (_owner)
     listMotel = listMotel.filter((item) => {
       item.owner._id === _owner;
@@ -621,14 +633,14 @@ router.get("/", async (req, res) => {
         break;
     }
 
-  if (typeof _price === "string")
+  if (Array.isArray(_price))
     listMotel = listMotel.filter((item) => {
       return (
         item.room.some((room) => {
-          return room.price >= parseInt(_price.split(",")[0]);
+          return room.price >= parseInt(_price[0]);
         }) &&
         item.room.some((room) => {
-          return room.price <= parseInt(_price.split(",")[1]);
+          return room.price <= parseInt(_price[1]);
         })
       );
     });
@@ -815,10 +827,10 @@ router.post("/", verifyToken, async (req, res) => {
         const renameImage = await upload.rename(
           checkMotel.images[i].public_id,
           newMotel._id +
-          "/" +
-          checkMotel.images[i].public_id.substr(
-            checkMotel.images[i].public_id.indexOf("/") + 1
-          )
+            "/" +
+            checkMotel.images[i].public_id.substr(
+              checkMotel.images[i].public_id.indexOf("/") + 1
+            )
         );
         if (renameImage.success)
           newMotel.images.push({
@@ -832,10 +844,10 @@ router.post("/", verifyToken, async (req, res) => {
       const renameThumbnail = await upload.rename(
         checkMotel.thumbnail.public_id,
         newMotel._id +
-        "/" +
-        checkMotel.thumbnail.public_id.substr(
-          checkMotel.thumbnail.public_id.indexOf("/") + 1
-        )
+          "/" +
+          checkMotel.thumbnail.public_id.substr(
+            checkMotel.thumbnail.public_id.indexOf("/") + 1
+          )
       );
       if (renameThumbnail.success)
         newMotel.thumbnail = {
@@ -1003,8 +1015,8 @@ router.post("/", verifyToken, async (req, res) => {
       const renameImage = await upload.rename(
         images[i].public_id,
         newMotel._id +
-        "/" +
-        images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
+          "/" +
+          images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
       );
       if (renameImage.success == true)
         newMotel.images.push({
@@ -1027,8 +1039,8 @@ router.post("/", verifyToken, async (req, res) => {
     const renameThumbnail = await upload.rename(
       thumbnail.public_id,
       newMotel._id +
-      "/" +
-      thumbnail.public_id.substr(thumbnail.public_id.indexOf("/") + 1)
+        "/" +
+        thumbnail.public_id.substr(thumbnail.public_id.indexOf("/") + 1)
     );
     if (renameThumbnail.success)
       newMotel.thumbnail = {

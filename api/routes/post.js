@@ -83,7 +83,7 @@ router.get("/", async (req, res) => {
         limit = parseInt(_limit);
         page = parseInt(_page);
       }
-    responsePosts = responsePosts.slice((page - 1) * limit, limit);
+    responsePosts = responsePosts.slice((page - 1) * limit, limit * page);
     res.status(200).json({
       success: true,
       data: responsePosts,

@@ -139,7 +139,7 @@ router.get("/", async (req, res) => {
         limit = parseInt(_limit);
         page = parseInt(_page);
       }
-    responseComments = responseComments.slice((page - 1) * limit, limit);
+    responseComments = responseComments.slice((page - 1) * limit, limit * page);
     res.status(200).json({
       success: true,
       data: responseComments,

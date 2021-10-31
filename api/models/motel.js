@@ -136,7 +136,13 @@ const motel = new Schema(
       type: Number,
     },
     school: [{ type: mongoose.Types.ObjectId, ref: "school" }],
+    favorites: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
   },
+
   { timestamps: true }
 );
 
