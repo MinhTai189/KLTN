@@ -12,6 +12,8 @@ const rateRouter = require("./routes/rate");
 const postRouter = require("./routes/post");
 const favoriteRouter = require("./routes/favorite");
 const commentRouter = require("./routes/comment");
+const approveRouter = require("./routes/approve");
+const feedBackRouter = require("./routes/feedBack");
 const fileUpload = require("express-fileupload");
 const Mongoose = require("mongoose");
 
@@ -55,6 +57,8 @@ app.use("/api/", authRouter);
 app.use("/api/", schoolDataRouter);
 app.use("/api/", userRouter);
 app.use("/api/", uploadRouter);
+app.use("/api/feedbacks", feedBackRouter);
+app.use("/api/approves", approveRouter);
 app.use("/api/posts", postRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/users/favorites", favoriteRouter);

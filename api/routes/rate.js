@@ -1,14 +1,14 @@
 const express = require("express");
 const verifyToken = require("../middleware/verifyToken");
 const motel = require("../models/motel");
-const reportRating = require("../models/report-rating");
+const report = require("../models/report");
 const school = require("../models/school");
 const user = require("../models/user");
 const removeVietNameseTones = require("../middleware/removeVietnameseTones");
 const router = express.Router();
 
 router.post("/reports", verifyToken, async (req, res) => {
-  const { motelId, rateId, content } = req.body;
+  const { motelId, rateId, content } = req.body.params;
   if (typeof motelId !== "string")
     return res
       .status(400)
@@ -31,11 +31,12 @@ router.post("/reports", verifyToken, async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: "Không tìm thấy đánh giá" });
-    const newReport = new reportRating({
-      motel: motelId,
-      rate: rateId,
+    const newReport = new report({
+      id1: motelId,
+      id2: rateId,
       content: content,
-      user: req.user.id,
+      owner: req.user.id,
+      type: "rate",
     });
     try {
       await newReport.save();

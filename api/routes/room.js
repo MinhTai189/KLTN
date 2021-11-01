@@ -176,7 +176,7 @@ router.patch("/:id/:idRoom", verifyToken, async (req, res) => {
           item === optional[i];
         })
       ) {
-        edited += "thuộc tính";
+        edited += "tiện ích";
         break;
       }
   }

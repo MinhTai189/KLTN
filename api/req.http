@@ -247,7 +247,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 ###
 POST http://localhost:5000/api/motels/rates/reports
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNTE2NDUxNSwiZXhwIjoxNjM1MTY1MTE1fQ.X1v_Df6hPPLfv20gxG9khd-1pcAn7kuAd0ZvreCndCk
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzU3MzM1OTUsImV4cCI6MTYzNTczNDE5NX0.rPmytZ1n0lTLuMw2PZS4-QCArmvhMIyJ31fvnyx6YoM
 
 {
     "motelId":"615a9f13dc19793cda17890f",
@@ -276,3 +276,13 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgw
 DELETE http://localhost:5000/api/comments/6177fbc7a377739d27938853
 Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzUyNTMxNzcsImV4cCI6MTYzNTI1Mzc3N30.la3nUcp3YfaqNiPQIiQISa_ry2kUjjk4LfEXtSeSKDY
+###
+POST http://localhost:5000/api/feedbacks
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzU2ODE0MTEsImV4cCI6MTYzNTY4MjAxMX0.1T4Ug5AjygYdq47kx0KF7emJuxjHxbQGx7RdzznteU0
+
+{
+    "content":"Hello World"
+}
+###
+GET http://localhost:5000/api/approves

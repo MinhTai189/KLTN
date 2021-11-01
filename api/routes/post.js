@@ -62,14 +62,14 @@ router.get("/", async (req, res) => {
         return JSON.stringify(item.subject._id) === JSON.stringify(_subject);
       });
     if (_order && _sort)
-      if (_sort === "createAt") {
+      if (_sort === "createdat") {
         if ((_order = "asc"))
           responsePosts = responsePosts.sort((post1, post2) => {
-            return new Date(post1.createAt) - new Date(post2.createAt);
+            return new Date(post1.createdAt) - new Date(post2.createdAt);
           });
         else if ((_order = "desc"))
           responsePosts = responsePosts.sort((post1, post2) => {
-            return new Date(post2.createAt) - new Date(post1.createAt);
+            return new Date(post2.createdAt) - new Date(post1.createdAt);
           });
       }
     let page = 1;

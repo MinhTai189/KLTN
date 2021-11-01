@@ -48,8 +48,7 @@ export const RateSection = ({ motelName, rateList, motelId }: Props) => {
     const [openReportModal, setOpenReportModal] = useState(false)
 
     const [contentReport, setContentReport] = useState('')
-
-    let idRateReport = ''
+    const [idRateReport, setIdRateReport] = useState('')
 
     const handleCancelModal = () => {
         setOpenRateModal(false)
@@ -111,16 +110,16 @@ export const RateSection = ({ motelName, rateList, motelId }: Props) => {
             return
         }
 
-        idRateReport = idRate
+        setIdRateReport(idRate)
         setOpenReportModal(true)
     }
 
     const hanldeSubmitReport = async () => {
-        if (contentFormValue.trim().length === 0) {
+        if (contentReport.trim().length === 0) {
             toast.error('Vui lòng nhập đánh giá!')
             return;
         }
-        if (contentFormValue.length > 100) {
+        if (contentReport.length > 100) {
             toast.error('Đánh giá tối đa 100 ký tự!')
             return;
         }
@@ -136,10 +135,13 @@ export const RateSection = ({ motelName, rateList, motelId }: Props) => {
 
             setLoading(false)
             setOpenReportModal(false)
+            
+            toast.success('Đã thực hiện tố cáo thành công!')
         } catch (error: any) {
-            toast.error(error.response.data.message)
             setLoading(false)
             setOpenReportModal(false)
+            
+            toast.error(error.response.data.message)
         }
     }
 

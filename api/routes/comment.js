@@ -114,14 +114,14 @@ router.get("/", async (req, res) => {
         return JSON.stringify(item.post._id) === JSON.stringify(_post);
       });
     if (_order && _sort)
-      if (_sort === "createAt") {
+      if (_sort === "createdat") {
         if ((_order = "asc"))
           responseComments = responseComments.sort((cmt1, cmt2) => {
-            return new Date(cmt1.createAt) - new Date(cmt2.createAt);
+            return new Date(cmt1.createdAt) - new Date(cmt2.createdAt);
           });
         else if ((_order = "desc"))
           responseComments = responseComments.sort((cmt1, cmt2) => {
-            return new Date(cmt2.createAt) - new Date(cmt1.createAt);
+            return new Date(cmt2.createdAt) - new Date(cmt1.createdAt);
           });
       }
     if (_subject)
