@@ -11,8 +11,17 @@ const objectId = require("mongoose").ObjectId;
 const verifyToken = require("../middleware/verifyToken");
 router.get("/", async (req, res) => {
   try {
-    const { _user, _keysearch, _role, _subject, _order, _sort, _limit, _page } =
-      req.query;
+    const {
+      _user,
+      _keysearch,
+      _role,
+      _subject,
+      _order,
+      _sort,
+      _limit,
+      _page,
+      _hashtag,
+    } = req.query;
     let posts = await post
       .find({ valid: true })
       .populate("owner")
@@ -72,6 +81,15 @@ router.get("/", async (req, res) => {
             return new Date(post2.createdAt) - new Date(post1.createdAt);
           });
       }
+    if (_hashtag)
+      responsePosts = responsePosts.filter((post) => {
+        let count = 0;
+        for (let i = 0; i < post.hashTag.length; i++) {
+          for (let j = 0; j < _hashtag.length; j++)
+            if (post.hashTag[i] == _hashtag[j]) count++;
+        }
+        return count == _hashtag.length;
+      });
     let page = 1;
     let limit = responsePosts.length;
     let totalRows = responsePosts.length;
@@ -158,6 +176,9 @@ router.delete("/:id", verifyToken, async (req, res) => {
     if (findPost.subject.toString() === "6173ba553c954151dcc8fdf9")
       await reviewModel.findOneAndDelete({ post: findPost._id });
     await commentModel.deleteMany({ post: findPost._id });
+    await subjectModel.findByIdAndUpdate(findPost.subject, {
+      $inc: { posts: -1 },
+    });
     return res.status(200).json({
       success: false,
       message: "Đã xóa bài viết thành công",
@@ -187,7 +208,8 @@ router.patch("/:id", verifyToken, async (req, res) => {
     });
   const subjectId = findPost.subject.toString();
 
-  const { title, content, hashTag, school, review, block, status } = req.body;
+  const { require, title, content, hashTag, school, review, block, status } =
+    req.body;
 
   if (typeof title === "string") {
     findPost.title = title;
@@ -223,7 +245,15 @@ router.patch("/:id", verifyToken, async (req, res) => {
       }
       findPost.school = school;
     }
-
+    if (Array.isArray(require)) {
+      for (let i = 0; i < require.length; i++) {
+        if (typeof require[i] !== "string")
+          return res
+            .status(400)
+            .json({ success: false, message: "Sai dữ liệu về yêu cầu" });
+      }
+      findPost.require = require;
+    }
     try {
       await findPost.save();
       return res.status(200).json({
@@ -323,7 +353,8 @@ router.patch("/:id", verifyToken, async (req, res) => {
       .json({ success: false, message: "Chuyên mục không hợp lệ" });
 });
 router.post("/", verifyToken, async (req, res) => {
-  const { subject, title, content, hashTag, school, review } = req.body;
+  const { subject, title, content, require, hashTag, school, review } =
+    req.body;
   const subjectId = subject;
   if (!subjectId)
     return res.status(400).json({
@@ -359,6 +390,12 @@ router.post("/", verifyToken, async (req, res) => {
         message:
           "Vui lòng cung cấp ít nhất một trường gần nhà trọ bạn muốn tìm",
       });
+    if (Array.isArray(require) == false)
+      return res.status(400).json({
+        success: false,
+        message: "Yêu cầu là ít nhất mảng rỗng",
+      });
+
     for (let i = 0; i < school.length; i++) {
       const check = await schoolModel.exists({ _id: school[i] });
       if (!check)
@@ -375,14 +412,19 @@ router.post("/", verifyToken, async (req, res) => {
       hashTag,
       subject: subjectId,
       owner: req.user.id,
+      require,
     });
     if (req.user.isAdmin) newPost.valid = true;
     try {
       await newPost.save();
-      if (req.user.isAdmin)
+      if (req.user.isAdmin) {
         await userModel.findByIdAndUpdate(newPost.owner, {
           $inc: { posts: 1 },
         });
+        await subjectModel.findByIdAndUpdate(subjectId, {
+          $inc: { posts: 1 },
+        });
+      }
       return res.status(200).json({
         success: true,
         message: "Đã đăng bài bài viết thành công",
@@ -421,10 +463,14 @@ router.post("/", verifyToken, async (req, res) => {
     if (req.user.isAdmin) newPost.valid = true;
     try {
       await newPost.save();
-      if (req.user.isAdmin)
+      if (req.user.isAdmin) {
         await userModel.findByIdAndUpdate(newPost.owner, {
           $inc: { posts: 1 },
         });
+        await subjectModel.findByIdAndUpdate(subjectId, {
+          $inc: { posts: 1 },
+        });
+      }
       return res.status(200).json({
         success: true,
         message: "Đã đăng bài bài viết thành công",
@@ -476,10 +522,14 @@ router.post("/", verifyToken, async (req, res) => {
     try {
       await newPost.save();
       await newReview.save();
-      if (req.user.isAdmin)
+      if (req.user.isAdmin) {
         await userModel.findByIdAndUpdate(newPost.owner, {
           $inc: { posts: 1 },
         });
+        await subjectModel.findByIdAndUpdate(subjectId, {
+          $inc: { posts: 1 },
+        });
+      }
       return res.status(200).json({
         success: true,
         message: "Đã đăng bài bài viết thành công",
@@ -505,10 +555,14 @@ router.post("/", verifyToken, async (req, res) => {
     if (req.user.isAdmin) newPost.valid = true;
     try {
       await newPost.save();
-      if (req.user.isAdmin)
+      if (req.user.isAdmin) {
         await userModel.findByIdAndUpdate(newPost.owner, {
           $inc: { posts: 1 },
         });
+        await subjectModel.findByIdAndUpdate(subjectId, {
+          $inc: { posts: 1 },
+        });
+      }
       return res.status(200).json({
         success: true,
         message: "Đã đăng bài bài viết thành công",

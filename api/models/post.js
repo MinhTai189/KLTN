@@ -48,6 +48,11 @@ const post = new Schema(
       required: true,
       default: false,
     },
+    require: {
+      type: Array,
+      required: true,
+      default: [],
+    },
   },
   { timestamps: true }
 );

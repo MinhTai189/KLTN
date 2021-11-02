@@ -21,7 +21,7 @@ Content-Type: application/json
 Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzUxMDA1NywiZXhwIjoxNjMzNTEwMDg3fQ.kQbrkkPsBRA3n5U8tmdZiU-DllvRjt8spB-_YQkX2e8
 
  {
-    "username":"maideptrai",
+    "username":"admin2",
     "password":"123456"
     // "accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzMzUwOTAyOCwiZXhwIjoxNjMzNTA5NjI4fQ.B9QIlEO7J2BV56XL2K7qItHPW9_GOBPtvTr0tCSXCSE"
  }
@@ -207,25 +207,21 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 ###
 POST http://localhost:5000/api/posts
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNTE2NzE2MCwiZXhwIjoxNjM1MTY3NzYwfQ.KsaAVYX1rD9GPLJTBlDIdoZzi5R8Z8UYxmDyXwNDfzs
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNTg1MzY3OCwiZXhwIjoxNjM1ODU0Mjc4fQ.o3f1bjAx-hCuT55EWqZAK-kJVfHK8n8g6KmQ3T9CcWI
 
 {
-    "subject":"6173ba553c954151dcc8fdf9",
+    "subject":"6173ba553c954151dcc8fdf7",
     "title":"Review nha tro AS",
     "content":"Để cảnh sát không tìm được mình, bạn hãy cố gắng chặn lối vào nơi bạn đang ẩn nấp. Lý tưởng nhất là có ổ khóa chắc chắn bên trong cánh cửa, và cửa có hướng mở ra ngoài để tên sát nhân không đạp bật vào được. Có lẽ bạn cũng nên chặn cửa bằng các chướng ngại vật khác, chẳng hạn như các đồ nội thất nặng.",
     "hashTag":["sachse","600"]
-    ,"review":{
-        "cleanup":7,
-        "price":7,
-        "beauty":7,
-        "quiet":7,
-        "road":7
-    }
+    ,"require":["Sạch sẽ không tiếng ồn"],
+    "school":["6139d5d6d02c8be6b20880cc"]
+    
 }
 ###
 PATCH  http://localhost:5000/api/posts/617696c696a8ddd8b7732938
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0YWU1MGUyNjlkZCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNTE2MTY5OSwiZXhwIjoxNjM1MTYyMjk5fQ.5hbOCjRZt6Yz7d4kpLH_GVHZKRApiDS7LcW2HpEypkw
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNTg0OTk5MSwiZXhwIjoxNjM1ODUwNTkxfQ.ERzR_DOuOBZJbmH6KHu49IrnXsfA7OsVzxUqdAhpW5M
 
 {
     "subject":"6173ba553c954151dcc8fdf9",
