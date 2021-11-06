@@ -83,7 +83,8 @@ router.get("/", async (req, res) => {
       .populate("owner")
       .populate("subject")
       .populate("likes.owner", "name")
-      .select("-unsignedTitle");
+      .select("-unsignedTitle")
+      .populate("school", "-nameDistricts");
 
     if (typeof _keysearch === "string") {
       posts = posts.filter((item) => {
@@ -190,8 +191,9 @@ router.get("/:id", async (req, res) => {
       .findById(req.params.id)
       .populate("owner")
       .populate("subject")
-      .populate("owner", "name")
-      .select("-unsignedTitle");
+      .populate("likes.owner", "name")
+      .select("-unsignedTitle")
+      .populate("school", "-nameDistricts");
     if (!findPost)
       return res.status(400).json({
         success: false,
@@ -582,17 +584,18 @@ router.post("/", verifyToken, async (req, res) => {
   }
   if (subjectId === "6173ba553c954151dcc8fdf7") {
     // tìm nhà trọ
-    if (Array.isArray(school) == false) {
-      for (let i = 0; i < images.length; i++) {
-        await unlink(images[i].public_id);
+    if (school)
+      if (Array.isArray(school) == false) {
+        for (let i = 0; i < images.length; i++) {
+          await unlink(images[i].public_id);
+        }
+        return res.status(400).json({
+          success: false,
+          message:
+            "Vui lòng cung cấp ít nhất một trường gần nhà trọ bạn muốn tìm",
+        });
       }
-      return res.status(400).json({
-        success: false,
-        message:
-          "Vui lòng cung cấp ít nhất một trường gần nhà trọ bạn muốn tìm",
-      });
-    }
-    if (Array.isArray(require) == false) {
+    if (!require) {
       for (let i = 0; i < images.length; i++) {
         await unlink(images[i].public_id);
       }
@@ -652,33 +655,29 @@ router.post("/", verifyToken, async (req, res) => {
       });
     }
   } else if (subjectId === "6173ba553c954151dcc8fdf8") {
-    if (Array.isArray(school) == false) {
-      for (let i = 0; i < images.length; i++) {
-        await unlink(images[i].public_id);
-      }
-      return res.status(400).json({
-        success: false,
-        message:
-          "Vui lòng cung cấp ít nhất một trường gần nhà trọ bạn muốn tìm",
-      });
-    }
-    for (let i = 0; i < school.length; i++) {
-      const check = await schoolModel.exists({ _id: school[i] });
-      if (!check) {
-        for (let i = 0; i < images.length; i++) {
-          await unlink(images[i].public_id);
+    let s = [];
+    if (school)
+      if (Array.isArray(school) == true) {
+        for (let i = 0; i < school.length; i++) {
+          const check = await schoolModel.exists({ _id: school[i] });
+          if (!check) {
+            for (let i = 0; i < images.length; i++) {
+              await unlink(images[i].public_id);
+            }
+            return res.status(400).json({
+              success: false,
+              message: "Không tìm thấy trường này",
+            });
+          }
         }
-        return res.status(400).json({
-          success: false,
-          message: "Không tìm thấy trường này",
-        });
+        s = school;
       }
-    }
+
     const newPost = new post({
       title,
       unsignedTitle: removeVietNameseTones(title),
       content,
-      school,
+      school: s,
       hashTag,
       subject: subjectId,
       owner: req.user.id,
@@ -747,6 +746,7 @@ router.post("/", verifyToken, async (req, res) => {
       owner: req.user.id,
       likes: [],
       images,
+      school: [],
     });
     const newReview = new reviewModel({
       post: newPost._id,
@@ -793,6 +793,7 @@ router.post("/", verifyToken, async (req, res) => {
       owner: req.user.id,
       likes: [],
       images,
+      school: [],
     });
     if (req.user.isAdmin) newPost.valid = true;
     try {

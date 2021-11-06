@@ -38,11 +38,12 @@ const post = new Schema(
       required: true,
       default: false,
     },
-    school: {
-      type: Array,
-      required: true,
-      default: [],
-    },
+    school: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "school",
+      },
+    ],
     valid: {
       type: Boolean,
       required: true,
