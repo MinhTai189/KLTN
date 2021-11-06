@@ -207,15 +207,22 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 ###
 POST http://localhost:5000/api/posts
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNTg1MzY3OCwiZXhwIjoxNjM1ODU0Mjc4fQ.o3f1bjAx-hCuT55EWqZAK-kJVfHK8n8g6KmQ3T9CcWI
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzYwMDc3ODgsImV4cCI6MTYzNjAwODM4OH0.f6XCLrGAYnTySKQWo36bWeZ-yo1uDEgbN_AL6WLMl0I
 
 {
-    "subject":"6173ba553c954151dcc8fdf7",
+    "subject":"6173ba553c954151dcc8fdf9",
     "title":"Review nha tro AS",
     "content":"Để cảnh sát không tìm được mình, bạn hãy cố gắng chặn lối vào nơi bạn đang ẩn nấp. Lý tưởng nhất là có ổ khóa chắc chắn bên trong cánh cửa, và cửa có hướng mở ra ngoài để tên sát nhân không đạp bật vào được. Có lẽ bạn cũng nên chặn cửa bằng các chướng ngại vật khác, chẳng hạn như các đồ nội thất nặng.",
     "hashTag":["sachse","600"]
-    ,"require":["Sạch sẽ không tiếng ồn"],
-    "school":["6139d5d6d02c8be6b20880cc"]
+    ,"require":[],
+    "school":[],
+    "review":{
+        "cleanup":10,
+        "price":7,
+        "beauty":10,
+        "quiet":7,
+        "road":7
+    }
     
 }
 ###
@@ -282,3 +289,15 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgw
 }
 ###
 GET http://localhost:5000/api/approves
+###
+POST http://localhost:5000/api/posts/likes/6185ece9aef86b056bcdb6e7
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjE2ODA5MywiZXhwIjoxNjM2MTY4NjkzfQ.cUO30zHh8wk5W_6gjHCwOArg0DixOpLUwpLfyNOLTQI
+
+{
+    "type":1
+}
+###
+DELETE http://localhost:5000/api/posts/likes/6185ece9aef86b056bcdb6e7
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjE2ODA5MywiZXhwIjoxNjM2MTY4NjkzfQ.cUO30zHh8wk5W_6gjHCwOArg0DixOpLUwpLfyNOLTQI

@@ -9,6 +9,62 @@ const reviewModel = require("../models/review");
 const post = require("../models/post");
 const objectId = require("mongoose").ObjectId;
 const verifyToken = require("../middleware/verifyToken");
+const { unlink } = require("../middleware/upload");
+
+router.delete("/likes/:id", verifyToken, async (req, res) => {
+  const id = req.params.id;
+  const findPost = await post.findById(id);
+  try {
+    if (!findPost)
+      res
+        .status(400)
+        .json({ success: false, message: "Không tìm thấy bài viết" });
+    const liked = findPost.likes.find((item) => {
+      return JSON.stringify(item.owner) === JSON.stringify(req.user.id);
+    });
+    console.log(findPost._id);
+    if (!liked)
+      res
+        .status(400)
+        .json({ success: false, message: "Bạn chưa like bài viết này" });
+    await post.findOneAndUpdate(
+      { _id: findPost._id },
+      { $pull: { likes: { _id: liked._id } } }
+    );
+
+    res.status(200).json({ success: true, message: "unlike thành công" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Lỗi không xác định" });
+  }
+});
+router.post("/likes/:id", verifyToken, async (req, res) => {
+  const id = req.params.id;
+  const findPost = await post.findById(id);
+  const type = req.body.type;
+  try {
+    if (!findPost)
+      res
+        .status(400)
+        .json({ success: false, message: "Không tìm thấy bài viết" });
+    if (
+      findPost.likes.some((item) => {
+        return JSON.stringify(item.owner) === JSON.stringify(req.user.id);
+      })
+    )
+      res.status(400).json({ success: false, message: "Đã like bài viết rồi" });
+    findPost.likes.push({
+      type: type,
+      owner: req.user.id,
+    });
+    await findPost.save();
+    res.status(200).json({ success: true, message: "Like thành công" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Lỗi không xác định" });
+  }
+});
+
 router.get("/", async (req, res) => {
   try {
     const {
@@ -25,7 +81,9 @@ router.get("/", async (req, res) => {
     let posts = await post
       .find({ valid: true })
       .populate("owner")
-      .populate("subject");
+      .populate("subject")
+      .populate("likes.owner", "name")
+      .select("-unsignedTitle");
 
     if (typeof _keysearch === "string") {
       posts = posts.filter((item) => {
@@ -80,6 +138,15 @@ router.get("/", async (req, res) => {
           responsePosts = responsePosts.sort((post1, post2) => {
             return new Date(post2.createdAt) - new Date(post1.createdAt);
           });
+      } else if (_sort === "like") {
+        if ((_order = "asc"))
+          responsePosts = responsePosts.sort((post1, post2) => {
+            return post1.likes.length - post2.likes.length;
+          });
+        else if ((_order = "desc"))
+          responsePosts = responsePosts.sort((post1, post2) => {
+            return post2.likes.length - post1.likes.length;
+          });
       }
     if (_hashtag)
       responsePosts = responsePosts.filter((post) => {
@@ -122,7 +189,9 @@ router.get("/:id", async (req, res) => {
     const findPost = await post
       .findById(req.params.id)
       .populate("owner")
-      .populate("subject");
+      .populate("subject")
+      .populate("owner", "name")
+      .select("-unsignedTitle");
     if (!findPost)
       return res.status(400).json({
         success: false,
@@ -146,7 +215,18 @@ router.get("/:id", async (req, res) => {
       school: ownerSchool,
       posts: findPost.owner.posts,
     };
-    let responsePost = { ...findPost._doc, owner: owner };
+    let images = [];
+    for (let i = 0; i < findPost.images.length; i++)
+      images.push(findPost.images[i].url);
+    let likes = findPost.likes.sort((post1, post2) => {
+      return post1.type - post2.type;
+    });
+    let responsePost = {
+      ...findPost._doc,
+      owner: owner,
+      images: images,
+      likes: likes,
+    };
 
     if (findPost.subject._id.toString() === "6173ba553c954151dcc8fdf9") {
       responsePost.review = await reviewModel.findOne({ post: findPost._id });
@@ -179,6 +259,9 @@ router.delete("/:id", verifyToken, async (req, res) => {
     await subjectModel.findByIdAndUpdate(findPost.subject, {
       $inc: { posts: -1 },
     });
+    for (let i = 0; i < findPost.images.length; i++) {
+      await unlink(findPost.images[i].public_id);
+    }
     return res.status(200).json({
       success: false,
       message: "Đã xóa bài viết thành công",
@@ -193,6 +276,25 @@ router.delete("/:id", verifyToken, async (req, res) => {
 });
 router.patch("/:id", verifyToken, async (req, res) => {
   const findPost = await post.findById(req.params.id);
+
+  const subjectId = findPost.subject.toString();
+  const { require, title, content, hashTag, school, review, block, status } =
+    req.body;
+  let { images } = req.body;
+  if (typeof title === "string") {
+    findPost.title = title;
+    findPost.unsignedTitle = removeVietNameseTones(title);
+  }
+  let newImg = [];
+  let oldImg = [];
+  if (images) if (!Array.isArray(images)) images = [images];
+  if (images)
+    if (Array.isArray(images))
+      for (let i = 0; i < images.length; i++) {
+        typeof images[i] === "object"
+          ? newImg.push(images[i])
+          : oldImg.push(images[i]);
+      }
   if (!findPost)
     return res.status(400).json({
       success: false,
@@ -206,62 +308,91 @@ router.patch("/:id", verifyToken, async (req, res) => {
       success: false,
       message: "Bạn không đủ quyền thực hiện hành động này",
     });
-  const subjectId = findPost.subject.toString();
-
-  const { require, title, content, hashTag, school, review, block, status } =
-    req.body;
-
-  if (typeof title === "string") {
-    findPost.title = title;
-    findPost.unsignedTitle = removeVietNameseTones(title);
-  }
   if (content) {
-    if (typeof content !== "string")
+    if (typeof content !== "string") {
+      for (let i = 0; i < newImg.length; i++) {
+        await unlink(newImg[i].public_id);
+      }
       return res.status(400).json({
         success: false,
-        message: "Thiếu nội dung ",
+        message: "Thiếu nội dung",
       });
-    if (content.length < 100)
+    }
+    if (content.length < 100) {
+      for (let i = 0; i < newImg.length; i++) {
+        await unlink(newImg[i].public_id);
+      }
       return res.status(400).json({
         success: false,
         message: "Nội dung quá ngắn",
       });
+    }
     findPost.content = content;
   }
   if (Array.isArray(hashTag) == true) findPost.hashTag = hashTag;
   if (typeof block === "boolean") findPost.block = block;
   if (typeof status === "boolean") findPost.status = status;
-
+  let deleteImg = [];
+  if (newImg.length > 0) {
+    let newImages = [];
+    for (let i = 0; i < findPost.images.length; i++) {
+      let del = true;
+      for (let j = 0; j < oldImg.length; j++) {
+        if (oldImg[j] === findPost.images[i].url) {
+          newImages.push(findPost.images[i]);
+          del = false;
+        }
+      }
+      if (del == true) deleteImg.push({ ...findPost.images[i]._doc });
+    }
+    newImages = newImages.concat(newImg);
+    findPost.images = newImages;
+  }
   if (subjectId === "6173ba553c954151dcc8fdf7") {
     // tìm nhà trọ
     if (Array.isArray(school) == true) {
       for (let i = 0; i < school.length; i++) {
         const check = await schoolModel.exists({ _id: school[i] });
-        if (!check)
+        if (!check) {
+          for (let i = 0; i < newImg.length; i++) {
+            await unlink(newImg[i].public_id);
+          }
           return res.status(400).json({
             success: false,
             message: "Không tìm thấy trường",
           });
+        }
       }
       findPost.school = school;
     }
     if (Array.isArray(require)) {
       for (let i = 0; i < require.length; i++) {
-        if (typeof require[i] !== "string")
+        if (typeof require[i] !== "string") {
+          for (let i = 0; i < newImg.length; i++) {
+            await unlink(newImg[i].public_id);
+          }
           return res
             .status(400)
             .json({ success: false, message: "Sai dữ liệu về yêu cầu" });
+        }
       }
       findPost.require = require;
     }
+
     try {
       await findPost.save();
+      for (let i = 0; i < deleteImg.length; i++) {
+        await unlink(deleteImg[i].public_id);
+      }
       return res.status(200).json({
         success: true,
         message: "Đã cập nhật bài viết thành công",
       });
     } catch (err) {
       console.log(err);
+      if (newImg.length > 0)
+        for (let i = 0; i < newImg.length; i++)
+          await unlink(newImg[i].public_id);
       return res.status(500).json({
         success: false,
         message: "Lỗi không xác định",
@@ -271,22 +402,32 @@ router.patch("/:id", verifyToken, async (req, res) => {
     if (Array.isArray(school) == true) {
       for (let i = 0; i < school.length; i++) {
         const check = await schoolModel.exists({ _id: school[i] });
-        if (!check)
+        if (!check) {
+          for (let i = 0; i < newImg.length; i++) {
+            await unlink(newImg[i].public_id);
+          }
           return res.status(400).json({
             success: false,
             message: "Không tìm thấy trường ",
           });
+        }
       }
       findPost.school = school;
     }
     try {
       await findPost.save();
+      for (let i = 0; i < deleteImg.length; i++) {
+        await unlink(deleteImg[i].public_id);
+      }
       return res.status(200).json({
         success: true,
         message: "Đã cập nhật bài bài viết thành công",
       });
     } catch (err) {
       console.log(err);
+      for (let i = 0; i < newImg.length; i++) {
+        await unlink(newImg[i].public_id);
+      }
       return res.status(500).json({
         success: false,
         message: "Lỗi không xác định",
@@ -300,17 +441,25 @@ router.patch("/:id", verifyToken, async (req, res) => {
         typeof review.price !== "number" &&
         typeof review.quiet !== "number" &&
         typeof review.beauty !== "number"
-      )
+      ) {
+        for (let i = 0; i < newImg.length; i++) {
+          await unlink(newImg[i].public_id);
+        }
         return res.status(400).json({
           success: false,
           message: "Vui lòng cung cấp đúng thông tin về các thông số đánh giá",
         });
+      }
       const findReview = await reviewModel.findOne({ post: findPost._id });
-      if (!findReview)
+      if (!findReview) {
+        for (let i = 0; i < newImg.length; i++) {
+          await unlink(newImg[i].public_id);
+        }
         return res.status(400).json({
           success: false,
           message: "Không tìm thấy thông tin review",
         });
+      }
       if (typeof review.beauty === "number") findReview.beauty = review.beauty;
       if (typeof review.quiet === "number") findReview.quiet = review.quiet;
       if (typeof review.price === "number") findReview.price = review.price;
@@ -322,11 +471,17 @@ router.patch("/:id", verifyToken, async (req, res) => {
 
     try {
       await findPost.save();
+      for (let i = 0; i < deleteImg.length; i++) {
+        await unlink(deleteImg[i].public_id);
+      }
       return res.status(200).json({
         success: true,
         message: "Đã cập nhật bài viết thành công",
       });
     } catch (err) {
+      for (let i = 0; i < newImg.length; i++) {
+        await unlink(newImg[i].public_id);
+      }
       console.log(err);
       return res.status(500).json({
         success: false,
@@ -335,74 +490,129 @@ router.patch("/:id", verifyToken, async (req, res) => {
     }
   } else if (subjectId === "6173ba553c954151dcc8fdfa") {
     try {
-      await newPost.save();
+      await findPost.save();
+      for (let i = 0; i < deleteImg.length; i++) {
+        await unlink(deleteImg[i].public_id);
+      }
       return res.status(200).json({
         success: true,
         message: "Đã cập nhật bài bài viết thành công",
       });
     } catch (err) {
+      for (let i = 0; i < newImg.length; i++) {
+        await unlink(newImg[i].public_id);
+      }
       console.log(err);
       return res.status(500).json({
         success: false,
         message: "Lỗi không xác định",
       });
     }
-  } else
+  } else {
+    for (let i = 0; i < newImg.length; i++) {
+      await unlink(newImg[i].public_id);
+    }
     return res
       .status(400)
       .json({ success: false, message: "Chuyên mục không hợp lệ" });
+  }
 });
 router.post("/", verifyToken, async (req, res) => {
   const { subject, title, content, require, hashTag, school, review } =
     req.body;
+  let { images } = req.body;
   const subjectId = subject;
-  if (!subjectId)
+  if (images) if (!Array.isArray(images)) images = [images];
+  if (images) {
+    if (Array.isArray(images) == true) {
+      for (let i = 0; i < images.length; i++) {
+        if (!images[i].url || !images[i].public_id)
+          return res.status(400).json({
+            success: false,
+            message: "Vui lòng xem lại hình ảnh gửi lên",
+          });
+      }
+    }
+  } else images = [];
+
+  if (!subjectId) {
+    for (let i = 0; i < images.length; i++) {
+      await unlink(images[i].public_id);
+    }
     return res.status(400).json({
       success: false,
       message: "Thiếu thông tin về chuyên mục",
     });
-  if (typeof title !== "string")
+  }
+  if (typeof title !== "string") {
+    for (let i = 0; i < images.length; i++) {
+      await unlink(images[i].public_id);
+    }
     return res.status(400).json({
       success: false,
       message: "Thiếu thông tin tiêu đề bài viết",
     });
-  if (typeof content !== "string")
+  }
+  if (typeof content !== "string") {
+    for (let i = 0; i < images.length; i++) {
+      await unlink(images[i].public_id);
+    }
     return res.status(400).json({
       success: false,
       message: "Thiếu nội dung",
     });
-  if (content.length < 100)
+  }
+  if (content.length < 100) {
+    for (let i = 0; i < images.length; i++) {
+      await unlink(images[i].public_id);
+    }
     return res.status(400).json({
       success: false,
       message: "Nội dung quá ngắn",
     });
-  if (Array.isArray(hashTag) == false)
+  }
+  if (Array.isArray(hashTag) == false) {
+    for (let i = 0; i < images.length; i++) {
+      await unlink(images[i].public_id);
+    }
     return res.status(400).json({
       success: false,
       message: "Sai thông tin hashTag",
     });
-
+  }
   if (subjectId === "6173ba553c954151dcc8fdf7") {
     // tìm nhà trọ
-    if (Array.isArray(school) == false)
+    if (Array.isArray(school) == false) {
+      for (let i = 0; i < images.length; i++) {
+        await unlink(images[i].public_id);
+      }
       return res.status(400).json({
         success: false,
         message:
           "Vui lòng cung cấp ít nhất một trường gần nhà trọ bạn muốn tìm",
       });
-    if (Array.isArray(require) == false)
+    }
+    if (Array.isArray(require) == false) {
+      for (let i = 0; i < images.length; i++) {
+        await unlink(images[i].public_id);
+      }
       return res.status(400).json({
         success: false,
         message: "Yêu cầu là ít nhất mảng rỗng",
       });
+    }
 
     for (let i = 0; i < school.length; i++) {
       const check = await schoolModel.exists({ _id: school[i] });
-      if (!check)
+      if (!check) {
+        for (let i = 0; i < images.length; i++) {
+          await unlink(images[i].public_id);
+        }
         return res.status(400).json({
           success: false,
           message: "Không tìm thấy trường này",
         });
+      }
     }
     const newPost = new post({
       title,
@@ -413,6 +623,8 @@ router.post("/", verifyToken, async (req, res) => {
       subject: subjectId,
       owner: req.user.id,
       require,
+      likes: [],
+      images,
     });
     if (req.user.isAdmin) newPost.valid = true;
     try {
@@ -430,6 +642,9 @@ router.post("/", verifyToken, async (req, res) => {
         message: "Đã đăng bài bài viết thành công",
       });
     } catch (err) {
+      for (let i = 0; i < images.length; i++) {
+        await unlink(images[i].public_id);
+      }
       console.log(err);
       return res.status(500).json({
         success: false,
@@ -437,19 +652,27 @@ router.post("/", verifyToken, async (req, res) => {
       });
     }
   } else if (subjectId === "6173ba553c954151dcc8fdf8") {
-    if (Array.isArray(school) == false)
+    if (Array.isArray(school) == false) {
+      for (let i = 0; i < images.length; i++) {
+        await unlink(images[i].public_id);
+      }
       return res.status(400).json({
         success: false,
         message:
           "Vui lòng cung cấp ít nhất một trường gần nhà trọ bạn muốn tìm",
       });
+    }
     for (let i = 0; i < school.length; i++) {
       const check = await schoolModel.exists({ _id: school[i] });
-      if (!check)
+      if (!check) {
+        for (let i = 0; i < images.length; i++) {
+          await unlink(images[i].public_id);
+        }
         return res.status(400).json({
           success: false,
           message: "Không tìm thấy trường này",
         });
+      }
     }
     const newPost = new post({
       title,
@@ -459,6 +682,8 @@ router.post("/", verifyToken, async (req, res) => {
       hashTag,
       subject: subjectId,
       owner: req.user.id,
+      likes: [],
+      images,
     });
     if (req.user.isAdmin) newPost.valid = true;
     try {
@@ -476,6 +701,9 @@ router.post("/", verifyToken, async (req, res) => {
         message: "Đã đăng bài bài viết thành công",
       });
     } catch (err) {
+      for (let i = 0; i < images.length; i++) {
+        await unlink(images[i].public_id);
+      }
       console.log(err);
       return res.status(500).json({
         success: false,
@@ -492,16 +720,24 @@ router.post("/", verifyToken, async (req, res) => {
           typeof review.quiet === "number" &&
           typeof review.beauty === "number"
         )
-      )
+      ) {
+        for (let i = 0; i < images.length; i++) {
+          await unlink(images[i].public_id);
+        }
         return res.status(400).json({
           success: false,
           message: "Vui lòng cung cấp đúng thông tin về các thông số đánh giá",
         });
-    } else
+      }
+    } else {
+      for (let i = 0; i < images.length; i++) {
+        await unlink(images[i].public_id);
+      }
       return res.status(400).json({
         success: false,
         message: "Vui lòng cung cấp đúng thông tin về các thông số đánh giá",
       });
+    }
     const newPost = new post({
       title,
       unsignedTitle: removeVietNameseTones(title),
@@ -509,6 +745,8 @@ router.post("/", verifyToken, async (req, res) => {
       hashTag,
       subject: subjectId,
       owner: req.user.id,
+      likes: [],
+      images,
     });
     const newReview = new reviewModel({
       post: newPost._id,
@@ -535,9 +773,11 @@ router.post("/", verifyToken, async (req, res) => {
         message: "Đã đăng bài bài viết thành công",
       });
     } catch (err) {
+      for (let i = 0; i < images.length; i++) {
+        await unlink(images[i].public_id);
+      }
       console.log(err);
       await post.findByIdAndDelete(newPost._id);
-
       return res.status(500).json({
         success: false,
         message: "Lỗi không xác định",
@@ -551,6 +791,8 @@ router.post("/", verifyToken, async (req, res) => {
       hashTag,
       subject: subjectId,
       owner: req.user.id,
+      likes: [],
+      images,
     });
     if (req.user.isAdmin) newPost.valid = true;
     try {
@@ -568,15 +810,22 @@ router.post("/", verifyToken, async (req, res) => {
         message: "Đã đăng bài bài viết thành công",
       });
     } catch (err) {
+      for (let i = 0; i < images.length; i++) {
+        await unlink(images[i].public_id);
+      }
       console.log(err);
       return res.status(500).json({
         success: false,
         message: "Lỗi không xác định",
       });
     }
-  } else
+  } else {
+    for (let i = 0; i < images.length; i++) {
+      await unlink(images[i].public_id);
+    }
     return res
       .status(400)
       .json({ success: false, message: "Chuyên mục không hợp lệ" });
+  }
 });
 module.exports = router;

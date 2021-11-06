@@ -53,6 +53,24 @@ const post = new Schema(
       required: true,
       default: [],
     },
+    images: [
+      {
+        url: String,
+        public_id: String,
+      },
+    ],
+    likes: [
+      {
+        type: {
+          type: Number,
+          enum: [1, 2, 3, 4, 5, 6],
+        },
+        owner: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "user",
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
