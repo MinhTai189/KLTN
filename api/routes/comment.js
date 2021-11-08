@@ -12,10 +12,20 @@ router.post("/:idPost", verifyToken, async (req, res) => {
     console.log(req.body);
     const postId = req.params.idPost;
     const findPost = await post.findById(postId);
+
     if (!findPost)
       return res
         .status(400)
         .json({ success: false, message: "Không tìm thấy bài viết này" });
+    if (findPost.block == true)
+      return res
+        .status(403)
+        .json({ success: false, message: "Bài viết này đã khóa" });
+    if (findPost.valid == false)
+      return res
+        .status(403)
+        .json({ success: false, message: "Khổng thể thực hiện hành động này" });
+
     const { content, tag } = req.body;
     if (typeof content !== "string")
       return res.status(400).json({

@@ -902,6 +902,15 @@ router.post("/", verifyToken, async (req, res) => {
       .status(400)
       .json({ success: false, message: "Vui lòng cung cấp tên nhà trọ" });
   }
+  if (name === "post") {
+    await unlinkImageMotel(thumbnail, images);
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "Vui lòng cung cấp tên nhà trọ hợp lệ",
+      });
+  }
   if (!address) {
     await unlinkImageMotel(thumbnail, images);
     return res
