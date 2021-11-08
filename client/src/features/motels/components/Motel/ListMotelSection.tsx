@@ -18,8 +18,6 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        paddingTop: 80,
-
         '& .loading': {
             width: '100%',
             height: 300,

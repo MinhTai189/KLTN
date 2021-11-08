@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Hero } from 'components/Home';
 import { MainLayout } from 'components/Layouts/MainLayout';
 import { authActions, selectIsLogged } from 'features/auth/authSlice';
+import { CommunicateSection } from 'features/communicate/components';
 import { ListMotel } from 'features/motels/components';
 import { motelActions } from 'features/motels/motelSlice';
 import { useEffect, useState } from 'react';
@@ -52,6 +53,8 @@ const HomePage = () => {
             <Hero hiddenScrollDown={hiddenScrollDown} />
 
             <ListMotel />
+
+            <CommunicateSection />
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             {/* find motel */}
             {/* forum */}

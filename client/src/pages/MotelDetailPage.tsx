@@ -1,4 +1,4 @@
-import { Grid } from '@material-ui/core'
+import { Box, Grid } from '@material-ui/core'
 import { Modal } from 'antd'
 import { motelApi } from 'api/motel'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
@@ -188,8 +188,11 @@ const MotelDetailPage = () => {
     return (
         <>
             <MainLayout>
-                <div className="container">
-                    <Grid container spacing={4} style={{ marginTop: 80 }}>
+                <Box
+                    className="container"
+                    mt={12}
+                >
+                    <Grid container spacing={4}>
                         <Grid item md={5}>
                             {dataMotel.album.length > 0 &&
                                 <AlbumMotel
@@ -220,7 +223,7 @@ const MotelDetailPage = () => {
                     }
 
                     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-                </div>
+                </Box>
             </MainLayout>
 
             <Modal title='Chỉnh sửa phòng trọ' visible={openRoomModal} onCancel={handleCloseModal} footer={null}>

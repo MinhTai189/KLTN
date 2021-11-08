@@ -1,3 +1,4 @@
+import { Box } from '@material-ui/core'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { MainLayout } from 'components/Layouts/MainLayout'
 import { ListMotelSection } from 'features/motels/components'
@@ -48,13 +49,16 @@ const MotelPage = () => {
 
     return (
         <MainLayout>
-            <div className="container">
+            <Box
+                className="container"
+                mt={12}
+            >
                 <ListMotelSection
                     handleSelectPagination={handleSelectPagination}
                     filterSchool={filterSchool}
                     handleFilterMotel={handleFilterMotel}
                 />
-            </div>
+            </Box>
         </MainLayout>
     )
 }

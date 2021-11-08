@@ -5,6 +5,8 @@ import { AdminLayout } from 'components/Layouts';
 import HomePage from 'pages/HomePage';
 import MotelDetailPage from 'pages/MotelDetailPage';
 import MotelPage from 'pages/MotelPage';
+import PostPage from 'pages/PostPage';
+import PostViewPage from 'pages/PostViewPage';
 import { Route, Switch } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import { themeMUI } from 'utils';
@@ -26,6 +28,14 @@ function App() {
 
           <Route path="/motels">
             <MotelPage />
+          </Route>
+
+          <Route path='/posts/:id'>
+            <PostViewPage />
+          </Route>
+
+          <Route path='/posts'>
+            <PostPage />
           </Route>
 
           <Route path="/auth">

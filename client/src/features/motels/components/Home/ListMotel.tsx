@@ -1,4 +1,4 @@
-import { Theme } from '@material-ui/core'
+import { Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { useAppSelector } from 'app/hooks'
 import Logo from 'assets/images/logo-white.png'
@@ -67,11 +67,11 @@ export const ListMotel = () => {
 
     return (
         <div className='container'>
-            <h2 className={classes.title}>
+            <Typography variant='h2' className={classes.title}>
                 Danh sách nhà trọ
 
                 <img src={Logo} alt="logo" />
-            </h2>
+            </Typography>
 
             <ul className={classes.listMotel}>
                 {listMotel.map((motel, index) => (

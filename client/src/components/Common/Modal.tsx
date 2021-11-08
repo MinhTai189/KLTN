@@ -38,12 +38,9 @@ export const Modal = ({ open, children, onCancel }: Props) => {
         const body: any = document.querySelector("body");
 
         if (open) {
-            document.body.style.position = 'fixed';
-            document.body.style.overflowY = 'scroll';
-            document.body.style.top = `-${window.scrollY}px`;
+            body.style.overflow = "hidden"
         } else {
-            document.body.style.position = '';
-            document.body.style.top = '';
+            body.style.overflow = "auto"
         }
     }, [open])
 
@@ -55,7 +52,7 @@ export const Modal = ({ open, children, onCancel }: Props) => {
             <div
                 className={classes.cover}
                 onClick={onCancel}
-            ></div>
+            />
 
             <Paper className={classes.modal}>
                 {children}

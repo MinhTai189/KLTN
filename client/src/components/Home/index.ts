@@ -1,4 +1,4 @@
 export * from './DropDownInfor';
-export * from './Hero';
-export * from './MotelRows';
-export * from './SchoolRows';
+export * from './Hero/Hero';
+export * from './Hero/MotelRows';
+export * from './Hero/SchoolRows';

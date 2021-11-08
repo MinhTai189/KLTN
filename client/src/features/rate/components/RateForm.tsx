@@ -75,7 +75,14 @@ export const RateForm = ({ setRateFormValue, setContentFormValue, contentFormVal
 
             <div className="rows">
                 <div className="text-area">
-                    <textarea value={contentFormValue} onChange={(e) => setContentFormValue(e.target.value)} name="rate" rows={3} placeholder='Hãy nhập một vài đánh giá...'></textarea>
+                    <textarea
+                        value={contentFormValue}
+                        onChange={(e) => setContentFormValue(e.target.value)}
+                        name="comment"
+                        rows={3}
+                        placeholder='Hãy nhập một vài đánh giá...'
+                        spellCheck='false'
+                    />
 
                     <small style={{ color: contentFormValue.length > 100 ? '#f44336' : 'inherit' }}>{`${contentFormValue.length}/100`}</small>
                 </div>

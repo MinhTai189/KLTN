@@ -136,7 +136,12 @@ const schema = yup.object().shape({
         }),
     school: yup
         .array()
-        .min(1, 'Hãy cung cấp trường học xung quanh khu vực nhà trọ')
+        .min(1, 'Hãy cung cấp trường học xung quanh khu vực nhà trọ'),
+    status: yup
+        .string()
+        .required(),
+    available: yup
+        .number(),
 })
 
 const radioOptions: Array<FieldOption> = [
@@ -150,10 +155,21 @@ const radioOptions: Array<FieldOption> = [
     }
 ]
 
+type FormState = Omit<MotelOnly, 'invalid' | 'images' | 'thumbnail' | '_id'>
+
 export const EditMotelForm = ({ updateData, onClickUpdateMotel, handleUploadThumbnail, handleUploadImages }: Props) => {
     const classes = useStyles()
-    const { handleSubmit, control, setError, formState: { errors }, setValue, getValues } = useForm({
-        defaultValues: updateData,
+
+    const { handleSubmit, control, setError, formState: { errors }, setValue, getValues } = useForm<FormState>({
+        defaultValues: {
+            name: updateData.name,
+            address: updateData.address,
+            desc: updateData.desc,
+            contact: updateData.contact,
+            school: updateData.school,
+            status: updateData.status,
+            available: updateData.available
+        },
         resolver: yupResolver(schema)
     })
     const [selectedSchool, setSelectedSchool] = useState<Array<School>>(updateData.school)
@@ -161,12 +177,11 @@ export const EditMotelForm = ({ updateData, onClickUpdateMotel, handleUploadThum
     const [optionsSchool, setOptionsSchool] = useState<Array<School>>([])
     const [status, setStatus] = useState(getValues('status'))
 
-    const [selectedThumbnail, setSelectedThumbnail] = useState<any>(getValues('thumbnail'))
-    const [selectedImages, setSelectedImages] = useState<any>(getValues('images'))
+    const [selectedThumbnail, setSelectedThumbnail] = useState<any>(updateData.thumbnail)
+    const [selectedImages, setSelectedImages] = useState<any>(updateData.images)
 
     const [errThumnail, setErrThumbnail] = useState('')
     const [errImages, setErrImages] = useState('')
-
 
     useEffect(() => {
         schoolApi.getAll()
@@ -208,7 +223,6 @@ export const EditMotelForm = ({ updateData, onClickUpdateMotel, handleUploadThum
     }
 
     const removeThumbnail = () => {
-        setValue('thumbnail', '')
         setSelectedThumbnail(undefined)
     }
 
