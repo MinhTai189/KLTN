@@ -1,19 +1,12 @@
-const cloudinary1 = require("cloudinary");
-const cloudinary2 = require("cloudinary");
+const cloudinary = require("cloudinary");
 fs = require("fs");
-cloudinary1.config({
+cloudinary.config({
   cloud_name: process.env.CLOUND_NAME,
   api_key: process.env.CLOUND_API_KEY,
   api_secret: process.env.CLOUND_API_SECRET,
 });
-cloudinary2.config({
-  cloud_name: process.env.CLOUND_NAME2,
-  api_key: process.env.CLOUND_API_KEY2,
-  api_secret: process.env.CLOUND_API_SECRET2,
-});
+
 const upload = async (req, res, next) => {
-  let cloudinary = cloudinary1;
-  if (req.body.folder === "post") cloudinary = cloudinary2;
   if (!req.files)
     return res.status(400).json({ success: false, message: "Khong co file" });
   var files;
@@ -90,7 +83,6 @@ const upload = async (req, res, next) => {
 const unlink = async (public_id) => {
   try {
     let rel;
-    let cloudinary = cloudinary1;
     if (public_id.split("/")[0] === "post") cloudinary = cloudinary2;
     await cloudinary.v2.uploader.destroy(public_id, (err, result) => {
       if (err) console.log(err);
@@ -104,7 +96,6 @@ const unlink = async (public_id) => {
 };
 const rename = async (public_id, newPublic_id) => {
   let res;
-  let cloudinary = cloudinary1;
   await cloudinary.v2.uploader.rename(
     public_id,
     newPublic_id,

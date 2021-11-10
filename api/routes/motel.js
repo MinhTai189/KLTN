@@ -711,6 +711,7 @@ router.get("/", async (req, res) => {
         avatarUrl: listMotel[i].rate[j].user.avatarUrl.url,
         credit: listMotel[i].rate[j].user.credit,
         isAdmin: listMotel[i].rate[j].user.isAdmin,
+        rank: listMotel[i].rate[j].user.rank,
       };
       if (listMotel[i].rate[j].valid)
         rateData.push({ ...listMotel[i].rate[j]._doc, user: userNewData });
@@ -904,12 +905,10 @@ router.post("/", verifyToken, async (req, res) => {
   }
   if (name === "post") {
     await unlinkImageMotel(thumbnail, images);
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Vui lòng cung cấp tên nhà trọ hợp lệ",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "Vui lòng cung cấp tên nhà trọ hợp lệ",
+    });
   }
   if (!address) {
     await unlinkImageMotel(thumbnail, images);
@@ -1188,12 +1187,15 @@ router.get("/:id", async (req, res) => {
   const id = req.params.id;
   const findMotel = await motel
     .findById(id)
-    .populate("rate.user", "avatarUrl name _id isAdmin credit")
+    .populate("rate.user", "avatarUrl name _id isAdmin credit rank")
     .populate("school", "-nameDistricts")
-    .populate("owner", "name avatarUrl _id isAdmin credit email school motels")
+    .populate(
+      "owner",
+      "name avatarUrl _id isAdmin credit email school motels rank"
+    )
     .populate(
       "editor.user",
-      "name avatarUrl _id isAdmin credit email school motels"
+      "name avatarUrl _id isAdmin credit email school motels rank"
     );
 
   if (!findMotel)
@@ -1214,6 +1216,7 @@ router.get("/:id", async (req, res) => {
       _id: findMotel.rate[i].user._id,
       avatarUrl: findMotel.rate[i].user.avatarUrl.url,
       credit: findMotel.rate[i].user.credit,
+      rank: findMotel.rate[i].user.rank,
     };
     if (findMotel.rate[i].valid)
       newRate.push({ ...findMotel.rate[i]._doc, user: userRate });
@@ -1249,6 +1252,7 @@ router.get("/:id", async (req, res) => {
     email: findMotel.owner.email,
     school: ownerSchool,
     motels: findMotel.owner.motels,
+    rank: findMotel.owner.rank,
   };
   let editorData = [];
   for (let i = 0; i < findMotel.editor.length; i++) {
@@ -1266,6 +1270,7 @@ router.get("/:id", async (req, res) => {
       credit: findMotel.editor[i].user.credit,
       school: editorSchool,
       motels: findMotel.owner.motels,
+      rank: findMotel.owner.rank,
     };
     editorData.push({
       user: editorDataUser,

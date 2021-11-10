@@ -70,6 +70,11 @@ const UserSchema = new Schema(
       required: true,
       default: 0,
     },
+    rank: {
+      type: String,
+      required: true,
+      default: "Người qua đường",
+    },
   },
   { timestamps: true }
 );

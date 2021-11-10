@@ -7,7 +7,18 @@ const comment = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
     },
-    tag: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
+    reply: {
+      type: {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "user",
+        },
+        comment: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+      },
+      required: false,
+    },
     post: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "post",
@@ -16,6 +27,22 @@ const comment = new Schema(
     content: {
       type: String,
       required: true,
+    },
+    likes: {
+      type: [
+        {
+          type: {
+            type: Number,
+            enum: [1, 2, 3, 4, 5, 6],
+          },
+          owner: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user",
+          },
+        },
+      ],
+      required: true,
+      default: [],
     },
   },
   { timestamps: true }

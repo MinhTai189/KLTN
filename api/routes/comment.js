@@ -6,7 +6,67 @@ const post = require("../models/post");
 const school = require("../models/school");
 const user = require("../models/user");
 const router = express.Router();
+router.delete("/likes/:id", verifyToken, async (req, res) => {
+  const id = req.params.id;
+  const findComment = await comment.findById(id);
+  try {
+    if (!findComment)
+      return res
+        .status(400)
+        .json({ success: false, message: "Không tìm thấy comment" });
+    const liked = findComment.likes.find((item) => {
+      return JSON.stringify(item.owner) === JSON.stringify(req.user.id);
+    });
+    console.log(findComment._id);
+    if (!liked)
+      return res
+        .status(400)
+        .json({ success: false, message: "Bạn chưa like comment này" });
+    await comment.findOneAndUpdate(
+      { _id: findComment._id },
+      { $pull: { likes: { _id: liked._id } } }
+    );
 
+    return res
+      .status(200)
+      .json({ success: true, message: "unlike thành công" });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Lỗi không xác định" });
+  }
+});
+router.post("/likes/:id", verifyToken, async (req, res) => {
+  const id = req.params.id;
+  const findComment = await comment.findById(id);
+  const type = req.body.type;
+  try {
+    if (!findComment)
+      return res
+        .status(400)
+        .json({ success: false, message: "Không tìm thấy bài viết" });
+    if (
+      findComment.likes.some((item) => {
+        return JSON.stringify(item.owner) === JSON.stringify(req.user.id);
+      })
+    )
+      return res
+        .status(400)
+        .json({ success: false, message: "Đã like bình luận rồi" });
+    findComment.likes.push({
+      type: type,
+      owner: req.user.id,
+    });
+    await findComment.save();
+    return res.status(200).json({ success: true, message: "Like thành công" });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Lỗi không xác định" });
+  }
+});
 router.post("/:idPost", verifyToken, async (req, res) => {
   try {
     console.log(req.body);
@@ -26,31 +86,41 @@ router.post("/:idPost", verifyToken, async (req, res) => {
         .status(403)
         .json({ success: false, message: "Khổng thể thực hiện hành động này" });
 
-    const { content, tag } = req.body;
+    const { content, reply } = req.body;
     if (typeof content !== "string")
       return res.status(400).json({
         success: false,
         message: "Vui lòng cung cấp nội dung bình luận",
       });
-    if (Array.isArray(tag) == false)
-      return res.status(400).json({
-        success: false,
-        message: "Vui lòng cung cấp ít nhất mảng rỗng",
-      });
-    for (let i = 0; i < tag.length; i++) {
-      const check = await user.exists({ _id: tag[i] });
-      if (!check)
-        return res.status(400).json({
-          success: false,
-          message: "Người dùng được tag không tồn tại",
-        });
-    }
     const newComment = new comment({
       content,
-      tag,
       owner: req.user.id,
       post: postId,
     });
+    if (reply) {
+      if (!reply.comment)
+        return res.status(400).json({
+          success: false,
+          message: "Vui lòng cho biết Comment bạn muốn trả lời",
+        });
+      const check = await comment.exists({
+        _id: reply.comment,
+        post: findPost._id,
+      });
+      if (!check)
+        return res.status(400).json({
+          success: false,
+          message:
+            "Comment bạn đang trả lời không tồm tại hoặc không thuộc bài viết này",
+        });
+      if (!reply.user)
+        return res.status(400).json({
+          success: false,
+          message: "Vui lòng cho biết người bạn muốn trả lời",
+        });
+      newComment.reply = reply;
+    }
+
     await newComment.save();
     return res
       .status(200)
@@ -65,8 +135,9 @@ router.get("/", async (req, res) => {
     const comments = await comment
       .find({})
       .populate("owner")
-      .populate("tag", "_id name")
-      .populate("post", "title _id subject");
+      .populate("reply.user", "_id name")
+      .populate("post", "title _id subject")
+      .populate("likes.owner", "name avatarUrl rank");
     const {
       _role,
       _keysearch,
@@ -93,9 +164,30 @@ router.get("/", async (req, res) => {
         email: comments[i].owner.email,
         school: ownerSchool,
         posts: comments[i].owner.posts,
+        rank: comments[i].owner.rank,
       };
-      responseComments.push({ ...comments[i]._doc, owner: owner });
+      responseComments.push({
+        ...comments[i]._doc,
+        owner: owner,
+        likes: comments[i].likes.map((like) => {
+          return {
+            ...like,
+            owner: { ...like.owner, avatarUrl: like.owner.avatarUrl.url },
+          };
+        }),
+        numLikes: [
+          comments[i].likes.filter((like) => like.type === 1).length,
+          comments[i].likes.filter((like) => like.type === 2).length,
+          comments[i].likes.filter((like) => like.type === 3).length,
+          comments[i].likes.filter((like) => like.type === 4).length,
+          comments[i].likes.filter((like) => like.type === 5).length,
+          comments[i].likes.filter((like) => like.type === 6).length,
+        ],
+      });
     }
+    responseComments = responseComments.sort((cmt1, cmt2) => {
+      return new Date(cmt2.createdAt) - new Date(cmt1.createdAt);
+    });
     if (typeof _keysearch === "string")
       responseComments = responseComments.filter((item) => {
         const reg = new RegExp(removeVietnameseTones(_keysearch), "i");
@@ -133,11 +225,21 @@ router.get("/", async (req, res) => {
           responseComments = responseComments.sort((cmt1, cmt2) => {
             return new Date(cmt2.createdAt) - new Date(cmt1.createdAt);
           });
+      } else if (_sort === "likes") {
+        if ((_order = "asc"))
+          responseComments = responseComments.sort((cmt1, cmt2) => {
+            return cmt1.likes.length - cmt2.likes.length;
+          });
+        else if ((_order = "desc"))
+          responseComments = responseComments.sort((cmt1, cmt2) => {
+            return cmt2.likes.length - cmt1.likes.length;
+          });
       }
     if (_subject)
       responseComments = responseComments.filter((item) => {
         return JSON.stringify(item.post.subject) === JSON.stringify(_subject);
       });
+
     let page = 1;
     let limit = responseComments.length;
     let totalRows = responseComments.length;
@@ -179,6 +281,10 @@ router.delete("/:id", verifyToken, async (req, res) => {
   ) {
     try {
       await comment.findByIdAndDelete(commentId);
+      await comment.deleteMany({
+        post: deleteComment.post,
+        "reply.comment": deleteComment._id,
+      });
       return res
         .status(200)
         .json({ success: true, message: "Đã xóa thành công bình luận" });
@@ -196,23 +302,14 @@ router.patch("/:id", verifyToken, async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: "Không tìm thấy bình luận này" });
-    const { content, tag } = req.body;
+    const { content } = req.body;
     if (typeof content === "string") findComment.content = content;
-    if (Array.isArray(tag) == true) findComment.tag = tag;
-    if (Array.isArray(tag) == true)
-      for (let i = 0; i < tag.length; i++) {
-        const check = await user.exists({ _id: tag[i] });
-        if (!check)
-          return res.status(400).json({
-            success: false,
-            message: "Người dùng được tag không tồn tại",
-          });
-      }
     if (
-      JSON.stringify(req.user.id) === JSON.stringify(findComment.owner) ||
-      req.user.isAdmin
+      JSON.stringify(req.user.id) !== JSON.stringify(findComment.owner) &&
+      req.user.isAdmin == false
     )
-      await findComment.save();
+      res.status(403).json({ success: false, message: "Bạn không có quyền" });
+    await findComment.save();
     return res
       .status(200)
       .json({ success: true, message: "Đã chỉnh sửa bình luận thành công" });

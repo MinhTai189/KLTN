@@ -11,5 +11,10 @@ const subject = new Schema({
     required: true,
     default: 0,
   },
+  views: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
 });
 module.exports = mongoose.model("subject", subject);
