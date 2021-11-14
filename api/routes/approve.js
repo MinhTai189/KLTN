@@ -16,7 +16,11 @@ router.get("/details", async (req, res) => {
   const { _id1, _id2, _type } = req.query;
   let response;
   if (_type === "post") {
-    const getPostInvalid = await post.findById(_id1).populate("subject");
+    const getPostInvalid = await post
+      .findById(_id1)
+      .populate("subject")
+      .populate("owner", "-unsignedName -refreshToken")
+      .select("-valid");
     if (!getPostInvalid)
       return res
         .status(400)
@@ -35,10 +39,26 @@ router.get("/details", async (req, res) => {
         return res
           .status(400)
           .json({ success: false, message: "Không tìm thấy nội dung review" });
+      const ownerSchool = await school
+        .findOne({ codeName: response.owner.school })
+        .select("-nameDistricts");
+      let owner = {
+        avatarUrl: response.owner.avatarUrl.url,
+        name: response.owner.name,
+        isAdmin: response.owner.isAdmin,
+        _id: response.owner.id,
+        credit: response.owner.credit,
+        email: response.owner.email,
+        school: ownerSchool,
+        motels: response.owner.motels,
+      };
       response.review = getReviewInvalid;
+      res.owner = owner;
     }
   } else if (_type === "report") {
-    const getReport = await report.findById(_id1);
+    const getReport = await report
+      .findById(_id1)
+      .populate("owner", "-unsignedName -refreshToken");
     if (!getReport)
       return res
         .status(400)
@@ -58,10 +78,33 @@ router.get("/details", async (req, res) => {
           success: false,
           message: "Không tìm thấy đánh giá này hoặc đánh giá đã bị xóa",
         });
-      response = { ...getRate._doc, motel: getMotelRating._id };
+      response = {
+        rate: {
+          ...getRate._doc,
+          motel: getMotelRating._id,
+        },
+        content: getReport.content,
+        owner: getReport.owner,
+      };
+      const ownerSchool = await school
+        .findOne({ codeName: response.owner.school })
+        .select("-nameDistricts");
+      let owner = {
+        avatarUrl: response.owner.avatarUrl.url,
+        name: response.owner.name,
+        isAdmin: response.owner.isAdmin,
+        _id: response.owner.id,
+        credit: response.owner.credit,
+        email: response.owner.email,
+        school: ownerSchool,
+        motels: response.owner.motels,
+      };
+      response.owner = owner;
     }
   } else if (_type === "rate") {
-    const getMotelRating = await motel.findById(_id1);
+    const getMotelRating = await motel
+      .findById(_id1)
+      .populate("rate.user", "-unsignedName -refreshToken");
     if (!getMotelRating)
       return res.status(400).json({
         success: false,
@@ -79,7 +122,8 @@ router.get("/details", async (req, res) => {
   } else if (_type === "room") {
     const getNewUpdateRoom = await userUpdateRoom
       .findById(_id1)
-      .populate("motel");
+      .populate("motel")
+      .populate("user", "-refreshToken -password");
     if (!getNewUpdateRoom)
       return res.status(400).json({
         success: false,
@@ -96,6 +140,19 @@ router.get("/details", async (req, res) => {
         message: "Không tìm thấy phòng này hoặc đã bị xóa",
       });
     console.log(getNewUpdateRoom);
+    const ownerSchool = await school
+      .findOne({ codeName: getNewUpdateRoom.user.school })
+      .select("-nameDistricts");
+    let owner = {
+      avatarUrl: getNewUpdateRoom.user.avatarUrl.url,
+      name: getNewUpdateRoom.user.name,
+      isAdmin: getNewUpdateRoom.user.isAdmin,
+      _id: getNewUpdateRoom.user._id,
+      credit: getNewUpdateRoom.user.credit,
+      email: getNewUpdateRoom.user.email,
+      school: ownerSchool,
+      motels: getNewUpdateRoom.user.motels,
+    };
     let newRoom = {
       ...getNewUpdateRoom._doc,
     };
@@ -108,6 +165,103 @@ router.get("/details", async (req, res) => {
         ...getRoom._doc,
       },
       newRoom,
+      owner,
+    };
+  } else if (_type === "motel") {
+    const motelNewUpdate = await userUpdateMotel
+      .findById(_id1)
+      .populate("user")
+      .select("-unsignedName -room")
+      .populate("school", "-nameDistricts");
+    if (!motelNewUpdate)
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm được thông tin cập nhật này",
+      });
+    const findMotel = await motel
+      .findById(motelNewUpdate.motel)
+      .populate("owner")
+      .select("-unsignedName -room")
+      .populate("school", "-nameDistricts");
+    if (!findMotel)
+      return res.status(400).json({
+        success: false,
+        message: "Nhà trọ này không tồn tại hoặc đã bị xóa",
+      });
+    const ownerNewSchool = await school
+      .findOne({ codeName: motelNewUpdate.user.school })
+      .select("-nameDistricts");
+    let ownerNew = {
+      avatarUrl: motelNewUpdate.user.avatarUrl.url,
+      name: motelNewUpdate.user.name,
+      isAdmin: motelNewUpdate.user.isAdmin,
+      _id: motelNewUpdate.user._id,
+      credit: motelNewUpdate.user.credit,
+      email: motelNewUpdate.user.email,
+      school: ownerNewSchool,
+      motels: motelNewUpdate.user.motels,
+    };
+    const ownerOldSchool = await school
+      .findOne({ codeName: findMotel.owner.school })
+      .select("-nameDistricts");
+    let ownerOld = {
+      avatarUrl: findMotel.owner.avatarUrl.url,
+      name: findMotel.owner.name,
+      isAdmin: findMotel.owner.isAdmin,
+      _id: findMotel.owner._id,
+      credit: findMotel.owner.credit,
+      email: findMotel.owner.email,
+      school: ownerOldSchool,
+      motels: findMotel.owner.motels,
+    };
+    let newMotel = {
+      ...motelNewUpdate._doc,
+      owner: ownerNew,
+      thumbnail: motelNewUpdate.thumbnail.url,
+      images: motelNewUpdate.images.map((item) => {
+        if (typeof item === "string") return item;
+        else return item.url;
+      }),
+    };
+    delete newMotel.user;
+
+    response = {
+      newMotel,
+      oldMotel: {
+        ...findMotel._doc,
+        owner: ownerOld,
+        thumbnail: findMotel.thumbnail.url,
+        images: findMotel.images.map((item) => {
+          return item.url;
+        }),
+      },
+    };
+  } else if (_type === "new-motel") {
+    const newMotel = await unapprovedMotel
+      .findById(_id1)
+      .populate("owner")
+      .select("-unsignedName")
+      .populate("school", "-nameDistricts");
+    const ownerSchool = await school
+      .findOne({ codeName: newMotel.owner.school })
+      .select("-nameDistricts");
+    let owner = {
+      avatarUrl: newMotel.owner.avatarUrl.url,
+      name: newMotel.owner.name,
+      isAdmin: newMotel.owner.isAdmin,
+      _id: newMotel.owner._id,
+      credit: newMotel.owner.credit,
+      email: newMotel.owner.email,
+      school: ownerSchool,
+      motels: newMotel.owner.motels,
+    };
+    response = {
+      ...newMotel._doc,
+      owner: owner,
+      thumbnail: newMotel.thumbnail.url,
+      images: newMotel.images.map((item) => {
+        return item.url;
+      }),
     };
   }
   return res.status(200).json({ success: true, data: response });
@@ -150,7 +304,9 @@ router.get("/", async (req, res) => {
       email: rates[i].user.email,
       school: ownerSchool,
       motels: rates[i].user.motels,
+      rank: rates[i].user.rank,
     };
+
     responseApprove.push({
       title: "Đánh giá " + rates[i].motel.name,
       id1: rates[i].motel.id,
@@ -173,13 +329,15 @@ router.get("/", async (req, res) => {
       email: newMotel[i].owner.email,
       school: ownerSchool,
       motels: newMotel[i].owner.motels,
+      rank: newMotel[i].owner.rank,
     };
+
     responseApprove.push({
       title: "Nhà trọ mới: " + newMotel[i].name,
       id1: newMotel[i]._id,
       id2: "",
       createdAt: newMotel[i].createdAt,
-      type: "newMotel",
+      type: "new-motel",
       owner,
     });
   }
@@ -196,6 +354,7 @@ router.get("/", async (req, res) => {
       email: updateMotel[i].user.email,
       school: ownerSchool,
       motels: updateMotel[i].user.motels,
+      rank: updateMotel[i].user.rank,
     };
     responseApprove.push({
       title: "Sửa thông tin " + updateMotel[i].name,
@@ -219,6 +378,7 @@ router.get("/", async (req, res) => {
       email: updateRoom[i].user.email,
       school: ownerSchool,
       motels: updateRoom[i].user.motels,
+      rank: updateRoom[i].user.rank,
     };
     let type = "room";
 
@@ -244,6 +404,7 @@ router.get("/", async (req, res) => {
       email: newPost[i].owner.email,
       school: ownerSchool,
       motels: newPost[i].owner.motels,
+      rank: newPost[i].owner.rank,
     };
     responseApprove.push({
       title: "Bài viết mới: " + newPost[i].title,
@@ -267,6 +428,7 @@ router.get("/", async (req, res) => {
       email: newFeedBack[i].owner.email,
       school: ownerSchool,
       motels: newFeedBack[i].owner.motels,
+      rank: newFeedBack[i].owner.rank,
     };
     responseApprove.push({
       title: "Góp ý của " + owner.name,
@@ -295,6 +457,7 @@ router.get("/", async (req, res) => {
       email: reports[i].owner.email,
       school: ownerSchool,
       motels: reports[i].owner.motels,
+      rank: reports[i].owner.rank,
     };
     responseApprove.push({
       title: type,

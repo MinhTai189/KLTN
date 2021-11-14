@@ -11,4 +11,13 @@ router.get("/", async (req, res) => {
     res.status(500).json({ success: false, message: "Lỗi không xác định" });
   }
 });
+router.get("/:id", async (req, res) => {
+  try {
+    const findSubject = await subject.findById(req.params.id);
+    res.status(200).json({ success: true, data: findSubject });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Lỗi không xác định" });
+  }
+});
 module.exports = router;

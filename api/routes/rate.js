@@ -120,6 +120,7 @@ router.get("/", async (req, res) => {
           email: motelRates[i].rate[j].user.email,
           school: ownerSchool,
           motels: motelRates[i].rate[j].user.motels,
+          rank: motelRates[i].rate[j].user.rank,
         };
         if (motelRates[i].rate[j].valid)
           rates.push({ ...motelRates[i].rate[j]._doc, user: user, motel: mt });
