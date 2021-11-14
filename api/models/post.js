@@ -29,7 +29,7 @@ const post = new Schema(
       type: String,
       required: true,
     },
-    hashTag: {
+    tags: {
       type: Array,
     },
     status: {

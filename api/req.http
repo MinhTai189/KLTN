@@ -207,55 +207,42 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxM2M3ZTNjY2Q5NTQ0
 ###
 POST http://localhost:5000/api/posts
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjQzNzY3NSwiZXhwIjoxNjM2NDM4Mjc1fQ._MW9BYvNtFm3u-tdjdcfEiuy2lusbzCS6864KDb0j-Y
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjg4NTg1OSwiZXhwIjoxNjM2ODg2NDU5fQ.ADeOLta4k9-2olFgGcm_FkSqIL72tQAP4IE9pWqqqrM
 
 {
-    "subject":"6173ba553c954151dcc8fdf9",
-    "title":"Review nhà trọ Minh",
-    "content":"Để cảnh sát không tìm được mình, bạn hãy cố gắng chặn lối vào nơi bạn đang ẩn nấp. Lý tưởng nhất là có ổ khóa chắc chắn bên trong cánh cửa, và cửa có hướng mở ra ngoài để tên sát nhân không đạp bật vào được. Có lẽ bạn cũng nên chặn cửa bằng các chướng ngại vật khác, chẳng hạn như các đồ nội thất nặng.",
-    "hashTag":["sachse","600"],
-    "review":{
-        "cleanup": 5,
-        "road": 4,
-        "beauty": 5,
-        "quiet": 7,
-        "price": 4
-    }
-}
-###
-POST http://localhost:5000/api/posts
-Content-Type: application/json
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjg2NDI4MCwiZXhwIjoxNjM2ODY0ODgwfQ.mfEzCm6O16naJkkJ9wjXuj97EV3pBIunIbTHDnvlz4w
-
-{
-    "subject":"6173ba553c954151dcc8fdf7",
+    "subjectId":"6173ba553c954151dcc8fdf7",
     "title":"Tìm nhà trọ",
     "content":"Để cảnh sát không tìm được mình, bạn hãy cố gắng chặn lối vào nơi bạn đang ẩn nấp. Lý tưởng nhất là có ổ khóa chắc chắn bên trong cánh cửa, và cửa có hướng mở ra ngoài để tên sát nhân không đạp bật vào được. Có lẽ bạn cũng nên chặn cửa bằng các chướng ngại vật khác, chẳng hạn như các đồ nội thất nặng.",
-    "hashTag":"sachse,600",
-    "require":{
-         "school": []
-        ,
-        "price": {
-          "min": 300000,
-          "max": 400000
-        },
-        "area": {
-          "width": 4,
-          "height": 4
-        },
-        "addition":""
-    }
+    "tags":"sachse,600",
+    "school": [],
+    "price": 7000000,
+    "additional":""
+    
 }
 ###
-PATCH  http://localhost:5000/api/posts/617696c696a8ddd8b7732938
+POST  http://localhost:5000/api/posts
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjQzNzY3NSwiZXhwIjoxNjM2NDM4Mjc1fQ._MW9BYvNtFm3u-tdjdcfEiuy2lusbzCS6864KDb0j-Y
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjg4NzMyMywiZXhwIjoxNjM2ODg3OTIzfQ.pa36ceyTLe0fI_Sr4a8K7dBUHmbrkf6LCB1GhBwyw_U
 
 {
     "title":"Tìm người ở ghép",
     "content":"Để cảnh sát không tìm được mình, bạn hãy cố gắng chặn lối vào nơi bạn đang ẩn nấp. Lý tưởng nhất là có ổ khóa chắc chắn bên trong cánh cửa, và cửa có hướng mở ra ngoài để tên sát nhân không đạp bật vào được. Có lẽ bạn cũng nên chặn cửa bằng các chướng ngại vật khác, chẳng hạn như các đồ nội thất nặng.",
-    "hashTag":["sachse","600"],
-    "motel":""
+    "tags":"sach se ,600",
+    "motel":"615a9f13dc19793cda17890f",
+    "subjectId":"6173ba553c954151dcc8fdf8",
+    "additional":""
+}
+###
+PATCH  http://localhost:5000/api/posts/6190eb3490c8afd1f14858a7
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjg4Nzk0MCwiZXhwIjoxNjM2ODg4NTQwfQ.xkmY60sPjR-qThq9b5W2AuvHg8qep-kZjDL7tS471og
+
+{
+    "title":"Tìm người ở ghép",
+    "content":"Để cảnh sát không tìm được mình, bạn hãy cố gắng chặn lối vào nơi bạn đang ẩn nấp. Lý tưởng nhất là có ổ khóa chắc chắn bên trong cánh cửa, và cửa có hướng mở ra ngoài để tên sát nhân không đạp bật vào được. Có lẽ bạn cũng nên chặn cửa bằng các chướng ngại vật khác, chẳng hạn như các đồ nội thất nặng.",
+    "tags":"sach se ,dep trai",
+    "motel":"615a9f13dc19793cda17890f",
+    "additional":"deptrainhuNguyenTanMai"
 }
 ###
 DELETE  http://localhost:5000/api/posts/617696c696a8ddd8b7732938
@@ -370,13 +357,13 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1
 ###
 POST http://localhost:5000/api/posts
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjg2NDI4MCwiZXhwIjoxNjM2ODY0ODgwfQ.mfEzCm6O16naJkkJ9wjXuj97EV3pBIunIbTHDnvlz4w
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjg4NTg1OSwiZXhwIjoxNjM2ODg2NDU5fQ.ADeOLta4k9-2olFgGcm_FkSqIL72tQAP4IE9pWqqqrM
 
 {
-    "subject":"6173ba553c954151dcc8fdf9",
+    "subjectId":"6173ba553c954151dcc8fdf9",
     "title":"Review nhà trọ Minh",
     "content":"Để cảnh sát không tìm được mình, bạn hãy cố gắng chặn lối vào nơi bạn đang ẩn nấp. Lý tưởng nhất là có ổ khóa chắc chắn bên trong cánh cửa, và cửa có hướng mở ra ngoài để tên sát nhân không đạp bật vào được. Có lẽ bạn cũng nên chặn cửa bằng các chướng ngại vật khác, chẳng hạn như các đồ nội thất nặng.",
-    "hashTag":"sachse,600",
+    "tags":"sachse,giare",
     "review":{
         "cleanup": 5,
         "road": 4,
