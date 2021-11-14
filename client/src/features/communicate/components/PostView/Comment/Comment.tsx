@@ -41,9 +41,13 @@ export const Comment = ({ }: Props) => {
                     <CommentBody
                         typing={typing}
                         handleRely={handleRely}
+                        sizeAction='small'
+                        positionAction='left'
                     />
 
-                    {typing && <TypingComment isRely ref={inputRef} />}
+                    {typing && <TypingComment
+                        isRely
+                        ref={inputRef} />}
 
                     <ListSubComment />
                 </>

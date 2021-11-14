@@ -38,3 +38,8 @@ ul {
   margin: 0 auto;
   padding: 0 16px;
 }
+
+.ck-block-toolbar-button {
+  border: 1px solid #000 !important;
+  border-radius: 50% !important;
+}

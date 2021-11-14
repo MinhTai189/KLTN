@@ -1,12 +1,11 @@
-import { Avatar, Box, Chip, TextField, Theme, Tooltip, Typography } from '@material-ui/core'
+import { Box, Theme, Tooltip } from '@material-ui/core'
 import { ViewColumn, ViewList } from '@material-ui/icons'
-import { Autocomplete } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/styles'
 import { useAppSelector } from 'app/hooks'
+import { AutoCompleteSchool } from 'features/school/components/AutoCompleteSchool'
 import { selectDataSchool, selectLoadingSchool } from 'features/school/schoolSlice'
 import { School } from 'models'
-import { ChangeEvent, ComponentType, HTMLAttributes, memo } from 'react'
-import ListboxComponent from './ListboxComponent'
+import { ChangeEvent, memo } from 'react'
 
 interface Props {
     listLayout: 'list' | 'grid'
@@ -105,44 +104,11 @@ const Controls = ({ listLayout, setListLayout, filterSchool, handleFilterMotel }
         <Box className={classes.root}>
             <Box className='left'>
                 <div className="field">
-                    <Autocomplete
+                    <AutoCompleteSchool
                         value={filterSchool}
                         onChange={handleFilterMotel}
-                        multiple
-                        id="tags-filled"
-                        freeSolo
-                        limitTags={3}
                         loading={loading}
-                        options={listSchool}
-                        ListboxComponent={ListboxComponent as ComponentType<HTMLAttributes<HTMLElement>>}
-                        getOptionLabel={(option) => option.name}
-                        renderOption={(option: School) => (
-                            <>
-                                <Avatar src={option.logo} style={{ width: 20, height: 'auto', marginRight: 8, borderRadius: 0 }} >U</Avatar>
-                                <Typography style={{ fontSize: '0.8em' }}>{option.name}</Typography>
-                            </>
-                        )}
-                        renderTags={(value: School[], getTagProps) =>
-                            value.map((option: School, index: number) => (
-                                <Tooltip title={option.name}>
-                                    <Chip
-                                        color='secondary'
-                                        size='small'
-                                        avatar={<Avatar src={option.logo} />}
-                                        {...getTagProps({ index })}
-                                    />
-                                </Tooltip>
-                            ))
-                        }
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                size='small'
-                                placeholder="Nhập một trường học..."
-                                variant='outlined'
-                                color='secondary'
-                            />
-                        )}
+                        listSchool={listSchool}
                     />
                 </div>
             </Box>

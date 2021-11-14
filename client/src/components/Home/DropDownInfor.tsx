@@ -2,6 +2,7 @@ import { Avatar, Box, Divider, List, ListItem, ListItemIcon, ListItemProps, List
 import { ExitToApp } from '@material-ui/icons'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { authActions, selectCurrentUser } from 'features/auth/authSlice'
+import { showCreateModalAction } from 'features/communicate/showCreateModalSlice'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -34,8 +35,8 @@ const useStyles = makeStyles(theme => ({
         right: 0,
         top: '130%',
         width: 250,
-        boxShadow: theme.shadows[7],
-        border: `5px solid ${theme.palette.primary.main}`,
+        boxShadow: theme.shadows[5],
+        borderRadius: 10,
 
         "& a": {
             color: 'inherit'
@@ -56,6 +57,11 @@ export const DropDownInfor = (props: Props) => {
 
     const handleLogout = () => {
         dispatch(authActions.logout())
+    }
+
+    const handleClickCreatePost = () => {
+        dispatch(showCreateModalAction.open())
+        setIsShowDD(false)
     }
 
     function ListItemLink(props: ListItemProps<'a', { button?: true }>) {
@@ -80,6 +86,13 @@ export const DropDownInfor = (props: Props) => {
 
                 <ListItem button>
                     <ListItemText primary='Trang cá nhân' />
+                </ListItem>
+
+                <ListItem
+                    button
+                    onClick={handleClickCreatePost}
+                >
+                    <ListItemText primary='Đăng bài viết' />
                 </ListItem>
 
                 <ListItem button>

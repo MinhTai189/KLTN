@@ -24,7 +24,7 @@ const corsOpts = {
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 
   allowedHeaders: [
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization, 'X-CSRF-TOKEN",
   ],
 };
 

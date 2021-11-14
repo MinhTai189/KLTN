@@ -6,6 +6,7 @@ import {
 } from '@reduxjs/toolkit';
 import { connectRouter, routerMiddleware } from 'connected-react-router';
 import authReducer from 'features/auth/authSlice';
+import showCreateModalReducer from 'features/communicate/showCreateModalSlice';
 import motelReducer from 'features/motels/motelSlice';
 import schoolReducer from 'features/school/schoolSlice';
 import userReducer from 'features/users/usersSlice';
@@ -18,6 +19,7 @@ const reducer = combineReducers({
   users: userReducer,
   motels: motelReducer,
   school: schoolReducer,
+  showCreateModal: showCreateModalReducer,
   router: connectRouter(history),
 });
 const sagaMiddleware = createSagaMiddleware();

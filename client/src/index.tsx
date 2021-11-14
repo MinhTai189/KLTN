@@ -1,9 +1,10 @@
+import { ThemeProvider } from '@material-ui/styles';
 import { ConnectedRouter } from 'connected-react-router';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
-import { history } from 'utils';
+import { history, themeMUI } from 'utils';
 import App from './App';
 import { store } from './app/store';
 import './index.css';
@@ -12,7 +13,9 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <ConnectedRouter history={history}>
-        <App />
+        <ThemeProvider theme={themeMUI}>
+          <App />
+        </ThemeProvider>
       </ConnectedRouter>
 
       <ToastContainer

@@ -161,7 +161,11 @@ export const PostView = (props: Props) => {
                 <MotelRecommendPost />
             </Box>
 
-            <Box mb={2} mt={8}>
+            <Box
+                id='comment'
+                mb={2}
+                mt={8}
+            >
                 <TypingComment
                     ref={inputRef}
                 />

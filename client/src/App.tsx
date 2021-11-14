@@ -1,7 +1,8 @@
-import { ThemeProvider } from '@material-ui/core';
 import 'antd/dist/antd.css';
 import { AdminRoute, NotFound, ScrollToTop } from 'components/Common';
 import { AdminLayout } from 'components/Layouts';
+import { CreatedPost } from 'features/communicate/components';
+import { CreateReviewPage } from 'pages/CreateReviewPage';
 import HomePage from 'pages/HomePage';
 import MotelDetailPage from 'pages/MotelDetailPage';
 import MotelPage from 'pages/MotelPage';
@@ -9,13 +10,12 @@ import PostPage from 'pages/PostPage';
 import PostViewPage from 'pages/PostViewPage';
 import { Route, Switch } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
-import { themeMUI } from 'utils';
 import Auth from "./features/auth";
 
 function App() {
 
   return (
-    <ThemeProvider theme={themeMUI}>
+    <>
       <ScrollToTop>
         <Switch>
           <Route path="/" exact>
@@ -38,6 +38,10 @@ function App() {
             <PostPage />
           </Route>
 
+          <Route path='/create-post/review'>
+            <CreateReviewPage />
+          </Route>
+
           <Route path="/auth">
             <Auth />
           </Route>
@@ -51,7 +55,9 @@ function App() {
           </Route>
         </Switch>
       </ScrollToTop>
-    </ThemeProvider>
+
+      <CreatedPost />
+    </>
   );
 }
 

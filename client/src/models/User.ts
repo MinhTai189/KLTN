@@ -10,6 +10,7 @@ export interface User {
   province: string;
   school: string;
   favorite?: string[];
+  posts?: number;
   createdAt?: string;
   updatedAt?: string;
   accessToken?: string;

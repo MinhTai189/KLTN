@@ -1,14 +1,14 @@
 import { Box, Theme, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
-import Chat from 'assets/images/chat.jpg'
 import Motel from 'assets/images/motel.jpg'
 import Review from 'assets/images/review.jpg'
 import RoomMate from 'assets/images/roommate.jpg'
 import { TopicCard } from "./TopicCard"
 import Logo from 'assets/images/logo.png'
+import { Thread } from "models/Thread"
 
 interface Props {
-
+    listThread: Array<Thread>
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -55,7 +55,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const CommunicateSection = (props: Props) => {
+const listImgThread = [Motel, RoomMate, Review]
+
+export const CommunicateSection = ({ listThread }: Props) => {
     const classes = useStyles()
 
     return (
@@ -72,37 +74,15 @@ export const CommunicateSection = (props: Props) => {
                 </Typography>
 
                 <Box className={classes.wrapper}>
-                    <TopicCard
-                        image={Motel}
-                        title='Tìm nhà trọ'
-                        view='101'
-                        count='4'
-                        listPost=''
-                    />
-
-                    <TopicCard
-                        image={Review}
-                        title='Đánh giá'
-                        view='8'
-                        count='36'
-                        listPost=''
-                    />
-
-                    <TopicCard
-                        image={RoomMate}
-                        title='Tìm bạn ở ghép'
-                        view='2002'
-                        count='200'
-                        listPost=''
-                    />
-
-                    <TopicCard
-                        image={Chat}
-                        title='Giao lưu, thảo luận'
-                        view='101'
-                        count='4'
-                        listPost=''
-                    />
+                    {listThread.map((thread, index) => (
+                        <TopicCard
+                            image={listImgThread[index]}
+                            title={thread.name}
+                            view='101'
+                            count={thread.posts}
+                            listPost=''
+                        />
+                    ))}
                 </Box>
             </Box>
         </Box>

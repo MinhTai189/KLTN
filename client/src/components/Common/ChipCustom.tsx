@@ -4,7 +4,6 @@ import { styled } from "@material-ui/styles"
 interface Props extends ChipProps {
 
 }
-
 const ChipStyle = styled(Chip)(({ theme }) => ({
     background: 'var(--background) !important',
     height: 22,
