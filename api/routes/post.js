@@ -6,9 +6,47 @@ const userModel = require("../models/user");
 const commentModel = require("../models/comment");
 const schoolModel = require("../models/school");
 const post = require("../models/post");
-const objectId = require("mongoose").ObjectId;
+const objectId = require("mongoose").Types.ObjectId;
 const verifyToken = require("../middleware/verifyToken");
+const removeVietnameseTones = require("../middleware/removeVietnameseTones");
+const report = require("../models/report");
 
+router.post("/reports", verifyToken, async (req, res) => {
+  try {
+    const { postId, content } = req.body;
+    if (!postId)
+      return res.status(400).json({
+        success: false,
+        message: "Vui lòng cung cấp thông tin bài viết",
+      });
+    if (!postId)
+      return res.status(400).json({
+        success: false,
+        message: "Vui lòng cho biết tại sao bạn tố cáo bài viết này",
+      });
+    const checkPost = await post.findById(postId);
+    if (!checkPost)
+      return res
+        .status(400)
+        .json({ success: false, message: "Không tìm thấy bài viết" });
+    const newReport = new report({
+      id1: postId,
+      id2: "",
+      content: content,
+      owner: req.user.id,
+      type: "post",
+    });
+    await newReport.save();
+    return res
+      .status(200)
+      .json({ success: true, message: "Tố cáo thành công" });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Lỗi không xác định" });
+  }
+});
 router.delete("/likes/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
   const findPost = await post.findById(id);
@@ -89,15 +127,13 @@ router.get("/", async (req, res) => {
       .populate("owner")
       .populate("subject")
       .populate("likes.owner", "name rank avatarUrl")
-      .populate("motel", "-rate -editor")
-      .select("-unsignedTitle")
-      .populate("require.school", "-nameDistricts");
+      .populate("motel", "-rate -editor");
 
     if (typeof _keysearch === "string") {
       posts = posts.filter((item) => {
         const reg = new RegExp(_keysearch, "i");
         return (
-          reg.test(item.unsignedTitle) ||
+          reg.test(removeVietnameseTones(item.title)) ||
           reg.test(item.title) ||
           reg.test(item.owner.unsignedName) ||
           reg.test(item.owner.name) ||
@@ -224,8 +260,7 @@ router.get("/:id", async (req, res) => {
       .populate("subject")
       .populate("likes.owner", "name avatarUrl rank")
       .populate("motel", "-rate -editor")
-      .select("-unsignedTitle")
-      .populate("require.school", "-nameDistricts");
+      .select("-unsignedTitle");
     if (!findPost)
       return res.status(400).json({
         success: false,
@@ -349,7 +384,7 @@ router.patch("/:id", verifyToken, async (req, res) => {
         message: "Thiếu nội dung",
       });
     }
-    if (content.length < 100) {
+    if (content.length < 20) {
       return res.status(400).json({
         success: false,
         message: "Nội dung quá ngắn",
@@ -357,19 +392,34 @@ router.patch("/:id", verifyToken, async (req, res) => {
     }
     findPost.content = content;
   }
-  if (Array.isArray(hashTag) == true) findPost.hashTag = hashTag;
+  if (hashTag) {
+    if (hashTag.length > 0) findPost.hashTag = hashTag.split(",");
+    else findPost.hashTag = [];
+  }
   if (typeof block === "boolean") findPost.block = block;
   if (typeof status === "boolean") findPost.status = status;
 
   if (subjectId === "6173ba553c954151dcc8fdf7") {
     // tìm nhà trọ
     if (require) {
+      let schoolData = [];
       if (!Array.isArray(require.school)) {
         return res.status(400).json({
           success: false,
           message:
             "Vui lòng cung cấp các trường lân cận về nhà trọ bạn muốn tìm",
         });
+      } else {
+        if (require.school.length > 0) {
+          const getSchools = await schoolModel
+            .find({
+              $or: require.school.map((item) => {
+                return { _id: new objectId(item) };
+              }),
+            })
+            .select("-nameDistricts");
+          schoolData = getSchools;
+        } else schoolData = [];
       }
       if (!require.price)
         return res.status(400).json({
@@ -386,27 +436,16 @@ router.patch("/:id", verifyToken, async (req, res) => {
           message:
             "Vui lòng cung cấp giá tối thiểu và giá tối đa mà bạn muốn tìm",
         });
-      if (!require.area)
-        return res.status(400).json({
-          success: false,
-          message: "Vui lòng cung cấp diện tích tối thiểu bạn muốn tìm",
-        });
 
-      if (
-        typeof parseInt(require.area.height) !== "number" ||
-        typeof parseInt(require.area.width) !== "number"
-      )
-        return res.status(400).json({
-          success: false,
-          message: "Vui lòng cung cấp diện tích tối thiểu bạn muốn tìm",
-        });
-      if (!Array.isArray(require.optional))
-        return res.status(400).json({
-          success: false,
-          message: "Vui lòng cung cấp các tiện ích bạn muốn tìm",
-        });
-
-      findPost.require = { ...require._doc };
+      let addition;
+      require.addition.length > 0
+        ? (addition = require.addition.split(","))
+        : (addition = []);
+      findPost.require = {
+        ...require,
+        school: schoolData,
+        addition: addition,
+      };
     }
 
     try {
@@ -423,7 +462,17 @@ router.patch("/:id", verifyToken, async (req, res) => {
       });
     }
   } else if (subjectId === "6173ba553c954151dcc8fdf8") {
+    //tim ban o ghep
     if (motel) findPost.motel = motel;
+    if (typeof require === "string") {
+      if (!Array.isArray(require.split(",")))
+        return res.status(400).json({
+          success: false,
+          message: "Vui lòng cung cấp yêu cầu của bạn",
+        });
+      if (require.length > 0) findPost.require = require.split(",");
+      else findPost.require = [];
+    }
     try {
       await findPost.save();
       return res.status(200).json({
@@ -509,26 +558,39 @@ router.post("/", verifyToken, async (req, res) => {
       message: "Nội dung quá ngắn",
     });
   }
-  if (Array.isArray(hashTag) == false) {
+  if (typeof !hashTag === "string") {
     return res.status(400).json({
       success: false,
       message: "Sai thông tin hashTag",
     });
   }
+  let tag;
+  hashTag.length > 0 ? (tag = hashTag.split(",")) : (tag = []);
   if (subjectId === "6173ba553c954151dcc8fdf7") {
     // tìm nhà trọ
-
     if (!require) {
       return res.status(400).json({
         success: false,
         message: "Vui lòng cung cấp yêu cầu về nhà trọ bạn muốn tìm",
       });
     }
+    let schoolData = [];
     if (!Array.isArray(require.school)) {
       return res.status(400).json({
         success: false,
         message: "Vui lòng cung cấp các trường lân cận về nhà trọ bạn muốn tìm",
       });
+    } else {
+      if (require.school.length > 0) {
+        const getSchools = await schoolModel
+          .find({
+            $or: require.school.map((item) => {
+              return { _id: new objectId(item) };
+            }),
+          })
+          .select("-nameDistricts");
+        schoolData = getSchools;
+      } else schoolData = [];
     }
     if (!require.price)
       return res.status(400).json({
@@ -545,34 +607,22 @@ router.post("/", verifyToken, async (req, res) => {
         message:
           "Vui lòng cung cấp giá tối thiểu và giá tối đa mà bạn muốn tìm",
       });
-    if (!require.area)
-      return res.status(400).json({
-        success: false,
-        message: "Vui lòng cung cấp diện tích tối thiểu bạn muốn tìm",
-      });
-
-    if (
-      typeof parseInt(require.area.height) !== "number" ||
-      typeof parseInt(require.area.width) !== "number"
-    )
-      return res.status(400).json({
-        success: false,
-        message: "Vui lòng cung cấp diện tích tối thiểu bạn muốn tìm",
-      });
-    if (!Array.isArray(require.optional))
-      return res.status(400).json({
-        success: false,
-        message: "Vui lòng cung cấp các tiện ích bạn muốn tìm",
-      });
-
+    let addition;
+    require.addition.length > 0
+      ? (addition = require.addition.split(","))
+      : (addition = []);
     const newPost = new post({
       title,
       unsignedTitle: removeVietNameseTones(title),
       content,
-      hashTag,
+      hashTag: tag,
       subject: subjectId,
       owner: req.user.id,
-      require,
+      require: {
+        ...require,
+        addition: addition,
+        school: schoolData,
+      },
       likes: [],
       type: 1,
     });
@@ -604,15 +654,28 @@ router.post("/", verifyToken, async (req, res) => {
         success: false,
         message: "Vui lòng cung cấp nhà trọ bạn đang tạm trú",
       });
-
+    if (typeof require === "string")
+      if (!Array.isArray(require.split(",")))
+        return res.status(400).json({
+          success: false,
+          message: "Vui lòng cung cấp yêu cầu của bạn",
+        });
+      else
+        return res.status(400).json({
+          success: false,
+          message: "Vui lòng cung cấp yêu cầu của bạn",
+        });
+    let req;
+    require.length > 0 ? (req = require.split(",")) : (req = []);
     const newPost = new post({
       title,
       unsignedTitle: removeVietNameseTones(title),
       content,
-      hashTag,
+      hashTag: tag,
       subject: subjectId,
       owner: req.user.id,
       likes: [],
+      require: require.split(","),
       motel,
       type: 2,
     });
@@ -664,7 +727,7 @@ router.post("/", verifyToken, async (req, res) => {
       title,
       unsignedTitle: removeVietNameseTones(title),
       content,
-      hashTag,
+      hashTag: tag,
       subject: subjectId,
       owner: req.user.id,
       likes: [],
@@ -688,7 +751,7 @@ router.post("/", verifyToken, async (req, res) => {
       });
     } catch (err) {
       console.log(err);
-      await post.findByIdAndDelete(newPost._id);
+      //    await post.findByIdAndDelete(newPost._id);
       return res.status(500).json({
         success: false,
         message: "Lỗi không xác định",

@@ -49,29 +49,7 @@ const post = new Schema(
       default: false,
     },
     require: {
-      type: {
-        school: [
-          {
-            type: Schema.Types.ObjectId,
-            ref: "school",
-          },
-        ],
-        price: {
-          min: Number,
-          max: Number,
-        },
-        optional: {
-          type: Array,
-        },
-        area: {
-          width: Number,
-          height: Number,
-        },
-        addition: {
-          type: Array,
-          default: [],
-        },
-      },
+      type: Schema.Types.Mixed,
       required: false,
     },
     review: {
@@ -120,3 +98,22 @@ const post = new Schema(
   { timestamps: true }
 );
 module.exports = mongoose.model("post", post);
+// {
+//   school: [
+//     {
+//       type: Schema.Types.ObjectId,
+//       ref: "school",
+//     },
+//   ],
+//   price: {
+//     min: Number,
+//     max: Number,
+//   },
+//   optional: {
+//     type: Array,
+//   },
+//   addition: {
+//     type: Array,
+//     default: [],
+//   },
+// }

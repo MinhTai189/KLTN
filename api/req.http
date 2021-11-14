@@ -225,13 +225,13 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1
 ###
 POST http://localhost:5000/api/posts
 Content-Type: application/json
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjUyNDE3MCwiZXhwIjoxNjM2NTI0NzcwfQ.a-LHWeacTXw62iINTBCFAFtZMV2GAi0EpXk0DPNYrYY
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjg2NDI4MCwiZXhwIjoxNjM2ODY0ODgwfQ.mfEzCm6O16naJkkJ9wjXuj97EV3pBIunIbTHDnvlz4w
 
 {
     "subject":"6173ba553c954151dcc8fdf7",
     "title":"Tìm nhà trọ",
     "content":"Để cảnh sát không tìm được mình, bạn hãy cố gắng chặn lối vào nơi bạn đang ẩn nấp. Lý tưởng nhất là có ổ khóa chắc chắn bên trong cánh cửa, và cửa có hướng mở ra ngoài để tên sát nhân không đạp bật vào được. Có lẽ bạn cũng nên chặn cửa bằng các chướng ngại vật khác, chẳng hạn như các đồ nội thất nặng.",
-    "hashTag":["sachse","600"],
+    "hashTag":"sachse,600",
     "require":{
          "school": []
         ,
@@ -239,12 +239,11 @@ Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1Z
           "min": 300000,
           "max": 400000
         },
-        "optional": ["wifi"],
         "area": {
           "width": 4,
           "height": 4
         },
-        "addition":[]
+        "addition":""
     }
 }
 ###
@@ -326,3 +325,65 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgw
 DELETE http://localhost:5000/api/comments/likes/618a70c328c53b2415056829
 Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzY1MDM0NTIsImV4cCI6MTYzNjUwNDA1Mn0.5s4QJ2c_OKZz3Pg37kOvTYhpdtNE4GS-DWqZyXgamCU
+###
+POST http://localhost:5000/api/posts/likes/618a0bf68dda576736cd5c92
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzY0NTc5NDUsImV4cCI6MTYzNjQ1ODU0NX0.fqJ9ofvGkrkzy-MYSB118l4qRPaC5vaO6uSRQYTBeu8
+
+{
+    "type":2
+}
+###
+DELETE http://localhost:5000/api/posts/likes/618a0bf68dda576736cd5c92
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjQ0ODAyMCwiZXhwIjoxNjM2NDQ4NjIwfQ.c_6GM8gBTNVpkKOVTFIUKGf_lRg-FyZ-PWSPoKAy6vk
+###
+POST http://localhost:5000/api/comments/likes/618a70c328c53b2415056829
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzY1MDM0NTIsImV4cCI6MTYzNjUwNDA1Mn0.5s4QJ2c_OKZz3Pg37kOvTYhpdtNE4GS-DWqZyXgamCU
+
+{
+    "type":2
+}
+###
+DELETE http://localhost:5000/api/comments/likes/618a70c328c53b2415056829
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzY1MDM0NTIsImV4cCI6MTYzNjUwNDA1Mn0.5s4QJ2c_OKZz3Pg37kOvTYhpdtNE4GS-DWqZyXgamCU
+###
+POST http://localhost:5000/api/posts/reports
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjgwODc0MywiZXhwIjoxNjM2ODA5MzQzfQ.gcyPU9rWtRP8LsLE0ajuuAqv-QzyrfadlvrEpojZ2zw
+
+{
+    "postId":"618e662249ffd8e8651176f4",
+    "content":"Bài viết này vi phạm"
+}
+###
+POST http://localhost:5000/api/comments/reports
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjgwOTI1NSwiZXhwIjoxNjM2ODA5ODU1fQ.vqmXUIxt-T_ZWl6vMqMpKHO2umdDJ_A99uVIGp3nZpQ
+
+{
+    "commentId":"618a70c328c53b2415056829",
+    "content":"Bình luận này vi phạm"
+}
+###
+POST http://localhost:5000/api/posts
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjg2NDI4MCwiZXhwIjoxNjM2ODY0ODgwfQ.mfEzCm6O16naJkkJ9wjXuj97EV3pBIunIbTHDnvlz4w
+
+{
+    "subject":"6173ba553c954151dcc8fdf9",
+    "title":"Review nhà trọ Minh",
+    "content":"Để cảnh sát không tìm được mình, bạn hãy cố gắng chặn lối vào nơi bạn đang ẩn nấp. Lý tưởng nhất là có ổ khóa chắc chắn bên trong cánh cửa, và cửa có hướng mở ra ngoài để tên sát nhân không đạp bật vào được. Có lẽ bạn cũng nên chặn cửa bằng các chướng ngại vật khác, chẳng hạn như các đồ nội thất nặng.",
+    "hashTag":"sachse,600",
+    "review":{
+        "cleanup": 5,
+        "road": 4,
+        "beauty": 5,
+        "quiet": 7,
+        "price": 4
+    }
+}
+###
+POST http://localhost:5000/api/posts

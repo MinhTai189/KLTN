@@ -10,6 +10,7 @@ const school = require("../models/school");
 const report = require("../models/report");
 const removeVietnameseTones = require("../middleware/removeVietnameseTones");
 const review = require("../models/review");
+const comment = require("../models/comment");
 const router = express.Router();
 
 router.get("/details", async (req, res) => {
@@ -51,6 +52,7 @@ router.get("/details", async (req, res) => {
         email: response.owner.email,
         school: ownerSchool,
         motels: response.owner.motels,
+        rank: response.owner.rank,
       };
       response.review = getReviewInvalid;
       res.owner = owner;
@@ -98,6 +100,65 @@ router.get("/details", async (req, res) => {
         email: response.owner.email,
         school: ownerSchool,
         motels: response.owner.motels,
+        rank: response.owner.rank,
+      };
+      response.owner = owner;
+    } else if (getReport.type === "post") {
+      const getPost = await post.findById(getReport.id1);
+      if (!getPost)
+        return res.status(400).json({
+          success: false,
+          message: "Không tìm thấy bài viết này hoặc bài viết đã bị xóa",
+        });
+      response = {
+        post: {
+          ...getPost._doc,
+        },
+        content: getReport.content,
+        owner: getReport.owner,
+      };
+      const ownerSchool = await school
+        .findOne({ codeName: response.owner.school })
+        .select("-nameDistricts");
+      let owner = {
+        avatarUrl: response.owner.avatarUrl.url,
+        name: response.owner.name,
+        isAdmin: response.owner.isAdmin,
+        _id: response.owner.id,
+        credit: response.owner.credit,
+        email: response.owner.email,
+        school: ownerSchool,
+        motels: response.owner.motels,
+        rank: response.owner.rank,
+      };
+      response.owner = owner;
+    } else if (getReport.type === "comment") {
+      const getComment = await comment.findById(getReport.id1);
+      if (!getComment)
+        return res.status(400).json({
+          success: false,
+          message: "Không tìm thấy bài viết này hoặc bài viết đã bị xóa",
+        });
+      response = {
+        comment: {
+          ...getComment._doc,
+        },
+        content: getReport.content,
+        owner: getReport.owner,
+      };
+      const ownerSchool = await school
+        .findOne({ codeName: response.owner.school })
+        .select("-nameDistricts");
+      let owner = {
+        avatarUrl: response.owner.avatarUrl.url,
+        name: response.owner.name,
+        isAdmin: response.owner.isAdmin,
+        _id: response.owner.id,
+        credit: response.owner.credit,
+        email: response.owner.email,
+        school: ownerSchool,
+        motels: response.owner.motels,
+        rank: response.owner.rank,
       };
       response.owner = owner;
     }
@@ -118,7 +179,25 @@ router.get("/details", async (req, res) => {
         success: false,
         message: "Không tìm thấy đánh giá này hoặc đánh giá đã bị xóa",
       });
-    response = { ...getRate._doc, motel: getMotelRating._id };
+
+    let resRate = { ...getRate._doc, motel: getMotelRating._id };
+    const ownerSchool = await school
+      .findOne({ codeName: resRate.user.school })
+      .select("-nameDistricts");
+    let owner = {
+      avatarUrl: resRate.user.avatarUrl.url,
+      name: resRate.user.name,
+      isAdmin: resRate.user.isAdmin,
+      _id: resRate.user._id,
+      credit: resRate.user.credit,
+      email: resRate.user.email,
+      school: ownerSchool,
+      motels: resRate.user.motels,
+      rank: resRate.user.rank,
+    };
+    delete resRate.user;
+    resRate.owner = owner;
+    response = resRate;
   } else if (_type === "room") {
     const getNewUpdateRoom = await userUpdateRoom
       .findById(_id1)
@@ -152,6 +231,7 @@ router.get("/details", async (req, res) => {
       email: getNewUpdateRoom.user.email,
       school: ownerSchool,
       motels: getNewUpdateRoom.user.motels,
+      rank: getNewUpdateRoom.user.rank,
     };
     let newRoom = {
       ...getNewUpdateRoom._doc,
@@ -200,6 +280,7 @@ router.get("/details", async (req, res) => {
       email: motelNewUpdate.user.email,
       school: ownerNewSchool,
       motels: motelNewUpdate.user.motels,
+      rank: motelNewUpdate.user.rank,
     };
     const ownerOldSchool = await school
       .findOne({ codeName: findMotel.owner.school })
@@ -254,6 +335,7 @@ router.get("/details", async (req, res) => {
       email: newMotel.owner.email,
       school: ownerSchool,
       motels: newMotel.owner.motels,
+      rank: newMotel.owner.rank,
     };
     response = {
       ...newMotel._doc,
@@ -263,6 +345,24 @@ router.get("/details", async (req, res) => {
         return item.url;
       }),
     };
+  } else if (_type === "feedback") {
+    const getFeedBack = await feedBack.findById(_id1).populate("owner");
+    const ownerSchool = await school
+      .findOne({ codeName: getFeedBack.owner.school })
+      .select("-nameDistricts");
+    const owner = {
+      avatarUrl: getFeedBack.owner.avatarUrl.url,
+      name: getFeedBack.owner.name,
+      isAdmin: getFeedBack.owner.isAdmin,
+      _id: getFeedBack.owner._id,
+      credit: getFeedBack.owner.credit,
+      email: getFeedBack.owner.email,
+      school: ownerSchool,
+      motels: getFeedBack.owner.motels,
+
+      rank: getFeedBack.owner.rank,
+    };
+    response = { ...getFeedBack._doc, owner: owner };
   }
   return res.status(200).json({ success: true, data: response });
 });
