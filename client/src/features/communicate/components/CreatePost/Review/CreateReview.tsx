@@ -1,5 +1,6 @@
 import { Box, Button, makeStyles, Theme } from '@material-ui/core'
 import { BalloonCKEditor } from 'components/Common'
+import { useRef } from 'react'
 import { TagInput } from '../TagInput'
 
 interface Props {
@@ -37,15 +38,23 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
 
         '& .ck-content': {
-            padding: 0,
+            paddingLeft: 8,
             minHeight: 400,
+            fontSize: 17,
+            lineHeight: '25px',
 
-            '& p': {
+            '& > ul, & > ol': {
+                listStyleType: 'inherit',
+                listStylePosition: 'inside',
                 fontSize: 17,
-                lineHeight: '25px'
+                marginTop: 6,
+                paddingLeft: 12
+            },
+
+            '& > ol': {
+                listStyleType: 'decimal',
             }
         },
-
         '& .ck.ck-editor__editable:not(.ck-editor__nested-editable).ck-focused': {
             borderColor: 'transparent',
             boxShadow: 'none'
@@ -55,12 +64,22 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const CreateReview = () => {
     const classes = useStyles()
+    const areaRef = useRef<HTMLAreaElement>(null)
+
+    const handleGrowArea = () => {
+        if (areaRef.current) {
+            areaRef.current.style.height = "96px";
+            areaRef.current.style.height = (areaRef.current.scrollHeight) + "px";
+        }
+    }
 
     return (
         <Box className={classes.root}>
             <textarea
                 className='title-input'
                 placeholder='Nhập tiêu đề vào đây...'
+                ref={areaRef as any}
+                onInput={handleGrowArea}
             />
 
             <BalloonCKEditor />
@@ -76,6 +95,7 @@ export const CreateReview = () => {
                     setInput={() => { }}
                     suggest={[]}
                     setSuggest={() => { }}
+                    typePost='review'
                 />
             </Box>
 

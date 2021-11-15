@@ -1,8 +1,10 @@
 import { Box, makeStyles, MenuItem, Select, TextField, Theme, Typography } from '@material-ui/core'
 import { ChangeEvent } from 'react'
+import { listSuggest } from 'features/communicate/listSuggest'
 
 
 interface Props {
+    typePost: 'find-motel' | 'find-roommate' | 'review' | 'find-motel-addi' | 'find-roommate-addi'
     placeHolder: string
     input: string
     setInput: (e: ChangeEvent<any>) => void
@@ -36,11 +38,16 @@ const useStyles = makeStyles((theme: Theme) => ({
             '& .list-selected-tag': {
                 display: 'flex',
                 alignItems: 'flex-end',
+                flexWrap: 'wrap',
                 margin: 0,
 
                 '& .tag': {
                     marginRight: theme.spacing(1),
 
+                    '& .MuiTypography-root': {
+                        fontSize: '0.8em',
+                        fontWeight: 500
+                    }
                 }
             },
 
@@ -72,8 +79,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const TagInput = ({ placeHolder, input, setInput, suggest, setSuggest }: Props) => {
+export const TagInput = ({ placeHolder, input, setInput, suggest, setSuggest, typePost }: Props) => {
     const classes = useStyles()
+    const suggests = listSuggest[typePost]
 
     return (
         <Box className={classes.root}>
@@ -95,7 +103,7 @@ export const TagInput = ({ placeHolder, input, setInput, suggest, setSuggest }: 
                     {suggest.map((el, index) => (
                         <li key={index} className="tag">
                             <Typography>
-                                {el}
+                                {`#${el}`}
                             </Typography>
                         </li>
                     ))}
@@ -110,17 +118,22 @@ export const TagInput = ({ placeHolder, input, setInput, suggest, setSuggest }: 
                     margin='dense'
                     name='tag'
                     displayEmpty
+                    multiple
+                    renderValue={() => (<>Tag gợi ý</>)}
                 >
-                    <MenuItem value="" disabled>
-                        Gợi ý
+                    <MenuItem
+                        value=''
+                        disabled
+                    >
+                        Tag gợi ý
                     </MenuItem>
 
-                    {new Array(8).fill(1).map((option, index) => (
+                    {suggests.map((tag, index) => (
                         <MenuItem
-                            key={index}
-                            value={index}
+                            key={tag}
+                            value={tag}
                         >
-                            Thid is an option
+                            {tag}
                         </MenuItem>
                     ))}
                 </Select>

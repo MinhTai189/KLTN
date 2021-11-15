@@ -2,15 +2,18 @@ import { Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { Modal } from 'antd'
 import { motelApi } from 'api/motel'
+import { useAppDispatch } from 'app/hooks'
 import { Loading } from 'components/Common/Loading'
 import { Motel } from 'models'
 import { ChangeEvent, useEffect, useState } from 'react'
+import { mapTrimStringArray } from 'utils'
 import { CreatePostForm } from '../CreatePostForm'
-import { DataPost } from '../models/create-post'
+import { DataPost, DataPostFinal } from '../models/create-post'
 
 interface Props {
     open: boolean
     onCancel: () => void
+    handleSubmitCreatedPost: (data: DataPostFinal) => void
 }
 
 const useStyles = makeStyles(() => ({
@@ -26,8 +29,10 @@ const useStyles = makeStyles(() => ({
     }
 }))
 
-export const ModalFindRoommate = ({ open, onCancel }: Props) => {
+export const ModalFindRoommate = ({ open, onCancel, handleSubmitCreatedPost }: Props) => {
     const classes = useStyles()
+    const dispatch = useAppDispatch()
+    const [errMotel, setErrMotel] = useState('')
 
     const [listMotel, setListMotel] = useState<Array<Motel>>([])
     const [loading, setLoading] = useState(false)
@@ -37,7 +42,7 @@ export const ModalFindRoommate = ({ open, onCancel }: Props) => {
             input: '',
             suggest: []
         },
-        motels: [],
+        motel: undefined,
         additional: {
             input: '',
             suggest: []
@@ -59,14 +64,22 @@ export const ModalFindRoommate = ({ open, onCancel }: Props) => {
             })
     }, [])
 
-    const handleChangeContent = (value: string) => {
-        setDataPost(prev => ({ ...prev, content: value }))
-    }
-
     const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault()
+        if (!dataPost.motel) {
+            setErrMotel('Hãy chọn một nhà trọ mà bạn muốn tìm bạn ở ghép')
+            return
+        }
 
-        console.log(dataPost)
+        const newDataPost: DataPostFinal = {
+            ...dataPost,
+            additional: `${dataPost.additional.input}${mapTrimStringArray(dataPost.additional.suggest).join(',')}`,
+            tags: `${dataPost.tags.input}${mapTrimStringArray(dataPost.tags.suggest).join(',')}`,
+            motel: dataPost?.motel._id,
+            subjectId: '6173ba553c954151dcc8fdf8'
+        }
+
+        handleSubmitCreatedPost(newDataPost)
     }
 
     return (
@@ -82,10 +95,10 @@ export const ModalFindRoommate = ({ open, onCancel }: Props) => {
             {!loading ? <CreatePostForm
                 dataPost={dataPost}
                 setDataPost={setDataPost}
-                handleChangeContent={handleChangeContent}
                 handleSubmit={handleSubmit}
                 typePost='find-roommate'
                 listMotel={listMotel}
+                errMotel={errMotel}
             />
                 : <Box className='loading'>
                     <Loading />

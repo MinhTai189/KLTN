@@ -7,7 +7,8 @@ import { ChangeEvent, forwardRef, useEffect, useImperativeHandle, useRef, useSta
 interface Props {
     showBtnSubmit?: boolean
     placeHolder?: string
-    onChange: (value: string) => void
+    value: string
+    setValue: (state: string) => void
 }
 
 interface Areatext {
@@ -80,11 +81,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const TypingTextArea = forwardRef<Areatext, Props>(
     ({ showBtnSubmit = true,
         placeHolder = 'Hãy viết một vài bình luận...',
-        onChange
+        value,
+        setValue
     }: Props, ref) => {
         const classes = useStyles()
-
-        const [value, setValue] = useState('')
         const [showEmoji, setShowEmoji] = useState(false)
         const areaRef = useRef<HTMLElement>(null)
 
@@ -110,23 +110,11 @@ export const TypingTextArea = forwardRef<Areatext, Props>(
         }
 
         const onEmojiClick = (e: any, emojiObject: any) => {
-            setValue(prev => {
-                const result = prev + emojiObject.emoji
-
-                onChange(result)
-
-                return result
-            })
+            setValue(value + emojiObject.emoji)
         }
 
         const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-            setValue(prev => {
-                const result = e.target.value
-
-                onChange(result)
-
-                return result
-            })
+            setValue(e.target.value)
         }
 
         return (

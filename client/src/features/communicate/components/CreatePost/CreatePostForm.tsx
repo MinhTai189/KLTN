@@ -1,5 +1,7 @@
-import { Box, Button, TextField, Theme } from "@material-ui/core"
+import { Box, Button, CircularProgress, TextField, Theme } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
+import { useAppSelector } from "app/hooks"
+import { selectLoadingPost } from "features/communicate/postSlice"
 import { Motel } from "models"
 import { ChangeEvent } from "react"
 import { TypingTextArea } from "../PostView/Comment/TypingTextArea"
@@ -10,10 +12,11 @@ import { TagInput } from "./TagInput"
 interface Props {
     dataPost: DataPost
     setDataPost: (state: any) => void
-    handleChangeContent: (value: string) => void
     handleSubmit: (e: ChangeEvent<HTMLFormElement>) => void
     typePost: 'find-motel' | 'find-roommate'
     listMotel?: Motel[]
+    errSchools?: string
+    errMotel?: string
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -56,8 +59,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const CreatePostForm = ({ dataPost, setDataPost, handleChangeContent, handleSubmit, typePost, listMotel }: Props) => {
+export const CreatePostForm = ({ dataPost, setDataPost, handleSubmit, typePost, listMotel, errSchools, errMotel }: Props) => {
     const classes = useStyles()
+    const loading = useAppSelector(selectLoadingPost)
 
     return (
         <form
@@ -67,7 +71,7 @@ export const CreatePostForm = ({ dataPost, setDataPost, handleChangeContent, han
             <Box className='main-container'>
                 <div className="left-col">
                     <Box mb={2}>
-                        <label className='input-label'>Tiêu đề</label>
+                        <label className='input-label'>Tiêu đề*</label>
 
                         <TextField
                             className='name-post'
@@ -79,6 +83,7 @@ export const CreatePostForm = ({ dataPost, setDataPost, handleChangeContent, han
                             variant='outlined'
                             value={dataPost.title}
                             onChange={(e) => setDataPost((prev: DataPost) => ({ ...prev, title: e.target.value }))}
+                            required
                         />
                     </Box>
 
@@ -91,6 +96,7 @@ export const CreatePostForm = ({ dataPost, setDataPost, handleChangeContent, han
                             setInput={(e) => setDataPost((prev: DataPost) => ({ ...prev, tags: { ...prev.tags, input: e.target.value } }))}
                             suggest={dataPost.tags.suggest}
                             setSuggest={(e) => setDataPost((prev: DataPost) => ({ ...prev, tags: { ...prev.tags, suggest: e.target.value } }))}
+                            typePost={typePost}
                         />
                     </Box>
                 </div>
@@ -101,6 +107,8 @@ export const CreatePostForm = ({ dataPost, setDataPost, handleChangeContent, han
                         setDataPost={setDataPost}
                         typePost={typePost}
                         listMotel={listMotel}
+                        errSchools={errSchools}
+                        errMotel={errMotel}
                     />
                 </div>
             </Box>
@@ -111,12 +119,16 @@ export const CreatePostForm = ({ dataPost, setDataPost, handleChangeContent, han
                 <TypingTextArea
                     showBtnSubmit={false}
                     placeHolder='Hãy viết nội dung bạn muốn đăng...'
-                    onChange={handleChangeContent}
+                    value={dataPost.content}
+                    setValue={(value: string) => setDataPost((prev: DataPost) => ({ ...prev, content: value }))}
                 />
             </Box>
 
             <Box my={3}>
-                <Button fullWidth type='submit' variant='contained' color='primary' size='large'>Đăng tin</Button>
+                <Button fullWidth type='submit' variant='contained' color='primary' size='large'>
+                    {loading && <><CircularProgress color='secondary' size={15} /> &nbsp;</>}
+                    Đăng
+                </Button>
             </Box>
         </form>
     )

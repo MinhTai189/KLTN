@@ -27,7 +27,7 @@ import Table from '@ckeditor/ckeditor5-table/src/table.js';
 import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar.js';
 import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation.js';
 
-class Editor extends BalloonBlockEditor {}
+class Editor extends BalloonBlockEditor { }
 
 // Plugins to include in the build.
 Editor.builtinPlugins = [
@@ -60,22 +60,42 @@ Editor.builtinPlugins = [
 Editor.defaultConfig = {
 	toolbar: {
 		items: [
+			'heading',
+			'|',
 			'bold',
 			'italic',
-			'link'
+			'|',
+			'link',
+			'|',
+			'bulletedList',
+			'numberedList',
+			'|',
+			'undo',
+			'redo'
 		]
 	},
 	language: 'vi',
 	blockToolbar: [
 		'heading',
-		'imageUpload',
-		'mediaEmbed',
+		'|',
+		'bold',
+		'italic',
+		'|',
+		'link',
+		'|',
 		'bulletedList',
 		'numberedList',
+		'|',
 		'indent',
 		'outdent',
+		'|',
+		'imageUpload',
+		'mediaEmbed',
+		'|',
 		'insertTable',
+		'|',
 		'blockQuote',
+		'|',
 		'undo',
 		'redo'
 	],

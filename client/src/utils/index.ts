@@ -12,3 +12,4 @@ export * from './mapOptions';
 export * from './numberToCurrency';
 export * from './changeRoomToTable';
 export * from './styleChips';
+export * from './mapTrimStringArr';

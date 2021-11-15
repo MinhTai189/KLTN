@@ -1,14 +1,17 @@
-import { Box, TextField, Theme, Typography, Chip } from '@material-ui/core'
+import { Box, FormControl, FormHelperText, TextField, Theme, Typography } from '@material-ui/core'
 import { AddCircle } from '@material-ui/icons'
 import { Autocomplete } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/styles'
-import ListboxComponent from '../ListboxComponent'
-import { ComponentType, HTMLAttributes } from 'react'
-import { MotelRowOption } from './MotelRowOption'
 import { Motel } from 'models'
+import { ChangeEvent, ComponentType, HTMLAttributes } from 'react'
+import ListboxComponent from '../ListboxComponent'
+import { MotelRowOption } from './MotelRowOption'
 
 interface Props {
+    value: Motel | undefined
+    onChange: (e: ChangeEvent<{}>, value: Motel | null) => void
     listMotel: Motel[]
+    errMotel?: string
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -39,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const AutocompleteMotel = ({ listMotel }: Props) => {
+export const AutocompleteMotel = ({ listMotel, errMotel, value, onChange }: Props) => {
     const classes = useStyles()
 
     const NoOption = (
@@ -60,20 +63,26 @@ export const AutocompleteMotel = ({ listMotel }: Props) => {
     )
 
     return (
-        <Autocomplete
-            options={listMotel}
-            getOptionLabel={(option) => option.name}
-            renderOption={(option) => (
-                <MotelRowOption motel={option} />
-            )}
-            renderInput={(params) =>
-                <TextField
-                    {...params}
-                    variant="outlined"
-                    size='small'
-                />}
-            noOptionsText={NoOption}
-            ListboxComponent={ListboxComponent as ComponentType<HTMLAttributes<HTMLElement>>}
-        />
+        <FormControl fullWidth>
+            <Autocomplete
+                value={value}
+                onChange={onChange}
+                options={listMotel}
+                getOptionLabel={(option) => option.name}
+                renderOption={(option) => (
+                    <MotelRowOption motel={option} />
+                )}
+                renderInput={(params) =>
+                    <TextField
+                        {...params}
+                        variant="outlined"
+                        size='small'
+                    />}
+                noOptionsText={NoOption}
+                ListboxComponent={ListboxComponent as ComponentType<HTMLAttributes<HTMLElement>>}
+            />
+
+            {errMotel && <FormHelperText style={{ color: '#f44336' }}>{errMotel}</FormHelperText>}
+        </FormControl>
     )
 }

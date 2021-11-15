@@ -76,6 +76,7 @@ export const CommunicateSection = ({ listThread }: Props) => {
                 <Box className={classes.wrapper}>
                     {listThread.map((thread, index) => (
                         <TopicCard
+                            key={thread._id}
                             image={listImgThread[index]}
                             title={thread.name}
                             view='101'

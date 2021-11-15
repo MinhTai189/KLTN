@@ -1,7 +1,7 @@
 import 'antd/dist/antd.css';
 import { AdminRoute, NotFound, ScrollToTop } from 'components/Common';
 import { AdminLayout } from 'components/Layouts';
-import { CreatedPost } from 'features/communicate/components';
+import { CreatePost } from 'features/communicate/components';
 import { CreateReviewPage } from 'pages/CreateReviewPage';
 import HomePage from 'pages/HomePage';
 import MotelDetailPage from 'pages/MotelDetailPage';
@@ -56,7 +56,7 @@ function App() {
         </Switch>
       </ScrollToTop>
 
-      <CreatedPost />
+      <CreatePost />
     </>
   );
 }

@@ -5,12 +5,14 @@ import { useAppSelector } from 'app/hooks'
 import { Loading } from 'components/Common/Loading'
 import { selectLoadingSchool } from 'features/school/schoolSlice'
 import { ChangeEvent, useState } from 'react'
+import { mapTrimStringArray } from 'utils'
 import { CreatePostForm } from '../CreatePostForm'
-import { DataPost } from '../models/create-post'
+import { DataPost, DataPostFinal } from '../models/create-post'
 
 interface Props {
     open: boolean
     onCancel: () => void
+    handleSubmitCreatedPost: (data: DataPostFinal) => void
 }
 
 const useStyles = makeStyles(() => ({
@@ -26,10 +28,11 @@ const useStyles = makeStyles(() => ({
     }
 }))
 
-export const ModalFindMotel = ({ open, onCancel }: Props) => {
+export const ModalFindMotel = ({ open, onCancel, handleSubmitCreatedPost }: Props) => {
     const classes = useStyles()
     const loading = useAppSelector(selectLoadingSchool)
 
+    const [errSchools, setErrSchool] = useState('')
     const [dataPost, setDataPost] = useState<DataPost>({
         title: '',
         tags: {
@@ -45,14 +48,23 @@ export const ModalFindMotel = ({ open, onCancel }: Props) => {
         content: ''
     })
 
-    const handleChangeContent = (value: string) => {
-        setDataPost(prev => ({ ...prev, content: value }))
-    }
-
     const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault()
+        if (dataPost.schools && dataPost.schools.length <= 0) {
+            setErrSchool('Hãy chọn một trường bạn muốn tìm nhà trọ gần đó')
+            return;
+        }
 
-        console.log(dataPost)
+        const newDataPost: DataPostFinal = {
+            ...dataPost,
+            additional: `${dataPost.additional.input}${mapTrimStringArray(dataPost.additional.suggest).join(',')}`,
+            tags: `${dataPost.tags.input}${mapTrimStringArray(dataPost.tags.suggest).join(',')}`,
+            price: dataPost.price ? +dataPost.price : 0,
+            motel: undefined,
+            subjectId: '6173ba553c954151dcc8fdf7'
+        }
+
+        handleSubmitCreatedPost(newDataPost)
     }
 
     return (
@@ -68,9 +80,9 @@ export const ModalFindMotel = ({ open, onCancel }: Props) => {
             {!loading ? <CreatePostForm
                 dataPost={dataPost}
                 setDataPost={setDataPost}
-                handleChangeContent={handleChangeContent}
                 handleSubmit={handleSubmit}
                 typePost='find-motel'
+                errSchools={errSchools}
             />
                 : <Box className='loading'>
                     <Loading />

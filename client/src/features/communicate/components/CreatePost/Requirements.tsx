@@ -14,6 +14,8 @@ interface Props {
     setDataPost: (state: any) => void
     typePost: 'find-motel' | 'find-roommate'
     listMotel?: Motel[]
+    errSchools?: string
+    errMotel?: string
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -34,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-export const Requirements = ({ dataPost, setDataPost, typePost, listMotel }: Props) => {
+export const Requirements = ({ dataPost, setDataPost, typePost, listMotel, errSchools, errMotel }: Props) => {
     const classes = useStyles()
     const listSchool = useAppSelector(selectDataSchool)
     const loading = useAppSelector(selectLoadingSchool)
@@ -47,24 +49,30 @@ export const Requirements = ({ dataPost, setDataPost, typePost, listMotel }: Pro
             </Typography>
 
             {typePost === 'find-motel' && <Box my={2}>
-                <label className='input-label'>Chọn trường mà bạn muốn nhà trọ nằm gần đó</label>
+                <label className='input-label'>Chọn trường mà bạn muốn nhà trọ nằm gần đó*</label>
 
                 <AutoCompleteSchool
                     listSchool={listSchool}
                     value={dataPost.schools as any}
                     onChange={(e, value) => setDataPost((prev: DataPost) => ({ ...prev, schools: value }))}
                     loading={loading}
+                    err={errSchools}
                 />
             </Box>}
 
             {typePost === 'find-roommate' && <Box my={2}>
-                <label className='input-label'>Chọn nhà trọ muốn tìm bạn ở ghép</label>
+                <label className='input-label'>Chọn nhà trọ muốn tìm bạn ở ghép*</label>
 
-                <AutocompleteMotel listMotel={listMotel || []} />
+                <AutocompleteMotel
+                    listMotel={listMotel || []}
+                    errMotel={errMotel}
+                    value={dataPost.motel}
+                    onChange={(e, value) => setDataPost((prev: DataPost) => ({ ...prev, motel: value }))}
+                />
             </Box>}
 
             {typePost === 'find-motel' && <Box my={2}>
-                <label className='input-label'>Giá thuê</label>
+                <label className='input-label'>Giá thuê(khoảng)</label>
 
                 <TextField
                     type='number'
@@ -89,6 +97,7 @@ export const Requirements = ({ dataPost, setDataPost, typePost, listMotel }: Pro
                     setInput={(e: ChangeEvent<any>) => setDataPost((prev: DataPost) => ({ ...prev, additional: { ...prev.additional, input: e.target.value } }))}
                     suggest={dataPost.additional.suggest}
                     setSuggest={(e: ChangeEvent<any>) => setDataPost((prev: DataPost) => ({ ...prev, additional: { ...prev.additional, suggest: e.target.value } }))}
+                    typePost={`${typePost}-addi` as any}
                 />
             </Box>
         </Box>

@@ -5,7 +5,7 @@ export interface DataPost {
   tags: TagsAddi;
   schools?: School[];
   price?: number;
-  motels?: Motel[];
+  motel?: Motel;
   additional: TagsAddi;
   content: string;
 }
@@ -13,4 +13,12 @@ export interface DataPost {
 export interface TagsAddi {
   input: string;
   suggest: string[];
+}
+
+export interface DataPostFinal
+  extends Omit<DataPost, 'tags' | 'additional' | 'motel'> {
+  subjectId: string;
+  tags: string;
+  additional: string;
+  motel: string | undefined;
 }

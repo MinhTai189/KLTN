@@ -503,7 +503,7 @@ router.post("/", verifyToken, async (req, res) => {
     title,
     content,
     price,
-    school,
+    schools,
     additional,
     tags,
     review,
@@ -528,12 +528,6 @@ router.post("/", verifyToken, async (req, res) => {
       message: "Thiếu nội dung",
     });
   }
-  if (content.length < 50) {
-    return res.status(400).json({
-      success: false,
-      message: "Nội dung quá ngắn",
-    });
-  }
   if (typeof tags !== "string") {
     return res.status(400).json({
       success: false,
@@ -544,11 +538,7 @@ router.post("/", verifyToken, async (req, res) => {
   tags.length > 0 ? (tag = tags.split(",")) : (tag = []);
   tag = tag.map((t) => t.replace(/ /g, "").trim());
   if (subjectId === "6173ba553c954151dcc8fdf7") {
-    // tìm nhà trọ
-    console.log(price);
-    console.log(additional);
-    console.log(school);
-    if (!price || additional == undefined || !school) {
+    if (!schools) {
       return res.status(400).json({
         success: false,
         message: "Vui lòng cung cấp các yêu cầu về nhà trọ bạn muốn tìm",
@@ -565,7 +555,7 @@ router.post("/", verifyToken, async (req, res) => {
       require: {
         price,
         additional,
-        school,
+        schools,
       },
       likes: [],
       type: 1,
@@ -597,11 +587,6 @@ router.post("/", verifyToken, async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Vui lòng cung cấp nhà trọ bạn đang tạm trú",
-      });
-    if (typeof additional !== "string")
-      return res.status(400).json({
-        success: false,
-        message: "Vui lòng cung cấp các yêu cầu của bạn",
       });
 
     const newPost = new post({
