@@ -368,7 +368,6 @@ router.patch("/:id", verifyToken, async (req, res) => {
     title,
     content,
     tags,
-    review,
     block,
     status,
     motel,
@@ -436,12 +435,10 @@ router.patch("/:id", verifyToken, async (req, res) => {
   } else if (subjectId === "6173ba553c954151dcc8fdf8") {
     //tim ban o ghep
     if (motel) findPost.motel = motel;
-    console.log(findPost);
     if (additional) findPost.require.additional = additional;
     try {
       findPost.markModified("require");
       await findPost.save();
-
       return res.status(200).json({
         success: true,
         message: "Đã cập nhật bài bài viết thành công",
@@ -454,30 +451,7 @@ router.patch("/:id", verifyToken, async (req, res) => {
       });
     }
   } else if (subjectId === "6173ba553c954151dcc8fdf9") {
-    if (typeof review === "object") {
-      if (
-        typeof review.cleanup !== "number" &&
-        typeof review.road !== "number" &&
-        typeof review.price !== "number" &&
-        typeof review.quiet !== "number" &&
-        typeof review.beauty !== "number"
-      ) {
-        return res.status(400).json({
-          success: false,
-          message: "Vui lòng cung cấp đúng thông tin về các thông số đánh giá",
-        });
-      }
-      if (typeof review.beauty === "number")
-        findPost.review.beauty = review.beauty;
-      if (typeof review.quiet === "number")
-        findPost.review.quiet = review.quiet;
-      if (typeof review.price === "number")
-        findPost.review.price = review.price;
-      if (typeof review.road === "number") findPost.review.road = review.road;
-      if (typeof review.cleanup === "number")
-        findPost.review.cleanup = review.cleanup;
-    }
-
+    if (motel) findPost.motel = motel;
     try {
       await findPost.save();
       return res.status(200).json({
@@ -498,17 +472,8 @@ router.patch("/:id", verifyToken, async (req, res) => {
   }
 });
 router.post("/", verifyToken, async (req, res) => {
-  const {
-    subjectId,
-    title,
-    content,
-    price,
-    schools,
-    additional,
-    tags,
-    review,
-    motel,
-  } = req.body;
+  const { subjectId, title, content, price, schools, additional, tags, motel } =
+    req.body;
 
   if (!subjectId) {
     return res.status(400).json({
@@ -626,27 +591,12 @@ router.post("/", verifyToken, async (req, res) => {
       });
     }
   } else if (subjectId === "6173ba553c954151dcc8fdf9") {
-    if (typeof review === "object") {
-      if (
-        !(
-          typeof review.cleanup === "number" &&
-          typeof review.road === "number" &&
-          typeof review.price === "number" &&
-          typeof review.quiet === "number" &&
-          typeof review.beauty === "number"
-        )
-      ) {
-        return res.status(400).json({
-          success: false,
-          message: "Vui lòng cung cấp đúng thông tin về các thông số đánh giá",
-        });
-      }
-    } else {
+    if (!motel)
       return res.status(400).json({
         success: false,
-        message: "Vui lòng cung cấp đúng thông tin về các thông số đánh giá",
+        message: "Vui lòng cung cấp nhà trọ bạn muốn review",
       });
-    }
+
     const newPost = new post({
       title,
       unsignedTitle: removeVietNameseTones(title),
@@ -655,7 +605,7 @@ router.post("/", verifyToken, async (req, res) => {
       subject: subjectId,
       owner: req.user.id,
       likes: [],
-      review,
+      motel,
       type: 3,
     });
     if (req.user.isAdmin) newPost.valid = true;

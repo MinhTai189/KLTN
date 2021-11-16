@@ -52,31 +52,6 @@ const post = new Schema(
       type: Schema.Types.Mixed,
       required: false,
     },
-    review: {
-      type: {
-        cleanup: {
-          type: Number,
-          required: true,
-        },
-        road: {
-          type: Number,
-          required: true,
-        },
-        beauty: {
-          type: Number,
-          required: true,
-        },
-        quiet: {
-          type: Number,
-          required: true,
-        },
-        price: {
-          type: Number,
-          required: true,
-        },
-      },
-      required: false,
-    },
     likes: [
       {
         type: {
