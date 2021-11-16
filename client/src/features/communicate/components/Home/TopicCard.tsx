@@ -9,7 +9,6 @@ interface Props {
     view: number | string
     count: number | string
     listPost?: any
-    background?: string
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -80,7 +79,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const TopicCard = ({ image, title, view, count, listPost, background = '#fff' }: Props) => {
+export const TopicCard = ({ image, title, view, count, listPost }: Props) => {
     const classes = useStyles()
     const history = useHistory()
 
@@ -89,10 +88,7 @@ export const TopicCard = ({ image, title, view, count, listPost, background = '#
     }
 
     return (
-        <Card
-            className={classes.root}
-            style={{ background }}
-        >
+        <Card className={classes.root}>
             <CardActionArea
                 onClick={handleClickNavigation}
             >

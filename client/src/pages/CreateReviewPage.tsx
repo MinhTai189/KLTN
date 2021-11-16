@@ -1,10 +1,10 @@
 import { useAppDispatch } from 'app/hooks'
 import { MainLayout } from 'components/Layouts'
-import { CreateReview } from 'features/communicate/components'
-import { DataPostFinal } from 'features/communicate/components/CreatePost/models/create-post'
-import { postAction } from 'features/communicate/postSlice'
+import { DataPostFinal } from 'features/posts/components/CreatePost/models/create-post'
+import { postAction } from 'features/posts/postSlice'
 import { motelActions } from 'features/motels/motelSlice'
 import { useEffect } from 'react'
+import { CreateReview } from 'features/posts/components/CreatePost/Review/CreateReview'
 
 interface Props {
 

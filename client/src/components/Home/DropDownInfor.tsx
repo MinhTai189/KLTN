@@ -2,7 +2,7 @@ import { Avatar, Box, Divider, List, ListItem, ListItemIcon, ListItemProps, List
 import { ExitToApp } from '@material-ui/icons'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { authActions, selectCurrentUser } from 'features/auth/authSlice'
-import { showCreateModalAction } from 'features/communicate/showCreateModalSlice'
+import { showCreateModalAction } from 'features/posts/showCreateModalSlice'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 

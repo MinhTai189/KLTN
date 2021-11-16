@@ -4,7 +4,7 @@ import { useAppDispatch } from 'app/hooks'
 import Motel from 'assets/images/motel.jpg'
 import Review from 'assets/images/review.jpg'
 import RoomMate from 'assets/images/roommate.jpg'
-import { showCreateModalAction } from 'features/communicate/showCreateModalSlice'
+import { showCreateModalAction } from 'features/posts/showCreateModalSlice'
 import { useHistory } from 'react-router'
 
 interface Props {

@@ -13,3 +13,4 @@ export * from './numberToCurrency';
 export * from './changeRoomToTable';
 export * from './styleChips';
 export * from './mapTrimStringArr';
+export * from './checkCommaLastString';

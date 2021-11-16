@@ -51,17 +51,12 @@ export const ListThread = (props: Props) => {
                 </li>
                 <li className="items">
                     <Typography className='thread' variant='h6'>
-                        Đánh giá
-                    </Typography>
-                </li>
-                <li className="items">
-                    <Typography className='thread' variant='h6'>
                         Tìm bạn ở ghép
                     </Typography>
                 </li>
                 <li className="items">
                     <Typography className='thread' variant='h6'>
-                        Giao lưu, thảo luận
+                        Đánh giá
                     </Typography>
                 </li>
             </ul>

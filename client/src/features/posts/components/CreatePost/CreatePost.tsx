@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "app/hooks"
-import { postAction } from "features/communicate/postSlice"
-import { selectStatusCreateModal } from "features/communicate/showCreateModalSlice"
+import { postAction } from "features/posts/postSlice"
+import { selectStatusCreateModal } from "features/posts/showCreateModalSlice"
 import { schoolActions } from "features/school/schoolSlice"
 import { useEffect, useState } from "react"
 import { ModalFindMotel } from "./FindMotel/ModalFindMotel"

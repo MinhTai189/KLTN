@@ -1,11 +1,11 @@
 import { Box, Button, CircularProgress, makeStyles, Theme } from '@material-ui/core'
 import { useAppSelector } from 'app/hooks'
 import { BalloonCKEditor } from 'components/Common'
-import { selectLoadingPost } from 'features/communicate/postSlice'
+import { selectLoadingPost } from 'features/posts/postSlice'
 import { selectDataMotel, selectLoadingMotel } from 'features/motels/motelSlice'
 import { useRef, useState } from 'react'
 import { toast } from 'react-toastify'
-import { mapTrimStringArray } from 'utils'
+import { checkCommaLastString, mapTrimStringArray } from 'utils'
 import { AutocompleteMotel } from '../FindRommate/AutocompleteMotel'
 import { DataPost, DataPostFinal } from '../models/create-post'
 import { TagInput } from '../TagInput'
@@ -113,7 +113,7 @@ export const CreateReview = ({ handleCreateReview }: Props) => {
         const submitData: any = {
             ...reviewData,
             title: title.trim(),
-            tags: `${tags.input}${mapTrimStringArray(tags.suggest).join(',')}`,
+            tags: `${checkCommaLastString(tags.input)}${mapTrimStringArray(tags.suggest).join(',')}`,
             subjectId: '6173ba553c954151dcc8fdf9',
             motel: motel ? motel._id : ''
         }

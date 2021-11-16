@@ -1,4 +1,4 @@
-import { DataPostFinal } from 'features/communicate/components/CreatePost/models/create-post';
+import { DataPostFinal } from 'features/posts/components/CreatePost/models/create-post';
 import { Filter, ListResponse } from 'models';
 import { Post } from 'models/post';
 import axiosClient from './axiosClient';

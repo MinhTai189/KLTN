@@ -1,12 +1,11 @@
-import threadApi from 'api/thread';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Hero } from 'components/Home';
 import { MainLayout } from 'components/Layouts/MainLayout';
 import { authActions, selectIsLogged } from 'features/auth/authSlice';
 import { CommunicateSection } from 'features/communicate/components';
+import { selectDataThread, threadActions } from 'features/communicate/threadSlice';
 import { ListMotel } from 'features/motels/components';
 import { motelActions } from 'features/motels/motelSlice';
-import { Thread } from 'models/Thread';
 import { useEffect, useState } from 'react';
 
 const HomePage = () => {
@@ -14,7 +13,7 @@ const HomePage = () => {
     const filter = useAppSelector(selectIsLogged)
     const dispatch = useAppDispatch();
 
-    const [listThread, setListThread] = useState<Array<Thread>>([])
+    const listThread = useAppSelector(selectDataThread)
     const [isChangeNav, setIsChangeNav] = useState(false)
     const [hiddenScrollDown, setHiddenScrollDown] = useState(false)
 
@@ -48,9 +47,7 @@ const HomePage = () => {
         }
 
         // get list of thread
-        threadApi.get()
-            .then(res => setListThread(res.data))
-            .catch(err => console.log(err?.message))
+        !listThread && dispatch(threadActions.get())
 
         return () => {
             window.onscroll = () => { }
@@ -63,7 +60,7 @@ const HomePage = () => {
 
             <ListMotel />
 
-            {listThread.length > 0 && <CommunicateSection listThread={listThread} />}
+            <CommunicateSection />
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             {/* find motel */}
             {/* forum */}

@@ -6,14 +6,15 @@ import {
 } from '@reduxjs/toolkit';
 import { connectRouter, routerMiddleware } from 'connected-react-router';
 import authReducer from 'features/auth/authSlice';
-import postReducer from 'features/communicate/postSlice';
-import showCreateModalReducer from 'features/communicate/showCreateModalSlice';
+import postReducer from 'features/posts/postSlice';
+import showCreateModalReducer from 'features/posts/showCreateModalSlice';
 import motelReducer from 'features/motels/motelSlice';
 import schoolReducer from 'features/school/schoolSlice';
 import userReducer from 'features/users/usersSlice';
 import createSagaMiddleware from 'redux-saga';
 import { history } from 'utils';
 import rootSaga from './rootSaga';
+import threadReducer from 'features/communicate/threadSlice';
 
 const reducer = combineReducers({
   auth: authReducer,
@@ -21,6 +22,7 @@ const reducer = combineReducers({
   motels: motelReducer,
   school: schoolReducer,
   post: postReducer,
+  thread: threadReducer,
   showCreateModal: showCreateModalReducer,
   router: connectRouter(history),
 });

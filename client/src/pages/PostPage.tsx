@@ -1,6 +1,6 @@
 import { Box } from "@material-ui/core"
 import { MainLayout } from "components/Layouts/MainLayout"
-import { ListPostSection } from "features/communicate/components"
+import { ListPostSection } from "features/posts/components"
 
 
 interface Props {

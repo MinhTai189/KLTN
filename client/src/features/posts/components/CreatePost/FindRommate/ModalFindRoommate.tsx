@@ -6,7 +6,7 @@ import { useAppDispatch } from 'app/hooks'
 import { Loading } from 'components/Common/Loading'
 import { Motel } from 'models'
 import { ChangeEvent, useEffect, useState } from 'react'
-import { mapTrimStringArray } from 'utils'
+import { checkCommaLastString, mapTrimStringArray } from 'utils'
 import { CreatePostForm } from '../CreatePostForm'
 import { DataPost, DataPostFinal } from '../models/create-post'
 
@@ -73,8 +73,8 @@ export const ModalFindRoommate = ({ open, onCancel, handleSubmitCreatedPost }: P
 
         const newDataPost: DataPostFinal = {
             ...dataPost,
-            additional: `${dataPost.additional?.input}${mapTrimStringArray(dataPost.additional?.suggest || []).join(',')}`,
-            tags: `${dataPost.tags.input}${mapTrimStringArray(dataPost.tags.suggest).join(',')}`,
+            additional: `${checkCommaLastString(dataPost.additional?.input || '')}${mapTrimStringArray(dataPost.additional?.suggest || []).join(',')}`,
+            tags: `${checkCommaLastString(dataPost.tags.input)}${mapTrimStringArray(dataPost.tags.suggest).join(',')}`,
             motel: dataPost?.motel._id,
             subjectId: '6173ba553c954151dcc8fdf8'
         }

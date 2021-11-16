@@ -1,7 +1,7 @@
 import { Box, Button, CircularProgress, TextField, Theme } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
 import { useAppSelector } from "app/hooks"
-import { selectLoadingPost } from "features/communicate/postSlice"
+import { selectLoadingPost } from "features/posts/postSlice"
 import { Motel } from "models"
 import { ChangeEvent } from "react"
 import { TypingTextArea } from "../PostView/Comment/TypingTextArea"

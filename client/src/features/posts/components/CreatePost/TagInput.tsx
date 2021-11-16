@@ -1,6 +1,6 @@
 import { Box, makeStyles, MenuItem, Select, TextField, Theme, Typography } from '@material-ui/core'
 import { ChangeEvent } from 'react'
-import { listSuggest } from 'features/communicate/listSuggest'
+import { listSuggest } from 'features/posts/listSuggest'
 
 
 interface Props {

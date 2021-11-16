@@ -6,9 +6,10 @@ import RoomMate from 'assets/images/roommate.jpg'
 import { TopicCard } from "./TopicCard"
 import Logo from 'assets/images/logo.png'
 import { Thread } from "models/Thread"
+import { useAppSelector } from "app/hooks"
+import { selectDataThread } from "features/communicate/threadSlice"
 
 interface Props {
-    listThread: Array<Thread>
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -57,8 +58,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const listImgThread = [Motel, RoomMate, Review]
 
-export const CommunicateSection = ({ listThread }: Props) => {
+export const CommunicateSection = ({ }: Props) => {
     const classes = useStyles()
+    const listThread = useAppSelector(selectDataThread)
 
     return (
         <Box
@@ -74,7 +76,7 @@ export const CommunicateSection = ({ listThread }: Props) => {
                 </Typography>
 
                 <Box className={classes.wrapper}>
-                    {listThread.map((thread, index) => (
+                    {listThread && listThread.map((thread, index) => (
                         <TopicCard
                             key={thread._id}
                             image={listImgThread[index]}
