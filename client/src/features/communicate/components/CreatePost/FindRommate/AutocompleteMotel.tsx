@@ -1,4 +1,4 @@
-import { Box, FormControl, FormHelperText, TextField, Theme, Typography } from '@material-ui/core'
+import { Box, FormControl, FormHelperText, Paper, TextField, Theme, Typography } from '@material-ui/core'
 import { AddCircle } from '@material-ui/icons'
 import { Autocomplete } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/styles'
@@ -12,6 +12,7 @@ interface Props {
     onChange: (e: ChangeEvent<{}>, value: Motel | null) => void
     listMotel: Motel[]
     errMotel?: string
+    loading?: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -42,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const AutocompleteMotel = ({ listMotel, errMotel, value, onChange }: Props) => {
+export const AutocompleteMotel = ({ listMotel, errMotel, value, onChange, loading }: Props) => {
     const classes = useStyles()
 
     const NoOption = (
@@ -67,6 +68,7 @@ export const AutocompleteMotel = ({ listMotel, errMotel, value, onChange }: Prop
             <Autocomplete
                 value={value}
                 onChange={onChange}
+                loading={loading}
                 options={listMotel}
                 getOptionLabel={(option) => option.name}
                 renderOption={(option) => (

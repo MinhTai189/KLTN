@@ -12,22 +12,18 @@ const editorConfig = {
         headers: {
             Authorization: getToken().accessToken
         }
-    }
+    },
 }
 
-export const BalloonCKEditor = () => {
-    // const [data, setData] = useState('')
-
-    // console.log(data);
-
+export const BalloonCKEditor = ({ value, onChange }) => {
     return (
         <CKEditor
             editor={Editor}
             config={editorConfig}
-            data=''
+            data={value}
             onChange={(event, editor) => {
                 const data = editor.getData();
-                // setData(data)
+                onChange(data)
             }}
         />
     )

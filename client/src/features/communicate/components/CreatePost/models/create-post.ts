@@ -6,7 +6,7 @@ export interface DataPost {
   schools?: School[];
   price?: number;
   motel?: Motel;
-  additional: TagsAddi;
+  additional?: TagsAddi;
   content: string;
 }
 

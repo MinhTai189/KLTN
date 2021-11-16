@@ -1,9 +1,17 @@
-import { Box, Button, makeStyles, Theme } from '@material-ui/core'
+import { Box, Button, CircularProgress, makeStyles, Theme } from '@material-ui/core'
+import { useAppSelector } from 'app/hooks'
 import { BalloonCKEditor } from 'components/Common'
-import { useRef } from 'react'
+import { selectLoadingPost } from 'features/communicate/postSlice'
+import { selectDataMotel, selectLoadingMotel } from 'features/motels/motelSlice'
+import { useRef, useState } from 'react'
+import { toast } from 'react-toastify'
+import { mapTrimStringArray } from 'utils'
+import { AutocompleteMotel } from '../FindRommate/AutocompleteMotel'
+import { DataPost, DataPostFinal } from '../models/create-post'
 import { TagInput } from '../TagInput'
 
 interface Props {
+    handleCreateReview: (data: DataPostFinal) => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -13,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         maxWidth: 800,
         margin: 'auto',
 
-        '& > .title-input': {
+        '& .title-input': {
             width: '100%',
             resize: 'none',
             padding: theme.spacing(1),
@@ -62,15 +70,55 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const CreateReview = () => {
+export const CreateReview = ({ handleCreateReview }: Props) => {
     const classes = useStyles()
     const areaRef = useRef<HTMLAreaElement>(null)
+    const loadingCreateReview = useAppSelector(selectLoadingPost)
+
+    const listMotel = useAppSelector(selectDataMotel)
+    const loading = useAppSelector(selectLoadingMotel)
+    const [reviewData, setReviewData] = useState<DataPost>({
+        title: '',
+        tags: {
+            input: '',
+            suggest: [],
+        },
+        motel: undefined,
+        content: ''
+    })
 
     const handleGrowArea = () => {
         if (areaRef.current) {
             areaRef.current.style.height = "96px";
             areaRef.current.style.height = (areaRef.current.scrollHeight) + "px";
         }
+    }
+
+    const handleSubmit = () => {
+        const { title, tags, motel, content } = reviewData
+        let errMessage = 'Hãy bổ sung đầy đủ thông tin: '
+
+        if (title.trim() === '')
+            errMessage += 'Tiêu đề bài viết,'
+        if (content === '')
+            errMessage += 'Nội dung bài viết,'
+        if (motel === undefined)
+            errMessage += 'Chọn một nhà trọ bạn muốn đánh giá'
+
+        if (errMessage !== 'Hãy bổ sung đầy đủ thông tin: ') {
+            toast.error(errMessage)
+            return
+        }
+
+        const submitData: any = {
+            ...reviewData,
+            title: title.trim(),
+            tags: `${tags.input}${mapTrimStringArray(tags.suggest).join(',')}`,
+            subjectId: '6173ba553c954151dcc8fdf9',
+            motel: motel ? motel._id : ''
+        }
+
+        handleCreateReview(submitData)
     }
 
     return (
@@ -80,9 +128,27 @@ export const CreateReview = () => {
                 placeholder='Nhập tiêu đề vào đây...'
                 ref={areaRef as any}
                 onInput={handleGrowArea}
+                value={reviewData.title}
+                onChange={(e) => setReviewData(prev => ({ ...prev, title: e.target.value }))}
             />
 
-            <BalloonCKEditor />
+            <BalloonCKEditor
+                value={reviewData.content}
+                onChange={(data: string) => setReviewData(prev => ({ ...prev, content: data }))}
+            />
+
+            <Box className='tags-wrapper'>
+                <label className='label'>
+                    Chọn một nhà trọ bạn muốn đánh giá:
+                </label>
+
+                <AutocompleteMotel
+                    listMotel={listMotel}
+                    value={reviewData.motel}
+                    onChange={(e, value) => setReviewData(prev => ({ ...prev, motel: value || undefined }))}
+                    loading={loading}
+                />
+            </Box>
 
             <Box className='tags-wrapper'>
                 <label className='label'>
@@ -90,11 +156,11 @@ export const CreateReview = () => {
                 </label>
 
                 <TagInput
-                    placeHolder=''
-                    input=''
-                    setInput={() => { }}
-                    suggest={[]}
-                    setSuggest={() => { }}
+                    placeHolder='Nhập tag(VD: danhgianhatro,anninh)'
+                    input={reviewData.tags.input}
+                    setInput={(e) => setReviewData((prev: DataPost) => ({ ...prev, tags: { ...prev.tags, input: e.target.value } }))}
+                    suggest={reviewData.tags.suggest}
+                    setSuggest={(e) => setReviewData((prev: DataPost) => ({ ...prev, tags: { ...prev.tags, suggest: e.target.value } }))}
                     typePost='review'
                 />
             </Box>
@@ -104,8 +170,10 @@ export const CreateReview = () => {
                 variant='contained'
                 fullWidth
                 size='large'
+                onClick={handleSubmit}
             >
-                Lưu
+                {loadingCreateReview && <><CircularProgress color='secondary' size={15} /> &nbsp;</>}
+                Đăng
             </Button>
         </Box>
     )

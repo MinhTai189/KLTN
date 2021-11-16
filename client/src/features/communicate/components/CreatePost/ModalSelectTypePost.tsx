@@ -5,6 +5,7 @@ import Motel from 'assets/images/motel.jpg'
 import Review from 'assets/images/review.jpg'
 import RoomMate from 'assets/images/roommate.jpg'
 import { showCreateModalAction } from 'features/communicate/showCreateModalSlice'
+import { useHistory } from 'react-router'
 
 interface Props {
     open: boolean
@@ -67,6 +68,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const ModalSelectTypePost = ({ open, setTypeModalOpen }: Props) => {
     const classes = useStyles()
     const dispatch = useAppDispatch()
+    const history = useHistory()
 
     const options = [
         { img: Motel, label: 'Tìm nhà trọ' },
@@ -97,7 +99,12 @@ export const ModalSelectTypePost = ({ open, setTypeModalOpen }: Props) => {
                 <ul className="list-option">
                     {options.map((option, index) => (
                         <li className='option'>
-                            <Button onClick={() => handleClickSelectPost(index + 1)}>
+                            <Button
+                                onClick={() => {
+                                    handleClickSelectPost(index + 1)
+                                    index === 2 && history.push('/create-post/review')
+                                }}
+                            >
                                 <img src={option.img} className="icon" />
 
                                 <Typography className='label'>

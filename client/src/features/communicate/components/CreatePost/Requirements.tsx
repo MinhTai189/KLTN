@@ -93,9 +93,9 @@ export const Requirements = ({ dataPost, setDataPost, typePost, listMotel, errSc
 
                 <TagInput
                     placeHolder='Nhập thông tin bổ sung(VD: an ninh,yên tĩnh)'
-                    input={dataPost.additional.input}
+                    input={dataPost.additional?.input || ''}
                     setInput={(e: ChangeEvent<any>) => setDataPost((prev: DataPost) => ({ ...prev, additional: { ...prev.additional, input: e.target.value } }))}
-                    suggest={dataPost.additional.suggest}
+                    suggest={dataPost.additional?.suggest || []}
                     setSuggest={(e: ChangeEvent<any>) => setDataPost((prev: DataPost) => ({ ...prev, additional: { ...prev.additional, suggest: e.target.value } }))}
                     typePost={`${typePost}-addi` as any}
                 />

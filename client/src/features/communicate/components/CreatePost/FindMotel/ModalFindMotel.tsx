@@ -57,7 +57,7 @@ export const ModalFindMotel = ({ open, onCancel, handleSubmitCreatedPost }: Prop
 
         const newDataPost: DataPostFinal = {
             ...dataPost,
-            additional: `${dataPost.additional.input}${mapTrimStringArray(dataPost.additional.suggest).join(',')}`,
+            additional: `${dataPost.additional?.input}${mapTrimStringArray(dataPost.additional?.suggest || []).join(',')}`,
             tags: `${dataPost.tags.input}${mapTrimStringArray(dataPost.tags.suggest).join(',')}`,
             price: dataPost.price ? +dataPost.price : 0,
             motel: undefined,

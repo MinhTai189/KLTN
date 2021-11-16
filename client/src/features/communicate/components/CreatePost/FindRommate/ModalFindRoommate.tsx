@@ -73,7 +73,7 @@ export const ModalFindRoommate = ({ open, onCancel, handleSubmitCreatedPost }: P
 
         const newDataPost: DataPostFinal = {
             ...dataPost,
-            additional: `${dataPost.additional.input}${mapTrimStringArray(dataPost.additional.suggest).join(',')}`,
+            additional: `${dataPost.additional?.input}${mapTrimStringArray(dataPost.additional?.suggest || []).join(',')}`,
             tags: `${dataPost.tags.input}${mapTrimStringArray(dataPost.tags.suggest).join(',')}`,
             motel: dataPost?.motel._id,
             subjectId: '6173ba553c954151dcc8fdf8'

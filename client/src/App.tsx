@@ -1,5 +1,5 @@
 import 'antd/dist/antd.css';
-import { AdminRoute, NotFound, ScrollToTop } from 'components/Common';
+import { AdminRoute, NotFound, ScrollToTop, UserRoute } from 'components/Common';
 import { AdminLayout } from 'components/Layouts';
 import { CreatePost } from 'features/communicate/components';
 import { CreateReviewPage } from 'pages/CreateReviewPage';
@@ -38,9 +38,9 @@ function App() {
             <PostPage />
           </Route>
 
-          <Route path='/create-post/review'>
+          <UserRoute path='/create-post/review'>
             <CreateReviewPage />
-          </Route>
+          </UserRoute>
 
           <Route path="/auth">
             <Auth />
