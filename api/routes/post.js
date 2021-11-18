@@ -312,6 +312,8 @@ router.get("/:id", async (req, res) => {
           return image.url;
         }),
       };
+    const comments = await commentModel.find({ post: responsePost._id });
+    responsePost.numComments = comments.length;
     res.status(200).json({ success: true, data: responsePost });
     await subjectModel.findByIdAndUpdate(findPost.subject._id, {
       $inc: { views: 1 },

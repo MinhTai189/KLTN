@@ -13,6 +13,105 @@ const review = require("../models/review");
 const comment = require("../models/comment");
 const router = express.Router();
 
+router.delete("/", async (req, res) => {
+  const { _id1, _id2, _type } = req.query;
+  if (_type === "post") {
+    const deletePostInvalid = await post.findOneAndDelete({
+      _id: _id1,
+      valid: false,
+    });
+    if (!deletePostInvalid)
+      return res
+        .status(400)
+        .json({ success: false, message: "Không tìm thây bài viết" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Đã xóa thông tin này" });
+  } else if (_type === "report") {
+    const deleteReport = await report.findByIdAndDelete(_id1);
+
+    if (!deleteReport)
+      return res
+        .status(400)
+        .json({ success: false, message: "Không tìm thấy report này" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Đã xóa thông tin này" });
+  } else if (_type === "rate") {
+    const getMotelRating = await motel.findById(_id1);
+    if (!getMotelRating)
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm thấy đánh giá này hoặc đã bị xóa",
+      });
+    const getRate = getMotelRating.rate.find((item) => {
+      return JSON.stringify(_id2) === JSON.stringify(item._id);
+    });
+    if (!getRate)
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm thấy đánh giá này hoặc đánh giá đã bị xóa",
+      });
+    try {
+      await motel.findOneAndUpdate(
+        { _id: _id1 },
+        {
+          $pull: { rate: { _id: _id2 } },
+        }
+      );
+      return res
+        .status(200)
+        .json({ success: true, message: "Đã xóa thông tin này" });
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Lỗi không xác định" });
+    }
+  } else if (_type === "room") {
+    const getNewUpdateRoom = await userUpdateRoom.findByIdAndDelete(_id1);
+    if (!getNewUpdateRoom)
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm thấy thông tin cập nhật nhật này",
+      });
+    else
+      return res
+        .status(200)
+        .json({ success: true, message: "Đã xóa thông tin này" });
+  } else if (_type === "motel") {
+    const motelNewUpdate = await userUpdateMotel.findByIdAndDelete(_id1);
+    if (!motelNewUpdate)
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm được thông tin cập nhật này",
+      });
+    return res
+      .status(200)
+      .json({ success: true, message: "Đã xóa thông tin này" });
+  } else if (_type === "new-motel") {
+    const newMotel = await unapprovedMotel.findByIdAndDelete(_id1);
+    if (!newMotel)
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm thấy thông tin nhà trọ này",
+      });
+    return res
+      .status(200)
+      .json({ success: true, message: "Đã xóa thông tin này" });
+  } else if (_type === "feedback") {
+    const getFeedBack = await feedBack.findByIdAndDelete(_id1);
+    if (!getFeedBack)
+      return res.status(400).json({
+        success: false,
+        message: "Không tìm thấy phản hồi này",
+      });
+    return res
+      .status(200)
+      .json({ success: true, message: "Đã xóa thông tin này" });
+  }
+});
+
 router.get("/details", async (req, res) => {
   const { _id1, _id2, _type } = req.query;
   let response;
