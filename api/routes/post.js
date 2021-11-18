@@ -314,6 +314,7 @@ router.get("/:id", async (req, res) => {
       };
     const comments = await commentModel.find({ post: responsePost._id });
     responsePost.numComments = comments.length;
+    responsePost.totalLikes = responsePost.likes.length;
     res.status(200).json({ success: true, data: responsePost });
     await subjectModel.findByIdAndUpdate(findPost.subject._id, {
       $inc: { views: 1 },
