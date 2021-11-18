@@ -327,7 +327,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1
 ###
 POST http://localhost:5000/api/comments/likes/618a70c328c53b2415056829
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzY1MDM0NTIsImV4cCI6MTYzNjUwNDA1Mn0.5s4QJ2c_OKZz3Pg37kOvTYhpdtNE4GS-DWqZyXgamCU
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNzIyNjMyNCwiZXhwIjoxNjM3MjI2OTI0fQ.jMargoTDXzVKZWwIhfU51e5Dtelx2VuJYteYBC8qoM8
 
 {
     "type":2

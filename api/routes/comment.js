@@ -171,10 +171,11 @@ router.get("/", async (req, res) => {
         owner: owner,
         likes: comments[i].likes.map((like) => {
           return {
-            ...like,
-            owner: { ...like.owner, avatarUrl: like.owner.avatarUrl.url },
+            ...like._doc,
+            owner: { ...like.owner._doc, avatarUrl: like.owner.avatarUrl.url },
           };
         }),
+
         numLikes: [
           comments[i].likes.filter((like) => like.type === 1).length,
           comments[i].likes.filter((like) => like.type === 2).length,
@@ -183,6 +184,7 @@ router.get("/", async (req, res) => {
           comments[i].likes.filter((like) => like.type === 5).length,
           comments[i].likes.filter((like) => like.type === 6).length,
         ],
+        totalLikes: comments[i].likes.length,
       });
     }
     responseComments = responseComments.sort((cmt1, cmt2) => {
