@@ -51,10 +51,10 @@ router.post("/likes/:id", verifyToken, async (req, res) => {
         return JSON.stringify(item.owner) === JSON.stringify(req.user.id);
       })
     )
-      return res
-        .status(400)
-        .json({ success: false, message: "Đã like bình luận rồi" });
-    findComment.likes.push({
+      findComment.likes.filter((item) => {
+        return JSON.stringify(item.owner) !== JSON.stringify(req.user.id);
+      });
+    findComment.likes = findComment.likes.push({
       type: parseInt(type),
       owner: req.user.id,
     });

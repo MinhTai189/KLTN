@@ -293,10 +293,10 @@ GET http://localhost:5000/api/approves
 ###
 POST http://localhost:5000/api/posts/likes/6195d0ea8b995acd0afd726d
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNzI4MjMxNiwiZXhwIjoxNjM3MjgyOTE2fQ.pkVgMknKtdcTWEd_irYY-OBaPiOcvJFX7W4o9n_9BFE
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNzMwOTU1OSwiZXhwIjoxNjM3MzEwMTU5fQ.EshiQv5dX5Rs7TPiINzwQtc6UxdA2S-ixRV6WLsVH7Y
 
 {
-    "type":2
+    "type":6
 }
 ###
 DELETE http://localhost:5000/api/posts/likes/6195d0ea8b995acd0afd726d

@@ -98,9 +98,10 @@ router.post("/likes/:id", verifyToken, async (req, res) => {
         return JSON.stringify(item.owner) === JSON.stringify(req.user.id);
       })
     )
-      return res
-        .status(400)
-        .json({ success: false, message: "Đã like bài viết rồi" });
+      findPost.likes = findPost.likes.filter((item) => {
+        return JSON.stringify(item.owner) !== JSON.stringify(req.user.id);
+      });
+
     findPost.likes.push({
       type: parseInt(type),
       owner: req.user.id,
