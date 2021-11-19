@@ -45,17 +45,17 @@ router.post("/likes/:id", verifyToken, async (req, res) => {
     if (!findComment)
       return res
         .status(400)
-        .json({ success: false, message: "Không tìm thấy bài viết" });
+        .json({ success: false, message: "Không tìm thấy bình luận" });
     if (
       findComment.likes.some((item) => {
         return JSON.stringify(item.owner) === JSON.stringify(req.user.id);
       })
     )
-      return res
-        .status(400)
-        .json({ success: false, message: "Đã like bình luận rồi" });
-    findComment.likes.push({
-      type: type,
+      findComment.likes.filter((item) => {
+        return JSON.stringify(item.owner) !== JSON.stringify(req.user.id);
+      });
+    findComment.likes = findComment.likes.push({
+      type: parseInt(type),
       owner: req.user.id,
     });
     await findComment.save();
@@ -69,7 +69,6 @@ router.post("/likes/:id", verifyToken, async (req, res) => {
 });
 router.post("/:idPost", verifyToken, async (req, res) => {
   try {
-    console.log(req.body);
     const postId = req.params.idPost;
     const findPost = await post.findById(postId);
 
@@ -86,7 +85,7 @@ router.post("/:idPost", verifyToken, async (req, res) => {
         .status(403)
         .json({ success: false, message: "Khổng thể thực hiện hành động này" });
 
-    const { content, reply } = req.body;
+    const { content, commentId } = req.body;
     if (typeof content !== "string")
       return res.status(400).json({
         success: false,
@@ -97,28 +96,25 @@ router.post("/:idPost", verifyToken, async (req, res) => {
       owner: req.user.id,
       post: postId,
     });
-    if (reply) {
-      if (!reply.comment)
-        return res.status(400).json({
-          success: false,
-          message: "Vui lòng cho biết Comment bạn muốn trả lời",
-        });
-      const check = await comment.exists({
-        _id: reply.comment,
+    if (commentId) {
+      const check = await comment.findOne({
+        _id: commentId,
         post: findPost._id,
       });
       if (!check)
         return res.status(400).json({
           success: false,
           message:
-            "Comment bạn đang trả lời không tồm tại hoặc không thuộc bài viết này",
+            "Bình luận bạn đang trả lời không tồn tại hoặc không thuộc bài viết này",
         });
-      if (!reply.user)
+      if (check.reply)
         return res.status(400).json({
           success: false,
-          message: "Vui lòng cho biết người bạn muốn trả lời",
+          message:
+            "Bình luận bạn đang trả lời là bình luận đã trả lời bình luận khác",
         });
-      newComment.reply = reply;
+
+      newComment.reply = { comment: commentId };
     }
 
     await newComment.save();
@@ -135,7 +131,6 @@ router.get("/", async (req, res) => {
     const comments = await comment
       .find({})
       .populate("owner")
-      .populate("reply.user", "_id name")
       .populate("post", "title _id subject")
       .populate("likes.owner", "name avatarUrl rank");
     const {
@@ -166,6 +161,7 @@ router.get("/", async (req, res) => {
         posts: comments[i].owner.posts,
         rank: comments[i].owner.rank,
       };
+
       responseComments.push({
         ...comments[i]._doc,
         owner: owner,
@@ -187,6 +183,7 @@ router.get("/", async (req, res) => {
         totalLikes: comments[i].likes.length,
       });
     }
+
     responseComments = responseComments.sort((cmt1, cmt2) => {
       return new Date(cmt2.createdAt) - new Date(cmt1.createdAt);
     });
@@ -241,7 +238,41 @@ router.get("/", async (req, res) => {
       responseComments = responseComments.filter((item) => {
         return JSON.stringify(item.post.subject) === JSON.stringify(_subject);
       });
-
+    let deleteComment = [];
+    for (let i = 0; i < responseComments.length; i++) {
+      if (!responseComments[i].reply) responseComments[i].reply = [];
+      for (let j = 0; j < responseComments.length; j++) {
+        if (responseComments[j].reply)
+          if (!Array.isArray(responseComments[j].reply))
+            if (
+              JSON.stringify(responseComments[j].reply.comment) ===
+              JSON.stringify(responseComments[i]._id)
+            ) {
+              responseComments[i].reply.push({ ...responseComments[j] });
+              delete responseComments[i].reply[
+                responseComments[i].reply.length - 1
+              ].reply;
+              delete responseComments[i].reply[
+                responseComments[i].reply.length - 1
+              ].post;
+              responseComments[i].reply[
+                responseComments[i].reply.length - 1
+              ].user = responseComments[i].owner;
+              deleteComment.push(responseComments[j]._id);
+              // responseComments = responseComments.filter((item) => {
+              //   return (
+              //     JSON.stringify(item._id) !==
+              //     JSON.stringify(responseComments[j]._id)
+              //   );
+              // });
+            }
+      }
+    }
+    for (let i = 0; i < deleteComment.length; i++) {
+      responseComments = responseComments.filter((item) => {
+        return JSON.stringify(item._id) !== JSON.stringify(deleteComment[i]);
+      });
+    }
     let page = 1;
     let limit = responseComments.length;
     let totalRows = responseComments.length;
