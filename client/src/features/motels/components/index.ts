@@ -15,3 +15,4 @@ export * from './Motel/ListMotelSection';
 export * from './Motel/MotelItem';
 export * from './Motel/Controls';
 export * from './Motel/FilterSider';
+export * from './MotelDetail/PreviewImages';

@@ -1,7 +1,7 @@
 import { Box, Theme, Avatar } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { ReactElement } from 'react'
-import { TotalAction } from '../Common/TotalAction'
+import { TotalAction } from '../../../posts/components/PostView/Common/TotalAction'
 
 interface Props {
     children?: ReactElement

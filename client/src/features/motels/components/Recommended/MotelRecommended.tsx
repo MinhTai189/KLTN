@@ -1,7 +1,5 @@
-import { Box, Card, CardActionArea, CardContent, CardMedia, makeStyles, Theme, Typography, Divider } from '@material-ui/core'
+import { Card, CardActionArea, CardContent, CardMedia, makeStyles, Theme, Typography } from '@material-ui/core'
 import { DateRange, LocationOn } from '@material-ui/icons'
-import { ChipCustom } from 'components/Common'
-import { styleChips } from 'utils'
 
 interface Props {
 
@@ -9,11 +7,12 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        width: 220,
+        width: '100%',
+        boxShadow: theme.shadows[3],
 
         '& .thumbnail': {
             width: '100%',
-            height: 150,
+            height: 120,
             objectFit: 'cover'
         },
 
@@ -21,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) => ({
             padding: theme.spacing(1),
 
             '& .name': {
-                fontSize: '1em',
+                fontSize: '0.95em',
                 marginBottom: 4,
                 color: theme.palette.primary.main,
                 fontWeight: 500
@@ -36,21 +35,16 @@ const useStyles = makeStyles((theme: Theme) => ({
                     '& .info': {
                         display: 'flex',
                         alignItems: 'center',
-                        fontSize: '0.7em',
+                        fontSize: '0.8em',
 
                         '& > svg': {
-                            width: '0.55em',
-                            height: '0.55em',
-                            marginRight: 4,
+                            width: '0.6em',
+                            height: '0.6em',
+                            marginRight: 8,
                         }
                     }
                 }
             },
-
-            '& .chips': {
-                display: 'flex',
-                justifyContent: 'space-between'
-            }
         },
     }
 }))
@@ -91,28 +85,6 @@ export const MotelRecommended = (props: Props) => {
 
                                 20/10/2021
                             </Typography>
-                        </li>
-                    </ul>
-
-                    <Divider style={{ marginBottom: 4, }} />
-
-                    <ul className='chips'>
-                        <li className='chip'>
-                            <ChipCustom
-                                style={styleChips.green}
-                                label={'Còn phòng'}
-                                size='small'
-                                color='primary'
-                            />
-                        </li>
-
-                        <li className='chip'>
-                            <ChipCustom
-                                style={styleChips.blue}
-                                label='500k-800k/tháng'
-                                size='small'
-                                color='primary'
-                            />
                         </li>
                     </ul>
                 </CardContent>

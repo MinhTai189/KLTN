@@ -1,13 +1,16 @@
 import { Box, Theme, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
-import { Modal } from "components/Common"
+import { LikePost } from "models"
 import { useState } from "react"
 import { ListTool } from "../Common/ListTool"
 import { TotalAction } from "../Common/TotalAction"
 import { ModalStaticAction } from "./ModalStaticAction"
 
 interface Props {
-
+    listLike: LikePost[]
+    staticLike: number[]
+    quantityLike: number;
+    quantityComment: number
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -51,32 +54,35 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const StaticAction = (props: Props) => {
+export const StaticAction = ({ listLike, quantityComment, quantityLike, staticLike }: Props) => {
     const classes = useStyles()
     const [showModalStatic, setShowModalStatic] = useState(false)
 
     return (
         <Box className={classes.root}>
             <span className="total-action-cmt">
-                <span
+                {quantityLike > 0 && <span
                     className="total-action"
                     onClick={() => setShowModalStatic(true)}
                 >
-                    <TotalAction />
-                </span>
+                    <TotalAction
+                        staticLike={staticLike}
+                        quantityLike={quantityLike}
+                    />
+                </span>}
 
-                <span className="dot">
-                </span>
+                {quantityLike > 0 && quantityComment > 0 && <span className="dot">
+                </span>}
 
-                <span className="total-cmt">
+                {quantityComment > 0 && <span className="total-cmt">
                     <Typography className='number'>
-                        48
+                        {quantityComment}
                     </Typography>
 
                     <Typography className='text'>
                         bình luận
                     </Typography>
-                </span>
+                </span>}
 
                 <span style={{ flex: 1 }} />
 

@@ -1,4 +1,4 @@
-import { School, User } from 'models';
+import { Motel, School, User } from 'models';
 import { Thread } from './Thread';
 
 export interface Post {
@@ -7,20 +7,29 @@ export interface Post {
   title: string;
   subject: Thread;
   content: string;
-  hashTag: string[];
+  tags: string[];
   status: boolean;
   block: boolean;
   type: number;
-  school: School[];
+  motel: Motel;
   valid: boolean;
-  require: string[];
+  require: Require;
   likes: LikePost[];
+  numLikes: number[];
+  totalLikes: number;
+  numComments: number;
   createdAt: string;
   updatedAt: string;
 }
 
-interface LikePost {
+export interface LikePost {
   type: number;
   owner: User;
   _id: string;
+}
+
+export interface Require {
+  school: School[];
+  price: number;
+  additional: string;
 }

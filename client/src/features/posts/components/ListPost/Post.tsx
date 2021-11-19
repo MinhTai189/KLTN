@@ -87,7 +87,7 @@ export const Post = (props: Props) => {
 
     return (
         <Box className={classes.root}>
-            <Link to='/posts/1234'>
+            <Link to='/posts/6192460b323cc83d776daa43'>
                 <Typography
                     variant='h5'
                     className='title'

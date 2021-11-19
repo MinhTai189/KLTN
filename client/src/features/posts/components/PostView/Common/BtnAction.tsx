@@ -1,12 +1,15 @@
-import { Box, makeStyles, Button } from '@material-ui/core'
-import { ReactElement } from 'react'
+import { Box, Button, makeStyles } from '@material-ui/core'
+import { FavoriteTwoTone } from '@material-ui/icons'
+import { useAction } from 'hooks'
 import { Actions } from './Actions'
 
 interface Props {
-    icon?: ReactElement
     sizeBtn?: 'large' | 'medium' | 'small'
     positionAction?: 'left' | 'right'
     sizeAction?: 'small' | 'large'
+    isLike: boolean
+    type: number
+    handleLike: (type: number, isClickBtn?: boolean) => void
 }
 
 const useStyles = makeStyles({
@@ -14,10 +17,17 @@ const useStyles = makeStyles({
         position: 'relative',
 
         '& .btn-action': {
-            '& svg': {
+            '& div': {
                 width: 20,
                 height: 20,
-            }
+                display: 'grid',
+                placeItems: 'center',
+
+                '& svg': {
+                    width: '100%',
+                    height: '100%',
+                }
+            },
         },
 
         '&:hover .action-wrapper': {
@@ -37,8 +47,9 @@ const useStyles = makeStyles({
     }
 })
 
-export const BtnAction = ({ icon, sizeBtn = 'medium', positionAction = 'right', sizeAction = 'large' }: Props) => {
+export const BtnAction = ({ sizeBtn = 'medium', positionAction = 'right', sizeAction = 'large', isLike, type, handleLike }: Props) => {
     const classes = useStyles()
+    const listAction = useAction()
 
     return (
         <Box
@@ -47,10 +58,14 @@ export const BtnAction = ({ icon, sizeBtn = 'medium', positionAction = 'right', 
         >
             <Button
                 className='btn btn-action'
-                startIcon={icon}
+                startIcon={isLike ? listAction[type].icon : <FavoriteTwoTone />}
                 size={sizeBtn}
+                style={{
+                    color: isLike ? listAction[type].color : ''
+                }}
+                onClick={() => handleLike(0, true)}
             >
-                Thích
+                {isLike ? listAction[type].label : 'Thích'}
             </Button>
 
             <Box
@@ -61,7 +76,10 @@ export const BtnAction = ({ icon, sizeBtn = 'medium', positionAction = 'right', 
                     bottom: sizeAction === 'large' ? '150%' : '100%'
                 }}
             >
-                <Actions size={sizeAction} />
+                <Actions
+                    size={sizeAction}
+                    handleLike={handleLike}
+                />
             </Box>
         </Box>
     )

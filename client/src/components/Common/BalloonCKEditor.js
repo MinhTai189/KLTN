@@ -4,6 +4,9 @@ import { getToken } from 'utils';
 
 const editorConfig = {
     placeholder: 'Gõ nội dung vào đây. Kéo & thả hình để chèn vào bài. Chọn các đoạn chữ để hiện công cụ định dạng...',
+    mediaEmbed: {
+        previewsInData: true
+    },
     simpleUpload: {
         // The URL that the images are uploaded to.
         uploadUrl: 'http://localhost:5000/api/uploads/posts',

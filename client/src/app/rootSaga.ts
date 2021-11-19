@@ -5,6 +5,7 @@ import schoolSaga from 'features/school/schoolSaga';
 import userSaga from 'features/users/usersSaga';
 import { all, call } from 'redux-saga/effects';
 import threadSaga from 'features/communicate/threadSaga';
+import commentSaga from 'features/comment/commentSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -14,5 +15,6 @@ export default function* rootSaga() {
     call(postSaga),
     call(schoolSaga),
     call(threadSaga),
+    call(commentSaga),
   ]);
 }

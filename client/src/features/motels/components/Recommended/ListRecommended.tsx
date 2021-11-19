@@ -1,6 +1,5 @@
-import { Box, makeStyles } from "@material-ui/core"
+import { makeStyles } from "@material-ui/core"
 import { MotelRecommended } from "./MotelRecommended"
-import Carousel from 'react-elastic-carousel'
 
 interface Props {
 
@@ -8,10 +7,9 @@ interface Props {
 
 const useStyles = makeStyles({
     root: {
-        display: 'flex',
-
-        '& > .items': {
-        }
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+        gap: 15,
     },
 })
 
@@ -19,21 +17,10 @@ export const ListRecommended = (props: Props) => {
     const classes = useStyles()
 
     return (
-        <Carousel
-            className={classes.root}
-            itemsToShow={3}
-            isRTL={false}
-            showArrows={false}
-            pagination={false}
-        >
-            {new Array(5).fill(10).map((item, index) => (
-                <Box
-                    key={index}
-                    className='items'
-                >
-                    <MotelRecommended />
-                </Box>
+        <ul className={classes.root}>
+            {new Array(4).fill(10).map((item, index) => (
+                <MotelRecommended />
             ))}
-        </Carousel>
+        </ul>
     )
 }

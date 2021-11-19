@@ -1,18 +1,19 @@
-import { makeStyles, Avatar, Box, Theme } from '@material-ui/core'
-import { useState, useRef } from 'react'
+import { Avatar, Box, Theme } from '@material-ui/core'
+import { makeStyles } from '@material-ui/styles'
+import { useRef, useState } from 'react'
 import { CommentBody } from './CommentBody'
-import { CommentLayout } from '../Layout/CommentLayout'
+import { CommentLayout } from './Layout/CommentLayout'
+import { ListSubComment } from './ListSubComent'
 import { TypingComment } from './TypingComment'
 
 interface Props {
-
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {},
 }))
 
-export const Subcomment = (props: Props) => {
+export const Comment = ({ }: Props) => {
     const classes = useStyles()
     const [typing, setTyping] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -43,8 +44,11 @@ export const Subcomment = (props: Props) => {
                         sizeAction='small'
                         positionAction='left'
                     />
-
-                    {typing && <TypingComment isRely ref={inputRef} />}
+                    {/* 
+                    {typing && <TypingComment
+                        isRely
+                        ref={inputRef} />} */}
+                    <ListSubComment />
                 </>
             </CommentLayout>
         </Box>

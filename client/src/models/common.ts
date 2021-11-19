@@ -18,6 +18,7 @@ export interface Filter {
   _sort?: string;
   _namelike?: string;
   _school?: string | string[];
+  _post?: string;
   _district?: string;
   _province?: string;
   _role?: string;

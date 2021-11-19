@@ -4,6 +4,8 @@ import { useAction } from 'hooks'
 
 interface Props {
     size?: 'large' | 'small'
+    staticLike: number[]
+    quantityLike: number
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -54,7 +56,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const TotalAction = ({ size = 'large' }: Props) => {
+export const TotalAction = ({ size = 'large', staticLike, quantityLike }: Props) => {
     const classes = useStyles()
     const listAction = useAction()
 
@@ -64,8 +66,10 @@ export const TotalAction = ({ size = 'large' }: Props) => {
             component='span'
         >
             <span className="list-icon">
-                {listAction.slice(0, 1).map((item, index, arr) => {
+                {staticLike.map((item, index, arr) => {
                     const zIndex = arr.length - index
+
+                    if (item <= 0) return null
 
                     return (
                         <span
@@ -73,7 +77,7 @@ export const TotalAction = ({ size = 'large' }: Props) => {
                             className="icon"
                             style={{ zIndex }}
                         >
-                            {item.icon}
+                            {listAction[index]}
                         </span>
                     )
                 })}
@@ -83,7 +87,7 @@ export const TotalAction = ({ size = 'large' }: Props) => {
                 className="number"
                 component='span'
             >
-                99
+                {quantityLike}
             </Typography>
         </Box >
     )

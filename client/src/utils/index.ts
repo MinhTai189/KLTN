@@ -14,3 +14,4 @@ export * from './changeRoomToTable';
 export * from './styleChips';
 export * from './mapTrimStringArr';
 export * from './checkCommaLastString';
+export * from './checkLikePostComment';

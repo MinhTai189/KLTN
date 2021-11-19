@@ -5,3 +5,5 @@ export * from './District';
 export * from './School';
 export * from './Motel';
 export * from './Rate';
+export * from './Post';
+export * from './Comment';

@@ -15,6 +15,7 @@ import createSagaMiddleware from 'redux-saga';
 import { history } from 'utils';
 import rootSaga from './rootSaga';
 import threadReducer from 'features/communicate/threadSlice';
+import commentReducer from 'features/comment/commentSlice';
 
 const reducer = combineReducers({
   auth: authReducer,
@@ -23,6 +24,7 @@ const reducer = combineReducers({
   school: schoolReducer,
   post: postReducer,
   thread: threadReducer,
+  comment: commentReducer,
   showCreateModal: showCreateModalReducer,
   router: connectRouter(history),
 });

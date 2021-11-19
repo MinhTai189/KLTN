@@ -1,11 +1,10 @@
 import { Box, Theme, Typography, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
+import { useAppSelector } from 'app/hooks'
+import { selectCurrentUser } from 'features/auth/authSlice'
+import { BtnAction, ListTool, ModalStaticAction } from 'features/posts/components'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BtnAction } from '../Common/BtnAction'
-import { ListTool } from '../Common/ListTool'
-import { TotalAction } from '../Common/TotalAction'
-import { ModalStaticAction } from '../Post/ModalStaticAction'
 
 interface Props {
     typing: boolean
@@ -112,6 +111,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const CommentBody = ({ typing, handleRely, positionAction = 'right', sizeAction = 'large' }: Props) => {
     const classes = useStyles()
+    const currentUser = useAppSelector(selectCurrentUser)
+
     const [showModalStatic, setShowModalStatic] = useState(false)
 
     const handleClickRely = () => {
@@ -155,20 +156,20 @@ export const CommentBody = ({ typing, handleRely, positionAction = 'right', size
                     className='total-action-wrapper'
                     onClick={() => setShowModalStatic(true)}
                 >
-                    <TotalAction size='small' />
+                    {/* <TotalAction size='small' /> */}
                 </Box>
             </Box>
 
-            <Box
+            {currentUser && <Box
                 className={classes.controls}
                 display='flex'
                 justifyContent='flex-end'
                 alignItems='center'
             >
-                <BtnAction
+                {/* <BtnAction
                     positionAction={positionAction}
                     sizeAction={sizeAction}
-                />
+                /> */}
 
                 <span className='dot'></span>
 
@@ -179,12 +180,12 @@ export const CommentBody = ({ typing, handleRely, positionAction = 'right', size
                 >
                     {typing ? 'Hủy' : 'Trả lời'}
                 </Button>
-            </Box>
+            </Box>}
 
-            <ModalStaticAction
+            {currentUser && <ModalStaticAction
                 open={showModalStatic}
                 onCancel={() => { setShowModalStatic(false) }}
-            />
+            />}
         </Box>
     )
 }

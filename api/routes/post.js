@@ -82,6 +82,7 @@ router.post("/likes/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
   const findPost = await post.findById(id);
   const type = req.body.type;
+  console.log({ type });
   try {
     if (!findPost)
       return res

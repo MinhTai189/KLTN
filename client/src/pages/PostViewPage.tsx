@@ -1,12 +1,29 @@
 import { Box } from '@material-ui/core'
+import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { MainLayout } from 'components/Layouts/MainLayout'
+import { commentAction, selectFilterComment } from 'features/comment/commentSlice'
 import { PostViewSection } from 'features/posts/components'
+import { postAction } from 'features/posts/postSlice'
+import { useEffect } from 'react'
+import { useParams } from 'react-router'
 
-interface Props {
+const PostViewPage = () => {
+    const dispatch = useAppDispatch()
+    const filter = useAppSelector(selectFilterComment)
+    const { id } = useParams<{ id: string }>()
 
-}
+    useEffect(() => {
+        dispatch(postAction.getById(id))
 
-const PostViewPage = (props: Props) => {
+    }, [dispatch])
+
+    useEffect(() => {
+        dispatch(commentAction.get({
+            ...filter,
+            _post: id
+        }))
+    }, [dispatch, filter])
+
     return (
         <MainLayout>
             <Box

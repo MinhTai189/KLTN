@@ -1,18 +1,27 @@
 import { Avatar, Box, Breadcrumbs, Button, Divider, makeStyles, Theme, Typography } from "@material-ui/core"
-import { FavoriteTwoTone, SmsTwoTone } from "@material-ui/icons"
-import { useRef } from "react"
+import { SmsTwoTone } from "@material-ui/icons"
+import { Pagination } from '@material-ui/lab'
+import postApi from "api/post"
+import { useAppSelector } from "app/hooks"
+import { selectCurrentUser } from "features/auth/authSlice"
+import { TypingComment } from "features/comment/components"
+import { Post, User } from "models"
+import { useEffect, useRef, useState } from "react"
 import { Link } from 'react-router-dom'
-import { Comment } from "../Comment/Comment"
-import { TypingComment } from "../Comment/TypingComment"
+import { toast } from "react-toastify"
+import { checkLikePostComment } from "utils"
+import { calculateCreatedTime } from "utils/calculateCreatedTime"
+import { Comment } from "../../../../comment/components/Comment"
 import { BtnAction } from "../Common/BtnAction"
 import { MotelRecommendPost } from "../Recommended/MotelRecommendPost"
 import { RelatedPost } from "../Recommended/RelatedPost"
 import { Content } from "./Content"
 import { ListTag } from "./ListTag"
+import { PostRequirement } from './PostRequirement'
 import { StaticAction } from "./StaticAction"
 
 interface Props {
-
+    postData: Post
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -64,9 +73,49 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const PostView = (props: Props) => {
+export const PostView = ({ postData }: Props) => {
     const classes = useStyles()
     const inputRef = useRef<HTMLInputElement>(null)
+
+    const currentUser: User = useAppSelector(selectCurrentUser)
+
+    const [userCommentData, setUserCommentData] = useState('')
+    const [likePost, setLikePost] = useState<{ isLike: boolean; type: number }>({
+        isLike: false,
+        type: -1,
+    })
+
+    useEffect(() => {
+        if (currentUser) {
+            const checkLikePost = checkLikePostComment(postData.likes, currentUser._id)
+            if (checkLikePost)
+                setLikePost({
+                    isLike: true,
+                    type: checkLikePost.type
+                })
+        }
+    }, [currentUser])
+
+    const handleLikePost = async (type: number, isClickBtn?: boolean) => {
+        try {
+            if (likePost.isLike === true && isClickBtn) {
+                await postApi.unlike(postData._id)
+                setLikePost({
+                    isLike: false,
+                    type: -1,
+                })
+            } else if (type !== likePost.type) {
+                await postApi.like(postData._id, type)
+                setLikePost({
+                    isLike: true,
+                    type
+                })
+            }
+        } catch (error: any) {
+            toast.error(error.response.data.message
+                || 'Đã xảy ra lỗi trong quá trình xử lý!')
+        }
+    }
 
     return (
         <Box className={classes.root}>
@@ -86,16 +135,16 @@ export const PostView = (props: Props) => {
                 variant='h1'
                 className={classes.title}
             >
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat, magnam. Veniam nisi recusandae, harum animi tempore est quasi qui facilis quaerat dignissimos! A quam officiis nulla ipsa aspernatur tenetur molestiae?
+                {postData.title}
             </Typography>
 
             <Box className={classes.authorWrapper}>
                 <Link to='/'>
                     <Avatar
                         className='avatar'
-                    // src={}
+                        src={postData.owner.avatarUrl}
                     >
-                        U
+                        {postData.owner.name[0]}
                     </Avatar>
                 </Link>
 
@@ -105,7 +154,7 @@ export const PostView = (props: Props) => {
                             className='name'
                             variant='h3'
                         >
-                            Tran Minh Tai
+                            {postData.owner.name}
                         </Typography>
                     </Link>
 
@@ -113,8 +162,8 @@ export const PostView = (props: Props) => {
                         <Typography
                             className='text'
                             component='span'>
-                            4 tháng&nbsp;&#x22C5;&nbsp;
-                            Bình luận: 42
+                            {`${calculateCreatedTime(postData.createdAt)}`}&nbsp;&#x22C5;&nbsp;
+                            Bình luận: {postData.numComments}
                         </Typography>
                     </Box>
                 </Box>
@@ -123,16 +172,26 @@ export const PostView = (props: Props) => {
             <Divider />
 
             <Box my={1}>
-                <ListTag />
+                <ListTag listTag={postData.tags} />
             </Box>
 
             <Box my={3}>
-                <Content />
+                <Content
+                    content={postData.content}
+                    type={postData.type}
+                />
             </Box>
 
-            <Box>
-                <StaticAction />
-            </Box>
+            {postData.require && <Box my={3}>
+                <PostRequirement require={postData.require} />
+            </Box>}
+
+            <StaticAction
+                listLike={postData.likes}
+                staticLike={postData.numLikes}
+                quantityLike={postData.totalLikes}
+                quantityComment={postData.numComments}
+            />
 
             <Box
                 className={classes.threadActions}
@@ -140,7 +199,11 @@ export const PostView = (props: Props) => {
                 mb={4}
             >
                 <Box className='button-group'>
-                    <BtnAction icon={<FavoriteTwoTone />} />
+                    <BtnAction
+                        isLike={likePost.isLike}
+                        type={likePost.type}
+                        handleLike={handleLikePost}
+                    />
 
                     <Button
                         className='btn'
@@ -162,16 +225,57 @@ export const PostView = (props: Props) => {
             </Box>
 
             <Box
+                display='flex'
+                justifyContent='flex-end'
+                mt={8}
+            >
+                <Pagination
+                    count={10}
+                    size="small"
+                    shape='rounded'
+                    hideNextButton
+                    hidePrevButton
+                    color='primary'
+                />
+            </Box>
+
+            <Box
                 id='comment'
                 mb={2}
-                mt={8}
             >
                 <TypingComment
                     ref={inputRef}
+                    data={userCommentData}
+                    setData={setUserCommentData}
                 />
             </Box>
 
             <Comment />
+
+            <Box
+                display='flex'
+                justifyContent='flex-end'
+                mt={8}
+            >
+                <Pagination
+                    count={10}
+                    size="small"
+                    shape='rounded'
+                    hideNextButton
+                    hidePrevButton
+                    color='primary'
+                />
+            </Box>
+
+            <Box
+                mb={2}
+            >
+                <TypingComment
+                    ref={inputRef}
+                    data={userCommentData}
+                    setData={setUserCommentData}
+                />
+            </Box>
 
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
         </Box>

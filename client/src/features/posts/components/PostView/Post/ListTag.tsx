@@ -4,7 +4,7 @@ import { memo } from 'react'
 import { getColorChip, styleChips } from 'utils'
 
 interface Props {
-
+    listTag: string[]
 }
 
 const useStyles = makeStyles({
@@ -18,13 +18,15 @@ const useStyles = makeStyles({
     }
 })
 
-export const ListTag = memo((props: Props) => {
+export const ListTag = memo(({ listTag }: Props) => {
     const classes = useStyles()
 
     return (
         <ul className={classes.root}>
-            {new Array(7).fill(1).map((_, index) => {
+            {listTag.map((tag, index) => {
                 const color = getColorChip()
+
+                if (!tag) return null
 
                 return (
                     <li
@@ -34,7 +36,7 @@ export const ListTag = memo((props: Props) => {
                         <ChipCustom
                             // @ts-ignore
                             style={styleChips[color]}
-                            label='#sachse'
+                            label={tag}
                             size='medium'
                             color='primary'
                         />

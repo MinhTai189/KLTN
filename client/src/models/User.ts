@@ -9,6 +9,7 @@ export interface User {
   district: string;
   province: string;
   school: string;
+  rank?: string;
   favorite?: string[];
   posts?: number;
   createdAt?: string;

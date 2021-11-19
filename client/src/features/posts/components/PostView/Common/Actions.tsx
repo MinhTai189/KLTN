@@ -3,6 +3,7 @@ import { useAction } from 'hooks'
 
 interface Props {
     size?: 'small' | 'large'
+    handleLike: (type: number) => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -30,9 +31,9 @@ const useStyles = makeStyles((theme: Theme) => ({
                 },
 
                 '&.small': {
-                    '& .btn svg': {
-                        width: '2.5em',
-                        height: '2.5em',
+                    '& .btn-action div': {
+                        width: 35,
+                        height: 35,
                     },
 
                     '& .label': {
@@ -41,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
                     },
 
                     '&:not(:last-child)': {
-                        marginRight: theme.spacing(1),
+                        marginRight: theme.spacing(0.8),
                     },
                 },
 
@@ -57,9 +58,14 @@ const useStyles = makeStyles((theme: Theme) => ({
                         animation: `$icon 300ms cubic-bezier(0.38, 0.16, 0.56, 1.3)`,
                     },
 
+                    '& div': {
+                        width: 42,
+                        height: 42,
+                    },
+
                     '& svg': {
-                        width: '3em',
-                        height: '3em',
+                        width: '100%',
+                        height: '100%',
                     }
                 },
 
@@ -102,7 +108,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const Actions = ({ size = 'large' }: Props) => {
+export const Actions = ({ size = 'large', handleLike }: Props) => {
     const classes = useStyles()
     const listAction = useAction()
 
@@ -115,7 +121,10 @@ export const Actions = ({ size = 'large' }: Props) => {
                             className={`action ${size}`}
                             key={index}
                         >
-                            <button className='btn-action'>
+                            <button
+                                className='btn-action'
+                                onClick={() => handleLike(index)}
+                            >
                                 {action.icon}
                             </button>
 

@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Hero } from 'components/Home';
 import { MainLayout } from 'components/Layouts/MainLayout';
-import { authActions, selectIsLogged } from 'features/auth/authSlice';
+import { selectIsLogged } from 'features/auth/authSlice';
 import { CommunicateSection } from 'features/communicate/components';
 import { selectDataThread, threadActions } from 'features/communicate/threadSlice';
 import { ListMotel } from 'features/motels/components';
@@ -9,22 +9,12 @@ import { motelActions } from 'features/motels/motelSlice';
 import { useEffect, useState } from 'react';
 
 const HomePage = () => {
-    const isLogged = useAppSelector(selectIsLogged)
     const filter = useAppSelector(selectIsLogged)
     const dispatch = useAppDispatch();
 
     const listThread = useAppSelector(selectDataThread)
     const [isChangeNav, setIsChangeNav] = useState(false)
     const [hiddenScrollDown, setHiddenScrollDown] = useState(false)
-
-    useEffect(() => {
-        function autoLogin() {
-            if (!isLogged && Boolean(localStorage.getItem('accessToken'))) {
-                dispatch(authActions.login({ username: '', password: '', rememberMe: true }))
-            }
-        }
-        autoLogin();
-    }, [dispatch, isLogged])
 
     useEffect(() => {
         //fetch motel data
