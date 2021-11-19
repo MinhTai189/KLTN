@@ -173,12 +173,12 @@ router.get("/", async (req, res) => {
         }),
 
         numLikes: [
+          comments[i].likes.filter((like) => like.type === 0).length,
           comments[i].likes.filter((like) => like.type === 1).length,
           comments[i].likes.filter((like) => like.type === 2).length,
           comments[i].likes.filter((like) => like.type === 3).length,
           comments[i].likes.filter((like) => like.type === 4).length,
           comments[i].likes.filter((like) => like.type === 5).length,
-          comments[i].likes.filter((like) => like.type === 6).length,
         ],
         totalLikes: comments[i].likes.length,
       });

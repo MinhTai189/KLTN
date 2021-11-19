@@ -57,7 +57,7 @@ const post = new Schema(
         {
           type: {
             type: Number,
-            enum: [1, 2, 3, 4, 5, 6],
+            enum: [0, 1, 2, 3, 4, 5],
             required: true,
           },
           owner: {

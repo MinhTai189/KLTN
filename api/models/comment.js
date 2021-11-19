@@ -30,7 +30,7 @@ const comment = new Schema(
           type: {
             type: Number,
             required: true,
-            enum: [1, 2, 3, 4, 5, 6],
+            enum: [0, 1, 2, 3, 4, 5],
           },
           owner: {
             type: mongoose.Schema.Types.ObjectId,
