@@ -83,11 +83,7 @@ router.post("/likes/:id", verifyToken, async (req, res) => {
   const findPost = await post.findById(id);
 
   const type = req.body.params.type;
-<<<<<<< HEAD
-  if (typeof type === 'undefined')
-=======
   if (typeof type !== "number")
->>>>>>> 3ad0d03fc65faad8d70e204e80918285f4f4db51
     return res
       .status(400)
       .json({ success: false, message: "Vui lòng cho biết cảm xúc của bạn" });

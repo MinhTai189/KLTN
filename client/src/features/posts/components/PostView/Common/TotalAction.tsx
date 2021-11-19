@@ -15,9 +15,11 @@ const useStyles = makeStyles((theme: Theme) => ({
         cursor: 'pointer',
 
         '&.small': {
-            '& .icon svg': {
-                width: 14,
-                height: 14,
+            '& .icon': {
+                '& div': {
+                    width: 14,
+                    height: 14,
+                },
             },
 
             '& .number': {
@@ -39,9 +41,16 @@ const useStyles = makeStyles((theme: Theme) => ({
                     marginLeft: -8
                 },
 
-                '& svg': {
+                '& div': {
                     width: 22,
                     height: 22,
+                    display: 'grid',
+                    placeItems: 'center'
+                },
+
+                '& svg': {
+                    width: '100%',
+                    height: '100%',
                 }
             }
         },
@@ -77,7 +86,7 @@ export const TotalAction = ({ size = 'large', staticLike, quantityLike }: Props)
                             className="icon"
                             style={{ zIndex }}
                         >
-                            {listAction[index]}
+                            {listAction[index].icon}
                         </span>
                     )
                 })}
