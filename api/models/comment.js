@@ -9,10 +9,6 @@ const comment = new Schema(
     },
     reply: {
       type: {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "user",
-        },
         comment: {
           type: mongoose.Schema.Types.ObjectId,
         },
@@ -33,10 +29,12 @@ const comment = new Schema(
         {
           type: {
             type: Number,
+            required: true,
             enum: [1, 2, 3, 4, 5, 6],
           },
           owner: {
             type: mongoose.Schema.Types.ObjectId,
+            required: true,
             ref: "user",
           },
         },

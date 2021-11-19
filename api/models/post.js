@@ -52,18 +52,24 @@ const post = new Schema(
       type: Schema.Types.Mixed,
       required: false,
     },
-    likes: [
-      {
-        type: {
-          type: Number,
-          enum: [1, 2, 3, 4, 5, 6],
+    likes: {
+      type: [
+        {
+          type: {
+            type: Number,
+            enum: [1, 2, 3, 4, 5, 6],
+            required: true,
+          },
+          owner: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user",
+            required: true,
+          },
         },
-        owner: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "user",
-        },
-      },
-    ],
+      ],
+      required: true,
+      default: [],
+    },
     motel: {
       required: false,
       type: mongoose.Schema.Types.ObjectId,

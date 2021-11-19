@@ -81,12 +81,18 @@ router.delete("/likes/:id", verifyToken, async (req, res) => {
 router.post("/likes/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
   const findPost = await post.findById(id);
+
   const type = req.body.type;
+  if (!type)
+    return res
+      .status(400)
+      .json({ success: false, message: "Vui lòng cho biết cảm xúc của bạn" });
   try {
     if (!findPost)
       return res
         .status(400)
         .json({ success: false, message: "Không tìm thấy bài viết" });
+
     if (
       findPost.likes.some((item) => {
         return JSON.stringify(item.owner) === JSON.stringify(req.user.id);
@@ -96,7 +102,7 @@ router.post("/likes/:id", verifyToken, async (req, res) => {
         .status(400)
         .json({ success: false, message: "Đã like bài viết rồi" });
     findPost.likes.push({
-      type: type,
+      type: parseInt(type),
       owner: req.user.id,
     });
     await findPost.save();
