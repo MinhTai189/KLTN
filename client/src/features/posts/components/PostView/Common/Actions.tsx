@@ -3,7 +3,7 @@ import { useAction } from 'hooks'
 
 interface Props {
     size?: 'small' | 'large'
-    handleLike: (type: number) => void
+    handleLike: (type: number, isClick?: boolean) => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({

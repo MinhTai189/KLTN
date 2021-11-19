@@ -83,7 +83,11 @@ router.post("/likes/:id", verifyToken, async (req, res) => {
   const findPost = await post.findById(id);
 
   const type = req.body.params.type;
+<<<<<<< HEAD
   if (typeof type === 'undefined')
+=======
+  if (typeof type !== "number")
+>>>>>>> 3ad0d03fc65faad8d70e204e80918285f4f4db51
     return res
       .status(400)
       .json({ success: false, message: "Vui lòng cho biết cảm xúc của bạn" });
@@ -115,7 +119,6 @@ router.post("/likes/:id", verifyToken, async (req, res) => {
       .json({ success: false, message: "Lỗi không xác định" });
   }
 });
-
 router.get("/", async (req, res) => {
   try {
     const {
@@ -168,12 +171,12 @@ router.get("/", async (req, res) => {
         ...posts[i]._doc,
         owner: owner,
         numLikes: [
+          posts[i].likes.filter((item) => item.type === 0).length,
           posts[i].likes.filter((item) => item.type === 1).length,
           posts[i].likes.filter((item) => item.type === 2).length,
           posts[i].likes.filter((item) => item.type === 3).length,
           posts[i].likes.filter((item) => item.type === 4).length,
           posts[i].likes.filter((item) => item.type === 5).length,
-          posts[i].likes.filter((item) => item.type === 6).length,
         ],
       });
     }
@@ -303,12 +306,12 @@ router.get("/:id", async (req, res) => {
         };
       }),
       numLikes: [
+        findPost.likes.filter((like) => like.type === 0).length,
         findPost.likes.filter((like) => like.type === 1).length,
         findPost.likes.filter((like) => like.type === 2).length,
         findPost.likes.filter((like) => like.type === 3).length,
         findPost.likes.filter((like) => like.type === 4).length,
         findPost.likes.filter((like) => like.type === 5).length,
-        findPost.likes.filter((like) => like.type === 6).length,
       ],
     };
     if (responsePost.motel)
