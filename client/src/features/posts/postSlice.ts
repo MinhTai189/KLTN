@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import { Post } from 'models';
+import { Filter, Post } from 'models';
 import { DataPostFinal } from './components/CreatePost/models/create-post';
 
 interface State {
   listData: Post[];
   data: Post | null;
   loading: boolean;
+  filter: Filter;
   err: string;
 }
 
@@ -14,6 +15,10 @@ const initialState: State = {
   listData: [],
   data: null,
   loading: false,
+  filter: {
+    _page: 1,
+    _limit: 10,
+  },
   err: '',
 };
 
@@ -42,6 +47,9 @@ const postSlice = createSlice({
       state.loading = false;
       state.err = action.payload;
     },
+    setFilter: (state, action: PayloadAction<Filter>) => {
+      state.filter = action.payload;
+    },
   },
 });
 
@@ -52,6 +60,7 @@ export const postAction = postSlice.actions;
 export const selectListDataPost = (state: RootState) => state.post.listData;
 export const selectDataPost = (state: RootState) => state.post.data;
 export const selectLoadingPost = (state: RootState) => state.post.loading;
+export const selectFilterPost = (state: RootState) => state.post.filter;
 export const selectErrPost = (state: RootState) => state.post.err;
 
 //reducer

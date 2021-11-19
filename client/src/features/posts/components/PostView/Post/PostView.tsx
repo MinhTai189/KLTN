@@ -2,9 +2,10 @@ import { Avatar, Box, Breadcrumbs, Button, Divider, makeStyles, Theme, Typograph
 import { SmsTwoTone } from "@material-ui/icons"
 import { Pagination } from '@material-ui/lab'
 import postApi from "api/post"
-import { useAppSelector } from "app/hooks"
+import { useAppDispatch, useAppSelector } from "app/hooks"
 import { selectCurrentUser } from "features/auth/authSlice"
 import { TypingComment } from "features/comment/components"
+import { postAction, selectFilterPost } from "features/posts/postSlice"
 import { Post, User } from "models"
 import { useEffect, useRef, useState } from "react"
 import { Link } from 'react-router-dom'
@@ -76,7 +77,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const PostView = ({ postData }: Props) => {
     const classes = useStyles()
     const inputRef = useRef<HTMLInputElement>(null)
+    const dispatch = useAppDispatch()
 
+    const filter = useAppSelector(selectFilterPost)
     const currentUser: User = useAppSelector(selectCurrentUser)
 
     const [userCommentData, setUserCommentData] = useState('')
@@ -111,6 +114,8 @@ export const PostView = ({ postData }: Props) => {
                     type
                 })
             }
+
+            dispatch(postAction.setFilter({ ...filter }))
         } catch (error: any) {
             toast.error(error.response.data.message
                 || 'Đã xảy ra lỗi trong quá trình xử lý!')
@@ -122,12 +127,14 @@ export const PostView = ({ postData }: Props) => {
             <Box className='breadcrumb'>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link to='/'>
-                        Material-UI
+                        Trang chủ
                     </Link>
                     <Link to='/'>
-                        Core
+                        Danh sách chủ đề
                     </Link>
-                    <Typography color="textPrimary">Breadcrumb</Typography>
+                    <Typography color="textPrimary">
+                        {postData.subject.name}
+                    </Typography>
                 </Breadcrumbs>
             </Box>
 

@@ -3,19 +3,21 @@ import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { MainLayout } from 'components/Layouts/MainLayout'
 import { commentAction, selectFilterComment } from 'features/comment/commentSlice'
 import { PostViewSection } from 'features/posts/components'
-import { postAction } from 'features/posts/postSlice'
+import { postAction, selectFilterPost } from 'features/posts/postSlice'
 import { useEffect } from 'react'
 import { useParams } from 'react-router'
 
 const PostViewPage = () => {
     const dispatch = useAppDispatch()
     const filter = useAppSelector(selectFilterComment)
+    const filterPost = useAppSelector(selectFilterPost)
+
     const { id } = useParams<{ id: string }>()
 
     useEffect(() => {
         dispatch(postAction.getById(id))
 
-    }, [dispatch])
+    }, [dispatch, filterPost])
 
     useEffect(() => {
         dispatch(commentAction.get({
