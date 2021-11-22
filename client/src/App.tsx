@@ -21,7 +21,7 @@ const App = () => {
 
   useEffect(() => {
     if (!isLogged && Boolean(localStorage.getItem('accessToken'))) {
-      dispatch(authActions.login({ username: '', password: '', rememberMe: true }))
+      dispatch(authActions.login({ username: '', password: '', rememberMe: true, isAutoLogin: true }))
     }
   }, [dispatch, isLogged])
 

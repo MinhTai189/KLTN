@@ -83,6 +83,7 @@ router.post("/likes/:id", verifyToken, async (req, res) => {
   const findPost = await post.findById(id);
 
   const type = req.body.params.type;
+  console.log({ body: req.body });
   if (typeof type !== "number")
     return res
       .status(400)

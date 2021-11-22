@@ -10,6 +10,7 @@ interface Props {
     isLike: boolean
     type: number
     handleLike: (type: number, isClickBtn?: boolean) => void
+    hiddenIcon?: boolean
 }
 
 const useStyles = makeStyles({
@@ -47,7 +48,7 @@ const useStyles = makeStyles({
     }
 })
 
-export const BtnAction = ({ sizeBtn = 'medium', positionAction = 'right', sizeAction = 'large', isLike, type, handleLike }: Props) => {
+export const BtnAction = ({ sizeBtn = 'medium', positionAction = 'right', sizeAction = 'large', hiddenIcon = false, isLike, type, handleLike }: Props) => {
     const classes = useStyles()
     const listAction = useAction()
 
@@ -58,7 +59,7 @@ export const BtnAction = ({ sizeBtn = 'medium', positionAction = 'right', sizeAc
         >
             <Button
                 className='btn btn-action'
-                startIcon={isLike ? listAction[type].icon : <FavoriteTwoTone />}
+                startIcon={!hiddenIcon ? isLike ? listAction[type].icon : <FavoriteTwoTone /> : null}
                 size={sizeBtn}
                 style={{
                     color: isLike ? listAction[type].color : ''

@@ -5,7 +5,7 @@ import { push } from 'connected-react-router';
 import { Response, User } from 'models';
 import { toast } from 'react-toastify';
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { clearToken, getToken } from 'utils';
+import { clearToken } from 'utils';
 import { authActions } from './authSlice';
 import { LoginData } from './models';
 
@@ -50,7 +50,7 @@ function* handleLogin(action: PayloadAction<LoginData>) {
     yield put(authActions.loginSuccess(responseData.data));
 
     //Redirect to Home page
-    if (!getToken().accessToken) yield put(push('/'));
+    if (!action.payload.isAutoLogin) yield put(push('/'));
   } catch (err: any) {
     if (err.response.data.message)
       yield put(authActions.loginFailed(err.response.data.message));

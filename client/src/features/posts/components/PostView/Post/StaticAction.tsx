@@ -92,6 +92,9 @@ export const StaticAction = ({ listLike, quantityComment, quantityLike, staticLi
             <ModalStaticAction
                 open={showModalStatic}
                 onCancel={() => { setShowModalStatic(false) }}
+                staticLike={staticLike}
+                totalQuantity={quantityLike}
+                listLike={listLike}
             />
         </Box>
     )

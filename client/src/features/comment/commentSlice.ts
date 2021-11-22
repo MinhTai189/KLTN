@@ -41,6 +41,9 @@ const commentSlice = createSlice({
       state.loading = false;
       state.errMessage = action.payload;
     },
+    setFilter: (state, action: PayloadAction<Filter>) => {
+      state.filter = action.payload;
+    },
     // add: (state, action: PayloadAction<string>) => {
     //   state.loading = true;
     // },

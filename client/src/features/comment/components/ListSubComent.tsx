@@ -1,8 +1,9 @@
 import { makeStyles } from "@material-ui/core"
+import { ReplingComment } from "models"
 import { Subcomment } from "./Subcomment"
 
 interface Props {
-
+    listReply: ReplingComment[]
 }
 
 const useStyles = makeStyles({
@@ -12,15 +13,15 @@ const useStyles = makeStyles({
     }
 })
 
-export const ListSubComment = (props: Props) => {
+export const ListSubComment = ({ listReply }: Props) => {
     const classes = useStyles()
 
     return (
         <ul className={classes.root}>
-            {new Array(5).fill(1).map((item, index) => {
-                return <li key={index}>
-                    <Subcomment />
-                </li>
+            {listReply && listReply.map(reply => {
+                return (<li key={reply._id}>
+                    <Subcomment replyData={reply} />
+                </li>)
             })}
         </ul>
     )

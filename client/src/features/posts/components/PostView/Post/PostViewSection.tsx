@@ -1,21 +1,16 @@
 import { Avatar, Box, Breadcrumbs, Button, Divider, makeStyles, Theme, Typography } from "@material-ui/core"
 import { SmsTwoTone } from "@material-ui/icons"
-import { Pagination } from '@material-ui/lab'
 import postApi from "api/post"
 import { useAppDispatch, useAppSelector } from "app/hooks"
 import { selectCurrentUser } from "features/auth/authSlice"
-import { TypingComment } from "features/comment/components"
 import { postAction, selectFilterPost } from "features/posts/postSlice"
 import { Post, User } from "models"
-import { useEffect, useRef, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { Link } from 'react-router-dom'
 import { toast } from "react-toastify"
 import { checkLikePostComment } from "utils"
 import { calculateCreatedTime } from "utils/calculateCreatedTime"
-import { Comment } from "../../../../comment/components/Comment"
 import { BtnAction } from "../Common/BtnAction"
-import { MotelRecommendPost } from "../Recommended/MotelRecommendPost"
-import { RelatedPost } from "../Recommended/RelatedPost"
 import { Content } from "./Content"
 import { ListTag } from "./ListTag"
 import { PostRequirement } from './PostRequirement'
@@ -74,15 +69,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const PostView = ({ postData }: Props) => {
+export const PostViewSection = memo(({ postData }: Props) => {
     const classes = useStyles()
-    const inputRef = useRef<HTMLInputElement>(null)
     const dispatch = useAppDispatch()
 
     const filter = useAppSelector(selectFilterPost)
     const currentUser: User = useAppSelector(selectCurrentUser)
-
-    const [userCommentData, setUserCommentData] = useState('')
     const [likePost, setLikePost] = useState<{ isLike: boolean; type: number }>({
         isLike: false,
         type: -1,
@@ -123,7 +115,7 @@ export const PostView = ({ postData }: Props) => {
     }
 
     return (
-        <Box className={classes.root}>
+        <Box className={classes.root} component='section'>
             <Box className='breadcrumb'>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link to='/'>
@@ -216,75 +208,11 @@ export const PostView = ({ postData }: Props) => {
                         className='btn'
                         startIcon={<SmsTwoTone />}
                         href="#comment"
-                        onClick={() => { inputRef.current?.focus() }}
                     >
                         Bình luận
                     </Button>
                 </Box>
             </Box>
-
-            <Box my={4}>
-                <RelatedPost />
-            </Box>
-
-            <Box my={4}>
-                <MotelRecommendPost />
-            </Box>
-
-            <Box
-                display='flex'
-                justifyContent='flex-end'
-                mt={8}
-            >
-                <Pagination
-                    count={10}
-                    size="small"
-                    shape='rounded'
-                    hideNextButton
-                    hidePrevButton
-                    color='primary'
-                />
-            </Box>
-
-            <Box
-                id='comment'
-                mb={2}
-            >
-                <TypingComment
-                    ref={inputRef}
-                    data={userCommentData}
-                    setData={setUserCommentData}
-                />
-            </Box>
-
-            <Comment />
-
-            <Box
-                display='flex'
-                justifyContent='flex-end'
-                mt={8}
-            >
-                <Pagination
-                    count={10}
-                    size="small"
-                    shape='rounded'
-                    hideNextButton
-                    hidePrevButton
-                    color='primary'
-                />
-            </Box>
-
-            <Box
-                mb={2}
-            >
-                <TypingComment
-                    ref={inputRef}
-                    data={userCommentData}
-                    setData={setUserCommentData}
-                />
-            </Box>
-
-            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
         </Box>
     )
-}
+})

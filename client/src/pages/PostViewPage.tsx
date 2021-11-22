@@ -1,16 +1,31 @@
-import { Box } from '@material-ui/core'
+import { Box, Grid } from '@material-ui/core'
+import { Pagination } from '@material-ui/lab'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { MainLayout } from 'components/Layouts/MainLayout'
 import { commentAction, selectFilterComment } from 'features/comment/commentSlice'
+import { CommentSection } from 'features/comment/components'
+import { MotelPreview } from "features/motels/components/PostView/MotelPreview"
 import { PostViewSection } from 'features/posts/components'
-import { postAction, selectFilterPost } from 'features/posts/postSlice'
-import { useEffect } from 'react'
+import { MotelRecommendPost } from 'features/posts/components/PostView/Recommended/MotelRecommendPost'
+import { RelatedPost } from 'features/posts/components/PostView/Recommended/RelatedPost'
+import { postAction, selectDataPost, selectFilterPost } from 'features/posts/postSlice'
+import { createContext, Profiler, ProfilerOnRenderCallback, useEffect } from 'react'
 import { useParams } from 'react-router'
+
+interface PostViewContext {
+    handleTypingData: (isComment: boolean) => void
+}
+
+export const PostViewContext = createContext<PostViewContext>({
+    handleTypingData: () => { },
+})
 
 const PostViewPage = () => {
     const dispatch = useAppDispatch()
-    const filter = useAppSelector(selectFilterComment)
+    const filterComment = useAppSelector(selectFilterComment)
     const filterPost = useAppSelector(selectFilterPost)
+
+    const postData = useAppSelector(selectDataPost)
 
     const { id } = useParams<{ id: string }>()
 
@@ -21,20 +36,67 @@ const PostViewPage = () => {
 
     useEffect(() => {
         dispatch(commentAction.get({
-            ...filter,
+            ...filterComment,
             _post: id
         }))
-    }, [dispatch, filter])
+    }, [dispatch, filterComment])
+
+    const handleTypingData = (isComment: boolean) => {
+        // console.log({ typingCommentData, isComment })
+    }
 
     return (
-        <MainLayout>
-            <Box
-                className='container'
-                mt={12}
-            >
-                <PostViewSection />
-            </Box>
-        </MainLayout>
+        <PostViewContext.Provider value={{
+            handleTypingData
+        }}>
+            <MainLayout>
+                <Box
+                    className='container'
+                    mt={12}
+                >
+                    <Box>
+                        <Grid container spacing={2}>
+                            <Grid item md={1}></Grid>
+                            <Grid item md={7}>
+                                {postData &&
+                                    <Profiler id='post-view-section' onRender={(id: string) => console.log(id, 'rendering')}>
+                                        <PostViewSection postData={postData} />
+                                    </Profiler>}
+
+                                <Box my={4}>
+                                    <RelatedPost />
+                                </Box>
+
+                                <Box my={4}>
+                                    <MotelRecommendPost />
+                                </Box>
+
+                                <Box
+                                    display='flex'
+                                    justifyContent='flex-end'
+                                    mt={8}
+                                >
+                                    <Pagination
+                                        count={10}
+                                        size="small"
+                                        shape='rounded'
+                                        hideNextButton
+                                        hidePrevButton
+                                        color='primary'
+                                    />
+                                </Box>
+
+                                <CommentSection />
+                            </Grid>
+                            <Grid item md={3}>
+                                {postData && postData.motel && <MotelPreview motelData={postData.motel} />}
+                            </Grid>
+                            <Grid item md={1}></Grid>
+                        </Grid>
+                    </Box>
+                </Box>
+            </MainLayout>
+        </PostViewContext.Provider>
     )
 }
 

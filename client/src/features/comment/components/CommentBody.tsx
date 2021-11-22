@@ -1,16 +1,23 @@
 import { Box, Theme, Typography, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import { useAppSelector } from 'app/hooks'
+import commentApi from 'api/comment'
+import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { selectCurrentUser } from 'features/auth/authSlice'
 import { BtnAction, ListTool, ModalStaticAction } from 'features/posts/components'
-import { useState } from 'react'
+import { TotalAction } from 'features/posts/components/PostView/Common/TotalAction'
+import { Comment, ReplingComment } from 'models'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { checkLikePostComment } from 'utils'
+import { calculateCreatedTime } from 'utils/calculateCreatedTime'
+import { commentAction, selectFilterComment } from '../commentSlice'
+import { CommentContext } from '../contexts/CommentContext'
 
 interface Props {
-    typing: boolean
-    handleRely: () => void
     positionAction?: 'left' | 'right'
     sizeAction?: 'small' | 'large'
+    comment: Comment | ReplingComment
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -98,10 +105,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         '& .MuiButton-root': {
             padding: theme.spacing(0.2, 0),
             minWidth: 40,
+            color: theme.palette.text.primary,
 
             '& .MuiButton-label': {
                 textTransform: 'capitalize',
-                color: theme.palette.text.primary,
                 fontWeight: 400,
                 fontSize: '0.8em'
             }
@@ -109,83 +116,137 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const CommentBody = ({ typing, handleRely, positionAction = 'right', sizeAction = 'large' }: Props) => {
+export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', comment }: Props) => {
     const classes = useStyles()
     const currentUser = useAppSelector(selectCurrentUser)
+    const filter = useAppSelector(selectFilterComment)
 
+    const dispatch = useAppDispatch()
     const [showModalStatic, setShowModalStatic] = useState(false)
 
-    const handleClickRely = () => {
-        handleRely()
+    const { _id, owner: { name, rank }, createdAt, content, totalLikes, numLikes, likes } = comment
+
+    const [likeComment, setLikeComment] = useState<{ isLike: boolean; type: number }>({
+        isLike: false,
+        type: -1,
+    })
+
+    useEffect(() => {
+        if (currentUser) {
+            const checkLikePost = checkLikePostComment(likes, currentUser._id)
+            if (checkLikePost)
+                setLikeComment({
+                    isLike: true,
+                    type: checkLikePost.type
+                })
+        }
+    }, [currentUser])
+
+    const handleLikeComment = async (type: number, isClickBtn?: boolean) => {
+        try {
+            if (likeComment.isLike === true && isClickBtn) {
+                await commentApi.unlike(_id)
+                setLikeComment({
+                    isLike: false,
+                    type: -1,
+                })
+            } else if (type !== likeComment.type) {
+                await commentApi.like(_id, type)
+                setLikeComment({
+                    isLike: true,
+                    type
+                })
+            }
+
+            dispatch(commentAction.setFilter({ ...filter }))
+        } catch (error: any) {
+            toast.error(error.response.data.message
+                || 'Đã xảy ra lỗi trong quá trình xử lý!')
+        }
     }
 
     return (
-        <Box className={classes.root}>
-            <Box className={classes.body}>
-                <Box className={classes.infoCmtContainer}>
-                    <Box className="left">
-                        <Typography
-                            variant='h6'
-                            className='author-name'
-                        >
-                            <Link to='/'>
-                                Trần Minh Tài
-                            </Link>
+        <CommentContext.Consumer>
+            {value => (
+                <Box className={classes.root}>
+                    <Box className={classes.body}>
+                        <Box className={classes.infoCmtContainer}>
+                            <Box className="left">
+                                <Typography
+                                    variant='h6'
+                                    className='author-name'
+                                >
+                                    <Link to='/'>
+                                        {name}
+                                    </Link>
+                                </Typography>
+
+                                <Typography className='author-rank'>
+                                    {rank}
+                                </Typography>
+
+                                <Typography
+                                    component='small'
+                                    className='timestamp'
+                                >
+                                    {calculateCreatedTime(createdAt)}
+                                </Typography>
+                            </Box>
+
+                            <ListTool />
+                        </Box>
+
+                        <Typography className={classes.content}>
+                            {content}
                         </Typography>
 
-                        <Typography className='author-rank'>
-                            Admin
-                        </Typography>
-
-                        <Typography
-                            component='small'
-                            className='timestamp'
+                        {totalLikes > 0 && <Box
+                            className='total-action-wrapper'
+                            onClick={() => setShowModalStatic(true)}
                         >
-                            5 giờ trước
-                        </Typography>
+                            <TotalAction
+                                size='small'
+                                quantityLike={totalLikes}
+                                staticLike={numLikes}
+                            />
+                        </Box>}
                     </Box>
 
-                    <ListTool />
+                    {currentUser && <Box
+                        className={classes.controls}
+                        display='flex'
+                        justifyContent='flex-end'
+                        alignItems='center'
+                    >
+                        <BtnAction
+                            positionAction={positionAction}
+                            sizeAction={sizeAction}
+                            isLike={likeComment.isLike}
+                            type={likeComment.type}
+                            handleLike={handleLikeComment}
+                            hiddenIcon
+                        />
+
+                        <span className='dot'></span>
+
+                        <Button
+                            size='small'
+                            style={{ background: value.typing.id === _id ? '#edeef2' : '' }}
+                            onClick={() => value.handleRely(_id, name)}
+                        >
+                            {value.typing.id === _id ? 'Hủy' : 'Trả lời'}
+                        </Button>
+                    </Box>}
+
+                    {currentUser && <ModalStaticAction
+                        open={showModalStatic}
+                        onCancel={() => { setShowModalStatic(false) }}
+                        listLike={likes}
+                        totalQuantity={totalLikes}
+                        staticLike={numLikes}
+                    />}
                 </Box>
-
-                <Typography className={classes.content}>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor quidem exercitationem molestias facilis sed commodi, sapiente illum laudantium natus, explicabo eos, pariatur enim fugit? Obcaecati consequuntur consectetur nemo eveniet incidunt.
-                </Typography>
-
-                <Box
-                    className='total-action-wrapper'
-                    onClick={() => setShowModalStatic(true)}
-                >
-                    {/* <TotalAction size='small' /> */}
-                </Box>
-            </Box>
-
-            {currentUser && <Box
-                className={classes.controls}
-                display='flex'
-                justifyContent='flex-end'
-                alignItems='center'
-            >
-                {/* <BtnAction
-                    positionAction={positionAction}
-                    sizeAction={sizeAction}
-                /> */}
-
-                <span className='dot'></span>
-
-                <Button
-                    size='small'
-                    style={{ background: typing ? '#edeef2' : '' }}
-                    onClick={() => handleClickRely()}
-                >
-                    {typing ? 'Hủy' : 'Trả lời'}
-                </Button>
-            </Box>}
-
-            {currentUser && <ModalStaticAction
-                open={showModalStatic}
-                onCancel={() => { setShowModalStatic(false) }}
-            />}
-        </Box>
+            )}
+        </CommentContext.Consumer>
     )
 }

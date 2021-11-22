@@ -1,22 +1,23 @@
 import { LikePost, Post, User } from 'models';
 
-export interface Comment {
+interface CommentReply {
   _id: string;
   owner: User;
-  post: Post;
-  content: string;
-  likes: LikePost[];
   createdAt: string;
   updatedAt: string;
   numLikes: number[];
   totalLikes: number;
-  reply: ReplingComment;
+  content: string;
+  likes: LikePost[];
 }
 
-export interface ReplingComment {
-  _id: string;
+export interface Comment extends CommentReply {
+  post: Post;
+  reply: ReplingComment[];
+}
+
+export interface ReplingComment extends CommentReply {
   user: User;
-  comment: string;
 }
 
-export interface AddedComment {}
+export interface AddComment {}

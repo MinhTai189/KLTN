@@ -3,11 +3,16 @@ import { Close } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
 import { Modal } from "components/Common"
 import { useAction } from "hooks"
+import { LikePost } from "models"
+import { useMemo, useState } from "react"
 import { BodyModalStacticAction } from "./BodyModalStacticAction"
 
 interface Props {
     open: boolean
     onCancel: () => void
+    staticLike: number[]
+    totalQuantity: number
+    listLike: LikePost[]
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -73,9 +78,22 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-export const ModalStaticAction = ({ open, onCancel }: Props) => {
+export const ModalStaticAction = ({ open, onCancel, staticLike, totalQuantity, listLike }: Props) => {
     const classes = useStyles()
     const listAction = useAction()
+
+    const [currentTab, setCurrentTab] = useState(7)
+
+    const currentListLike = useMemo(() => {
+        if (currentTab === 7)
+            return listLike
+
+        return listLike.filter(like => like.type === currentTab)
+    }, [currentTab])
+
+    const handleClickTab = (tab: number) => {
+        setCurrentTab(tab)
+    }
 
     return (
         <Modal
@@ -85,22 +103,32 @@ export const ModalStaticAction = ({ open, onCancel }: Props) => {
             <Box className={classes.root}>
                 <Box className='top'>
                     <ul className="tabs">
-                        <li className="tab active">
+                        <li
+                            className={`tab ${currentTab === 7 ? 'active' : ''}`}
+                            onClick={() => handleClickTab(7)}
+                        >
                             <Button className="btn-tab">
                                 <Typography className='label'>
                                     Tất cả
                                 </Typography>
 
                                 <Typography className='counter'>
-                                    12
+                                    {totalQuantity}
                                 </Typography>
                             </Button>
                         </li>
 
                         {listAction.map((action, index) => {
+                            const quantity = staticLike[index]
+
+                            if (quantity === 0) return null
 
                             return (
-                                <li className="tab">
+                                <li
+                                    key={index}
+                                    className={`tab ${currentTab === index ? 'active' : ''}`}
+                                    onClick={() => handleClickTab(index)}
+                                >
                                     <Button
                                         className='btn-tab'
                                     >
@@ -111,7 +139,7 @@ export const ModalStaticAction = ({ open, onCancel }: Props) => {
                                         />
 
                                         <Typography className='counter'>
-                                            88
+                                            {quantity}
                                         </Typography>
                                     </Button>
                                 </li>
@@ -131,7 +159,9 @@ export const ModalStaticAction = ({ open, onCancel }: Props) => {
                 <Divider style={{ marginTop: 12 }} />
 
                 <Box mt={1}>
-                    <BodyModalStacticAction />
+                    <BodyModalStacticAction
+                        listLike={currentListLike}
+                    />
                 </Box>
             </Box>
         </Modal>

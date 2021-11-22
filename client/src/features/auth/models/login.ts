@@ -3,4 +3,5 @@ export interface LoginData {
   password: string;
   rememberMe?: boolean;
   accessToken?: string;
+  isAutoLogin?: boolean;
 }

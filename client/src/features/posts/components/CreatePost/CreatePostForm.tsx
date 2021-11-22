@@ -116,12 +116,12 @@ export const CreatePostForm = ({ dataPost, setDataPost, handleSubmit, typePost, 
             <Box className='content-wrapper' mb={2}>
                 <label className='input-label'>Nội dung</label>
 
-                <TypingTextArea
+                {/* <TypingTextArea
                     showBtnSubmit={false}
                     placeHolder='Hãy viết nội dung bạn muốn đăng...'
                     value={dataPost.content}
                     setValue={(value: string) => setDataPost((prev: DataPost) => ({ ...prev, content: value }))}
-                />
+                /> */}
             </Box>
 
             <Box my={3}>

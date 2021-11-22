@@ -1,7 +1,7 @@
 import { Box, Button, makeStyles, Theme, Typography } from "@material-ui/core";
 import { ReactComponent as Emoij } from 'assets/images/emoij.svg';
 import Picker from 'emoji-picker-react';
-import { ChangeEvent, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 
 
 interface Props {
@@ -9,10 +9,8 @@ interface Props {
     placeHolder?: string
     value: string
     setValue: (state: string) => void
-}
-
-interface Areatext {
-    focus: () => void
+    isComment?: boolean
+    handleTypingData: (isComment: boolean) => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -78,25 +76,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-export const TypingTextArea = forwardRef<Areatext, Props>(
+export const TypingTextArea =
     ({ showBtnSubmit = true,
         placeHolder = 'Hãy viết một vài bình luận...',
         value,
-        setValue
-    }: Props, ref) => {
+        setValue,
+        isComment = false,
+        handleTypingData
+    }: Props) => {
         const classes = useStyles()
         const [showEmoji, setShowEmoji] = useState(false)
         const areaRef = useRef<HTMLElement>(null)
 
         const timeout = useRef(0)
-
-        useImperativeHandle(ref, () => ({
-            focus: () => {
-                timeout.current = window.setTimeout(() => {
-                    areaRef.current?.focus()
-                }, 0)
-            }
-        }))
 
         useEffect(() => {
             return window.clearTimeout(timeout.current)
@@ -155,10 +147,11 @@ export const TypingTextArea = forwardRef<Areatext, Props>(
                         color='primary'
                         variant='contained'
                         size='small'
+                        onClick={() => handleTypingData(isComment)}
                     >
                         Đăng
                     </Button>}
                 </Box>
             </Box>
         )
-    })
+    }

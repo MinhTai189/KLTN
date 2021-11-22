@@ -40,7 +40,8 @@ router.delete("/likes/:id", verifyToken, async (req, res) => {
 router.post("/likes/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
   const findComment = await comment.findById(id);
-  const type = req.body.type;
+  const type = req.body.params.type;
+
   try {
     if (!findComment)
       return res
@@ -50,14 +51,17 @@ router.post("/likes/:id", verifyToken, async (req, res) => {
       findComment.likes.some((item) => {
         return JSON.stringify(item.owner) === JSON.stringify(req.user.id);
       })
-    )
+    ) {
       findComment.likes.filter((item) => {
         return JSON.stringify(item.owner) !== JSON.stringify(req.user.id);
       });
-    findComment.likes = findComment.likes.push({
+    }
+
+    findComment.likes = [...findComment.likes, {
       type: parseInt(type),
       owner: req.user.id,
-    });
+    }];
+
     await findComment.save();
     return res.status(200).json({ success: true, message: "Like thành công" });
   } catch (err) {

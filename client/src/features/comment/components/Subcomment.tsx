@@ -1,52 +1,53 @@
-import { makeStyles, Avatar, Box, Theme } from '@material-ui/core'
-import { useState, useRef } from 'react'
-import { CommentLayout } from '.'
+import { Avatar, Box, makeStyles, Theme } from '@material-ui/core'
+import { ReplingComment } from 'models'
+import { CommentLayout, TypingComment } from '.'
+import { CommentContext } from '../contexts/CommentContext'
 import { CommentBody } from './CommentBody'
-import { TypingComment } from './TypingComment'
 
 interface Props {
-
+    replyData: ReplingComment
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {},
 }))
 
-export const Subcomment = (props: Props) => {
+export const Subcomment = ({ replyData }: Props) => {
     const classes = useStyles()
-    const [typing, setTyping] = useState(false)
-    const inputRef = useRef<HTMLInputElement>(null)
 
-    const handleRely = () => {
-        setTyping(!typing)
-        inputRef.current?.focus()
-    }
+    const { _id, owner: { avatarUrl } } = replyData
 
     return (
-        <Box
-            className={classes.root}
-            my={2}
-        >
-            <CommentLayout
-                totalAction={true}
-                avatar={<Avatar
-                    className='avatar'
-                // src={}
+        <CommentContext.Consumer>
+            {value => (
+                <Box
+                    className={classes.root}
+                    my={2}
                 >
-                    U
-                </Avatar>}
-            >
-                <>
-                    <CommentBody
-                        typing={typing}
-                        handleRely={handleRely}
-                        sizeAction='small'
-                        positionAction='left'
-                    />
+                    <CommentLayout
+                        totalAction={true}
+                        avatar={<Avatar
+                            className='avatar'
+                            src={avatarUrl}
+                        />}
+                    >
+                        <>
+                            <CommentBody
+                                sizeAction='small'
+                                positionAction='left'
+                                comment={replyData}
+                            />
 
-                    {/* {typing && <TypingComment isRely ref={inputRef} />} */}
-                </>
-            </CommentLayout>
-        </Box>
+                            {value.typing.id === _id && <TypingComment
+                                isRely
+                                repliedUserName={value.typing.username}
+                                data={value?.dataReplingComment || ''}
+                                setData={value?.setDataReplingComment || (() => { })}
+                            />}
+                        </>
+                    </CommentLayout>
+                </Box>
+            )}
+        </CommentContext.Consumer>
     )
 }
