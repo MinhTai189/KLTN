@@ -2,8 +2,6 @@ import { Avatar, Box, makeStyles, Theme, Typography } from "@material-ui/core";
 import { useAppSelector } from "app/hooks";
 import { selectCurrentUser } from "features/auth/authSlice";
 import { User } from "models";
-import { PostViewContext } from "pages/PostViewPage";
-import { memo } from "react";
 import { useHistory } from "react-router-dom";
 import { CommentLayout } from ".";
 import { TypingTextArea } from "./TypingTextArea";
@@ -13,6 +11,7 @@ interface Props {
     data: string
     setData: (state: string) => void
     repliedUserName?: string
+    handleSubmit: () => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -25,54 +24,50 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const TypingComment = ({ isRely = false, data, setData, repliedUserName }: Props) => {
+export const TypingComment = ({ isRely = false, data, setData, repliedUserName, handleSubmit }: Props) => {
     const classes = useStyles()
     const history = useHistory()
 
     const currentUser: User = useAppSelector(selectCurrentUser)
 
     return (
-        <PostViewContext.Consumer>
-            {value => (
-                <Box
-                    className={classes.root}
-                    mt={2}
-                    mb={3}
-                >
-                    <CommentLayout avatar={<Avatar
-                        className='avatar'
-                        src={currentUser ? currentUser.avatarUrl : 'https://res.cloudinary.com/dpregsdt9/image/upload/v1637224758/user-avatar/avatar_male_m_ljdn9m.png'}
-                        style={{ background: '#e5e6ec' }}
-                    >
-                        U
-                    </Avatar>}
-                    >
-                        {currentUser ? <>
-                            {isRely && <Typography className='user-rely'>
-                                {`Bạn đang trả lời ${repliedUserName}...`}
-                            </Typography>}
+        <Box
+            className={classes.root}
+            mt={2}
+            mb={3}
+        >
+            <CommentLayout avatar={<Avatar
+                className='avatar'
+                src={currentUser ? currentUser.avatarUrl : 'https://res.cloudinary.com/dpregsdt9/image/upload/v1637224758/user-avatar/avatar_male_m_ljdn9m.png'}
+                style={{ background: '#e5e6ec' }}
+            >
+                U
+            </Avatar>}
+            >
+                {currentUser ? <>
+                    {isRely && <Typography className='user-rely'>
+                        {`Bạn đang trả lời ${repliedUserName}...`}
+                    </Typography>}
 
-                            <TypingTextArea
-                                value={data}
-                                setValue={setData}
-                                isComment
-                                handleTypingData={value.handleTypingData}
-                            />
-                        </>
-                            : <Box
-                                display='flex'
-                                alignItems='center'
-                                style={{ height: '100%', cursor: 'pointer' }}
-                                onClick={() => history.push('/auth/login')}
-                            >
-                                <Typography style={{ color: 'rgba(0,0,0,0.7)' }} >
-                                    Đăng nhập một phát, tha hồ bình luận 😁
-                                </Typography>
-                            </Box>
-                        }
-                    </CommentLayout >
-                </Box >
-            )}
-        </PostViewContext.Consumer>
+                    <TypingTextArea
+                        value={data}
+                        setValue={setData}
+                        handleSubmit={handleSubmit}
+                        placeHolder={isRely ? 'Viết câu trả lời của bạn...' : 'Hãy viết một vài bình luận...'}
+                    />
+                </>
+                    : <Box
+                        display='flex'
+                        alignItems='center'
+                        style={{ height: '100%', cursor: 'pointer' }}
+                        onClick={() => history.push('/auth/login')}
+                    >
+                        <Typography style={{ color: 'rgba(0,0,0,0.7)' }} >
+                            Đăng nhập một phát, tha hồ bình luận 😁
+                        </Typography>
+                    </Box>
+                }
+            </CommentLayout >
+        </Box >
     )
 }

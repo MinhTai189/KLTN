@@ -9,16 +9,8 @@ import { PostViewSection } from 'features/posts/components'
 import { MotelRecommendPost } from 'features/posts/components/PostView/Recommended/MotelRecommendPost'
 import { RelatedPost } from 'features/posts/components/PostView/Recommended/RelatedPost'
 import { postAction, selectDataPost, selectFilterPost } from 'features/posts/postSlice'
-import { createContext, Profiler, ProfilerOnRenderCallback, useEffect } from 'react'
+import { createContext, useEffect } from 'react'
 import { useParams } from 'react-router'
-
-interface PostViewContext {
-    handleTypingData: (isComment: boolean) => void
-}
-
-export const PostViewContext = createContext<PostViewContext>({
-    handleTypingData: () => { },
-})
 
 const PostViewPage = () => {
     const dispatch = useAppDispatch()
@@ -41,62 +33,51 @@ const PostViewPage = () => {
         }))
     }, [dispatch, filterComment])
 
-    const handleTypingData = (isComment: boolean) => {
-        // console.log({ typingCommentData, isComment })
-    }
-
     return (
-        <PostViewContext.Provider value={{
-            handleTypingData
-        }}>
-            <MainLayout>
-                <Box
-                    className='container'
-                    mt={12}
-                >
-                    <Box>
-                        <Grid container spacing={2}>
-                            <Grid item md={1}></Grid>
-                            <Grid item md={7}>
-                                {postData &&
-                                    <Profiler id='post-view-section' onRender={(id: string) => console.log(id, 'rendering')}>
-                                        <PostViewSection postData={postData} />
-                                    </Profiler>}
+        <MainLayout>
+            <Box
+                className='container'
+                mt={12}
+            >
+                <Box>
+                    <Grid container spacing={2}>
+                        <Grid item md={1}></Grid>
+                        <Grid item md={7}>
+                            {postData && <PostViewSection postData={postData} />}
 
-                                <Box my={4}>
-                                    <RelatedPost />
-                                </Box>
+                            <Box my={4}>
+                                <RelatedPost />
+                            </Box>
 
-                                <Box my={4}>
-                                    <MotelRecommendPost />
-                                </Box>
+                            <Box my={4}>
+                                <MotelRecommendPost />
+                            </Box>
 
-                                <Box
-                                    display='flex'
-                                    justifyContent='flex-end'
-                                    mt={8}
-                                >
-                                    <Pagination
-                                        count={10}
-                                        size="small"
-                                        shape='rounded'
-                                        hideNextButton
-                                        hidePrevButton
-                                        color='primary'
-                                    />
-                                </Box>
+                            <Box
+                                display='flex'
+                                justifyContent='flex-end'
+                                mt={8}
+                            >
+                                <Pagination
+                                    count={10}
+                                    size="small"
+                                    shape='rounded'
+                                    hideNextButton
+                                    hidePrevButton
+                                    color='primary'
+                                />
+                            </Box>
 
-                                <CommentSection />
-                            </Grid>
-                            <Grid item md={3}>
-                                {postData && postData.motel && <MotelPreview motelData={postData.motel} />}
-                            </Grid>
-                            <Grid item md={1}></Grid>
+                            <CommentSection />
                         </Grid>
-                    </Box>
+                        <Grid item md={3}>
+                            {postData && postData.motel && <MotelPreview motelData={postData.motel} />}
+                        </Grid>
+                        <Grid item md={1}></Grid>
+                    </Grid>
                 </Box>
-            </MainLayout>
-        </PostViewContext.Provider>
+            </Box>
+        </MainLayout>
     )
 }
 

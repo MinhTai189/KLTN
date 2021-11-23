@@ -1,5 +1,10 @@
 import { Box } from '@material-ui/core'
+import commentApi from 'api/comment'
+import { useAppDispatch, useAppSelector } from 'app/hooks'
+import { commentAction, selectFilterComment } from 'features/comment/commentSlice'
 import { useCallback, useState } from 'react'
+import { useParams } from 'react-router'
+import { toast } from 'react-toastify'
 import { TypingComment } from '..'
 import { CommentContext } from '../../contexts/CommentContext'
 import { ListComment } from '../ListComment'
@@ -8,8 +13,11 @@ interface Props {
 }
 
 export const CommentSection = ({ }: Props) => {
+    const dispatch = useAppDispatch()
+    const commentFilter = useAppSelector(selectFilterComment)
+
     const [typingDataComment, setTypingDataComment] = useState('')
-    const [dataReplingComment, setDataReplingComment] = useState('')
+    const { id } = useParams<{ id: string }>()
 
     const [typing, setTyping] = useState({
         id: '',
@@ -20,14 +28,41 @@ export const CommentSection = ({ }: Props) => {
         setTyping(prev => prev.id === idRepling ? { id: '', username: '' } : { id: idRepling, username: usernameRepling })
     }, [])
 
+    const handleSubmitComment = () => {
+        commentApi.add(id, typingDataComment)
+            .then(() => {
+                toast.success("Đăng bình luận thành công!!!")
+                dispatch(commentAction.setFilter({ ...commentFilter }))
+                setTypingDataComment('')
+            })
+            .catch(err => {
+                toast.error(err.response.data.message)
+            })
+    }
+
+    const handleSubmitReply = useCallback((commentReplyId: string, userId: string, content: string) => {
+        commentApi.addReply(id, content, commentReplyId, userId)
+            .then(() => {
+                toast.success("Đăng bình luận thành công!!!")
+                dispatch(commentAction.setFilter({ ...commentFilter }))
+                setTypingDataComment('')
+                setTyping({
+                    id: '',
+                    username: ''
+                })
+            })
+            .catch(err => {
+                toast.error(err.response.data.message)
+            })
+    }, [])
+
     return (
         <CommentContext.Provider value={
             {
-                dataReplingComment,
-                setDataReplingComment,
                 typing,
                 setTyping,
                 handleRely,
+                handleSubmitReply
             }
         }>
             <Box component='section'>
@@ -38,6 +73,7 @@ export const CommentSection = ({ }: Props) => {
                     <TypingComment
                         data={typingDataComment}
                         setData={setTypingDataComment}
+                        handleSubmit={handleSubmitComment}
                     />
                 </Box>
 

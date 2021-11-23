@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { selectCurrentUser } from 'features/auth/authSlice'
 import { BtnAction, ListTool, ModalStaticAction } from 'features/posts/components'
 import { TotalAction } from 'features/posts/components/PostView/Common/TotalAction'
-import { Comment, ReplingComment } from 'models'
+import { Comment, ReplingComment, User } from 'models'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -18,6 +18,7 @@ interface Props {
     positionAction?: 'left' | 'right'
     sizeAction?: 'small' | 'large'
     comment: Comment | ReplingComment
+    repliedUser?: User
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -78,7 +79,18 @@ const useStyles = makeStyles((theme: Theme) => ({
         }
     },
     content: {
-        fontSize: '1em'
+        fontSize: '1em',
+
+        '& .hash-tag': {
+            color: theme.palette.primary.main,
+            cursor: 'pointer',
+            marginRight: theme.spacing(1),
+            transition: '300ms',
+
+            '&:hover': {
+                color: theme.palette.primary.dark
+            }
+        }
     },
     controls: {
         marginTop: 4,
@@ -116,7 +128,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', comment }: Props) => {
+export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', comment, repliedUser }: Props) => {
     const classes = useStyles()
     const currentUser = useAppSelector(selectCurrentUser)
     const filter = useAppSelector(selectFilterComment)
@@ -197,6 +209,11 @@ export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', co
                         </Box>
 
                         <Typography className={classes.content}>
+                            {repliedUser && <span className="hash-tag">
+                                <Link to='/'>
+                                    {`@${repliedUser.name}`}
+                                </Link>
+                            </span>}
                             {content}
                         </Typography>
 

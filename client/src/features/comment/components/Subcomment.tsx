@@ -1,5 +1,6 @@
 import { Avatar, Box, makeStyles, Theme } from '@material-ui/core'
 import { ReplingComment } from 'models'
+import { useState } from 'react'
 import { CommentLayout, TypingComment } from '.'
 import { CommentContext } from '../contexts/CommentContext'
 import { CommentBody } from './CommentBody'
@@ -14,8 +15,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const Subcomment = ({ replyData }: Props) => {
     const classes = useStyles()
+    const [replingData, setReplingData] = useState('')
 
-    const { _id, owner: { avatarUrl } } = replyData
+    const { _id, owner: { avatarUrl, _id: userId }, user } = replyData
 
     return (
         <CommentContext.Consumer>
@@ -36,13 +38,15 @@ export const Subcomment = ({ replyData }: Props) => {
                                 sizeAction='small'
                                 positionAction='left'
                                 comment={replyData}
+                                repliedUser={user}
                             />
 
                             {value.typing.id === _id && <TypingComment
                                 isRely
                                 repliedUserName={value.typing.username}
-                                data={value?.dataReplingComment || ''}
-                                setData={value?.setDataReplingComment || (() => { })}
+                                data={replingData}
+                                setData={setReplingData}
+                                handleSubmit={() => value.handleSubmitReply(_id, userId, replingData)}
                             />}
                         </>
                     </CommentLayout>

@@ -20,8 +20,6 @@ export const ListComment = memo((props: Props) => {
                         <Comment
                             key={comment._id}
                             comment={comment}
-                            dataReplingComment={''}
-                            setDataReplingComment={() => { }}
                         />
                     )
                 })}

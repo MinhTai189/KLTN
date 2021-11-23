@@ -9,8 +9,7 @@ interface Props {
     placeHolder?: string
     value: string
     setValue: (state: string) => void
-    isComment?: boolean
-    handleTypingData: (isComment: boolean) => void
+    handleSubmit: () => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -81,8 +80,7 @@ export const TypingTextArea =
         placeHolder = 'Hãy viết một vài bình luận...',
         value,
         setValue,
-        isComment = false,
-        handleTypingData
+        handleSubmit
     }: Props) => {
         const classes = useStyles()
         const [showEmoji, setShowEmoji] = useState(false)
@@ -147,7 +145,7 @@ export const TypingTextArea =
                         color='primary'
                         variant='contained'
                         size='small'
-                        onClick={() => handleTypingData(isComment)}
+                        onClick={handleSubmit}
                     >
                         Đăng
                     </Button>}
