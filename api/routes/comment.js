@@ -57,10 +57,13 @@ router.post("/likes/:id", verifyToken, async (req, res) => {
       });
     }
 
-    findComment.likes = [...findComment.likes, {
-      type: parseInt(type),
-      owner: req.user.id,
-    }];
+    findComment.likes = [
+      ...findComment.likes,
+      {
+        type: parseInt(type),
+        owner: req.user.id,
+      },
+    ];
 
     await findComment.save();
     return res.status(200).json({ success: true, message: "Like thành công" });
@@ -89,7 +92,7 @@ router.post("/:idPost", verifyToken, async (req, res) => {
         .status(403)
         .json({ success: false, message: "Khổng thể thực hiện hành động này" });
 
-    const { content, commentId } = req.body;
+    const { content, commentId, user } = req.body;
     if (typeof content !== "string")
       return res.status(400).json({
         success: false,
@@ -111,14 +114,19 @@ router.post("/:idPost", verifyToken, async (req, res) => {
           message:
             "Bình luận bạn đang trả lời không tồn tại hoặc không thuộc bài viết này",
         });
-      if (check.reply)
-        return res.status(400).json({
-          success: false,
-          message:
-            "Bình luận bạn đang trả lời là bình luận đã trả lời bình luận khác",
-        });
 
-      newComment.reply = { comment: commentId };
+      if (check.reply)
+        newComment.reply = {
+          comment: commentId,
+          user: user,
+          rootComment: check.reply.rootComment,
+        };
+      else
+        newComment.reply = {
+          comment: commentId,
+          user: user,
+          rootComment: comment,
+        };
     }
 
     await newComment.save();
@@ -136,7 +144,8 @@ router.get("/", async (req, res) => {
       .find({})
       .populate("owner")
       .populate("post", "title _id subject")
-      .populate("likes.owner", "name avatarUrl rank");
+      .populate("likes.owner", "name avatarUrl rank")
+      .populate("reply.user");
     const {
       _role,
       _keysearch,
@@ -249,20 +258,38 @@ router.get("/", async (req, res) => {
         if (responseComments[j].reply)
           if (!Array.isArray(responseComments[j].reply))
             if (
-              JSON.stringify(responseComments[j].reply.comment) ===
+              JSON.stringify(responseComments[j].reply.rootComment) ===
               JSON.stringify(responseComments[i]._id)
             ) {
               responseComments[i].reply.push({ ...responseComments[j] });
+              responseComments[i].reply[
+                responseComments[i].reply.length - 1
+              ].comment = responseComments[j].reply.comment;
               delete responseComments[i].reply[
                 responseComments[i].reply.length - 1
               ].reply;
+
               delete responseComments[i].reply[
                 responseComments[i].reply.length - 1
               ].post;
+              const userSchool = await school
+                .findOne({ codeName: responseComments[j].reply.user.school })
+                .select("-nameDistricts");
+              const user = {
+                avatarUrl: responseComments[j].reply.user.avatarUrl.url,
+                name: responseComments[j].reply.user.name,
+                isAdmin: responseComments[j].reply.user.isAdmin,
+                _id: responseComments[j].reply.user.id,
+                credit: responseComments[j].reply.user.credit,
+                email: responseComments[j].reply.user.email,
+                school: userSchool,
+                posts: responseComments[j].reply.user.posts,
+                rank: responseComments[j].reply.user.rank,
+              };
               responseComments[i].reply[
                 responseComments[i].reply.length - 1
-              ].user = responseComments[i].owner;
-              deleteComment.push(responseComments[j]._id);
+              ].user = user;
+              deleteComment.push(responseComments[j]);
               // responseComments = responseComments.filter((item) => {
               //   return (
               //     JSON.stringify(item._id) !==
@@ -274,7 +301,9 @@ router.get("/", async (req, res) => {
     }
     for (let i = 0; i < deleteComment.length; i++) {
       responseComments = responseComments.filter((item) => {
-        return JSON.stringify(item._id) !== JSON.stringify(deleteComment[i]);
+        return (
+          JSON.stringify(item._id) !== JSON.stringify(deleteComment[i]._id)
+        );
       });
     }
     let page = 1;
@@ -320,7 +349,7 @@ router.delete("/:id", verifyToken, async (req, res) => {
       await comment.findByIdAndDelete(commentId);
       await comment.deleteMany({
         post: deleteComment.post,
-        "reply.comment": deleteComment._id,
+        "reply.rootComment": deleteComment._id,
       });
       return res
         .status(200)

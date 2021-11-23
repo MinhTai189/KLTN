@@ -9,8 +9,15 @@ const comment = new Schema(
     },
     reply: {
       type: {
+        rootComment: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
         comment: {
           type: mongoose.Schema.Types.ObjectId,
+        },
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "user",
         },
       },
       required: false,

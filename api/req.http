@@ -261,11 +261,11 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgw
 ###
 POST http://localhost:5000/api/comments/6195d0ea8b995acd0afd726d
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNzI4NTY1MCwiZXhwIjoxNjM3Mjg2MjUwfQ.MFAEtctO-jUAFurhcSMejIoyJiOaFqL6c5k57jjEvh0
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNzY1NTg1NywiZXhwIjoxNjM3NjU2NDU3fQ.BhvcNjw1kTGtj6Z2uk6N-ssN4D_Yfds6hWfYlp15ypQ
 
 {
-    
-    "commentId":"6196f9feb3c5925e427b18b1",
+    "commentId":"619a5423c18357725465481c",
+    "user":"616b8678dd1e8090c8c17259",
     "content":"Comment này thật mất dạy 6"
 }
 ###
