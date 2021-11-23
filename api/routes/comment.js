@@ -92,7 +92,7 @@ router.post("/:idPost", verifyToken, async (req, res) => {
         .status(403)
         .json({ success: false, message: "Khổng thể thực hiện hành động này" });
 
-    const { content, commentId, user } = req.body;
+    const { content, commentId, userId } = req.body;
     if (typeof content !== "string")
       return res.status(400).json({
         success: false,
@@ -118,14 +118,14 @@ router.post("/:idPost", verifyToken, async (req, res) => {
       if (check.reply)
         newComment.reply = {
           comment: commentId,
-          user: user,
+          user: userId,
           rootComment: check.reply.rootComment,
         };
       else
         newComment.reply = {
           comment: commentId,
-          user: user,
-          rootComment: comment,
+          user: userId,
+          rootComment: commentId,
         };
     }
 
