@@ -27,6 +27,7 @@ export interface Filter {
   _rate?: number;
   _price?: number[];
   _optional?: string[];
+  _subject?: string;
 
   [key: string]: any;
 }

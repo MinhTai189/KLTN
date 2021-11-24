@@ -2,14 +2,13 @@ import { Avatar, Box, makeStyles, Theme, Typography } from "@material-ui/core";
 import { useAppSelector } from "app/hooks";
 import { selectCurrentUser } from "features/auth/authSlice";
 import { User } from "models";
+import { forwardRef } from "react";
 import { useHistory } from "react-router-dom";
 import { CommentLayout } from ".";
 import { TypingTextArea } from "./TypingTextArea";
 
 interface Props {
     isRely?: boolean
-    data: string
-    setData: (state: string) => void
     repliedUserName?: string
     handleSubmit: () => void
 }
@@ -24,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const TypingComment = ({ isRely = false, data, setData, repliedUserName, handleSubmit }: Props) => {
+export const TypingComment = forwardRef(({ isRely = false, repliedUserName, handleSubmit }: Props, ref) => {
     const classes = useStyles()
     const history = useHistory()
 
@@ -50,10 +49,9 @@ export const TypingComment = ({ isRely = false, data, setData, repliedUserName, 
                     </Typography>}
 
                     <TypingTextArea
-                        value={data}
-                        setValue={setData}
                         handleSubmit={handleSubmit}
                         placeHolder={isRely ? 'Viết câu trả lời của bạn...' : 'Hãy viết một vài bình luận...'}
+                        ref={ref as any}
                     />
                 </>
                     : <Box
@@ -70,4 +68,4 @@ export const TypingComment = ({ isRely = false, data, setData, repliedUserName, 
             </CommentLayout >
         </Box >
     )
-}
+})

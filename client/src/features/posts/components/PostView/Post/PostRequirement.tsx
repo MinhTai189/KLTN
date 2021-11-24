@@ -27,7 +27,8 @@ const useStyles = makeStyles((theme: Theme) => ({
                     fontSize: '0.9em',
 
                     '& b': {
-                        fontWeight: 500
+                        fontWeight: 500,
+                        marginRight: theme.spacing(0.5)
                     }
                 }
             }
@@ -63,7 +64,7 @@ export const PostRequirement = ({ require }: Props) => {
 
                 {require.price && <li className='require'>
                     <Typography className='text'>
-                        <b>Gía khoảng: </b>
+                        <b>Giá khoảng: </b>
                         {`${mapPriceMonth(require.price || 0)}/tháng`}
                     </Typography>
                 </li>}

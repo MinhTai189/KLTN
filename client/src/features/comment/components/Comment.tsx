@@ -1,7 +1,7 @@
 import { Avatar, Box, Theme } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { Comment as CommentType } from 'models'
-import { memo, useEffect, useRef, useState } from 'react'
+import { memo, useContext, useEffect, useRef, useState } from 'react'
 import { CommentContext } from '../contexts/CommentContext'
 import { CommentBody } from './CommentBody'
 import { CommentLayout } from './Layout/CommentLayout'
@@ -18,48 +18,48 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const Comment = memo(({ comment }: Props) => {
     const classes = useStyles()
-    const [replingData, setReplingData] = useState('')
+    const replyRef = useRef<any>()
+    const value = useContext(CommentContext)
 
     const { _id, owner: { avatarUrl, _id: userId }, reply } = comment
 
+    const handleReply = () => {
+        if (replyRef.current)
+            value.handleSubmitReply(_id, userId, replyRef.current.getValue())
+    }
+
     return (
-        <CommentContext.Consumer>
-            {value => (
-                <Box
-                    className={classes.root}
-                    my={2}
-                >
-                    <CommentLayout
-                        totalAction={true}
-                        avatar={<Avatar
-                            className='avatar'
-                            src={avatarUrl}
-                        />}
-                    >
-                        <>
-                            <CommentBody
-                                sizeAction='small'
-                                positionAction='left'
-                                comment={comment}
-                            />
+        <Box
+            className={classes.root}
+            my={2}
+        >
+            <CommentLayout
+                totalAction={true}
+                avatar={<Avatar
+                    className='avatar'
+                    src={avatarUrl}
+                />}
+            >
+                <>
+                    <CommentBody
+                        sizeAction='small'
+                        positionAction='left'
+                        comment={comment}
+                    />
 
-                            {value.typing.id === _id && <TypingComment
-                                isRely
-                                repliedUserName={value.typing.username}
-                                data={replingData}
-                                setData={setReplingData}
-                                handleSubmit={() => value.handleSubmitReply(_id, userId, replingData)}
-                            />}
+                    {value.typing.id === _id && <TypingComment
+                        isRely
+                        repliedUserName={value.typing.username}
+                        ref={replyRef}
+                        handleSubmit={() => handleReply()}
+                    />}
 
-                            <ListSubComment
-                                listReply={reply}
-                            />
-                        </>
-                    </CommentLayout>
-                </Box>
-            )}
-        </CommentContext.Consumer>
+                    <ListSubComment
+                        listReply={reply}
+                    />
+                </>
+            </CommentLayout>
+        </Box>
     )
 }
-
 )

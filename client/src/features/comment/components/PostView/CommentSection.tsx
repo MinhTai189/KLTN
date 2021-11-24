@@ -2,22 +2,19 @@ import { Box } from '@material-ui/core'
 import commentApi from 'api/comment'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { commentAction, selectFilterComment } from 'features/comment/commentSlice'
-import { useCallback, useState } from 'react'
+import { Profiler, useCallback, useRef, useState } from 'react'
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { TypingComment } from '..'
 import { CommentContext } from '../../contexts/CommentContext'
 import { ListComment } from '../ListComment'
 
-interface Props {
-}
 
-export const CommentSection = ({ }: Props) => {
+export const CommentSection = () => {
     const dispatch = useAppDispatch()
     const commentFilter = useAppSelector(selectFilterComment)
-
-    const [typingDataComment, setTypingDataComment] = useState('')
     const { id } = useParams<{ id: string }>()
+    const typingRef = useRef<any>()
 
     const [typing, setTyping] = useState({
         id: '',
@@ -29,11 +26,14 @@ export const CommentSection = ({ }: Props) => {
     }, [])
 
     const handleSubmitComment = () => {
-        commentApi.add(id, typingDataComment)
+        const content = typingRef.current?.getValue()
+        if (!content) return
+
+        commentApi.add(id, content)
             .then(() => {
                 toast.success("Đăng bình luận thành công!!!")
                 dispatch(commentAction.setFilter({ ...commentFilter }))
-                setTypingDataComment('')
+                typingRef.current?.resetValue()
             })
             .catch(err => {
                 toast.error(err.response.data.message)
@@ -45,7 +45,6 @@ export const CommentSection = ({ }: Props) => {
             .then(() => {
                 toast.success("Đăng bình luận thành công!!!")
                 dispatch(commentAction.setFilter({ ...commentFilter }))
-                setTypingDataComment('')
                 setTyping({
                     id: '',
                     username: ''
@@ -71,37 +70,14 @@ export const CommentSection = ({ }: Props) => {
                     mb={2}
                 >
                     <TypingComment
-                        data={typingDataComment}
-                        setData={setTypingDataComment}
                         handleSubmit={handleSubmitComment}
+                        ref={typingRef}
                     />
                 </Box>
 
-                <ListComment />
-
-                {/* <Box
-                display='flex'
-                justifyContent='flex-end'
-                mt={8}
-            >
-                <Pagination
-                    count={10}
-                    size="small"
-                    shape='rounded'
-                    hideNextButton
-                    hidePrevButton
-                    color='primary'
-                />
-            </Box>
-
-            <Box
-                mb={2}
-            >
-                <TypingComment
-                    data={userCommentData}
-                    setData={setUserCommentData}
-                />
-            </Box> */}
+                <Profiler id='list-comment' onRender={(id: string) => console.log(id, 'is rendering')}>
+                    <ListComment />
+                </Profiler>
             </Box>
         </CommentContext.Provider>
     )

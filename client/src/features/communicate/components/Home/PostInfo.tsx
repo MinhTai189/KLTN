@@ -1,9 +1,10 @@
-import { Box, makeStyles, Theme, Avatar, Typography } from '@material-ui/core'
-import AvatarU from 'assets/images/avatar.png'
+import { Avatar, Box, makeStyles, Theme, Typography } from '@material-ui/core'
+import { Post } from 'models'
 import { Link } from 'react-router-dom'
+import { calculateCreatedTime } from 'utils/calculateCreatedTime'
 
 interface Props {
-
+    post: Post
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -52,25 +53,25 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-export const PostInfo = (props: Props) => {
+export const PostInfo = ({ post }: Props) => {
     const classes = useStyles()
 
     return (
         <Box className={classes.root}>
-            <Avatar className='avatar' src={AvatarU} />
+            <Avatar className='avatar' src={post.owner.avatarUrl} />
 
             <div className="info">
                 <Typography className='title'>
-                    <Link to='/'>
-                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum, iure ea molestias tenetur a laboriosam fugit debitis esse praesentium, architecto obcaecati earum quibusdam atque, cupiditate commodi suscipit illo laborum sit.
+                    <Link to={`/posts/${post._id}`}>
+                        {post.content}
                     </Link>
                 </Typography>
 
                 <Typography className='bottom'>
-                    25/01/2021 &#x22C5;&#xa0;
+                    {calculateCreatedTime(post.createdAt)} &#x22C5;&#xa0;
 
                     <Link to='/'>
-                        Tran Minh Tai
+                        {post.owner.name}
                     </Link>
                 </Typography>
             </div>

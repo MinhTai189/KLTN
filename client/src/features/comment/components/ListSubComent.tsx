@@ -1,5 +1,6 @@
 import { makeStyles } from "@material-ui/core"
 import { ReplingComment } from "models"
+import { memo } from "react"
 import { Subcomment } from "./Subcomment"
 
 interface Props {
@@ -13,7 +14,7 @@ const useStyles = makeStyles({
     }
 })
 
-export const ListSubComment = ({ listReply }: Props) => {
+export const ListSubComment = memo(({ listReply }: Props) => {
     const classes = useStyles()
 
     return (
@@ -25,4 +26,4 @@ export const ListSubComment = ({ listReply }: Props) => {
             })}
         </ul>
     )
-}
+})

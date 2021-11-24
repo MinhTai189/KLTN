@@ -2,20 +2,23 @@ import { Box, Grid } from '@material-ui/core'
 import { Pagination } from '@material-ui/lab'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { MainLayout } from 'components/Layouts/MainLayout'
-import { commentAction, selectFilterComment } from 'features/comment/commentSlice'
+import { commentAction, selectFilterComment, selectPaginationComment } from 'features/comment/commentSlice'
 import { CommentSection } from 'features/comment/components'
 import { MotelPreview } from "features/motels/components/PostView/MotelPreview"
 import { PostViewSection } from 'features/posts/components'
 import { MotelRecommendPost } from 'features/posts/components/PostView/Recommended/MotelRecommendPost'
 import { RelatedPost } from 'features/posts/components/PostView/Recommended/RelatedPost'
 import { postAction, selectDataPost, selectFilterPost } from 'features/posts/postSlice'
-import { createContext, useEffect } from 'react'
+import { Pagination as PaginationModel } from 'models'
+import { Profiler, useEffect } from 'react'
 import { useParams } from 'react-router'
 
 const PostViewPage = () => {
     const dispatch = useAppDispatch()
     const filterComment = useAppSelector(selectFilterComment)
     const filterPost = useAppSelector(selectFilterPost)
+
+    const paginationComment: PaginationModel = useAppSelector(selectPaginationComment)
 
     const postData = useAppSelector(selectDataPost)
 
@@ -33,6 +36,13 @@ const PostViewPage = () => {
         }))
     }, [dispatch, filterComment])
 
+    const handlePaginationComment = (e: object, page: number) => {
+        dispatch(commentAction.setFilter({
+            ...paginationComment,
+            _page: page,
+        }))
+    }
+
     return (
         <MainLayout>
             <Box
@@ -43,15 +53,19 @@ const PostViewPage = () => {
                     <Grid container spacing={2}>
                         <Grid item md={1}></Grid>
                         <Grid item md={7}>
-                            {postData && <PostViewSection postData={postData} />}
+                            {postData && <Profiler id='post-view' onRender={() => console.log('post-view is rendering')}>
+                                <PostViewSection postData={postData} />
+                            </Profiler>}
 
-                            <Box my={4}>
-                                <RelatedPost />
-                            </Box>
+                            {paginationComment._page <= 1 && <>
+                                <Box my={4}>
+                                    <RelatedPost />
+                                </Box>
 
-                            <Box my={4}>
-                                <MotelRecommendPost />
-                            </Box>
+                                <Box my={4}>
+                                    <MotelRecommendPost />
+                                </Box>
+                            </>}
 
                             <Box
                                 display='flex'
@@ -59,7 +73,8 @@ const PostViewPage = () => {
                                 mt={8}
                             >
                                 <Pagination
-                                    count={10}
+                                    count={Math.ceil(paginationComment._totalRows / paginationComment._limit)}
+                                    onChange={handlePaginationComment}
                                     size="small"
                                     shape='rounded'
                                     hideNextButton

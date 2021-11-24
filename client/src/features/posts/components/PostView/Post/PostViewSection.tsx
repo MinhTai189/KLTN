@@ -3,6 +3,7 @@ import { SmsTwoTone } from "@material-ui/icons"
 import postApi from "api/post"
 import { useAppDispatch, useAppSelector } from "app/hooks"
 import { selectCurrentUser } from "features/auth/authSlice"
+import { selectPaginationComment } from "features/comment/commentSlice"
 import { postAction, selectFilterPost } from "features/posts/postSlice"
 import { Post, User } from "models"
 import { memo, useEffect, useState } from "react"
@@ -121,7 +122,7 @@ export const PostViewSection = memo(({ postData }: Props) => {
                     <Link to='/'>
                         Trang chủ
                     </Link>
-                    <Link to='/'>
+                    <Link to='/posts'>
                         Danh sách chủ đề
                     </Link>
                     <Typography color="textPrimary">

@@ -1,15 +1,18 @@
 import { Box, Button, makeStyles, Theme, Typography } from "@material-ui/core";
 import { ReactComponent as Emoij } from 'assets/images/emoij.svg';
 import Picker from 'emoji-picker-react';
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { forwardRef, Ref, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 
 interface Props {
     showBtnSubmit?: boolean
     placeHolder?: string
-    value: string
-    setValue: (state: string) => void
     handleSubmit: () => void
+    ref: Ref<HTMLTextAreaElement>
+}
+
+interface TextAreaRef {
+    getValue: () => string
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -26,6 +29,7 @@ const useStyles = makeStyles((theme: Theme) => ({
             outline: 'none',
             height: 40,
             background: 'transparent',
+            lineHeight: 1.5,
 
             '&::-webkit-scrollbar': {
                 width: 0
@@ -76,21 +80,32 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 export const TypingTextArea =
-    ({ showBtnSubmit = true,
+    forwardRef<TextAreaRef, Props>(({ showBtnSubmit = true,
         placeHolder = 'Hãy viết một vài bình luận...',
-        value,
-        setValue,
         handleSubmit
-    }: Props) => {
+    }, ref) => {
         const classes = useStyles()
         const [showEmoji, setShowEmoji] = useState(false)
-        const areaRef = useRef<HTMLElement>(null)
+        const [value, setValue] = useState('')
 
-        const timeout = useRef(0)
+        const areaRef = useRef<HTMLTextAreaElement>(null)
 
         useEffect(() => {
-            return window.clearTimeout(timeout.current)
+            return () => {
+                setValue('')
+
+                if (areaRef.current)
+                    areaRef.current.value = ''
+            }
         }, [])
+
+        useImperativeHandle(ref, () => ({
+            getValue: () => areaRef.current?.value || '',
+            resetValue: () => {
+                if (areaRef.current)
+                    areaRef.current.value = ''
+            }
+        }))
 
         const handleGrowArea = () => {
             if (areaRef.current) {
@@ -100,11 +115,11 @@ export const TypingTextArea =
         }
 
         const onEmojiClick = (e: any, emojiObject: any) => {
-            setValue(value + emojiObject.emoji)
-        }
+            const value = areaRef.current?.value
 
-        const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-            setValue(e.target.value)
+            if (value && areaRef.current) {
+                areaRef.current.value = value + emojiObject.emoji
+            }
         }
 
         return (
@@ -112,8 +127,7 @@ export const TypingTextArea =
                 <textarea
                     placeholder={placeHolder}
                     ref={areaRef as any}
-                    value={value}
-                    onChange={handleChange}
+                    onChange={(e) => setValue(e.target.value)}
                     onInput={handleGrowArea}
                 />
 
@@ -152,4 +166,4 @@ export const TypingTextArea =
                 </Box>
             </Box>
         )
-    }
+    })

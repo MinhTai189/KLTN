@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import { Filter, Post } from 'models';
+import { Filter, Pagination, Post } from 'models';
 import { DataPostFinal } from './components/CreatePost/models/create-post';
 
 interface State {
@@ -8,6 +8,7 @@ interface State {
   data: Post | null;
   loading: boolean;
   filter: Filter;
+  pagination: Pagination;
   err: string;
 }
 
@@ -19,6 +20,11 @@ const initialState: State = {
     _page: 1,
     _limit: 10,
   },
+  pagination: {
+    _page: 1,
+    _limit: 10,
+    _totalRows: 10,
+  },
   err: '',
 };
 
@@ -26,6 +32,17 @@ const postSlice = createSlice({
   name: 'post',
   initialState,
   reducers: {
+    get: (state, action: PayloadAction<Filter>) => {
+      state.loading = true;
+    },
+    getSucceeded: (state, action: PayloadAction<Post[]>) => {
+      state.loading = false;
+      state.listData = action.payload;
+    },
+    getFailed: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.err = action.payload;
+    },
     getById: (state, action: PayloadAction<string>) => {
       state.loading = true;
     },
@@ -61,6 +78,7 @@ export const selectListDataPost = (state: RootState) => state.post.listData;
 export const selectDataPost = (state: RootState) => state.post.data;
 export const selectLoadingPost = (state: RootState) => state.post.loading;
 export const selectFilterPost = (state: RootState) => state.post.filter;
+export const selectPaginationPost = (state: RootState) => state.post.pagination;
 export const selectErrPost = (state: RootState) => state.post.err;
 
 //reducer

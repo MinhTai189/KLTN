@@ -10,3 +10,4 @@ export * from './ModalConfirm';
 export * from './ModalReport';
 export * from './ChipCustom';
 export * from './BalloonCKEditor.js';
+export * from './Loading';

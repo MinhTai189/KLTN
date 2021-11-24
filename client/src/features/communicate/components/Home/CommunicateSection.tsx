@@ -8,6 +8,9 @@ import Logo from 'assets/images/logo.png'
 import { Thread } from "models/Thread"
 import { useAppSelector } from "app/hooks"
 import { selectDataThread } from "features/communicate/threadSlice"
+import { useEffect, useState } from "react"
+import { FIND_MOTEL_ID, FIND_ROOMMATE_ID, REVIEW_ID } from "contants/contants"
+import postApi from "api/post"
 
 interface Props {
 }
@@ -62,6 +65,46 @@ export const CommunicateSection = ({ }: Props) => {
     const classes = useStyles()
     const listThread = useAppSelector(selectDataThread)
 
+    const [listPostRecent, setListPostRecent] = useState({
+        [FIND_MOTEL_ID]: [],
+        [FIND_ROOMMATE_ID]: [],
+        [REVIEW_ID]: [],
+    })
+
+    useEffect(() => {
+        const iniFilter = {
+            _page: 1,
+            _limit: 3
+        }
+
+        try {
+            const findMotelPromise = postApi.get({
+                ...iniFilter,
+                _subject: FIND_MOTEL_ID
+            })
+
+            const findRoommatePromise = postApi.get({
+                ...iniFilter,
+                _subject: FIND_ROOMMATE_ID
+            })
+
+            const reviewPromise = postApi.get({
+                ...iniFilter,
+                _subject: REVIEW_ID
+            })
+
+            Promise.all([findMotelPromise, findRoommatePromise, reviewPromise])
+                .then(posts => {
+                    posts.forEach(post => setListPostRecent(prev => ({
+                        ...prev,
+                        [post.data[0].subject._id]: post.data
+                    })))
+                })
+        } catch (error) {
+            console.log(error)
+        }
+    }, [])
+
     return (
         <Box
             className={classes.root}
@@ -81,9 +124,10 @@ export const CommunicateSection = ({ }: Props) => {
                             key={thread._id}
                             image={listImgThread[index]}
                             title={thread.name}
-                            view='101'
+                            view={thread.views}
                             count={thread.posts}
-                            listPost=''
+                            // @ts-ignore
+                            listPost={listPostRecent[thread._id]}
                         />
                     ))}
                 </Box>

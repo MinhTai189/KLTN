@@ -1,8 +1,13 @@
 import { Box, makeStyles, Theme, Typography, Avatar } from '@material-ui/core'
+import { REVIEW_ID } from 'contants/contants'
+import ListPostContext from 'features/posts/contexts/ListPostContext'
+import { Post as PostModel } from 'models'
+import { useContext } from 'react'
 import { Link } from 'react-router-dom'
+import { calculateCreatedTime } from 'utils/calculateCreatedTime'
 
 interface Props {
-
+    postData: PostModel
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -35,6 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
             '& .body': {
                 background: '#edeef2',
+                width: '100%',
                 borderRadius: 10,
                 padding: theme.spacing(1.5, 2),
 
@@ -82,26 +88,25 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const Post = (props: Props) => {
+export const Post = ({ postData }: Props) => {
     const classes = useStyles()
+    const { _id, title, owner: { avatarUrl, name }, createdAt, content, tags, subject: { _id: subjectId } } = postData
 
     return (
-        <Box className={classes.root}>
-            <Link to='/posts/6192460b323cc83d776daa43'>
+        <Box className={classes.root} component='li'>
+            <Link to={`/posts/${_id}`}>
                 <Typography
                     variant='h5'
                     className='title'
                 >
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus cumque deserunt incidunt numquam beatae praesentium exercitationem accusantium ullam, reprehenderit esse voluptates pariatur nesciunt magnam libero vel magni provident, maiores est.
+                    {title}
                 </Typography>
 
                 <Box className='content'>
                     <Avatar
                         className='avatar'
-                    // src={}
-                    >
-                        N
-                    </Avatar>
+                        src={avatarUrl as string}
+                    />
 
                     <Box className='body'>
                         <Box className='author-info'>
@@ -109,37 +114,27 @@ export const Post = (props: Props) => {
                                 variant='h6'
                                 className='name'
                             >
-                                Tran Minh Tai
+                                {name}
                             </Typography>
 
                             <Typography className='timestamp'>
-                                &nbsp;•&nbsp;26 phút
+                                &nbsp;•&nbsp;{calculateCreatedTime(createdAt)}
                             </Typography>
                         </Box>
 
-                        <Typography className='text'>
-                            Lorem ipsum dolor adipisicing elit. Ea, culpa minus esse dolore, in accusamus natus commodi at neque consequatur rerum illum inventore adipisci omnis quasi sapiente, pariatur officiis maiores?...
-                        </Typography>
+                        {subjectId !== REVIEW_ID && <Typography className='text'>
+                            {content}
+                        </Typography>}
 
                         <Box className='tag-wrapper'>
                             <ul className="list-tag">
-                                <li className="tag">
-                                    <Typography className='text'>
-                                        <b>#</b>nam
-                                    </Typography>
-                                </li>
-
-                                <li className="tag">
-                                    <Typography className='text'>
-                                        <b>#</b>sachse
-                                    </Typography>
-                                </li>
-
-                                <li className="tag">
-                                    <Typography className='text'>
-                                        <b>#</b>nauancungnhau
-                                    </Typography>
-                                </li>
+                                {tags.map((tag, index) => (
+                                    <li key={index} className="tag">
+                                        <Typography className='text'>
+                                            <b>#</b>{tag}
+                                        </Typography>
+                                    </li>
+                                ))}
                             </ul>
                         </Box>
                     </Box>

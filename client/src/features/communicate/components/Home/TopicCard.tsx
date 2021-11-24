@@ -1,5 +1,6 @@
 import { Box, Card, CardActionArea, CardContent, CardMedia, Theme, Typography, Divider } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
+import { Post } from "models"
 import { useHistory } from "react-router"
 import { PostInfo } from "./PostInfo"
 
@@ -8,12 +9,12 @@ interface Props {
     title: string
     view: number | string
     count: number | string
-    listPost?: any
+    listPost: Post[]
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        width: 320,
+        width: 420,
         margin: theme.spacing(1.5, 0),
 
         '& .top': {
@@ -113,7 +114,7 @@ export const TopicCard = ({ image, title, view, count, listPost }: Props) => {
                         </Typography>
 
                         <Typography className='text'>
-                            Lượt xem
+                            Truy cập
                         </Typography>
                     </span>
 
@@ -130,9 +131,12 @@ export const TopicCard = ({ image, title, view, count, listPost }: Props) => {
 
                 <Divider />
 
-                <PostInfo />
-                <PostInfo />
-                <PostInfo />
+                {listPost.map(post => (
+                    <PostInfo
+                        key={post._id}
+                        post={post}
+                    />
+                ))}
             </CardContent>
         </Card>
     )

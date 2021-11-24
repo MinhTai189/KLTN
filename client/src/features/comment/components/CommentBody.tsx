@@ -130,13 +130,13 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', comment, repliedUser }: Props) => {
     const classes = useStyles()
-    const currentUser = useAppSelector(selectCurrentUser)
+    const currentUser: User = useAppSelector(selectCurrentUser)
     const filter = useAppSelector(selectFilterComment)
 
     const dispatch = useAppDispatch()
     const [showModalStatic, setShowModalStatic] = useState(false)
 
-    const { _id, owner: { name, rank }, createdAt, content, totalLikes, numLikes, likes } = comment
+    const { _id, owner: { name, rank, _id: userId }, createdAt, content, totalLikes, numLikes, likes } = comment
 
     const [likeComment, setLikeComment] = useState<{ isLike: boolean; type: number }>({
         isLike: false,
@@ -229,7 +229,7 @@ export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', co
                         </Box>}
                     </Box>
 
-                    {currentUser && <Box
+                    {currentUser && currentUser._id !== userId && <Box
                         className={classes.controls}
                         display='flex'
                         justifyContent='flex-end'
