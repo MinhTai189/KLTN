@@ -248,8 +248,8 @@ router.get("/", async (req, res) => {
     responsePosts = responsePosts.map((item) => {
       return {
         ...item,
-        numLikes: item.likes.length,
-        numComments: cmts.filter(
+        totalLikes: item.likes.length,
+        totalComments: cmts.filter(
           (cmt) => JSON.stringify(cmt.post) === JSON.stringify(item._id)
         ).length,
       };
