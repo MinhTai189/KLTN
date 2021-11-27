@@ -231,6 +231,7 @@ router.get("/", async (req, res) => {
         }
         return count == _hashtag.length;
       });
+
     let page = 1;
     let limit = responsePosts.length;
     let totalRows = responsePosts.length;
@@ -242,7 +243,17 @@ router.get("/", async (req, res) => {
         limit = parseInt(_limit);
         page = parseInt(_page);
       }
+    const cmts = await commentModel.find({});
     responsePosts = responsePosts.slice((page - 1) * limit, limit * page);
+    responsePosts = responsePosts.map((item) => {
+      return {
+        ...item,
+        numLikes: item.likes.length,
+        numComments: cmts.filter(
+          (cmt) => JSON.stringify(cmt.post) === JSON.stringify(item._id)
+        ).length,
+      };
+    });
     res.status(200).json({
       success: true,
       data: responsePosts,
@@ -481,7 +492,7 @@ router.patch("/:id", verifyToken, async (req, res) => {
 router.post("/", verifyToken, async (req, res) => {
   const { subjectId, title, content, price, schools, additional, tags, motel } =
     req.body;
-
+  console.log(tags);
   if (!subjectId) {
     return res.status(400).json({
       success: false,
@@ -508,7 +519,13 @@ router.post("/", verifyToken, async (req, res) => {
   }
   let tag;
   tags.length > 0 ? (tag = tags.split(",")) : (tag = []);
-  tag = tag.map((t) => t.replace(/ /g, "").trim());
+
+  tag = tag.map((t) => (t = t.replace(/ /g, "").trim()));
+  tag = tag.map((t) => (t = removeVietNameseTones(t)));
+  tag = tag.filter((t) => {
+    return t !== "";
+  });
+
   if (subjectId === "6173ba553c954151dcc8fdf7") {
     if (!schools) {
       return res.status(400).json({
@@ -516,7 +533,8 @@ router.post("/", verifyToken, async (req, res) => {
         message: "Vui lòng cung cấp các yêu cầu về nhà trọ bạn muốn tìm",
       });
     }
-
+    let add = additional;
+    add.length < 1 || !add.match(/[a-z]/i) ? (add = "") : (add = additional);
     const newPost = new post({
       title,
       unsignedTitle: removeVietNameseTones(title),
@@ -526,7 +544,7 @@ router.post("/", verifyToken, async (req, res) => {
       owner: req.user.id,
       require: {
         price,
-        additional,
+        additional: add,
         schools,
       },
       likes: [],

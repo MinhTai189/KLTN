@@ -27,7 +27,8 @@ const post = new Schema(
     },
     content: {
       type: String,
-      required: true,
+      required: false,
+      default: "",
     },
     tags: {
       type: Array,
