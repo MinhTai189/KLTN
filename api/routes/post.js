@@ -204,11 +204,11 @@ router.get("/", async (req, res) => {
       });
     if (_order && _sort)
       if (_sort === "createdat") {
-        if ((_order = "asc"))
+        if (_order === "asc")
           responsePosts = responsePosts.sort((post1, post2) => {
             return new Date(post1.createdAt) - new Date(post2.createdAt);
           });
-        else if ((_order = "desc"))
+        else if (_order === "desc")
           responsePosts = responsePosts.sort((post1, post2) => {
             return new Date(post2.createdAt) - new Date(post1.createdAt);
           });
@@ -217,7 +217,7 @@ router.get("/", async (req, res) => {
           responsePosts = responsePosts.sort((post1, post2) => {
             return post1.likes.length - post2.likes.length;
           });
-        else if ((_order = "desc"))
+        else if (_order === "desc")
           responsePosts = responsePosts.sort((post1, post2) => {
             return post2.likes.length - post1.likes.length;
           });
@@ -333,10 +333,7 @@ router.get("/:id", async (req, res) => {
 });
 router.delete("/:id", verifyToken, async (req, res) => {
   try {
-    if (
-      JSON.stringify(req.user.id) !== JSON.stringify(findPost.owner) &&
-      req.user.isAdmin == false
-    )
+    if (req.user.isAdmin == false)
       return res.status(403).json({
         success: false,
         message: "Bạn không đủ quyền thực hiện hành động này",

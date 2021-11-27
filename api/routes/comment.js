@@ -5,7 +5,45 @@ const comment = require("../models/comment");
 const post = require("../models/post");
 const school = require("../models/school");
 const user = require("../models/user");
+const report = require("../models/report");
 const router = express.Router();
+
+router.post("/reports", verifyToken, async (req, res) => {
+  try {
+    const { commentId, content } = req.body;
+    if (!commentId)
+      return res.status(400).json({
+        success: false,
+        message: "Vui lòng cung cấp thông tin bình luận",
+      });
+    if (!commentId)
+      return res.status(400).json({
+        success: false,
+        message: "Vui lòng cho biết tại sao bạn tố cáo bình luận này này",
+      });
+    const checkComment = await comment.findById(commentId);
+    if (!checkComment)
+      return res
+        .status(400)
+        .json({ success: false, message: "Không tìm thấy bình luận" });
+    const newReport = new report({
+      id1: commentId,
+      id2: "",
+      content: content,
+      owner: req.user.id,
+      type: "comment",
+    });
+    await newReport.save();
+    return res
+      .status(200)
+      .json({ success: true, message: "Tố cáo thành công" });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Lỗi không xác định" });
+  }
+});
 router.delete("/likes/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
   const findComment = await comment.findById(id);
@@ -52,7 +90,7 @@ router.post("/likes/:id", verifyToken, async (req, res) => {
         return JSON.stringify(item.owner) === JSON.stringify(req.user.id);
       })
     ) {
-      findComment.likes.filter((item) => {
+      findComment.likes = findComment.likes.filter((item) => {
         return JSON.stringify(item.owner) !== JSON.stringify(req.user.id);
       });
     }

@@ -277,9 +277,9 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1
     "content":"Bài này thật là hay"
 }
 ###
-DELETE http://localhost:5000/api/comments/6177fbc7a377739d27938853
+DELETE http://localhost:5000/api/comments/619e470bed609c118261f707
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgwOTBjOGMxNzI1OSIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2MzUyNTMxNzcsImV4cCI6MTYzNTI1Mzc3N30.la3nUcp3YfaqNiPQIiQISa_ry2kUjjk4LfEXtSeSKDY
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNzg5NDUwNiwiZXhwIjoxNjM3ODk1MTA2fQ.QX9h3ybImqXebB2Dk0iCV6ga-5RlnCFD7El4KvRsObc
 ###
 POST http://localhost:5000/api/feedbacks
 Content-Type: application/json
@@ -341,20 +341,20 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1
 ###
 POST http://localhost:5000/api/posts/reports
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjgwODc0MywiZXhwIjoxNjM2ODA5MzQzfQ.gcyPU9rWtRP8LsLE0ajuuAqv-QzyrfadlvrEpojZ2zw
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNzg5MzMzMiwiZXhwIjoxNjM3ODkzOTMyfQ.TloJonDcqZbNZX57i8T_ZAyh1jUdK5CS77sDYtyV0_M
 
 {
-    "postId":"618e662249ffd8e8651176f4",
+    "postId":"619790eb159d7286373464bc",
     "content":"Bài viết này vi phạm"
 }
 ###
 POST http://localhost:5000/api/comments/reports
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNjgwOTI1NSwiZXhwIjoxNjM2ODA5ODU1fQ.vqmXUIxt-T_ZWl6vMqMpKHO2umdDJ_A99uVIGp3nZpQ
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNzg5NDAwMiwiZXhwIjoxNjM3ODk0NjAyfQ.mRsmJ8irMNYzU9S3VD80rPWnUrYky08grXJHJTaTpCA
 
 {
-    "commentId":"618a70c328c53b2415056829",
-    "content":"Bình luận này vi phạm"
+    "commentId":"61a042fa94846631e7e84118",
+    "content":"Đồ tục tĩu"
 }
 ###
 POST http://localhost:5000/api/posts
