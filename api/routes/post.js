@@ -249,7 +249,7 @@ router.get("/", async (req, res) => {
       return {
         ...item,
         totalLikes: item.likes.length,
-        totalComments: cmts.filter(
+        numComments: cmts.filter(
           (cmt) => JSON.stringify(cmt.post) === JSON.stringify(item._id)
         ).length,
       };
