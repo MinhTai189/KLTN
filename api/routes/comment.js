@@ -261,9 +261,11 @@ router.get("/", async (req, res) => {
       responseComments = responseComments.filter((item) => {
         return JSON.stringify(item.owner._id) === JSON.stringify(_user);
       });
+
     if (_post)
       responseComments = responseComments.filter((item) => {
-        return JSON.stringify(item.post._id) === JSON.stringify(_post);
+        if (item.post != null)
+          return JSON.stringify(item.post._id) === JSON.stringify(_post);
       });
     if (_order && _sort)
       if (_sort === "createdat") {
