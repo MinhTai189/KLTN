@@ -1,23 +1,19 @@
 import { Box, Theme, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
+import { useAppSelector } from "app/hooks"
+import Logo from 'assets/images/logo.png'
 import Motel from 'assets/images/motel.jpg'
 import Review from 'assets/images/review.jpg'
 import RoomMate from 'assets/images/roommate.jpg'
-import { TopicCard } from "./TopicCard"
-import Logo from 'assets/images/logo.png'
-import { Thread } from "models/Thread"
-import { useAppSelector } from "app/hooks"
 import { selectDataThread } from "features/communicate/threadSlice"
-import { useEffect, useState } from "react"
-import { FIND_MOTEL_ID, FIND_ROOMMATE_ID, REVIEW_ID } from "contants/contants"
-import postApi from "api/post"
+import { ListPostRecent } from "../../../posts/components/Home/ListPostRecent"
+import { TopicCard } from "./TopicCard"
 
 interface Props {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        background: '#e9ecee',
         padding: theme.spacing(1, 0, 3)
     },
     title: {
@@ -52,10 +48,13 @@ const useStyles = makeStyles((theme: Theme) => ({
         }
     },
     wrapper: {
-        padding: theme.spacing(4, 0),
-        display: 'flex',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap'
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+        gap: '4vw',
+
+        [theme.breakpoints.down('xs')]: {
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        },
     }
 }))
 
@@ -64,46 +63,6 @@ const listImgThread = [Motel, RoomMate, Review]
 export const CommunicateSection = ({ }: Props) => {
     const classes = useStyles()
     const listThread = useAppSelector(selectDataThread)
-
-    const [listPostRecent, setListPostRecent] = useState({
-        [FIND_MOTEL_ID]: [],
-        [FIND_ROOMMATE_ID]: [],
-        [REVIEW_ID]: [],
-    })
-
-    useEffect(() => {
-        const iniFilter = {
-            _page: 1,
-            _limit: 3
-        }
-
-        try {
-            const findMotelPromise = postApi.get({
-                ...iniFilter,
-                _subject: FIND_MOTEL_ID
-            })
-
-            const findRoommatePromise = postApi.get({
-                ...iniFilter,
-                _subject: FIND_ROOMMATE_ID
-            })
-
-            const reviewPromise = postApi.get({
-                ...iniFilter,
-                _subject: REVIEW_ID
-            })
-
-            Promise.all([findMotelPromise, findRoommatePromise, reviewPromise])
-                .then(posts => {
-                    posts.forEach(post => setListPostRecent(prev => ({
-                        ...prev,
-                        [post.data[0].subject._id]: post.data
-                    })))
-                })
-        } catch (error) {
-            console.log(error)
-        }
-    }, [])
 
     return (
         <Box
@@ -122,15 +81,16 @@ export const CommunicateSection = ({ }: Props) => {
                     {listThread && listThread.map((thread, index) => (
                         <TopicCard
                             key={thread._id}
+                            type={index + 1}
                             image={listImgThread[index]}
                             title={thread.name}
                             view={thread.views}
                             count={thread.posts}
-                            // @ts-ignore
-                            listPost={listPostRecent[thread._id]}
                         />
                     ))}
                 </Box>
+
+                <ListPostRecent />
             </Box>
         </Box>
     )

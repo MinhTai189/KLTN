@@ -5,8 +5,10 @@ import { motelApi } from 'api/motel'
 import { useAppDispatch } from 'app/hooks'
 import { Loading } from 'components/Common/Loading'
 import { Motel } from 'models'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { toast } from 'react-toastify'
 import { checkCommaLastString, mapTrimStringArray } from 'utils'
+import { checkTags } from 'utils/check-valid/checkTag'
 import { CreatePostForm } from '../CreatePostForm'
 import { DataPost, DataPostFinal } from '../models/create-post'
 
@@ -31,7 +33,7 @@ const useStyles = makeStyles(() => ({
 
 export const ModalFindRoommate = ({ open, onCancel, handleSubmitCreatedPost }: Props) => {
     const classes = useStyles()
-    const dispatch = useAppDispatch()
+    const contentRef = useRef<any>()
     const [errMotel, setErrMotel] = useState('')
 
     const [listMotel, setListMotel] = useState<Array<Motel>>([])
@@ -71,12 +73,18 @@ export const ModalFindRoommate = ({ open, onCancel, handleSubmitCreatedPost }: P
             return
         }
 
+        if (!checkTags(dataPost.tags.input.split(','))) {
+            toast.error('Tag không hợp lệ!. Tag phải là ký tự không dấu và không được chứa khoảng cách.')
+            return
+        }
+
         const newDataPost: DataPostFinal = {
             ...dataPost,
             additional: `${checkCommaLastString(dataPost.additional?.input || '')}${mapTrimStringArray(dataPost.additional?.suggest || []).join(',')}`,
             tags: `${checkCommaLastString(dataPost.tags.input)}${mapTrimStringArray(dataPost.tags.suggest).join(',')}`,
             motel: dataPost?.motel._id,
-            subjectId: '6173ba553c954151dcc8fdf8'
+            subjectId: '6173ba553c954151dcc8fdf8',
+            content: contentRef.current?.getValue() ?? ''
         }
 
         handleSubmitCreatedPost(newDataPost)
@@ -99,6 +107,7 @@ export const ModalFindRoommate = ({ open, onCancel, handleSubmitCreatedPost }: P
                 typePost='find-roommate'
                 listMotel={listMotel}
                 errMotel={errMotel}
+                ref={contentRef}
             />
                 : <Box className='loading'>
                     <Loading />

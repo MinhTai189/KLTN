@@ -4,7 +4,7 @@ import { useAppSelector } from "app/hooks"
 import { TypingTextArea } from "features/comment/components"
 import { selectLoadingPost } from "features/posts/postSlice"
 import { Motel } from "models"
-import { ChangeEvent } from "react"
+import { ChangeEvent, forwardRef, Ref } from "react"
 import { DataPost } from "./models/create-post"
 import { Requirements } from "./Requirements"
 import { TagInput } from "./TagInput"
@@ -17,6 +17,7 @@ interface Props {
     listMotel?: Motel[]
     errSchools?: string
     errMotel?: string
+    ref: Ref<any>
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -59,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const CreatePostForm = ({ dataPost, setDataPost, handleSubmit, typePost, listMotel, errSchools, errMotel }: Props) => {
+export const CreatePostForm = forwardRef(({ dataPost, setDataPost, handleSubmit, typePost, listMotel, errSchools, errMotel }: Props, ref) => {
     const classes = useStyles()
     const loading = useAppSelector(selectLoadingPost)
 
@@ -116,12 +117,11 @@ export const CreatePostForm = ({ dataPost, setDataPost, handleSubmit, typePost, 
             <Box className='content-wrapper' mb={2}>
                 <label className='input-label'>Nội dung</label>
 
-                {/* <TypingTextArea
+                <TypingTextArea
                     showBtnSubmit={false}
                     placeHolder='Hãy viết nội dung bạn muốn đăng...'
-                    value={dataPost.content}
-                    setValue={(value: string) => setDataPost((prev: DataPost) => ({ ...prev, content: value }))}
-                /> */}
+                    ref={ref as any}
+                />
             </Box>
 
             <Box my={3}>
@@ -132,4 +132,4 @@ export const CreatePostForm = ({ dataPost, setDataPost, handleSubmit, typePost, 
             </Box>
         </form>
     )
-}
+})

@@ -21,15 +21,19 @@ const useStyles = makeStyles((theme: Theme) => ({
 
         '&.grid': {
             minHeight: 450,
+
+            [theme.breakpoints.down('xs')]: {
+                minHeight: 420
+            },
         }
     },
     wrapper: {
         display: 'flex',
         flexDirection: 'row',
+        height: '100%',
 
         '&.grid': {
             flexDirection: 'column',
-            height: '100%'
         }
     },
     thumbnail: {
@@ -37,7 +41,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 
         '&.grid': {
             width: '100%',
-            height: 200
+            height: 200,
+
+            [theme.breakpoints.down('sm')]: {
+                height: 175
+            },
+
+            [theme.breakpoints.down('xs')]: {
+                height: 200
+            },
         },
 
         '& img': {
@@ -56,7 +68,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 
         '& .name': {
             fontSize: '1.4em',
-            fontWeight: 400
+            fontWeight: 400,
+
+            [theme.breakpoints.down('sm')]: {
+                fontSize: '1.3em'
+            }
         },
 
         '& .list-chip': {
@@ -106,12 +122,21 @@ const useStyles = makeStyles((theme: Theme) => ({
                     marginRight: 6,
                     width: '0.75em',
                     height: '0.75em',
-                    fill: theme.palette.primary.dark
+                    fill: theme.palette.primary.dark,
+
+                    [theme.breakpoints.down('sm')]: {
+                        width: '0.7em',
+                        height: '0.7em',
+                    }
                 },
 
                 '& .text': {
                     fontSize: '0.85em',
-                    color: '#555'
+                    color: '#555',
+
+                    [theme.breakpoints.down('sm')]: {
+                        fontSize: '0.8em'
+                    }
                 },
             }
         },
@@ -119,7 +144,11 @@ const useStyles = makeStyles((theme: Theme) => ({
         '& .desc': {
             fontSize: '0.8em',
             marginTop: 4,
-            color: '#6d6d6d'
+            color: '#6d6d6d',
+
+            [theme.breakpoints.down('sm')]: {
+                fontSize: '0.785em'
+            }
         }
     }
 }))

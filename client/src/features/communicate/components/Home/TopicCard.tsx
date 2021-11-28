@@ -1,21 +1,23 @@
-import { Box, Card, CardActionArea, CardContent, CardMedia, Theme, Typography, Divider } from "@material-ui/core"
+import { Box, Card, CardActionArea, CardContent, CardMedia, Theme, Typography, Button, IconButton, Tooltip } from "@material-ui/core"
+import { PostAdd } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
-import { Post } from "models"
+import { useAppDispatch } from "app/hooks"
+import { createPostModalActions } from "features/posts/openCreatePostModalSlice"
 import { useHistory } from "react-router"
-import { PostInfo } from "./PostInfo"
 
 interface Props {
     image: string
     title: string
     view: number | string
     count: number | string
-    listPost: Post[]
+    type: number
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        width: 420,
-        margin: theme.spacing(1.5, 0),
+        width: '100%',
+        boxShadow: theme.shadows[6],
+        borderRadius: 30,
 
         '& .top': {
             width: '100%',
@@ -24,9 +26,13 @@ const useStyles = makeStyles((theme: Theme) => ({
             alignItems: 'center',
 
             '& .img': {
-                height: 180,
+                height: 170,
                 width: 'auto',
-                objectFit: 'cover'
+                objectFit: 'cover',
+
+                [theme.breakpoints.down('xs')]: {
+                    height: 140
+                },
             },
 
             '& .title': {
@@ -35,25 +41,15 @@ const useStyles = makeStyles((theme: Theme) => ({
                 fontWeight: 500,
                 textTransform: 'capitalize',
                 marginBottom: theme.spacing(1),
+
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '1.15em',
+                },
             }
         },
 
         '& .bottom': {
             width: '100%',
-
-            '& .desc': {
-                width: '100%',
-                textAlign: 'center',
-                fontSize: '1.2em',
-                height: 120
-            },
-
-            '& .amount': {
-                fontSize: '0.8em',
-                textAlign: 'right',
-                width: '100%',
-                display: 'block'
-            },
 
             '& .static': {
                 display: 'flex',
@@ -67,12 +63,20 @@ const useStyles = makeStyles((theme: Theme) => ({
                     '& .num': {
                         fontSize: '1.3em',
                         lineHeight: 1,
-                        fontWeight: 400
+                        fontWeight: 400,
+
+                        [theme.breakpoints.down('xs')]: {
+                            fontSize: '1.15em',
+                        },
                     },
 
                     '& .text': {
                         fontSize: '0.8em',
-                        color: theme.palette.text.hint
+                        color: theme.palette.text.hint,
+
+                        [theme.breakpoints.down('xs')]: {
+                            fontSize: '0.75em',
+                        },
                     }
                 }
             }
@@ -80,12 +84,22 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const TopicCard = ({ image, title, view, count, listPost }: Props) => {
+export const TopicCard = ({ image, title, view, count, type }: Props) => {
     const classes = useStyles()
+    const dispatch = useAppDispatch()
     const history = useHistory()
 
     const handleClickNavigation = () => {
         history.push('/posts')
+    }
+
+    const handleClickCreatePost = () => {
+        if (type === 3) {
+            history.push('/create-post/review')
+            return
+        }
+
+        dispatch(createPostModalActions.setShowModal(type))
     }
 
     return (
@@ -129,14 +143,13 @@ export const TopicCard = ({ image, title, view, count, listPost }: Props) => {
                     </span>
                 </div>
 
-                <Divider />
-
-                {listPost.map(post => (
-                    <PostInfo
-                        key={post._id}
-                        post={post}
-                    />
-                ))}
+                <Box textAlign='center'>
+                    <Tooltip title='Đăng bài viết'>
+                        <IconButton onClick={handleClickCreatePost}>
+                            <PostAdd />
+                        </IconButton>
+                    </Tooltip>
+                </Box>
             </CardContent>
         </Card>
     )

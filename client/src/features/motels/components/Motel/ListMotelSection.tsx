@@ -1,4 +1,5 @@
-import { Box, Divider, Grid, Theme } from '@material-ui/core'
+import { Box, Divider, Fab, Grid, Theme, Tooltip } from '@material-ui/core'
+import { FilterList } from '@material-ui/icons'
 import { Pagination } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/styles'
 import { useAppSelector } from 'app/hooks'
@@ -6,7 +7,7 @@ import { Loading } from 'components/Common/Loading'
 import { NoData } from 'components/Common/NoData'
 import { selectDataMotel, selectLoadingMotel, selectPaginationMotel } from 'features/motels/motelSlice'
 import { School } from 'models'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { FilterSider, MotelItem } from '..'
 import Controls from './Controls'
 
@@ -25,6 +26,30 @@ const useStyles = makeStyles((theme: Theme) => ({
             placeItems: 'center'
         }
     },
+    filterSidebar: {
+        display: 'block',
+        height: '85vh',
+        minHeight: 500,
+
+        [theme.breakpoints.down('sm')]: {
+            // display: 'none',
+            height: '100vh',
+            position: 'fixed',
+            right: 0,
+            top: 0,
+            zIndex: 10000000000000000,
+            width: '95%',
+            maxWidth: 350,
+            transform: 'translateX(100%)',
+            opacity: 0,
+            transition: '300ms',
+
+            '&.active': {
+                transform: 'translateX(0)',
+                opacity: 1
+            }
+        },
+    },
     listItem: {
         display: 'flex',
         flexDirection: 'column',
@@ -37,7 +62,35 @@ const useStyles = makeStyles((theme: Theme) => ({
         width: '100%',
 
         '& .MuiPagination-ul': {
-            justifyContent: 'flex-end'
+            justifyContent: 'flex-end',
+
+            [theme.breakpoints.down('sm')]: {
+                justifyContent: 'center'
+            }
+        },
+    },
+    btnShowFilter: {
+        display: 'none',
+
+        [theme.breakpoints.down('sm')]: {
+            display: 'flex',
+            position: 'fixed',
+            right: 15,
+            bottom: 15,
+        }
+    },
+    overlay: {
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0,0,0,0.5)',
+        zIndex: 1000000000,
+        transform: 'translateX(100%)',
+        opacity: 0,
+        transition: '100ms',
+
+        '&.active': {
+            transform: 'translateX(0)',
+            opacity: 1
         }
     }
 }))
@@ -45,19 +98,38 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const ListMotelSection = ({ handleSelectPagination, filterSchool, handleFilterMotel }: Props) => {
     const classes = useStyles()
     const loading = useAppSelector(selectLoadingMotel)
+    const [isOpenFilter, setIsOpenFilter] = useState(false)
 
     const pagination = useAppSelector(selectPaginationMotel)
     const listMotel = useAppSelector(selectDataMotel)
     const [listLayout, setListLayout] = useState<"grid" | "list">('list')
 
+    useEffect(() => {
+        if (window.innerWidth <= 768)
+            setListLayout('grid')
+        else setListLayout('list')
+
+        window.onresize = () => {
+            if (window.innerWidth <= 768)
+                setListLayout('grid')
+            else setListLayout('list')
+        }
+
+        return () => {
+            window.onresize = () => { }
+        }
+    }, [])
+
     return (
         <Box className={classes.root} component='section'>
             <Grid container spacing={2}>
-                <Grid item sm={3}>
-                    <FilterSider />
+                <Grid item sm={undefined} md={4} lg={3}>
+                    <Box className={`${classes.filterSidebar} ${isOpenFilter ? 'active' : ''}`}>
+                        <FilterSider setIsOpenFilter={setIsOpenFilter} />
+                    </Box>
                 </Grid>
 
-                <Grid item sm={8}>
+                <Grid item md={8} lg={8}>
                     <Controls
                         listLayout={listLayout}
                         setListLayout={setListLayout}
@@ -93,16 +165,31 @@ export const ListMotelSection = ({ handleSelectPagination, filterSchool, handleF
 
                     {listMotel.length > 0 && <Box className={classes.pagination} mt={1.5}>
                         <Pagination
+                            page={pagination._page}
                             count={Math.ceil(pagination._totalRows / pagination._limit)}
                             color="secondary"
                             onChange={handleSelectPagination}
                         />
                     </Box>}
-
-                    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
                 </Grid>
-                <Grid item sm={1}></Grid>
+                <Grid item sm={undefined} md={undefined} lg={1}></Grid>
             </Grid>
+
+            <Tooltip title='Bộ lọc'>
+                <Fab
+                    className={classes.btnShowFilter}
+                    color="primary"
+                    size='small'
+                    onClick={() => setIsOpenFilter(true)}
+                >
+                    <FilterList />
+                </Fab>
+            </Tooltip>
+
+            <Box
+                className={`${classes.overlay} ${isOpenFilter ? 'active' : ''}`}
+                onClick={() => setIsOpenFilter(false)}
+            ></Box>
         </Box>
     )
 }

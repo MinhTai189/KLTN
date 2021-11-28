@@ -4,7 +4,7 @@ import { useAppSelector } from "app/hooks"
 import { ReactComponent as Zalo } from 'assets/images/zalo.svg'
 import { ButtonCustom, ChipCustom } from "components/Common"
 import { selectCurrentUser } from "features/auth/authSlice"
-import { Editor, MotelDetail, Room } from "models"
+import { Editor, MotelDetail, OwnerDetail, Room } from "models"
 import { useCallback, useEffect, useState } from "react"
 import { Link } from 'react-router-dom'
 import { toast } from "react-toastify"
@@ -20,6 +20,7 @@ interface Props {
     setOpenRoomModal: (state: boolean) => void
     handleSelectRoom: (id: string) => void
     editor: Editor[]
+    owner: OwnerDetail | undefined
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -180,7 +181,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoomModal, editor, setOpenMotelModal }: Props) => {
+export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoomModal, editor, setOpenMotelModal, owner }: Props) => {
     const classes = useStyles()
     const { name, school, amountRate, desc, address, mark, status, contact: { phone, facebook, email, zalo } } = dataMotel
     const [listPrice, setListPrice] = useState<string[]>([])
@@ -433,7 +434,7 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
                     </Grid>
                     <Grid item sm={12} md={4}>
                         <Paper className={classes.wrapperInfor}>
-                            <CreatedUser />
+                            {owner && <CreatedUser owner={owner} />}
 
                             <Divider style={{ marginTop: 4, marginBottom: 4 }} />
 

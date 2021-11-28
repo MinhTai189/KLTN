@@ -418,8 +418,8 @@ router.get("/schools", async (req, res) => {
     }
     data.push({
       motels: motelsData,
-      district: schools[i].nameDistricts,
       _id: schools[i]._id,
+      logo: schools[i].logo,
       name: schools[i].name,
       codeName: schools[i].codeName,
     });
@@ -828,10 +828,10 @@ router.post("/", verifyToken, async (req, res) => {
         const renameImage = await upload.rename(
           checkMotel.images[i].public_id,
           newMotel._id +
-            "/" +
-            checkMotel.images[i].public_id.substr(
-              checkMotel.images[i].public_id.indexOf("/") + 1
-            )
+          "/" +
+          checkMotel.images[i].public_id.substr(
+            checkMotel.images[i].public_id.indexOf("/") + 1
+          )
         );
         if (renameImage.success)
           newMotel.images.push({
@@ -845,10 +845,10 @@ router.post("/", verifyToken, async (req, res) => {
       const renameThumbnail = await upload.rename(
         checkMotel.thumbnail.public_id,
         newMotel._id +
-          "/" +
-          checkMotel.thumbnail.public_id.substr(
-            checkMotel.thumbnail.public_id.indexOf("/") + 1
-          )
+        "/" +
+        checkMotel.thumbnail.public_id.substr(
+          checkMotel.thumbnail.public_id.indexOf("/") + 1
+        )
       );
       if (renameThumbnail.success)
         newMotel.thumbnail = {
@@ -1023,8 +1023,8 @@ router.post("/", verifyToken, async (req, res) => {
       const renameImage = await upload.rename(
         images[i].public_id,
         newMotel._id +
-          "/" +
-          images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
+        "/" +
+        images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
       );
       if (renameImage.success == true)
         newMotel.images.push({
@@ -1047,8 +1047,8 @@ router.post("/", verifyToken, async (req, res) => {
     const renameThumbnail = await upload.rename(
       thumbnail.public_id,
       newMotel._id +
-        "/" +
-        thumbnail.public_id.substr(thumbnail.public_id.indexOf("/") + 1)
+      "/" +
+      thumbnail.public_id.substr(thumbnail.public_id.indexOf("/") + 1)
     );
     if (renameThumbnail.success)
       newMotel.thumbnail = {

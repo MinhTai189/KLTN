@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { checkLikePostComment } from 'utils'
-import { calculateCreatedTime } from 'utils/calculateCreatedTime'
+import { calculateCreatedTime } from 'utils/convert-date/calculateCreatedTime'
 import { commentAction, selectFilterComment } from '../commentSlice'
 import { CommentContext } from '../contexts/CommentContext'
 
@@ -205,7 +205,7 @@ export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', co
                                 </Typography>
                             </Box>
 
-                            <ListTool />
+                            <ListTool isOwner={currentUser._id === userId} />
                         </Box>
 
                         <Typography className={classes.content}>

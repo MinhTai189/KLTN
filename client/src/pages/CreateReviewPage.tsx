@@ -6,11 +6,7 @@ import { motelActions } from 'features/motels/motelSlice'
 import { useEffect } from 'react'
 import { CreateReview } from 'features/posts/components/CreatePost/Review/CreateReview'
 
-interface Props {
-
-}
-
-export const CreateReviewPage = (props: Props) => {
+export const CreateReviewPage = () => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {

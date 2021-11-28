@@ -59,7 +59,15 @@ const BtnMedium = styled(Button)(({ theme }) => ({
 
         "& a": {
             color: theme.palette.primary.main,
+        },
+
+        [theme.breakpoints.down('sm')]: {
+            fontSize: 11.5,
         }
+    },
+
+    [theme.breakpoints.down('sm')]: {
+        padding: '4px 8px',
     }
 }))
 

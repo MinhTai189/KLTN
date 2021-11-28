@@ -1,9 +1,12 @@
 import { Box, ListItem, ListItemText, List, makeStyles, Theme, Typography } from "@material-ui/core"
 import { MoreHoriz } from "@material-ui/icons"
+import { useAppSelector } from "app/hooks"
+import { selectCurrentUser } from "features/auth/authSlice"
+import { User } from "models"
 import { useState } from "react"
 
 interface Props {
-
+    isOwner: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -44,8 +47,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const ListTool = (props: Props) => {
+export const ListTool = ({ isOwner }: Props) => {
     const classes = useStyles()
+    const currentUser: User = useAppSelector(selectCurrentUser)
     const [showList, setShowList] = useState(false)
 
     return (
@@ -67,29 +71,29 @@ export const ListTool = (props: Props) => {
                     <ListItemText primary="Báo xấu" />
                 </ListItem>
 
-                <ListItem
+                {currentUser && currentUser.isAdmin && <ListItem
                     className='tool'
                     button
                     component="li"
                 >
                     <ListItemText primary="Xóa" />
-                </ListItem>
+                </ListItem>}
 
-                <ListItem
+                {isOwner && <ListItem
                     className='tool'
                     button
                     component="li"
                 >
                     <ListItemText primary="Đóng bình luận" />
-                </ListItem>
+                </ListItem>}
 
-                <ListItem
+                {isOwner && <ListItem
                     className='tool'
                     button
                     component="li"
                 >
                     <ListItemText primary="Đã hoàn thành" />
-                </ListItem>
+                </ListItem>}
             </List>
         </Box>
     )

@@ -11,6 +11,7 @@ interface Props {
     staticLike: number[]
     quantityLike: number;
     quantityComment: number
+    isOwner: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -54,7 +55,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const StaticAction = ({ listLike, quantityComment, quantityLike, staticLike }: Props) => {
+export const StaticAction = ({ listLike, quantityComment, quantityLike, staticLike, isOwner }: Props) => {
     const classes = useStyles()
     const [showModalStatic, setShowModalStatic] = useState(false)
 
@@ -86,7 +87,7 @@ export const StaticAction = ({ listLike, quantityComment, quantityLike, staticLi
 
                 <span style={{ flex: 1 }} />
 
-                <ListTool />
+                <ListTool isOwner={isOwner} />
             </span>
 
             <ModalStaticAction

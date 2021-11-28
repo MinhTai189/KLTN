@@ -10,7 +10,7 @@ import { memo, useEffect, useState } from "react"
 import { Link } from 'react-router-dom'
 import { toast } from "react-toastify"
 import { checkLikePostComment } from "utils"
-import { calculateCreatedTime } from "utils/calculateCreatedTime"
+import { calculateCreatedTime } from "utils/convert-date/calculateCreatedTime"
 import { BtnAction } from "../Common/BtnAction"
 import { Content } from "./Content"
 import { ListTag } from "./ListTag"
@@ -191,6 +191,7 @@ export const PostViewSection = memo(({ postData }: Props) => {
                 staticLike={postData.numLikes}
                 quantityLike={postData.totalLikes}
                 quantityComment={postData.numComments}
+                isOwner={currentUser._id === postData.owner._id}
             />
 
             <Box

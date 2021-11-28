@@ -45,6 +45,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
         gridGap: '3.5em',
         marginBlock: 80,
+
+        [theme.breakpoints.down('xs')]: {
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        },
     },
     seeMore: {
         textAlign: 'center',

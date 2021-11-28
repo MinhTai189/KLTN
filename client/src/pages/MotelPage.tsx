@@ -6,10 +6,13 @@ import { motelActions, selectFilterMotel } from 'features/motels/motelSlice'
 import { schoolActions, selectDataSchool } from 'features/school/schoolSlice'
 import { School } from 'models'
 import { ChangeEvent, useEffect, useState } from 'react'
+import { useLocation } from 'react-router'
 
 
 const MotelPage = () => {
     const dispatch = useAppDispatch()
+    const location = useLocation<any>()
+
     const filter = useAppSelector(selectFilterMotel)
     const listSchool = useAppSelector(selectDataSchool)
 
@@ -26,6 +29,11 @@ const MotelPage = () => {
         if (listSchool.length === 0)
             dispatch(schoolActions.getSchool())
 
+
+        if (location.state?.school) {
+            setFilterSchool([location.state.school])
+            dispatch(motelActions.setFilter({ ...filter, _school: [location.state.school.codeName] }))
+        }
         return () => {
             dispatch(motelActions.setFilter({
                 _page: 1,
@@ -44,7 +52,7 @@ const MotelPage = () => {
         // @ts-ignore
         let _school: any = value.map(school => school.codeName)
 
-        dispatch(motelActions.setFilter({ ...filter, _school }))
+        dispatch(motelActions.setFilter({ ...filter, _page: 1, _school }))
     }
 
     return (

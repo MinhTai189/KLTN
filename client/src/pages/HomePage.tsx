@@ -7,25 +7,22 @@ import { selectDataThread, threadActions } from 'features/communicate/threadSlic
 import { ListMotel } from 'features/motels/components';
 import { motelActions } from 'features/motels/motelSlice';
 import { useEffect, useState } from 'react';
+import { DropdownList } from 'models'
+import { motelApi } from 'api/motel';
+import { postAction } from 'features/posts/postSlice';
 
 const HomePage = () => {
-    const filter = useAppSelector(selectIsLogged)
     const dispatch = useAppDispatch();
 
     const listThread = useAppSelector(selectDataThread)
     const [isChangeNav, setIsChangeNav] = useState(false)
+    const [listSchoolDropdown, setListSchoolDropdow] = useState<DropdownList[]>([])
+
     const [hiddenScrollDown, setHiddenScrollDown] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        //fetch motel data
-        dispatch(motelActions.getMotelRandom({
-            _page: 1,
-            _limit: 6
-        }))
-    }, [filter, dispatch])
-
-    useEffect(() => {
-        // scroll event window for nav
+        // scroll window event for nav
         window.onscroll = () => {
             if (window.scrollY >= 90) {
                 setIsChangeNav(true)
@@ -36,22 +33,51 @@ const HomePage = () => {
             }
         }
 
+        //fetch motel data
+        dispatch(motelActions.getMotelRandom({
+            _page: 1,
+            _limit: 6
+        }))
+
+        //get list of school for hero dropdown
+        setLoading(true)
+        motelApi.getListSchoolDropdown()
+            .then(res => {
+                setLoading(false)
+                setListSchoolDropdow(res.data)
+            })
+            .catch(err => {
+                console.log(err)
+                setLoading(false)
+            })
+
         // get list of thread
         !listThread && dispatch(threadActions.get())
+
+        //get list recent post
+        dispatch(postAction.get({
+            _page: 1,
+            _limit: 6,
+            _sort: 'createdat',
+            _order: 'desc'
+        }))
 
         return () => {
             window.onscroll = () => { }
         }
-    }, [])
+    }, [dispatch])
 
     return (
         <MainLayout isChangeNav={isChangeNav}>
-            <Hero hiddenScrollDown={hiddenScrollDown} />
+            <Hero
+                hiddenScrollDown={hiddenScrollDown}
+                listSchool={listSchoolDropdown}
+                loading={loading}
+            />
 
             <ListMotel />
 
             <CommunicateSection />
-            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
             {/* find motel */}
             {/* forum */}
         </MainLayout>

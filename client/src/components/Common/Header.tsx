@@ -6,7 +6,7 @@ import { User } from 'models';
 import { useEffect, useState } from 'react';
 import { DropDownInfor } from '../Home';
 import { ButtonCustom } from './Button';
-import { Link, useLocation } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 
 interface Props {
     isChangeNav: boolean
@@ -48,6 +48,10 @@ const useStyles = makeStyles((theme: Theme) =>
             flex: 1,
             margin: 0,
 
+            '& > a.active .nav-link, & .nav-link:hover': {
+                background: theme.palette.primary.main,
+            },
+
             "& li": {
                 color: 'white',
                 cursor: 'pointer',
@@ -61,10 +65,6 @@ const useStyles = makeStyles((theme: Theme) =>
                 '& .MuiTypography-root': {
                     fontSize: '0.9em',
                     letterSpacing: 1,
-                },
-
-                "&:hover, &.active": {
-                    background: theme.palette.primary.main,
                 },
 
                 [theme.breakpoints.down('sm')]: {
@@ -90,16 +90,8 @@ const routes = [
         name: 'Nhà trọ'
     },
     {
-        route: '/forum',
-        name: 'Ở ghép'
-    },
-    {
-        route: '/faq',
-        name: 'Hỏi đáp'
-    },
-    {
-        route: '/',
-        name: 'Diễn đàn'
+        route: '/posts',
+        name: 'Bài viết'
     },
 ]
 
@@ -117,10 +109,7 @@ export const Header = ({ isChangeNav }: Props) => {
     const currentUser: User = useAppSelector(selectCurrentUser)
     const dispatch = useAppDispatch()
 
-    const location = useLocation()
     const [sizeBtn, setSizeBtn] = useState<any>('large')
-    const [isHoverring, setIsHoverring] = useState(false)
-    const [currentActive, setCurrentActive] = useState(0)
 
     useEffect(() => {
         setSizeBtn(calcSizeBtn(window.innerWidth))
@@ -145,21 +134,19 @@ export const Header = ({ isChangeNav }: Props) => {
 
                 <ul
                     className={classes.navLinks}
-                    onMouseLeave={() => setIsHoverring(false)}
                 >
                     {routes.map((route, index) => {
                         return (
-                            <li
-                                key={index}
-                                className={!isHoverring && currentActive === index ? 'active' : ''}
-                                onMouseOver={() => setIsHoverring(true)}
-                            >
-                                <Typography>
-                                    <Link to={route.route}>
+                            <NavLink to={route.route} exact>
+                                <li
+                                    key={index}
+                                    className='nav-link'
+                                >
+                                    <Typography>
                                         {route.name}
-                                    </Link>
-                                </Typography>
-                            </li>
+                                    </Typography>
+                                </li>
+                            </NavLink>
                         )
                     })}
                 </ul>

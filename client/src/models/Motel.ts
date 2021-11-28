@@ -85,6 +85,12 @@ export interface Owner {
   email: string;
   credit: number;
   school: School;
+  rank: string;
+  motels: number;
+}
+
+export interface OwnerDetail extends Owner {
+  createdAt: string;
 }
 
 interface Contact {
@@ -92,6 +98,13 @@ interface Contact {
   email?: string;
   facebook?: string;
   zalo?: string;
+}
+
+export interface DropdownList extends School {
+  motels: {
+    _id: string;
+    thumbnail: string;
+  }[];
 }
 
 interface Area {

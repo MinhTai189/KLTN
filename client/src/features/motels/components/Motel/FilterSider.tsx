@@ -1,17 +1,16 @@
-import { Box, makeStyles, Paper, Theme, Divider } from "@material-ui/core";
+import { Box, Divider, makeStyles, Paper, Theme } from "@material-ui/core";
 import { Typography } from "antd";
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { ButtonCustom } from "components/Common";
+import { motelActions, selectFilterMotel } from 'features/motels/motelSlice';
 import { ChangeEvent, useState } from "react";
 import { PriceSlider } from "./Filter/PriceSlider";
 import { RateSelector } from "./Filter/RateSelector";
 import { StatusCheckbox } from "./Filter/StatusCheckbox";
-import { Utilities } from './Filter/Utilities'
-import { useAppDispatch, useAppSelector } from 'app/hooks'
-import { motelActions, selectFilterMotel } from 'features/motels/motelSlice'
-import { Filter } from "models";
+import { Utilities } from './Filter/Utilities';
 
 interface Props {
-
+    setIsOpenFilter: (state: boolean) => void
 }
 
 interface IFilter {
@@ -21,41 +20,59 @@ interface IFilter {
     utilities: string[]
 }
 
-
-
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        padding: theme.spacing(2),
+        padding: theme.spacing(1.5),
         position: 'sticky',
         top: 60,
+        height: '100%',
 
-        '& .btn-wrapper': {
-            display: 'flex',
-            justifyContent: 'flex-end',
+        '& .filters': {
+            height: '90%',
+            overflowY: 'auto',
+            overflowX: 'hidden',
 
-            '& .btn-refresh, & .btn-apply': {
-                marginRight: theme.spacing(2),
-                borderWidth: 1,
-                borderRadius: 3,
-                borderColor: '#ff4d4f',
-                padding: theme.spacing(0.8, 1.5),
+            '&::-webkit-scrollbar': {
+                width: 0
+            }
+        },
 
-                '& .MuiButton-label': {
-                    fontWeight: 400,
-                    color: '#ff4d4f'
-                }
-            },
+        '& .controls': {
+            position: 'absolute',
+            background: '#fff',
+            left: 0,
+            bottom: 0,
+            width: '100%',
+            padding: theme.spacing(0.5, 1.5, 1.5),
 
-            '& .btn-apply': {
-                margin: 0,
-                border: 'none',
-                background: theme.palette.primary.main,
+            '& .btn-wrapper': {
+                display: 'flex',
+                justifyContent: 'flex-end',
 
-                '& .MuiButton-label': {
-                    color: '#fff !important'
-                }
-            },
-        }
+                '& .btn-refresh, & .btn-apply': {
+                    marginRight: theme.spacing(2),
+                    borderWidth: 1,
+                    borderRadius: 3,
+                    borderColor: '#ff4d4f',
+                    padding: theme.spacing(0.8, 1.5),
+
+                    '& .MuiButton-label': {
+                        fontWeight: 400,
+                        color: '#ff4d4f'
+                    }
+                },
+
+                '& .btn-apply': {
+                    margin: 0,
+                    border: 'none',
+                    background: theme.palette.primary.main,
+
+                    '& .MuiButton-label': {
+                        color: '#fff !important'
+                    }
+                },
+            }
+        },
     },
     rows: {
         marginBottom: theme.spacing(3),
@@ -72,7 +89,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-export const FilterSider = (props: Props) => {
+export const FilterSider = ({ setIsOpenFilter }: Props) => {
     const classes = useStyles()
     const dispatch = useAppDispatch()
     const filterMotel = useAppSelector(selectFilterMotel)
@@ -139,78 +156,90 @@ export const FilterSider = (props: Props) => {
         dispatch(motelActions.setFilter({ ...filterMotel, ...newFilter }))
     }
 
+    // only close on small screen width
+    const handleCloseFilter = () => {
+        const screenWidth = window.innerWidth
+
+        if (screenWidth <= 768)
+            setIsOpenFilter(false)
+    }
+
     return (
         <Paper className={classes.root} component='aside'>
-            <Box className={classes.rows}>
-                <Typography className="label">
-                    Giá thuê/tháng
-                </Typography>
+            <Box className='filters'>
+                <Box className={classes.rows}>
+                    <Typography className="label">
+                        Giá thuê/tháng
+                    </Typography>
 
-                <Box className='seletors'>
-                    <PriceSlider
-                        priceRange={filter.priceRange}
-                        handleChangePrice={handleChangePrice}
-                    />
+                    <Box className='seletors'>
+                        <PriceSlider
+                            priceRange={filter.priceRange}
+                            handleChangePrice={handleChangePrice}
+                        />
+                    </Box>
+                </Box>
+
+                <Box className={classes.rows}>
+                    <Typography className="label">
+                        Trạng thái
+                    </Typography>
+
+                    <Box className='seletors'>
+                        <StatusCheckbox
+                            filter={filter}
+                            handleChangeStatus={handleChangeStatus}
+                        />
+                    </Box>
+                </Box>
+
+                <Box className={classes.rows}>
+                    <Typography className="label">
+                        Đánh giá
+                    </Typography>
+
+                    <Box className='seletors'>
+                        <RateSelector
+                            stars={filter.rate}
+                            handleSelectRate={handleSelectRate}
+                        />
+                    </Box>
+                </Box>
+
+                <Box className={classes.rows}>
+                    <Typography className="label">
+                        Tiện ích
+                    </Typography>
+
+                    <Box className='seletors'>
+                        <Utilities
+                            utilities={filter.utilities}
+                            handleSelectUtilities={handleSelectUtilities}
+                        />
+                    </Box>
                 </Box>
             </Box>
 
-            <Box className={classes.rows}>
-                <Typography className="label">
-                    Trạng thái
-                </Typography>
+            <Box className='controls'>
+                <Divider />
 
-                <Box className='seletors'>
-                    <StatusCheckbox
-                        filter={filter}
-                        handleChangeStatus={handleChangeStatus}
-                    />
+                <Box className='btn-wrapper' mt={1}>
+                    <ButtonCustom
+                        className='btn-refresh'
+                        sizeBtn='small'
+                        onClick={handleResetFilter}
+                    >
+                        Thiết lập lại
+                    </ButtonCustom>
+
+                    <ButtonCustom
+                        className='btn-apply'
+                        sizeBtn='small'
+                        onClick={() => { handleFilterMotel(); handleCloseFilter() }}
+                    >
+                        Áp dụng
+                    </ButtonCustom>
                 </Box>
-            </Box>
-
-            <Box className={classes.rows}>
-                <Typography className="label">
-                    Đánh giá
-                </Typography>
-
-                <Box className='seletors'>
-                    <RateSelector
-                        stars={filter.rate}
-                        handleSelectRate={handleSelectRate}
-                    />
-                </Box>
-            </Box>
-
-            <Box className={classes.rows}>
-                <Typography className="label">
-                    Tiện ích
-                </Typography>
-
-                <Box className='seletors'>
-                    <Utilities
-                        utilities={filter.utilities}
-                        handleSelectUtilities={handleSelectUtilities}
-                    />
-                </Box>
-            </Box>
-
-            <Divider style={{ marginTop: 48 }} />
-
-            <Box className='btn-wrapper' mt={2}>
-                <ButtonCustom
-                    className='btn-refresh'
-                    sizeBtn='small'
-                    onClick={handleResetFilter}
-                >
-                    Thiết lập lại
-                </ButtonCustom>
-
-                <ButtonCustom
-                    className='btn-apply'
-                    sizeBtn='small'
-                    onClick={handleFilterMotel}
-                >
-                    Áp dụng
-                </ButtonCustom>
             </Box>
         </Paper>
     )

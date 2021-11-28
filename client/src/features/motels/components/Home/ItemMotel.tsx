@@ -23,6 +23,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         boxShadow: theme.shadows[5],
         transition: 'all 500ms ease',
 
+        [theme.breakpoints.down('xs')]: {
+            height: 480
+        },
+
         "&:hover": {
             transform: 'translateY(-10px)',
             boxShadow: `4px 8px 5px 5px ${theme.palette.primary.light}`,
@@ -42,6 +46,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         height: '55%',
         position: 'relative',
         overflow: 'hidden',
+
+        [theme.breakpoints.down('xs')]: {
+            height: '50%'
+        },
 
         "& img": {
             width: '100%',
@@ -153,6 +161,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         flexDirection: 'column',
         justifyContent: 'space-between',
 
+        [theme.breakpoints.down('xs')]: {
+            height: '50%'
+        },
+
         "& .info": {
             width: '100%',
             display: 'flex',
@@ -177,7 +189,11 @@ const useStyles = makeStyles((theme: Theme) => ({
             fontSize: 13,
             lineHeight: 1.4,
             color: '#7c7c7c',
-            marginTop: 5
+            marginTop: 5,
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: 12
+            },
         },
 
         "& .rowBottom": {
@@ -191,6 +207,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 
                 "& img": {
                     height: 22,
+
+                    [theme.breakpoints.down('xs')]: {
+                        height: 18
+                    },
 
                     "&:not(:last-child)": {
                         marginRight: 16

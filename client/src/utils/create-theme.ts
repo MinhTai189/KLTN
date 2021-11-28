@@ -8,4 +8,13 @@ export const themeMUI = createTheme({
       main: '#FFC857',
     },
   },
+  breakpoints: {
+    values: {
+      xs: 425,
+      sm: 768,
+      md: 900,
+      lg: 1024,
+      xl: 1440,
+    },
+  },
 });

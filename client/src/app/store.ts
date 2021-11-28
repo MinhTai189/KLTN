@@ -16,6 +16,7 @@ import { history } from 'utils';
 import rootSaga from './rootSaga';
 import threadReducer from 'features/communicate/threadSlice';
 import commentReducer from 'features/comment/commentSlice';
+import createdPostReducer from 'features/posts/openCreatePostModalSlice';
 
 const reducer = combineReducers({
   auth: authReducer,
@@ -26,6 +27,7 @@ const reducer = combineReducers({
   thread: threadReducer,
   comment: commentReducer,
   showCreateModal: showCreateModalReducer,
+  createdPostModal: createdPostReducer,
   router: connectRouter(history),
 });
 const sagaMiddleware = createSagaMiddleware();

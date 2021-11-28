@@ -11,8 +11,7 @@ const { Header, Content } = Layout
 export const AdminLayout = () => {
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <Header>
-            </Header>
+            <Header />
 
             <Layout>
                 <AdminSider />

@@ -1,11 +1,21 @@
-import { Box } from "@material-ui/core"
+import { Box, Theme } from "@material-ui/core"
 import { Pagination } from "@material-ui/lab"
 import { useAppDispatch, useAppSelector } from "app/hooks"
 import { postAction, selectFilterPost, selectListDataPost, selectLoadingPost, selectPaginationPost } from "features/posts/postSlice"
 import { Post } from "./Post"
 import { Loading } from 'components/Common'
+import { makeStyles } from "@material-ui/styles"
+
+const useStyles = makeStyles((theme: Theme) => ({
+    root: {
+        [theme.breakpoints.down('sm')]: {
+            marginTop: theme.spacing(1.5)
+        }
+    }
+}))
 
 export const ListPost = () => {
+    const classes = useStyles()
     const dispatch = useAppDispatch()
 
     const listPost = useAppSelector(selectListDataPost)
@@ -22,7 +32,10 @@ export const ListPost = () => {
     }
 
     return (
-        <Box padding={[0, 3]}>
+        <Box
+            className={classes.root}
+            padding={[0, 3]}
+        >
             {!loading ? <>
                 <ul className="wrapper">
                     {listPost.map(post => (

@@ -3,6 +3,4 @@ export interface School {
   name: string;
   codeName: string;
   logo: string;
-
-  [key: string]: any;
 }

@@ -9,6 +9,7 @@ import { checkCommaLastString, mapTrimStringArray } from 'utils'
 import { AutocompleteMotel } from '../FindRommate/AutocompleteMotel'
 import { DataPost, DataPostFinal } from '../models/create-post'
 import { TagInput } from '../TagInput'
+import { checkTags } from 'utils/check-valid/checkTag'
 
 interface Props {
     handleCreateReview: (data: DataPostFinal) => void
@@ -107,6 +108,11 @@ export const CreateReview = ({ handleCreateReview }: Props) => {
 
         if (errMessage !== 'Hãy bổ sung đầy đủ thông tin: ') {
             toast.error(errMessage)
+            return
+        }
+
+        if (!checkTags(tags.input.split(','))) {
+            toast.error('Tag không hợp lệ!. Tag phải là ký tự không dấu và không được chứa khoảng cách.')
             return
         }
 

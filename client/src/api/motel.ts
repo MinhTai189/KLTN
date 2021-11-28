@@ -1,4 +1,12 @@
-import { Filter, ListResponse, Motel, Response, MotelOnly, Room } from 'models';
+import {
+  DropdownList,
+  Filter,
+  ListResponse,
+  Motel,
+  MotelOnly,
+  Response,
+  Room,
+} from 'models';
 import axiosClient from './axiosClient';
 
 export const motelApi = {
@@ -33,5 +41,9 @@ export const motelApi = {
   updateRoom: (data: Room): Promise<any> => {
     const url = `/motels/room/${data.motelId}/${data._id}`;
     return axiosClient.patch(url, data);
+  },
+  getListSchoolDropdown: (): Promise<ListResponse<DropdownList>> => {
+    const url = '/motels/schools';
+    return axiosClient.get(url);
   },
 };

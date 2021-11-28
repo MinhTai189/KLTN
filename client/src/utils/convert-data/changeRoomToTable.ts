@@ -2,7 +2,7 @@ import { Room } from 'models';
 import { ReactElement } from 'react';
 import React from 'react';
 import { twoNumber } from 'utils';
-import { mapPriceMonth } from './getPriceMotel';
+import { mapPriceMonth } from '../getPriceMotel';
 
 interface RoomTable {
   _id: string;

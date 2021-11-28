@@ -5,6 +5,7 @@ import districtApi from 'api/district'
 import schoolApi from 'api/school'
 import { ButtonCustom } from 'components/Common/Button'
 import { FileInputField } from 'components/FormFields/FileInputField'
+import { PATTERN_USERNAME } from 'constant/constant'
 import { useProvince } from 'hooks'
 import { District, FieldOption, ListResponse, Province, School } from 'models'
 import React, { ReactElement, useState } from 'react'
@@ -74,11 +75,11 @@ const schema = yup.object().shape({
         .strict()
         .trim('Không được chứa khoảng trắng ở đầu và cuối')
         .lowercase('Tên tài khoản không được chứa ký tự in hoa')
-        .test('space', 'Không được chứa khoảng trắng', (value) => {
+        .test('space', 'Tên tài khoản phải là ký tự không dấu và không chứa khoảng trắng', (value) => {
             if (!value) return true;
 
-            const parts = value?.split(' ') || [];
-            return parts.filter((x) => Boolean(x)).length === 1;
+            const parts = value.split(' ');
+            return parts.length === 1 && PATTERN_USERNAME.test(value);
         }),
     password: yup
         .string()

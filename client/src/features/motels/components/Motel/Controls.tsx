@@ -69,6 +69,10 @@ const useStyles = makeStyles((theme: Theme) => ({
             display: 'flex',
             alignItems: 'center',
 
+            [theme.breakpoints.down('sm')]: {
+                display: 'none'
+            },
+
             '& .control': {
                 width: 25,
                 height: 25,

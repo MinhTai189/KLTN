@@ -1,10 +1,8 @@
-import { Box, makeStyles, Theme, Typography, Avatar } from '@material-ui/core'
-import { REVIEW_ID } from 'contants/contants'
-import ListPostContext from 'features/posts/contexts/ListPostContext'
+import { Avatar, Box, makeStyles, Theme, Typography } from '@material-ui/core'
+import { REVIEW_ID } from 'constant/constant'
 import { Post as PostModel } from 'models'
-import { useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { calculateCreatedTime } from 'utils/calculateCreatedTime'
+import { calculateCreatedTime } from 'utils/convert-date/calculateCreatedTime'
 
 interface Props {
     postData: PostModel
@@ -24,6 +22,10 @@ const useStyles = makeStyles((theme: Theme) => ({
             marginBottom: 8,
             transition: '300ms',
 
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '1.05em'
+            },
+
             '&:hover': {
                 color: theme.palette.primary.main
             }
@@ -36,6 +38,11 @@ const useStyles = makeStyles((theme: Theme) => ({
                 width: '1.7em',
                 height: '1.7em',
                 marginRight: theme.spacing(1.5),
+
+                [theme.breakpoints.down('xs')]: {
+                    width: '1.55em',
+                    height: '1.55em',
+                },
             },
 
             '& .body': {
@@ -44,18 +51,30 @@ const useStyles = makeStyles((theme: Theme) => ({
                 borderRadius: 10,
                 padding: theme.spacing(1.5, 2),
 
+                [theme.breakpoints.down('xs')]: {
+                    padding: theme.spacing(1, 1.5),
+                },
+
                 '& .author-info': {
                     display: 'flex',
                     alignItems: 'center',
 
                     '& .name': {
                         fontSize: '0.95em',
-                        color: theme.palette.text.primary
+                        color: theme.palette.text.primary,
+
+                        [theme.breakpoints.down('xs')]: {
+                            fontSize: '0.9em'
+                        },
                     },
 
                     '& .timestamp': {
                         fontSize: '0.9em',
-                        color: theme.palette.text.hint
+                        color: theme.palette.text.hint,
+
+                        [theme.breakpoints.down('xs')]: {
+                            fontSize: '0.8em'
+                        },
                     },
                 },
 
@@ -63,7 +82,12 @@ const useStyles = makeStyles((theme: Theme) => ({
                     fontSize: '1.1em',
                     fontWeight: 400,
                     marginTop: 8,
-                    lineHeight: 1.6
+                    lineHeight: 1.6,
+
+                    [theme.breakpoints.down('xs')]: {
+                        fontSize: '1em',
+                        lineHeight: 1.4,
+                    },
                 }
             },
 
@@ -75,11 +99,19 @@ const useStyles = makeStyles((theme: Theme) => ({
                     '& .tag': {
                         '&:not(:last-child)': {
                             marginRight: 12,
+
+                            [theme.breakpoints.down('xs')]: {
+                                marginRight: 8
+                            },
                         },
 
                         '& .text': {
                             fontSize: '0.8725em',
-                            color: theme.palette.text.secondary
+                            color: theme.palette.text.secondary,
+
+                            [theme.breakpoints.down('xs')]: {
+                                fontSize: '0.75em',
+                            },
                         }
                     }
                 }

@@ -7,7 +7,7 @@ import { forwardRef, Ref, useEffect, useImperativeHandle, useRef, useState } fro
 interface Props {
     showBtnSubmit?: boolean
     placeHolder?: string
-    handleSubmit: () => void
+    handleSubmit?: () => void
     ref: Ref<HTMLTextAreaElement>
 }
 

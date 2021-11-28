@@ -8,13 +8,9 @@ import { AlbumMotel, EditMotelForm, InforMotelDetail } from 'features/motels/com
 import { motelActions, selectFilterMotel, selectLoadingMotel } from 'features/motels/motelSlice'
 import { RateSection } from 'features/rate/components'
 import { EditFormRoom } from 'features/room/components'
-import { Editor, Motel, MotelDetail, MotelOnly, Owner, Rate, Response, Room } from 'models'
+import { Editor, Motel, MotelDetail, MotelOnly, OwnerDetail, Rate, Response, Room } from 'models'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-
-interface OwnerDetail extends Owner {
-    createdAt: string
-}
 
 interface DataMotel {
     album: string[]
@@ -192,7 +188,7 @@ const MotelDetailPage = () => {
                     className="container"
                     mt={12}
                 >
-                    <Grid container spacing={4}>
+                    <Grid container spacing={2}>
                         <Grid item md={5}>
                             {dataMotel.album.length > 0 &&
                                 <AlbumMotel
@@ -210,6 +206,7 @@ const MotelDetailPage = () => {
                                     setOpenRoomModal={setOpenRoomModal}
                                     handleSelectRoom={handleSelectRoom}
                                     editor={dataMotel.editor}
+                                    owner={dataMotel.owner}
                                 />}
                         </Grid>
                     </Grid>

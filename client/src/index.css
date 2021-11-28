@@ -44,3 +44,9 @@ ul {
   border: 1px solid #000 !important;
   border-radius: 50% !important;
 }
+
+@media only screen and (max-width: 425px) {
+  .container {
+    padding: 0 8px;
+  }
+}

@@ -4,8 +4,10 @@ import { Modal } from 'antd'
 import { useAppSelector } from 'app/hooks'
 import { Loading } from 'components/Common/Loading'
 import { selectLoadingSchool } from 'features/school/schoolSlice'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useRef, useState } from 'react'
+import { toast } from 'react-toastify'
 import { checkCommaLastString, mapTrimStringArray } from 'utils'
+import { checkTags } from 'utils/check-valid/checkTag'
 import { CreatePostForm } from '../CreatePostForm'
 import { DataPost, DataPostFinal } from '../models/create-post'
 
@@ -31,6 +33,7 @@ const useStyles = makeStyles(() => ({
 export const ModalFindMotel = ({ open, onCancel, handleSubmitCreatedPost }: Props) => {
     const classes = useStyles()
     const loading = useAppSelector(selectLoadingSchool)
+    const contentRef = useRef<any>()
 
     const [errSchools, setErrSchool] = useState('')
     const [dataPost, setDataPost] = useState<DataPost>({
@@ -55,13 +58,19 @@ export const ModalFindMotel = ({ open, onCancel, handleSubmitCreatedPost }: Prop
             return;
         }
 
+        if (!checkTags(dataPost.tags.input.split(','))) {
+            toast.error('Tag không hợp lệ!. Tag phải là ký tự không dấu và không được chứa khoảng cách.')
+            return
+        }
+
         const newDataPost: DataPostFinal = {
             ...dataPost,
             additional: `${checkCommaLastString(dataPost.additional?.input || '')}${mapTrimStringArray(dataPost.additional?.suggest || []).join(',')}`,
             tags: `${checkCommaLastString(dataPost.tags.input)}${mapTrimStringArray(dataPost.tags.suggest).join(',')}`,
             price: dataPost.price ? +dataPost.price : 0,
             motel: undefined,
-            subjectId: '6173ba553c954151dcc8fdf7'
+            subjectId: '6173ba553c954151dcc8fdf7',
+            content: contentRef.current?.getValue() ?? ''
         }
 
         handleSubmitCreatedPost(newDataPost)
@@ -83,6 +92,7 @@ export const ModalFindMotel = ({ open, onCancel, handleSubmitCreatedPost }: Prop
                 handleSubmit={handleSubmit}
                 typePost='find-motel'
                 errSchools={errSchools}
+                ref={contentRef}
             />
                 : <Box className='loading'>
                     <Loading />
