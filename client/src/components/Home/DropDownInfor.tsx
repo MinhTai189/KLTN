@@ -1,39 +1,16 @@
-import { Avatar, Box, Divider, List, ListItem, ListItemIcon, ListItemProps, ListItemText, makeStyles } from '@material-ui/core'
+import { Divider, List, ListItem, ListItemIcon, ListItemProps, ListItemText, makeStyles } from '@material-ui/core'
 import { ExitToApp } from '@material-ui/icons'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { authActions, selectCurrentUser } from 'features/auth/authSlice'
 import { showCreateModalAction } from 'features/posts/showCreateModalSlice'
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 interface Props {
-
 }
 
 const useStyles = makeStyles(theme => ({
-    root: {},
-    infoWrap: {
-        cursor: 'pointer',
-        position: 'relative',
-    },
-    avatar: {
-        boxShadow: theme.shadows[5],
-        outline: `3px solid ${theme.palette.primary.main}`,
-        overflow: 'hidden',
-        transition: `.3s ${theme.transitions.easing.easeIn}`,
-        width: 30,
-        height: 30,
-
-        "&:hover": {
-            transform: 'scale(1.03)',
-            boxShadow: theme.shadows[8]
-        }
-    },
-    dropdown: {
-        position: 'absolute',
+    root: {
         background: theme.palette.background.default,
-        right: 0,
-        top: '130%',
         width: 250,
         boxShadow: theme.shadows[5],
         borderRadius: 10,
@@ -44,16 +21,10 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-export const DropDownInfor = (props: Props) => {
+export const DropDownInfor = ({ }: Props) => {
     const classes = useStyles()
-    const [isShowDD, setIsShowDD] = useState(false)
     const currentUser = useAppSelector(selectCurrentUser)
-
     const dispatch = useAppDispatch()
-
-    const handleShowDD = () => {
-        setIsShowDD(!isShowDD)
-    }
 
     const handleLogout = () => {
         dispatch(authActions.logout())
@@ -61,7 +32,6 @@ export const DropDownInfor = (props: Props) => {
 
     const handleClickCreatePost = () => {
         dispatch(showCreateModalAction.open())
-        setIsShowDD(false)
     }
 
     function ListItemLink(props: ListItemProps<'a', { button?: true }>) {
@@ -69,45 +39,38 @@ export const DropDownInfor = (props: Props) => {
     }
 
     return (
-        <Box className={classes.infoWrap} alignItems="center">
-            <Avatar className={classes.avatar} src={currentUser.avatarUrl} onClick={handleShowDD} />
+        <List className={classes.root}>
+            {currentUser?.isAdmin && <ListItem button>
+                <ListItemText>
+                    <Link to='/admin/dashboard'>
+                        Quản lý dữ liệu
+                    </Link>
+                </ListItemText>
+            </ListItem>}
 
-            <List
-                className={classes.dropdown}
-                style={{ display: isShowDD ? 'inline-block' : 'none' }}>
+            <ListItem button>
+                <ListItemText primary='Trang cá nhân' />
+            </ListItem>
 
-                {currentUser?.isAdmin && <ListItem button>
-                    <ListItemText>
-                        <Link to='/admin/dashboard'>
-                            Quản lý dữ liệu
-                        </Link>
-                    </ListItemText>
-                </ListItem>}
+            <ListItem
+                button
+                onClick={handleClickCreatePost}
+            >
+                <ListItemText primary='Đăng bài viết' />
+            </ListItem>
 
-                <ListItem button>
-                    <ListItemText primary='Trang cá nhân' />
-                </ListItem>
+            <ListItem button>
+                <ListItemText primary='Thông báo' />
+            </ListItem>
 
-                <ListItem
-                    button
-                    onClick={handleClickCreatePost}
-                >
-                    <ListItemText primary='Đăng bài viết' />
-                </ListItem>
+            <Divider />
 
-                <ListItem button>
-                    <ListItemText primary='Thông báo' />
-                </ListItem>
-
-                <Divider />
-
-                <ListItemLink onClick={handleLogout}>
-                    <ListItemIcon>
-                        <ExitToApp />
-                    </ListItemIcon>
-                    <ListItemText primary='Đăng xuất' />
-                </ListItemLink>
-            </List>
-        </Box>
+            <ListItemLink onClick={handleLogout}>
+                <ListItemIcon>
+                    <ExitToApp />
+                </ListItemIcon>
+                <ListItemText primary='Đăng xuất' />
+            </ListItemLink>
+        </List>
     )
 }

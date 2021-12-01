@@ -42,7 +42,6 @@ export const PriceSlider = ({ priceRange, handleChangePrice }: Props) => {
                 max={20000000}
                 step={100000}
                 onChange={handleChangePrice}
-                valueLabelDisplay="auto"
                 aria-labelledby="range-slider"
                 valueLabelFormat={valuetext}
                 color='secondary'

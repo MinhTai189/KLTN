@@ -1,5 +1,6 @@
 import { Box, Button, makeStyles, Theme, Typography } from "@material-ui/core";
 import { ReactComponent as Emoij } from 'assets/images/emoij.svg';
+import { DetectClickOutsize } from "components/Common/DetectClickOutsize";
 import Picker from 'emoji-picker-react';
 import { forwardRef, Ref, useEffect, useImperativeHandle, useRef, useState } from "react";
 
@@ -50,12 +51,6 @@ const useStyles = makeStyles((theme: Theme) => ({
                 position: 'relative',
                 zIndex: 19,
                 height: '1.7em',
-
-                '& .cover': {
-                    position: 'fixed',
-                    background: 'transparent',
-                    inset: 0
-                },
 
                 '& svg': {
                     width: '1.7em',
@@ -117,7 +112,7 @@ export const TypingTextArea =
         const onEmojiClick = (e: any, emojiObject: any) => {
             const value = areaRef.current?.value
 
-            if (value && areaRef.current) {
+            if (areaRef.current) {
                 areaRef.current.value = value + emojiObject.emoji
             }
         }
@@ -148,11 +143,11 @@ export const TypingTextArea =
                     <span className='emoji-wrapper'>
                         <Emoij onClick={() => setShowEmoji(!showEmoji)} />
 
-                        {showEmoji && <div className="cover" onClick={() => setShowEmoji(false)}></div>}
-
-                        {showEmoji && <span className='emoji-picker'>
-                            <Picker onEmojiClick={onEmojiClick} native />
-                        </span>}
+                        {showEmoji && <DetectClickOutsize cb={() => setShowEmoji(false)}>
+                            <span className='emoji-picker'>
+                                <Picker onEmojiClick={onEmojiClick} native />
+                            </span>
+                        </DetectClickOutsize>}
                     </span>
 
                     {showBtnSubmit && <Button

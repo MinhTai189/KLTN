@@ -1,4 +1,4 @@
-import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Box, createStyles, makeStyles, Theme, Typography, Badge, Avatar } from '@material-ui/core';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import Logo from 'assets/images/logo.png';
 import { authActions, selectCurrentUser } from 'features/auth/authSlice';
@@ -7,6 +7,9 @@ import { useEffect, useState } from 'react';
 import { DropDownInfor } from '../Home';
 import { ButtonCustom } from './Button';
 import { Link, NavLink } from 'react-router-dom'
+import { Notifications } from '@material-ui/icons';
+import { NotifDropDown } from 'features/notification/components';
+import { DetectClickOutsize } from './DetectClickOutsize';
 
 interface Props {
     isChangeNav: boolean
@@ -76,6 +79,48 @@ const useStyles = makeStyles((theme: Theme) =>
             [theme.breakpoints.down('xs')]: {
                 display: 'none'
             }
+        },
+        ctaWrapper: {
+            display: 'flex',
+            alignItems: 'flex-end',
+
+            '& .badge': {
+                marginRight: theme.spacing(4),
+                position: 'relative',
+
+                '& .MuiBadge-root': {
+                    cursor: 'pointer',
+
+                    '& > svg': {
+                        fill: '#fff'
+                    }
+                },
+            },
+
+            '& .avatar-wrapper': {
+                position: 'relative',
+
+                '& .avatar': {
+                    boxShadow: theme.shadows[5],
+                    outline: `3px solid ${theme.palette.primary.main}`,
+                    overflow: 'hidden',
+                    transition: `.3s ${theme.transitions.easing.easeIn}`,
+                    width: 30,
+                    height: 30,
+                    cursor: 'pointer',
+
+                    "&:hover": {
+                        transform: 'scale(1.03)',
+                        boxShadow: theme.shadows[8]
+                    }
+                }
+            },
+
+            '& .dropdown': {
+                position: 'absolute',
+                right: 0,
+                top: 'calc(100% + 10px)',
+            }
         }
     }),
 );
@@ -109,6 +154,8 @@ export const Header = ({ isChangeNav }: Props) => {
     const currentUser: User = useAppSelector(selectCurrentUser)
     const dispatch = useAppDispatch()
 
+    const [showNotif, setShowNotif] = useState(false)
+    const [showDropdown, setShowDropdown] = useState(false)
     const [sizeBtn, setSizeBtn] = useState<any>('large')
 
     useEffect(() => {
@@ -124,7 +171,7 @@ export const Header = ({ isChangeNav }: Props) => {
             window.removeEventListener('resize', () => { })
         }
     }, [])
-
+    console.log(showDropdown)
     return (
         <div className={classes.root} style={isChangeNav ? { background: '#1769aa' } : {}}>
             <nav className={classes.nav} style={isChangeNav ? { padding: '8px 16px' } : {}}>
@@ -152,7 +199,36 @@ export const Header = ({ isChangeNav }: Props) => {
                 </ul>
 
                 {currentUser?.avatarUrl ?
-                    <DropDownInfor />
+                    <Box className={classes.ctaWrapper}>
+                        <Box className='badge' component='span'>
+                            <Badge
+                                badgeContent={4}
+                                color="secondary"
+                                onClick={() => setShowNotif(!showNotif)}
+                            >
+                                <Notifications />
+                            </Badge>
+
+                            {showNotif && <DetectClickOutsize cb={() => setShowNotif(false)}>
+                                <Box className='dropdown'>
+                                    <NotifDropDown />
+                                </Box>
+                            </DetectClickOutsize>}
+                        </Box>
+
+                        {currentUser && <Box className='avatar-wrapper'>
+                            <Avatar
+                                className='avatar'
+                                src={currentUser.avatarUrl}
+                                onClick={() => setShowDropdown(!showDropdown)} />
+
+                            {showDropdown && <DetectClickOutsize cb={() => setShowDropdown(false)}>
+                                <Box className='dropdown'>
+                                    <DropDownInfor />
+                                </Box>
+                            </DetectClickOutsize>}
+                        </Box>}
+                    </Box>
                     : <ButtonCustom sizeBtn={sizeBtn}>
                         <Link to='/auth/login' onClick={() => dispatch(authActions.loginFailed(''))}>Đăng nhập</Link>
                     </ButtonCustom>

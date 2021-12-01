@@ -10,7 +10,7 @@ import { MotelRecommendPost } from 'features/posts/components/PostView/Recommend
 import { RelatedPost } from 'features/posts/components/PostView/Recommended/RelatedPost'
 import { postAction, selectDataPost, selectFilterPost } from 'features/posts/postSlice'
 import { Pagination as PaginationModel } from 'models'
-import { Profiler, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useParams } from 'react-router'
 
 const PostViewPage = () => {
@@ -53,9 +53,7 @@ const PostViewPage = () => {
                     <Grid container spacing={2}>
                         <Grid item md={1}></Grid>
                         <Grid item md={7}>
-                            {postData && <Profiler id='post-view' onRender={() => console.log('post-view is rendering')}>
-                                <PostViewSection postData={postData} />
-                            </Profiler>}
+                            {postData && <PostViewSection postData={postData} />}
 
                             {paginationComment._page <= 1 && <>
                                 <Box my={4}>

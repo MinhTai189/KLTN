@@ -11,3 +11,4 @@ export * from './ModalReport';
 export * from './ChipCustom';
 export * from './BalloonCKEditor.js';
 export * from './Loading';
+export * from './NoData';

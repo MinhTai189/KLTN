@@ -1,16 +1,13 @@
 import { Box, Theme, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
-import { LikePost } from "models"
+import { Post } from "models"
 import { useState } from "react"
 import { ListTool } from "../Common/ListTool"
 import { TotalAction } from "../Common/TotalAction"
 import { ModalStaticAction } from "./ModalStaticAction"
 
 interface Props {
-    listLike: LikePost[]
-    staticLike: number[]
-    quantityLike: number;
-    quantityComment: number
+    postData: Post
     isOwner: boolean
 }
 
@@ -55,29 +52,31 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const StaticAction = ({ listLike, quantityComment, quantityLike, staticLike, isOwner }: Props) => {
+export const StaticAction = ({ postData, isOwner }: Props) => {
     const classes = useStyles()
     const [showModalStatic, setShowModalStatic] = useState(false)
+
+    const { _id, totalLikes, likes, numLikes, numComments } = postData
 
     return (
         <Box className={classes.root}>
             <span className="total-action-cmt">
-                {quantityLike > 0 && <span
+                {totalLikes > 0 && <span
                     className="total-action"
                     onClick={() => setShowModalStatic(true)}
                 >
                     <TotalAction
-                        staticLike={staticLike}
-                        quantityLike={quantityLike}
+                        staticLike={numLikes}
+                        quantityLike={totalLikes}
                     />
                 </span>}
 
-                {quantityLike > 0 && quantityComment > 0 && <span className="dot">
+                {totalLikes > 0 && numComments > 0 && <span className="dot">
                 </span>}
 
-                {quantityComment > 0 && <span className="total-cmt">
+                {numComments > 0 && <span className="total-cmt">
                     <Typography className='number'>
-                        {quantityComment}
+                        {numComments}
                     </Typography>
 
                     <Typography className='text'>
@@ -87,15 +86,19 @@ export const StaticAction = ({ listLike, quantityComment, quantityLike, staticLi
 
                 <span style={{ flex: 1 }} />
 
-                <ListTool isOwner={isOwner} />
+                <ListTool
+                    isOwner={isOwner}
+                    isPost
+                    data={postData}
+                />
             </span>
 
             <ModalStaticAction
                 open={showModalStatic}
                 onCancel={() => { setShowModalStatic(false) }}
-                staticLike={staticLike}
-                totalQuantity={quantityLike}
-                listLike={listLike}
+                staticLike={numLikes}
+                totalQuantity={totalLikes}
+                listLike={likes}
             />
         </Box>
     )

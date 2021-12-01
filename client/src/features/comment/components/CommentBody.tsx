@@ -205,7 +205,11 @@ export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', co
                                 </Typography>
                             </Box>
 
-                            <ListTool isOwner={currentUser._id === userId} />
+                            <ListTool
+                                isOwner={currentUser._id === userId}
+                                isPost={false}
+                                data={comment}
+                            />
                         </Box>
 
                         <Typography className={classes.content}>

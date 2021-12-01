@@ -1,7 +1,9 @@
-import { Box } from '@material-ui/core'
+import { Box, Typography } from '@material-ui/core'
+import { NotInterested } from '@material-ui/icons'
 import commentApi from 'api/comment'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { commentAction, selectFilterComment } from 'features/comment/commentSlice'
+import { selectDataPost } from 'features/posts/postSlice'
 import { Profiler, useCallback, useRef, useState } from 'react'
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify'
@@ -13,6 +15,8 @@ import { ListComment } from '../ListComment'
 export const CommentSection = () => {
     const dispatch = useAppDispatch()
     const commentFilter = useAppSelector(selectFilterComment)
+    const postData = useAppSelector(selectDataPost)
+
     const { id } = useParams<{ id: string }>()
     const typingRef = useRef<any>()
 
@@ -69,10 +73,25 @@ export const CommentSection = () => {
                     id='comment'
                     mb={2}
                 >
-                    <TypingComment
+                    {postData && !postData?.block ? <TypingComment
                         handleSubmit={handleSubmitComment}
                         ref={typingRef}
                     />
+
+                        : <Box
+                            my={3}
+                            style={{
+                                width: '100%',
+                                display: 'grid',
+                                placeItems: 'center',
+                                background: "#ccc",
+                                padding: 12,
+                                borderRadius: 5
+                            }}>
+                            <Typography>
+                                Bài viết này đã vô hiệu chức năng bình luận
+                            </Typography>
+                        </Box>}
                 </Box>
 
                 <Profiler id='list-comment' onRender={(id: string) => console.log(id, 'is rendering')}>

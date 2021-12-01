@@ -19,6 +19,10 @@ const commentApi = {
     const url = `/comments/${postId}`;
     return axiosClient.post(url, { content, commentId, userId });
   },
+  remove: (commentId: string): Promise<any> => {
+    const url = `/comments/${commentId}`;
+    return axiosClient.delete(url);
+  },
   like: (commentId: string, type: number): Promise<Response<any>> => {
     const url = `/comments/likes/${commentId}`;
     return axiosClient.post(url, { params: { type } });
@@ -26,6 +30,10 @@ const commentApi = {
   unlike: (commentId: string): Promise<Response<any>> => {
     const url = `/comments/likes/${commentId}`;
     return axiosClient.delete(url);
+  },
+  report: (commentId: string, content: string): Promise<any> => {
+    const url = 'comments/reports';
+    return axiosClient.post(url, { commentId, content });
   },
 };
 

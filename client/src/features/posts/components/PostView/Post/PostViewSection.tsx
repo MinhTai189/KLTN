@@ -186,13 +186,10 @@ export const PostViewSection = memo(({ postData }: Props) => {
                 <PostRequirement require={postData.require} />
             </Box>}
 
-            <StaticAction
-                listLike={postData.likes}
-                staticLike={postData.numLikes}
-                quantityLike={postData.totalLikes}
-                quantityComment={postData.numComments}
+            {currentUser && <StaticAction
+                postData={postData}
                 isOwner={currentUser._id === postData.owner._id}
-            />
+            />}
 
             <Box
                 className={classes.threadActions}

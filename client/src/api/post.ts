@@ -16,6 +16,14 @@ const postApi = {
     const url = '/posts';
     return axiosClient.post(url, params);
   },
+  update: (params: any): Promise<any> => {
+    const url = '/posts';
+    return axiosClient.patch(url, params);
+  },
+  remove: (postId: string): Promise<any> => {
+    const url = `/posts/${postId}`;
+    return axiosClient.delete(url);
+  },
   like: (postId: string, type: number): Promise<Response<any>> => {
     const url = `/posts/likes/${postId}`;
     return axiosClient.post(url, { params: { type } });
@@ -23,6 +31,10 @@ const postApi = {
   unlike: (postId: string): Promise<Response<any>> => {
     const url = `/posts/likes/${postId}`;
     return axiosClient.delete(url);
+  },
+  report: (postId: string, content: string): Promise<any> => {
+    const url = 'posts/reports';
+    return axiosClient.post(url, { postId, content });
   },
 };
 

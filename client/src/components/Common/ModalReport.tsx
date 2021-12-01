@@ -72,7 +72,7 @@ export const ModalReport = ({ openModal, onOk, onCancel, loading = false, valueR
             <Box className={classes.wrapper}>
                 <img src={Report} alt='report illutration' />
 
-                <h3>Cảm ơn bạn đã báo cáo những nội dung không phù hợp</h3>
+                <h3>Cảm ơn bạn đã báo cáo những nội dung không phù hợp!</h3>
 
                 <div className="text-area">
                     <textarea value={valueReport} onChange={(e) => onChange(e.target.value)} name="report" rows={3} placeholder='Lý do bạn muốn báo cáo nội dung này...'></textarea>

@@ -1,11 +1,18 @@
-import { Box, ListItem, ListItemText, List, makeStyles, Theme, Typography } from "@material-ui/core"
+import { Box, List, ListItem, ListItemText, makeStyles, Theme } from "@material-ui/core"
 import { MoreHoriz } from "@material-ui/icons"
+import commentApi from "api/comment"
+import postApi from "api/post"
 import { useAppSelector } from "app/hooks"
+import { ModalReport } from "components/Common"
 import { selectCurrentUser } from "features/auth/authSlice"
-import { User } from "models"
+import { Comment, Post, ReplingComment, User } from "models"
 import { useState } from "react"
+import { useHistory } from "react-router"
+import { toast } from "react-toastify"
 
 interface Props {
+    data: Post | Comment | ReplingComment
+    isPost: boolean
     isOwner: boolean
 }
 
@@ -47,54 +54,154 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const ListTool = ({ isOwner }: Props) => {
+export const ListTool = ({ isPost, isOwner, data }: Props) => {
     const classes = useStyles()
+    const history = useHistory()
+
+    const { _id } = data
+
     const currentUser: User = useAppSelector(selectCurrentUser)
+    const [loading, setLoading] = useState(false)
+
+    const [reportContent, setReportContent] = useState('')
     const [showList, setShowList] = useState(false)
+    const [showConfirmModal, setShowConfirmModal] = useState(false)
+
+    const handleSubmitReport = async () => {
+        if (reportContent.length > 100) {
+            toast.error("Nội dung báo cáo tối đa 100 ký tự")
+            return
+        }
+
+        try {
+            setLoading(true)
+
+            isPost ? await postApi.report(_id, reportContent)
+                : await commentApi.report(_id, reportContent)
+
+            toast.success('Gửi báo cáo thành công!')
+
+            setLoading(false)
+            setReportContent('')
+            setShowConfirmModal(false)
+            setShowList(false)
+        } catch (error) {
+            toast.error('Gửi báo cáo thất bại!')
+            setLoading(false)
+        }
+    }
+
+    const handleSubmitCloseComment = async () => {
+        if (!window.confirm('Bạn có muốn đóng bình luận của bài viết này không ?\nMột khi đã đóng bạn sẽ không có khả năng mở lại.'))
+            return
+
+        try {
+            await postApi.update({
+                block: true
+            })
+
+            toast.success('Đã đóng bình luận thành công!')
+            setShowList(false)
+        } catch (error) {
+            toast.error('Đóng bình luận thất bại!')
+        }
+    }
+
+    const handleSubmitCompletedPost = async () => {
+        if (!window.confirm('Khi bạn đã hoàn thành mục tiêu của bài viết, bạn có thể chuyển trạng thái sang "Hoàn thành".\nBạn có muốn đánh dấu đã hoàn thành không ?'))
+            return
+
+        try {
+            await postApi.update({
+                status: true
+            })
+
+            toast.success('Chuyển trạng thái bài viết thành công!')
+            setShowList(false)
+        } catch (error) {
+            toast.error('Chuyển trạng thái bài viết thất bại!')
+        }
+    }
+
+    const handleSubmitRemove = async () => {
+        if (!window.confirm('Bạn có thật sự muốn xóa không ?'))
+            return
+
+        try {
+            isPost ? await postApi.remove(_id)
+                : await commentApi.remove(_id)
+
+            toast.success('Xóa bài viết thành công!')
+            setShowList(false)
+
+            isPost && history.push('/posts')
+        } catch (error) {
+            toast.error('Xóa bài viết thất bại!')
+        }
+    }
 
     return (
-        <Box className={classes.root}>
-            <MoreHoriz
-                className='icon'
-                onClick={() => setShowList(!showList)}
+        <>
+            <Box className={classes.root}>
+                <MoreHoriz
+                    className='icon'
+                    onClick={() => setShowList(!showList)}
+                />
+
+                <List
+                    className={`list-tool ${showList ? 'active' : ''}`}
+                    component="ul"
+                >
+                    <ListItem
+                        className='tool'
+                        button
+                        component="li"
+                        onClick={() => setShowConfirmModal(true)}
+                    >
+                        <ListItemText primary="Báo xấu" />
+                    </ListItem>
+
+                    {currentUser && currentUser.isAdmin && <ListItem
+                        className='tool'
+                        button
+                        component="li"
+                        onClick={handleSubmitRemove}
+                    >
+                        <ListItemText primary="Xóa" />
+                    </ListItem>}
+
+
+                    {// @ts-ignore
+                        isOwner && isPost && !data?.block && <ListItem
+                            className='tool'
+                            button
+                            component="li"
+                            onClick={handleSubmitCloseComment}
+                        >
+                            <ListItemText primary="Đóng bình luận" />
+                        </ListItem>}
+
+
+                    {// @ts-ignore
+                        isOwner && isPost && !data?.status && <ListItem
+                            className='tool'
+                            button
+                            component="li"
+                            onClick={handleSubmitCompletedPost}
+                        >
+                            <ListItemText primary="Đã hoàn thành" />
+                        </ListItem>}
+                </List>
+            </Box>
+
+            <ModalReport
+                openModal={showConfirmModal}
+                onCancel={() => setShowConfirmModal(false)}
+                onOk={handleSubmitReport}
+                valueReport={reportContent}
+                onChange={setReportContent}
+                loading={loading}
             />
-
-            <List
-                className={`list-tool ${showList ? 'active' : ''}`}
-                component="ul"
-            >
-                <ListItem
-                    className='tool'
-                    button
-                    component="li"
-                >
-                    <ListItemText primary="Báo xấu" />
-                </ListItem>
-
-                {currentUser && currentUser.isAdmin && <ListItem
-                    className='tool'
-                    button
-                    component="li"
-                >
-                    <ListItemText primary="Xóa" />
-                </ListItem>}
-
-                {isOwner && <ListItem
-                    className='tool'
-                    button
-                    component="li"
-                >
-                    <ListItemText primary="Đóng bình luận" />
-                </ListItem>}
-
-                {isOwner && <ListItem
-                    className='tool'
-                    button
-                    component="li"
-                >
-                    <ListItemText primary="Đã hoàn thành" />
-                </ListItem>}
-            </List>
-        </Box>
+        </>
     )
 }
