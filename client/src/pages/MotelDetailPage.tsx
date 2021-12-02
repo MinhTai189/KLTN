@@ -1,11 +1,14 @@
 import { Box, Grid } from '@material-ui/core'
 import { Modal } from 'antd'
 import { motelApi } from 'api/motel'
+import postApi from 'api/post'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { ModalConfirm } from 'components/Common/ModalConfirm'
 import { MainLayout } from 'components/Layouts/MainLayout'
 import { AlbumMotel, EditMotelForm, InforMotelDetail } from 'features/motels/components'
+import { FindMotelReviewSection } from 'features/motels/components/MotelDetail/FindMotelReviewSection'
 import { motelActions, selectFilterMotel, selectLoadingMotel } from 'features/motels/motelSlice'
+import { postAction } from 'features/posts/postSlice'
 import { RateSection } from 'features/rate/components'
 import { EditFormRoom } from 'features/room/components'
 import { Editor, Motel, MotelDetail, MotelOnly, OwnerDetail, Rate, Response, Room } from 'models'
@@ -86,6 +89,10 @@ const MotelDetailPage = () => {
             setOpenRoomModal(false)
         }
     }, [loading])
+
+    useEffect(() => {
+        dispatch(postAction.get({}))
+    }, [])
 
     const handleCloseModal = () => {
         setOpenMotelModal(false)
@@ -195,6 +202,8 @@ const MotelDetailPage = () => {
                                     images={dataMotel.album}
                                     motelName={dataMotel.motel?.name || ''}
                                 />}
+
+                            <FindMotelReviewSection />
                         </Grid>
 
                         <Grid item md={7}>

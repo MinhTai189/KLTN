@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
+import { FIND_ROOMMATE_ID, REVIEW_ID } from 'constant/constant';
 import { Filter, Pagination, Post } from 'models';
 import { DataPostFinal } from './components/CreatePost/models/create-post';
 
@@ -80,6 +81,20 @@ export const selectLoadingPost = (state: RootState) => state.post.loading;
 export const selectFilterPost = (state: RootState) => state.post.filter;
 export const selectPaginationPost = (state: RootState) => state.post.pagination;
 export const selectErrPost = (state: RootState) => state.post.err;
+
+export const selectFindRoommatePost = createSelector(
+  selectListDataPost,
+  (listPost: Post[]) => {
+    return listPost.filter((post) => post.subject._id === FIND_ROOMMATE_ID);
+  }
+);
+
+export const selectReviewPost = createSelector(
+  selectListDataPost,
+  (listPost: Post[]) => {
+    return listPost.filter((post) => post.subject._id === REVIEW_ID);
+  }
+);
 
 //reducer
 
