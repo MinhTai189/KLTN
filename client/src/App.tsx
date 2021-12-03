@@ -8,6 +8,7 @@ import { CreateReviewPage } from 'pages/CreateReviewPage';
 import HomePage from 'pages/HomePage';
 import MotelDetailPage from 'pages/MotelDetailPage';
 import MotelPage from 'pages/MotelPage';
+import NotificationPage from 'pages/NotificationPage';
 import PostPage from 'pages/PostPage';
 import PostViewPage from 'pages/PostViewPage';
 import { useEffect } from 'react';
@@ -51,6 +52,10 @@ const App = () => {
 
           <UserRoute path='/create-post/review'>
             <CreateReviewPage />
+          </UserRoute>
+
+          <UserRoute path='/notifications'>
+            <NotificationPage />
           </UserRoute>
 
           <Route path="/auth">

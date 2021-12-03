@@ -132,9 +132,10 @@ export const NotifDropDown = ({ }: Props) => {
                         ))}
                     </ul>
 
-                    <Link to='/' className='see-more'>
+                    <Link to='/notifications' className='see-more'>
                         Xem tất cả...
-                    </Link></>}
+                    </Link>
+                </>}
 
                 {/* <NoData content='Hiện tại bạn không có thông báo!' /> */}
             </Box>
