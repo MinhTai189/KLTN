@@ -1,15 +1,16 @@
-import { Box, Button, CircularProgress, makeStyles, Theme } from '@material-ui/core'
+import { Box, Button, CircularProgress, makeStyles, Theme, Typography } from '@material-ui/core'
 import { useAppSelector } from 'app/hooks'
 import { BalloonCKEditor } from 'components/Common'
 import { selectLoadingPost } from 'features/posts/postSlice'
 import { selectDataMotel, selectLoadingMotel } from 'features/motels/motelSlice'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-toastify'
 import { checkCommaLastString, mapTrimStringArray } from 'utils'
 import { AutocompleteMotel } from '../FindRommate/AutocompleteMotel'
 import { DataPost, DataPostFinal } from '../models/create-post'
 import { TagInput } from '../TagInput'
 import { checkTags } from 'utils/check-valid/checkTag'
+import SmallScreen from 'assets/images/small-screen.jpg'
 
 interface Props {
     handleCreateReview: (data: DataPostFinal) => void
@@ -21,6 +22,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         width: '100%',
         maxWidth: 800,
         margin: 'auto',
+
+        [theme.breakpoints.down('md')]: {
+            padding: theme.spacing(0, 6),
+        },
 
         '& .title-input': {
             width: '100%',
@@ -68,6 +73,25 @@ const useStyles = makeStyles((theme: Theme) => ({
             borderColor: 'transparent',
             boxShadow: 'none'
         }
+    },
+    msgInfor: {
+        width: '100%',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+        padding: theme.spacing(1),
+
+        '& > img': {
+            width: '65%'
+        },
+
+        '& .text': {
+            textAlign: 'center',
+            marginBottom: theme.spacing(2),
+            fontSize: '0.9rem'
+        }
     }
 }))
 
@@ -75,6 +99,7 @@ export const CreateReview = ({ handleCreateReview }: Props) => {
     const classes = useStyles()
     const areaRef = useRef<HTMLAreaElement>(null)
     const loadingCreateReview = useAppSelector(selectLoadingPost)
+    const [isHidden, setIsHidden] = useState(false)
 
     const listMotel = useAppSelector(selectDataMotel)
     const loading = useAppSelector(selectLoadingMotel)
@@ -87,6 +112,25 @@ export const CreateReview = ({ handleCreateReview }: Props) => {
         motel: undefined,
         content: ''
     })
+
+    useEffect(() => {
+        const detectSmallScreen = () => {
+            if (window.innerWidth < 600) {
+                setIsHidden(true)
+                return
+            }
+
+            setIsHidden(false)
+        }
+
+        detectSmallScreen()
+
+        window.addEventListener('resize', detectSmallScreen)
+
+        return () => {
+            window.removeEventListener('resize', detectSmallScreen)
+        }
+    }, [])
 
     const handleGrowArea = () => {
         if (areaRef.current) {
@@ -126,6 +170,21 @@ export const CreateReview = ({ handleCreateReview }: Props) => {
 
         handleCreateReview(submitData)
     }
+
+    if (isHidden)
+        return (
+            <Box className={classes.msgInfor}>
+                <img src={SmallScreen} />
+
+                <Typography className='text'>
+                    {'Bạn đang sử dụng màn hình có kích thước nhỏ(< 600px) nên sẽ không thể thực hiện chứ năng soạn thảo. Hãy chuyển sang màn hình có kích thước lớn hơn!'}
+                </Typography>
+
+                <Button variant='contained' color='primary'>
+                    Quay về
+                </Button>
+            </Box>
+        )
 
     return (
         <Box className={classes.root}>

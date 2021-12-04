@@ -1,4 +1,4 @@
-import { Divider, List, ListItem, ListItemIcon, ListItemProps, ListItemText, makeStyles } from '@material-ui/core'
+import { Box, Divider, List, ListItem, ListItemIcon, ListItemProps, ListItemText, makeStyles } from '@material-ui/core'
 import { ExitToApp } from '@material-ui/icons'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { authActions, selectCurrentUser } from 'features/auth/authSlice'
@@ -17,6 +17,14 @@ const useStyles = makeStyles(theme => ({
 
         "& a": {
             color: 'inherit'
+        },
+
+        '& .nav-links-mobile': {
+            display: 'none',
+
+            [theme.breakpoints.down('sm')]: {
+                display: 'block'
+            }
         }
     }
 }))
@@ -59,9 +67,27 @@ export const DropDownInfor = ({ }: Props) => {
                 <ListItemText primary='Đăng bài viết' />
             </ListItem>
 
-            <ListItem button>
-                <ListItemText primary='Thông báo' />
-            </ListItem>
+            <Box className='nav-links-mobile'>
+                <Divider />
+
+                <ListItem button>
+                    <Link to='/'>
+                        <ListItemText primary='Trang chủ' />
+                    </Link>
+                </ListItem>
+
+                <ListItem button>
+                    <Link to='/motels'>
+                        <ListItemText primary='Nhà trọ' />
+                    </Link>
+                </ListItem>
+
+                <ListItem button>
+                    <Link to='/posts'>
+                        <ListItemText primary='Bài viết' />
+                    </Link>
+                </ListItem>
+            </Box>
 
             <Divider />
 

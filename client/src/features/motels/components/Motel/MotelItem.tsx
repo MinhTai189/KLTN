@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme: Theme) => ({
             },
 
             [theme.breakpoints.down('xs')]: {
-                height: 200
+                height: 160
             },
         },
 
@@ -61,6 +61,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     infor: {
         flex: 1,
 
+        [theme.breakpoints.down('md')]: {
+            padding: theme.spacing(1, 1.5),
+        },
+
         '&.grid': {
             height: 250,
             padding: theme.spacing(1.5)
@@ -69,6 +73,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         '& .name': {
             fontSize: '1.4em',
             fontWeight: 400,
+
+            [theme.breakpoints.down('md')]: {
+                fontSize: '1.35em',
+            },
 
             [theme.breakpoints.down('sm')]: {
                 fontSize: '1.3em'
@@ -124,7 +132,7 @@ const useStyles = makeStyles((theme: Theme) => ({
                     height: '0.75em',
                     fill: theme.palette.primary.dark,
 
-                    [theme.breakpoints.down('sm')]: {
+                    [theme.breakpoints.down('md')]: {
                         width: '0.7em',
                         height: '0.7em',
                     }
@@ -134,7 +142,7 @@ const useStyles = makeStyles((theme: Theme) => ({
                     fontSize: '0.85em',
                     color: '#555',
 
-                    [theme.breakpoints.down('sm')]: {
+                    [theme.breakpoints.down('md')]: {
                         fontSize: '0.8em'
                     }
                 },
@@ -146,7 +154,7 @@ const useStyles = makeStyles((theme: Theme) => ({
             marginTop: 4,
             color: '#6d6d6d',
 
-            [theme.breakpoints.down('sm')]: {
+            [theme.breakpoints.down('md')]: {
                 fontSize: '0.785em'
             }
         }
@@ -161,13 +169,7 @@ const MotelCard = ({ listLayout, dataMotel }: Props) => {
 
     const createdDate = new Date(createdAt || '')
     const date = createdDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
-    let splitedDesc = ''
-
-    if (listLayout === 'grid') {
-        splitedDesc = desc.length > 280 ? desc.slice(0, 280) + '...' : desc.slice(0, 280)
-    } else {
-        splitedDesc = desc.length > 360 ? desc.slice(0, 280) + '...' : desc.slice(0, 280)
-    }
+    let splitedDesc = desc.length > 250 ? desc.slice(0, 250) + '...' : desc
 
     const handleClickItem = () => {
         history.push(`/motels/${_id}`)

@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
             width: 40,
             height: 40,
 
-            [theme.breakpoints.down('sm')]: {
+            [theme.breakpoints.down('md')]: {
                 width: 40,
                 height: 40
             }
@@ -45,8 +45,8 @@ const useStyles = makeStyles((theme: Theme) =>
         navLinks: {
             height: '100%',
             display: 'flex',
-            justifyContent: 'center',
             alignItems: 'center',
+            justifyContent: 'center',
             listStyle: 'none',
             flex: 1,
             margin: 0,
@@ -70,13 +70,13 @@ const useStyles = makeStyles((theme: Theme) =>
                     letterSpacing: 1,
                 },
 
-                [theme.breakpoints.down('sm')]: {
-                    padding: '0 4px',
+                [theme.breakpoints.down('md')]: {
+                    padding: '4px 8px',
                     fontSize: 13,
                 }
             },
 
-            [theme.breakpoints.down('xs')]: {
+            [theme.breakpoints.down('sm')]: {
                 display: 'none'
             }
         },
@@ -120,6 +120,13 @@ const useStyles = makeStyles((theme: Theme) =>
                 position: 'absolute',
                 right: 0,
                 top: 'calc(100% + 10px)',
+
+                '&.notif': {
+                    [theme.breakpoints.down(490)]: {
+                        position: 'fixed',
+                        top: 60,
+                    }
+                }
             }
         }
     }),
@@ -171,7 +178,7 @@ export const Header = ({ isChangeNav }: Props) => {
             window.removeEventListener('resize', () => { })
         }
     }, [])
-    console.log(showDropdown)
+
     return (
         <div className={classes.root} style={isChangeNav ? { background: '#1769aa' } : {}}>
             <nav className={classes.nav} style={isChangeNav ? { padding: '8px 16px' } : {}}>
@@ -209,8 +216,8 @@ export const Header = ({ isChangeNav }: Props) => {
                                 <Notifications />
                             </Badge>
 
-                            {showNotif && <DetectClickOutsize cb={() => setShowNotif(false)}>
-                                <Box className='dropdown'>
+                            {showNotif && <DetectClickOutsize cb={() => setTimeout(() => setShowNotif(false), 100)}>
+                                <Box className='dropdown notif'>
                                     <NotifDropDown />
                                 </Box>
                             </DetectClickOutsize>}
@@ -222,7 +229,7 @@ export const Header = ({ isChangeNav }: Props) => {
                                 src={currentUser.avatarUrl}
                                 onClick={() => setShowDropdown(!showDropdown)} />
 
-                            {showDropdown && <DetectClickOutsize cb={() => setShowDropdown(false)}>
+                            {showDropdown && <DetectClickOutsize cb={() => setTimeout(() => setShowDropdown(false), 100)}>
                                 <Box className='dropdown'>
                                     <DropDownInfor />
                                 </Box>

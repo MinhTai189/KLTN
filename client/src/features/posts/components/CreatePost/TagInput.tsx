@@ -65,6 +65,12 @@ const useStyles = makeStyles((theme: Theme) => ({
                     paddingBottom: theme.spacing(1),
                     fontSize: '0.85em',
                     color: '#fff',
+
+                    [theme.breakpoints.down('xs')]: {
+                        fontSize: '0.7em',
+                        paddingTop: theme.spacing(0.5),
+                        paddingBottom: theme.spacing(0.5),
+                    }
                 },
 
                 '& fieldset': {
@@ -128,7 +134,7 @@ export const TagInput = ({ placeHolder, input, setInput, suggest, setSuggest, ty
                         Tag gợi ý
                     </MenuItem>
 
-                    {suggests.map((tag, index) => (
+                    {suggests.map(tag => (
                         <MenuItem
                             key={tag}
                             value={tag}

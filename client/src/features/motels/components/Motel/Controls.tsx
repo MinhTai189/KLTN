@@ -25,6 +25,10 @@ const useStyles = makeStyles((theme: Theme) => ({
             '& .field': {
                 width: 400,
 
+                [theme.breakpoints.down('xs')]: {
+                    width: '90vw'
+                },
+
                 '& .MuiInputBase-root': {
                     paddingTop: 2,
                     paddingBottom: 2,

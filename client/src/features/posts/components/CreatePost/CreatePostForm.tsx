@@ -36,6 +36,10 @@ const useStyles = makeStyles((theme: Theme) => ({
             display: 'flex',
             gap: 15,
 
+            [theme.breakpoints.down('sm')]: {
+                flexDirection: 'column'
+            },
+
             '& .left-col': {
                 flex: 1,
             },
@@ -46,6 +50,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
 
         '& .content-wrapper': {
+            [theme.breakpoints.down('sm')]: {
+                marginTop: theme.spacing(1.5)
+            },
+
             '& > .MuiBox-root': {
                 borderRadius: 4,
                 background: '#fff',
@@ -54,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
                 "&:hover": {
                     borderColor: '#000'
-                }
+                },
             }
         }
     }

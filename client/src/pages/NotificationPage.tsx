@@ -10,7 +10,11 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        paddingTop: theme.spacing(12)
+        paddingTop: theme.spacing(12),
+
+        [theme.breakpoints.down('sm')]: {
+            paddingTop: theme.spacing(10),
+        },
     }
 }))
 
@@ -20,15 +24,15 @@ const NotificationPage = (props: Props) => {
     return (
         <MainLayout>
             <Box className={`${classes.root} container`}>
-                <Grid container spacing={2}>
-                    <Grid item lg={1} />
-                    <Grid item lg={3}>
+                <Grid container>
+                    <Grid item sm={undefined} md={undefined} lg={1} />
+                    <Grid item xs={12} sm={4} md={4} lg={3}>
                         <Controls />
                     </Grid>
-                    <Grid item lg={5}>
+                    <Grid item xs={12} sm={8} md={8} lg={6}>
                         <ListNotification />
                     </Grid>
-                    <Grid item lg={3} />
+                    <Grid item sm={undefined} md={undefined} lg={2} />
                 </Grid>
             </Box>
         </MainLayout>

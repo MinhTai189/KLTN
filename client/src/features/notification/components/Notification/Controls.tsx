@@ -13,11 +13,36 @@ const useStyles = makeStyles((theme: Theme) => ({
         top: 65,
         padding: theme.spacing(2),
 
+        [theme.breakpoints.down('sm')]: {
+            padding: theme.spacing(1.5),
+        },
+
         '& .rows': {
             margin: theme.spacing(1.5, 0),
 
+            [theme.breakpoints.down('sm')]: {
+                margin: theme.spacing(0.5, 0),
+            },
+
             '&.mt': {
-                marginTop: theme.spacing(6)
+                marginTop: theme.spacing(6),
+
+                [theme.breakpoints.down('sm')]: {
+                    marginTop: theme.spacing(4)
+                },
+
+                [theme.breakpoints.down('xs')]: {
+                    marginTop: theme.spacing(1),
+                }
+            }
+        },
+
+        '& .cb-group': {
+            display: 'flex',
+            flexDirection: 'column',
+
+            [theme.breakpoints.down('xs')]: {
+                flexDirection: 'row',
             }
         }
     }
@@ -49,13 +74,11 @@ const Controls = (props: Props) => {
                 </Button>
             </Box>
 
-            <Box className="rows">
+            <Box className='cb-group'>
                 <FormControlLabel
                     control={<Checkbox color='primary' checked={status.read} onChange={handleChecked} name="read" />}
                     label="Đã xem: 8"
                 />
-            </Box>
-            <Box className="rows">
                 <FormControlLabel
                     control={<Checkbox color='primary' checked={status.unread} onChange={handleChecked} name="unread" />}
                     label="Chưa xem: 15"

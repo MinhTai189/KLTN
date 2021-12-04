@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) => ({
             marginBottom: 8,
             transition: '300ms',
 
-            [theme.breakpoints.down('xs')]: {
+            [theme.breakpoints.down('sm')]: {
                 fontSize: '1.05em'
             },
 
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) => ({
                 height: '1.7em',
                 marginRight: theme.spacing(1.5),
 
-                [theme.breakpoints.down('xs')]: {
+                [theme.breakpoints.down('sm')]: {
                     width: '1.55em',
                     height: '1.55em',
                 },
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) => ({
                 borderRadius: 10,
                 padding: theme.spacing(1.5, 2),
 
-                [theme.breakpoints.down('xs')]: {
+                [theme.breakpoints.down('sm')]: {
                     padding: theme.spacing(1, 1.5),
                 },
 
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme: Theme) => ({
                         fontSize: '0.95em',
                         color: theme.palette.text.primary,
 
-                        [theme.breakpoints.down('xs')]: {
+                        [theme.breakpoints.down('sm')]: {
                             fontSize: '0.9em'
                         },
                     },
@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme: Theme) => ({
                         fontSize: '0.9em',
                         color: theme.palette.text.hint,
 
-                        [theme.breakpoints.down('xs')]: {
+                        [theme.breakpoints.down('sm')]: {
                             fontSize: '0.8em'
                         },
                     },
@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme: Theme) => ({
                     marginTop: 8,
                     lineHeight: 1.6,
 
-                    [theme.breakpoints.down('xs')]: {
+                    [theme.breakpoints.down('sm')]: {
                         fontSize: '1em',
                         lineHeight: 1.4,
                     },
@@ -100,7 +100,7 @@ const useStyles = makeStyles((theme: Theme) => ({
                         '&:not(:last-child)': {
                             marginRight: 12,
 
-                            [theme.breakpoints.down('xs')]: {
+                            [theme.breakpoints.down('sm')]: {
                                 marginRight: 8
                             },
                         },
@@ -108,8 +108,9 @@ const useStyles = makeStyles((theme: Theme) => ({
                         '& .text': {
                             fontSize: '0.8725em',
                             color: theme.palette.text.secondary,
+                            wordBreak: 'break-all',
 
-                            [theme.breakpoints.down('xs')]: {
+                            [theme.breakpoints.down('sm')]: {
                                 fontSize: '0.75em',
                             },
                         }

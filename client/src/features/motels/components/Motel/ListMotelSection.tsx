@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         minHeight: 500,
 
         [theme.breakpoints.down('sm')]: {
-            // display: 'none',
             height: '100vh',
             position: 'fixed',
             right: 0,
@@ -55,7 +54,15 @@ const useStyles = makeStyles((theme: Theme) => ({
         flexDirection: 'column',
 
         '& .item': {
-            marginBottom: 32
+            marginBottom: 32,
+
+            [theme.breakpoints.down('xs')]: {
+                marginBottom: 8
+            }
+        },
+
+        [theme.breakpoints.down('xs')]: {
+            gridTemplateColumns: '1fr !important',
         }
     },
     pagination: {

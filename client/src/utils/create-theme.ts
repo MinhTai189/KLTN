@@ -10,11 +10,11 @@ export const themeMUI = createTheme({
   },
   breakpoints: {
     values: {
-      xs: 425,
-      sm: 768,
-      md: 900,
-      lg: 1024,
-      xl: 1440,
+      xs: 0,
+      sm: 425,
+      md: 768,
+      lg: 900,
+      xl: 1024,
     },
   },
 });

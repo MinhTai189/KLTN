@@ -8,7 +8,7 @@ import { makeStyles } from "@material-ui/styles"
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        [theme.breakpoints.down('sm')]: {
+        [theme.breakpoints.down('md')]: {
             marginTop: theme.spacing(1.5)
         }
     }

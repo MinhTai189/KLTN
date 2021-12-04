@@ -14,6 +14,11 @@ const useStyles = makeStyles((theme: Theme) => ({
         borderRadius: 10,
         marginBottom: theme.spacing(2.5),
 
+        [theme.breakpoints.down('xs')]: {
+            marginBottom: theme.spacing(1.5),
+            padding: theme.spacing(0.5),
+        },
+
         '& .left': {
             textAlign: 'center',
             marginRight: theme.spacing(1),
@@ -21,6 +26,11 @@ const useStyles = makeStyles((theme: Theme) => ({
             '& .icon': {
                 width: 55,
                 height: 55,
+
+                [theme.breakpoints.down('xs')]: {
+                    height: 45,
+                    width: 45,
+                }
             },
 
             '& .led-green': {
@@ -37,7 +47,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 
         '& .body': {
             '& .title': {
-                fontSize: '0.95rem'
+                fontSize: '0.95rem',
+
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '0.85rem'
+                }
             },
 
             '& .bottom': {
@@ -48,7 +62,11 @@ const useStyles = makeStyles((theme: Theme) => ({
                 '& .date': {
                     fontSize: '1.05em',
                     flex: 1,
-                    color: theme.palette.text.secondary
+                    color: theme.palette.text.secondary,
+
+                    [theme.breakpoints.down('xs')]: {
+                        fontSize: '0.85em'
+                    }
                 },
 
                 '& .type': {

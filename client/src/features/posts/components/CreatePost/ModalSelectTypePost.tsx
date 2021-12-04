@@ -19,11 +19,23 @@ const useStyles = makeStyles((theme: Theme) => ({
         '& .body-wrapper': {
             margin: theme.spacing(6, 0, 4),
 
+            [theme.breakpoints.down('sm')]: {
+                margin: theme.spacing(2, 0),
+            },
+
+            [theme.breakpoints.down('xs')]: {
+                margin: theme.spacing(0.5, 0),
+            },
+
             '& > .list-option': {
                 display: 'flex',
                 justifyContent: 'center',
                 flexWrap: 'wrap',
                 gap: theme.spacing(3),
+
+                [theme.breakpoints.down('xs')]: {
+                    gap: theme.spacing(2)
+                },
 
                 '& .option': {
                     width: 200,
@@ -32,6 +44,17 @@ const useStyles = makeStyles((theme: Theme) => ({
                     borderRadius: 10,
                     cursor: 'pointer',
                     transition: '100ms',
+
+                    [theme.breakpoints.down('sm')]: {
+                        width: 150,
+                        height: 150,
+                    },
+
+                    [theme.breakpoints.down('xs')]: {
+                        width: 120,
+                        height: 120,
+                        gap: theme.spacing(1)
+                    },
 
                     '&:hover': {
                         transform: 'translateY(-5px)'
@@ -49,6 +72,14 @@ const useStyles = makeStyles((theme: Theme) => ({
                             '& p': {
                                 fontWeight: 600,
                                 color: theme.palette.primary.main,
+
+                                [theme.breakpoints.down('sm')]: {
+                                    fontSize: '0.9em'
+                                },
+
+                                [theme.breakpoints.down('xs')]: {
+                                    fontSize: '0.75em'
+                                },
                             }
                         },
 
