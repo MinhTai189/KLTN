@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { AdminRoute, NotFound, ScrollToTop, UserRoute } from 'components/Common';
 import { AdminLayout } from 'components/Layouts';
 import { authActions, selectIsLogged } from 'features/auth/authSlice';
-import { notifyActions, selectFilterNotify } from 'features/notification/notifySlice';
 import { CreatePost } from 'features/posts/components';
 import { CreateReviewPage } from 'pages/CreateReviewPage';
 import HomePage from 'pages/HomePage';
@@ -20,17 +19,12 @@ import Auth from "./features/auth";
 const App = () => {
   const isLogged = useAppSelector(selectIsLogged)
   const dispatch = useAppDispatch()
-  const notifyFilter = useAppSelector(selectFilterNotify)
 
   useEffect(() => {
     if (!isLogged && Boolean(localStorage.getItem('accessToken'))) {
       dispatch(authActions.login({ username: '', password: '', rememberMe: true, isAutoLogin: true }))
     }
   }, [dispatch, isLogged])
-
-  useEffect(() => {
-    dispatch(notifyActions.get(notifyFilter))
-  }, [dispatch, notifyFilter])
 
   return (
     <>

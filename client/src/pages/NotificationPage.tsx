@@ -1,16 +1,11 @@
-import { Box, Grid, Paper, Theme } from "@material-ui/core"
+import { Box, Grid, Theme } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
-import { useAppSelector } from "app/hooks"
+import { useAppDispatch, useAppSelector } from "app/hooks"
 import { MainLayout } from "components/Layouts"
-import { selectCurrentUser } from "features/auth/authSlice"
 import { ListNotification } from "features/notification/components"
 import Controls from "features/notification/components/Notification/Controls"
-import { Notify, User } from "models"
-import { ChangeEvent, useCallback, useEffect, useState } from "react"
-
-interface Props {
-
-}
+import { notifyActions, selectFilterNotify } from 'features/notification/notifySlice'
+import { useEffect } from "react"
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -22,8 +17,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const NotificationPage = (props: Props) => {
+const NotificationPage = () => {
     const classes = useStyles()
+    const dispatch = useAppDispatch()
+    const notifyFilter = useAppSelector(selectFilterNotify)
+
+    useEffect(() => {
+        dispatch(notifyActions.get(notifyFilter))
+    }, [dispatch, notifyFilter])
 
     return (
         <MainLayout>
