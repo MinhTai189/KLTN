@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "app/hooks"
 import { authActions, selectCurrentUser } from "features/auth/authSlice"
+import { notifyActions } from "features/notification/notifySlice"
 import { Notify } from "models"
 import { useEffect, useRef } from "react"
 import { io, Socket } from 'socket.io-client'
@@ -26,10 +27,9 @@ export const GlobalSocket = ({ children }: Props) => {
 
             socket.current.on('notify', (notify: Notify) => {
                 dispatch(authActions.setNotify(notify))
-                console.log('notify', notify)
             })
         }
-    }, [currentUser])
+    }, [currentUser, dispatch])
 
     return (
         <div>

@@ -1,17 +1,9 @@
 import { Box, Button, Checkbox, FormControlLabel, Paper, Theme } from "@material-ui/core"
 import { Pagination } from "@material-ui/lab"
 import { makeStyles } from "@material-ui/styles"
-import { useAppDispatch } from "app/hooks"
-import { notifyActions } from "features/notification/notifySlice"
-import { ChangeEvent } from "react"
-
-interface Props {
-    totalPage: number
-    handlePagination: (e: any, page: number) => void
-    status: { read: boolean; unread: boolean }
-    setStatus: (state: any) => void
-    handleChecked: (e: ChangeEvent<HTMLInputElement>) => void
-}
+import { useAppDispatch, useAppSelector } from "app/hooks"
+import { notifyActions, selectFilterNotify, selectPaginationNotify, selectDataNotify } from "features/notification/notifySlice"
+import { ChangeEvent, useEffect, useState } from "react"
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -54,15 +46,40 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const Controls = ({ status, totalPage, setStatus, handlePagination, handleChecked }: Props) => {
+const Controls = () => {
     const classes = useStyles()
     const dispatch = useAppDispatch()
+    const notifyFilter = useAppSelector(selectFilterNotify)
+
+    const notifyData = useAppSelector(selectDataNotify)
+    const notifyPagination = useAppSelector(selectPaginationNotify)
+    const [status, setStatus] = useState({
+        read: true,
+        unread: true
+    })
+
+    useEffect(() => {
+        dispatch(notifyActions.setFilter({
+            ...notifyFilter,
+            _page: 1,
+            _read: [status.read, status.unread]
+        }))
+    }, [status])
+
+    const handleChecked = (e: ChangeEvent<HTMLInputElement>) => {
+        setStatus(prev => ({ ...prev, [e.target.name]: e.target.checked }))
+    }
 
     const handleReadAll = () => {
         dispatch(notifyActions.readAll())
     }
 
-
+    const handlePagination = (e: any, page: number) => {
+        dispatch(notifyActions.setFilter({
+            ...notifyFilter,
+            _page: page,
+        }))
+    }
 
     return (
         <Paper className={classes.root}>
@@ -83,11 +100,11 @@ const Controls = ({ status, totalPage, setStatus, handlePagination, handleChecke
             <Box className='cb-group'>
                 <FormControlLabel
                     control={<Checkbox color='primary' checked={status.read} onChange={handleChecked} name="read" />}
-                    label="Đã xem: 8"
+                    label={`Đã xem: ${notifyData ? notifyData.read : 0}`}
                 />
                 <FormControlLabel
                     control={<Checkbox color='primary' checked={status.unread} onChange={handleChecked} name="unread" />}
-                    label="Chưa xem: 15"
+                    label={`Chưa xem: ${notifyData ? notifyData.unread : 0}`}
                 />
             </Box>
 
@@ -97,7 +114,8 @@ const Controls = ({ status, totalPage, setStatus, handlePagination, handleChecke
                 justifyContent='center'
             >
                 <Pagination
-                    count={totalPage}
+                    count={Math.ceil(notifyPagination._totalRows / notifyPagination._limit)}
+                    page={notifyPagination._page}
                     onChange={handlePagination}
                     variant="outlined"
                     shape="rounded"

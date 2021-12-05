@@ -28,6 +28,7 @@ export interface Filter {
   _price?: number[];
   _optional?: string[];
   _subject?: string;
+  _read?: boolean[];
 
   [key: string]: any;
 }

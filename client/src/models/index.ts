@@ -7,3 +7,4 @@ export * from './Motel';
 export * from './Rate';
 export * from './Post';
 export * from './Comment';
+export * from './Notify';

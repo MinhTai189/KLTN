@@ -1,12 +1,9 @@
 import { Theme } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
-import { Notify } from "models"
+import { useAppSelector } from "app/hooks"
+import { selectDataNotify } from "features/notification/notifySlice"
 import { memo } from "react"
 import { NotificationItem } from "./NotificationItem"
-
-interface Props {
-    listNotify: Notify[]
-}
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -18,12 +15,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const ListNotification = memo(({ listNotify }: Props) => {
+export const ListNotification = memo(() => {
     const classes = useStyles()
+    const notifyData = useAppSelector(selectDataNotify)
 
     return (
         <ul className={classes.root}>
-            {listNotify.map(notify => (
+            {notifyData && notifyData.notify.map(notify => (
                 <NotificationItem
                     key={notify._id}
                     data={notify}

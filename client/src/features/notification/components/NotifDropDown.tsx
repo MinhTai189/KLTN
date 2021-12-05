@@ -1,12 +1,11 @@
 import { Box, Divider, makeStyles, Theme, Typography } from "@material-ui/core"
-import { useAppSelector } from "app/hooks"
+import { useAppDispatch, useAppSelector } from "app/hooks"
 import { NoData } from "components/Common"
 import { selectCurrentUser } from "features/auth/authSlice"
+import { notifyActions, selectDataNotify } from 'features/notification/notifySlice'
 import { User } from "models"
 import { Link, useHistory } from "react-router-dom"
 import { calculateCreatedTime } from "utils/convert-date/calculateCreatedTime"
-import { useAppDispatch } from 'app/hooks'
-import { notifyActions } from 'features/notification/notifySlice'
 
 interface Props {
 }
@@ -102,6 +101,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const NotifDropDown = ({ }: Props) => {
     const classes = useStyles()
+
     const currentUser: User = useAppSelector(selectCurrentUser)
     const history = useHistory()
     const dispatch = useAppDispatch()
@@ -126,7 +126,7 @@ export const NotifDropDown = ({ }: Props) => {
             <Box className='body'>
                 {currentUser.notify && currentUser.notify.length > 0 ? <>
                     <ul className='notif-list'>
-                        {currentUser.notify.slice(0, 8).map(notify => (
+                        {currentUser.notify.slice(0, 10).map(notify => (
                             <li
                                 key={notify._id}
                                 className={`notif ${!notify.read ? 'unread' : ''}`}
@@ -151,7 +151,7 @@ export const NotifDropDown = ({ }: Props) => {
                         ))}
                     </ul>
 
-                    {currentUser.notify.length > 0 && <Link to='/notifications' className='see-more'>
+                    {currentUser.notify.length > 10 && <Link to='/notifications' className='see-more'>
                         Xem tất cả...
                     </Link>}
                 </>
