@@ -75,6 +75,16 @@ const UserSchema = new Schema(
       required: true,
       default: "Người qua đường",
     },
+    notify: {
+      type: Array,
+      required: false,
+      default: [],
+    },
+    deleted: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   { timestamps: true }
 );

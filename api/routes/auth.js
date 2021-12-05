@@ -9,105 +9,114 @@ const upload = require("../middleware/upload");
 const { google } = require("googleapis");
 const { OAuth2 } = google.auth;
 const client = new OAuth2(process.env.SERVICE_CLIENT_ID);
-const removeVietnameseTones = require("../middleware/removeVietnameseTones");
+const removeVietnameseTones = require("../utils/removeVietnameseTones");
 const axios = require("axios").default;
 const verifyToken = require("../middleware/verifyToken");
-
-router.post("/reset-password", async (req, res) => {
-  const { password, token } = req.body;
-  let data;
-  JWT.verify(token, process.env.forgotPasswordToken, (err, dataUser) => {
-    //Xác thực key
-    if (err) {
-      console.log(err);
-      return res
-        .status(500)
-        .json({ success: false, message: "Đường dẫn không chính xác" });
-    }
-    data = dataUser;
-  });
-  // hash mật khẩu mới
-  const newPasswordHashed = await argon2.hash(password);
-  try {
-    //Cập nhật mật khẩu
-    await user.findByIdAndUpdate(data.id, {
-      password: newPasswordHashed,
+const authRouter = (io) => {
+  // router.get("/", async (req, res) => {
+  //   await user.updateMany({}, { notify: [] });
+  // });
+  router.post("/reset-password", async (req, res) => {
+    const { password, token } = req.body;
+    let data;
+    JWT.verify(token, process.env.forgotPasswordToken, (err, dataUser) => {
+      //Xác thực key
+      if (err) {
+        console.log(err);
+        return res
+          .status(500)
+          .json({ success: false, message: "Đường dẫn không chính xác" });
+      }
+      data = dataUser;
     });
-    res
-      .status(200)
-      .json({ success: true, message: "Mật khẩu đã được sửa đổi" });
-  } catch (err) {
-    return res.status(404);
-  }
-});
-
-router.post("/refresh-token", async (req, res) => {
-  const { refreshToken } = req.body;
-  const check = await user.findOne({ refreshToken });
-
-  if (!check)
-    return res
-      .status(403)
-      .json({ success: false, message: "refresh token không chính xác" });
-
-  const accessToken = JWT.sign(
-    { id: check._id, isAdmin: check.isAdmin },
-    process.env.accessToken,
-    {
-      expiresIn: "10m",
+    // hash mật khẩu mới
+    const newPasswordHashed = await argon2.hash(password);
+    try {
+      //Cập nhật mật khẩu
+      await user.findOneAndUpdate(
+        { _id: data.id, deleted: false },
+        {
+          password: newPasswordHashed,
+        }
+      );
+      res
+        .status(200)
+        .json({ success: true, message: "Mật khẩu đã được sửa đổi" });
+    } catch (err) {
+      return res.status(404);
     }
-  );
-
-  const key = uuid.v4();
-  const newRefreshToken = JWT.sign(
-    { id: check._id, isAdmin: check.isAdmin },
-    key
-  );
-
-  check.refreshToken = newRefreshToken;
-  await check.save();
-
-  res.status(200).json({
-    success: true,
-    message: "refresh thành công",
-    data: {
-      accessToken,
-      refreshToken: newRefreshToken,
-    },
   });
-});
 
-router.post("/forgot-password", async (req, res) => {
-  //Route quên mật khẩu, nhận mail, xác thực
-  const { email } = req.body; //lấy email
-  const User = await user.findOne({ email: email });
+  router.post("/refresh-token", async (req, res) => {
+    const { refreshToken } = req.body;
+    const check = await user.findOne({
+      refreshToken: refreshToken,
+      deleted: false,
+    });
 
-  if (!User) {
-    return res
-      .status(401)
-      .json({ success: false, message: "Email không tồn tại" });
-  }
-  //Cung cấp key (10 phút)
-  const forgotPasswordToken = JWT.sign(
-    { id: User._id },
-    process.env.forgotPasswordToken,
-    { expiresIn: "10m" }
-  );
-  const transporter = nodemailer.createTransport({
-    // config mail
-    service: "Gmail",
-    auth: {
-      user: process.env.configmailuser,
-      pass: process.env.configmailpass,
-    },
+    if (!check)
+      return res
+        .status(403)
+        .json({ success: false, message: "refresh token không chính xác" });
+    const accessToken = JWT.sign(
+      { id: check._id, isAdmin: check.isAdmin, credit: check.credit },
+      process.env.accessToken,
+      {
+        expiresIn: "10m",
+      }
+    );
+
+    const key = uuid.v4();
+    const newRefreshToken = JWT.sign(
+      { id: check._id, isAdmin: check.isAdmin, credit: check.credit },
+      key
+    );
+
+    check.refreshToken = newRefreshToken;
+    await check.save();
+
+    res.status(200).json({
+      success: true,
+      message: "refresh thành công",
+      data: {
+        accessToken,
+        refreshToken: newRefreshToken,
+      },
+    });
   });
-  const mainOptions = {
-    // thiết lập đối tượng, nội dung gửi mail
-    from: "Nhà trọ Sinh viên",
-    to: User.email,
-    subject: "Forgot Password",
-    text: "",
-    html: `<div style="background-color:#c0392b;height: 500px;color: white;display:flex;" >
+
+  router.post("/forgot-password", async (req, res) => {
+    //Route quên mật khẩu, nhận mail, xác thực
+    const { email } = req.body; //lấy email
+    const User = await user.findOne({ email: email, deleted: false });
+
+    if (!User) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Email chưa được đăng ký" });
+    }
+    //Cung cấp key (10 phút)
+    const forgotPasswordToken = JWT.sign(
+      { id: User._id },
+      process.env.forgotPasswordToken,
+      { expiresIn: "10m" }
+    );
+
+    const transporter = nodemailer.createTransport({
+      // config mail
+      service: "Gmail",
+      auth: {
+        user: process.env.configmailuser,
+        pass: process.env.configmailpass,
+      },
+    });
+    const mainOptions = {
+      // thiết lập đối tượng, nội dung gửi mail
+      from: "Nhà trọ Sinh viên",
+      to: User.email,
+      subject: "Forgot Password",
+      text: "",
+      html: `<div style="background-color:#c0392b;height: 500px;color: white;display:flex;" >
     <div style="margin:auto">
       <div style="
       width:5%;
@@ -152,89 +161,253 @@ router.post("/forgot-password", async (req, res) => {
       </a>
       </div>
       </div></div>`,
+    };
+    transporter.sendMail(mainOptions, function (err, info) {
+      //tiến hành gửi mail
+      if (err) {
+        console.log(err);
+        return res
+          .status(400)
+          .json({ success: false, message: "Có lỗi xảy ra" });
+      } else {
+        return res
+          .status(200)
+          .json({ success: true, message: "Đã gửi mail thành công" });
+      }
+    });
+  });
+
+  const unlinkAvatar = async (avatarUrl) => {
+    if (avatarUrl)
+      if (avatarUrl.public_id) await upload.unlink(avatarUrl.public_id);
   };
-  transporter.sendMail(mainOptions, function (err, info) {
-    //tiến hành gửi mail
-    if (err) {
-      return res.status(400).json({ error: err });
-    } else {
+  router.post("/register", async (req, res) => {
+    let {
+      username,
+      password,
+      name,
+      email,
+      district,
+      province,
+      school,
+      avatarUrl,
+    } = req.body;
+
+    if (!username || !password) {
+      await unlinkAvatar(avatarUrl);
+      return res.status(400).json({
+        success: false,
+        message: "Tên đăng nhập hoặc mật khẩu không được bỏ trống",
+      });
+    }
+    if (!name) {
+      await unlinkAvatar(avatarUrl);
       return res
-        .status(200)
-        .json({ success: true, message: "Đã gửi mail thành công" });
+        .status(400)
+        .json({ success: false, message: "Vui lòng nhập đủ họ tên" });
+    }
+    if (!email) {
+      await unlinkAvatar(avatarUrl);
+      return res
+        .status(400)
+        .json({ success: false, message: "Email không được để trống" });
+    }
+    if (!school || !district || !province) {
+      await unlinkAvatar(avatarUrl);
+      return res
+        .status(400)
+        .json({ success: false, message: "Vui lòng cung cấp đủ thông tin" });
+    }
+    const checkUser = await user.findOne({
+      username: username,
+      deleted: false,
+    });
+    if (checkUser) {
+      await unlinkAvatar(avatarUrl);
+      return res
+        .status(400)
+        .json({ success: false, message: "Tên đăng nhập đã được sử dụng" });
+    }
+    const checkEmail = await user.findOne({ email: email, deleted: false });
+
+    if (checkEmail) {
+      await unlinkAvatar(avatarUrl);
+      return res
+        .status(400)
+        .json({ success: false, message: "Lỗi! Email đã được sử dụng" });
+    }
+    if (!avatarUrl)
+      avatarUrl = {
+        url: "https://res.cloudinary.com/dpregsdt9/image/upload/v1631352198/user-avatar/avatar-default_vzl8ur.jpg",
+      };
+
+    // Good
+    try {
+      const unsignedName = removeVietnameseTones(name);
+      const newUser = new user({
+        username,
+        password: await argon2.hash(password),
+        name,
+        unsignedName,
+        avatarUrl,
+        credit: undefined,
+        favorite: undefined,
+        isAdmin: undefined,
+        email,
+        district,
+        province,
+        school,
+      });
+      await newUser.save();
+      res.status(200).json({ success: true, message: "Đăng ký thành công" });
+    } catch (err) {
+      await unlinkAvatar(avatarUrl);
+      res.status(401).json({
+        success: false,
+        message: "Đã có lỗi xảy ra! vui lòng thử lại",
+        err,
+      });
     }
   });
-});
 
-const unlinkAvatar = async (avatarUrl) => {
-  if (avatarUrl)
-    if (avatarUrl.public_id) await upload.unlink(avatarUrl.public_id);
-};
-router.post("/register", async (req, res) => {
-  let {
-    username,
-    password,
-    name,
-    email,
-    district,
-    province,
-    school,
-    avatarUrl,
-  } = req.body;
+  //đăng nhập
+  router.post("/login", async (req, res) => {
+    const { username, password } = req.body;
+    const { authorization } = req.headers;
+    let userID = undefined;
+    let checkUser;
 
-  if (!username || !password) {
-    await unlinkAvatar(avatarUrl);
-    return res.status(400).json({
-      success: false,
-      message: "Tên đăng nhập hoặc mật khẩu không được bỏ trống",
+    try {
+      if (Boolean(username) && Boolean(password)) {
+        checkUser = await user
+          .findOne({ username: username, deleted: false })
+          .select("-unsignedName -deleted");
+
+        if (checkUser == null)
+          return res
+            .status(404)
+            .json({ success: false, message: "Tên đăng nhập bị sai" });
+
+        const pass = await argon2.verify(checkUser.password, password);
+        if (!pass)
+          return res
+            .status(404)
+            .json({ success: false, message: "Mật khẩu bị sai" });
+      } else {
+        let userData;
+        try {
+          userData = JWT.verify(authorization, process.env.accessToken);
+        } catch (err) {
+          if (err.name === "TokenExpiredError")
+            return res
+              .status(401)
+              .json({ success: false, message: "Token hết hạn" });
+          else
+            return res
+              .status(500)
+              .json({ success: false, message: "Lỗi không xác định" });
+        }
+        userID = userData.id;
+      }
+
+      if (userID)
+        checkUser = await user
+          .findOne({ _id: userID, deleted: false })
+          .select("-unsignedName");
+
+      const newAccessToken = JWT.sign(
+        {
+          id: checkUser._id,
+          isAdmin: checkUser.isAdmin,
+          credit: checkUser.credit,
+        },
+        process.env.accessToken,
+        { expiresIn: "10m" }
+      );
+      const url = checkUser.avatarUrl.url;
+      const key = uuid.v4();
+      const newRefreshToken = JWT.sign(
+        {
+          id: checkUser._id,
+          isAdmin: checkUser.isAdmin,
+          credit: checkUser.credit,
+        },
+        key
+      );
+
+      checkUser.refreshToken = newRefreshToken;
+      await checkUser.save();
+
+      const data = { ...checkUser._doc, avatarUrl: url };
+      res.status(200).json({
+        success: true,
+        message: "Đăng nhập thành công",
+        data: {
+          ...data,
+          notify: data.notify.sort(
+            (n1, n2) => new Date(n2.createdAt) - new Date(n1.createdAt)
+          ),
+          accessToken: newAccessToken,
+          refreshToken: newRefreshToken,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(404).json({
+        error: error,
+      });
+    }
+  });
+
+  router.post("/logout", verifyToken, async (req, res) => {
+    if (!req.user.id)
+      return res.status(400).json({
+        success: false,
+        message: "Yêu cầu gửi lên thông tin đăng xuất",
+      });
+    const id = req.user.id;
+    const check = await user.findOne({ _id: id, deleted: false });
+
+    if (!check)
+      return res
+        .status(400)
+        .json({ success: false, message: "Không tìm thấy ngươi dùng" });
+
+    check.refreshToken = "";
+    await check.save();
+    res.status(200).json({ success: true, message: "Đã đăng xuất" });
+  });
+
+  router.post("/register-facebook", async (req, res) => {
+    const { accessToken, userID, email, district, school, province } = req.body;
+    const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
+    &access_token=${accessToken}`;
+    const data = await axios.get(url);
+    const { id, name, picture } = data.data;
+
+    const checkUser = await user.findOne({
+      $or: [
+        { username: id },
+        {
+          email: email,
+        },
+      ],
+      deleted: false,
     });
-  }
-  if (!name) {
-    await unlinkAvatar(avatarUrl);
-    return res
-      .status(400)
-      .json({ success: false, message: "Vui lòng nhập đủ họ tên" });
-  }
-  if (!email) {
-    await unlinkAvatar(avatarUrl);
-    return res
-      .status(400)
-      .json({ success: false, message: "Email không được để trống" });
-  }
-  if (!school || !district || !province) {
-    await unlinkAvatar(avatarUrl);
-    return res
-      .status(400)
-      .json({ success: false, message: "Vui lòng cung cấp đủ thông tin" });
-  }
-  const checkUser = await user.findOne({ username });
-  if (checkUser) {
-    await unlinkAvatar(avatarUrl);
-    return res
-      .status(400)
-      .json({ success: false, message: "Tên đăng nhập đã được sử dụng" });
-  }
-  const checkEmail = await user.findOne({ email });
+    if (checkUser)
+      return res.status(401).json({
+        message: "Tài khoản facebook hoặc email này đã được sử dụng",
+        success: false,
+      });
 
-  if (checkEmail) {
-    await unlinkAvatar(avatarUrl);
-    return res
-      .status(400)
-      .json({ success: false, message: "Lỗi! Email đã được sử dụng" });
-  }
-  if (!avatarUrl)
-    avatarUrl = {
-      url: "https://res.cloudinary.com/dpregsdt9/image/upload/v1631352198/user-avatar/avatar-default_vzl8ur.jpg",
-    };
-
-  // Good
-  try {
+    const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
     const unsignedName = removeVietnameseTones(name);
     const newUser = new user({
-      username,
+      username: id,
       password: await argon2.hash(password),
       name,
       unsignedName,
-      avatarUrl,
+      avatarUrl: { url: picture.data.url },
       credit: undefined,
       favorite: undefined,
       isAdmin: undefined,
@@ -243,293 +416,168 @@ router.post("/register", async (req, res) => {
       province,
       school,
     });
-
     await newUser.save();
-    res.status(200).json({ success: true, message: "Đăng ký thành công" });
-  } catch (err) {
-    await unlinkAvatar(avatarUrl);
-    res.status(401).json({
-      success: false,
-      message: "Đã có lỗi xảy ra! vui lòng thử lại",
-      err,
-    });
-  }
-});
-
-//đăng nhập
-router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  const { authorization } = req.headers;
-  let userID = undefined;
-  let checkUser;
-
-  try {
-    if (Boolean(username) && Boolean(password)) {
-      checkUser = await user.findOne({ username }).select("-unsignedName");
-
-      if (checkUser == null)
-        return res
-          .status(404)
-          .json({ success: false, message: "Tên đăng nhập bị sai" });
-
-      const pass = await argon2.verify(checkUser.password, password);
-      if (!pass)
-        return res
-          .status(404)
-          .json({ success: false, message: "Mật khẩu bị sai" });
-    } else {
-      let userData;
-      try {
-        userData = JWT.verify(authorization, process.env.accessToken);
-      } catch (err) {
-        if (err.name === "TokenExpiredError")
-          return res
-            .status(401)
-            .json({ success: false, message: "Token hết hạn" });
-        else
-          return res
-            .status(500)
-            .json({ success: false, message: "Lỗi không xác định" });
-      }
-      userID = userData.id;
-    }
-
-    if (userID) checkUser = await user.findById(userID).select("-unsignedName");
 
     const newAccessToken = JWT.sign(
-      { id: checkUser._id, isAdmin: checkUser.isAdmin },
+      { id: newUser._id, isAdmin: newUser.isAdmin, credit: 0 },
       process.env.accessToken,
       { expiresIn: "10m" }
     );
-    const url = checkUser.avatarUrl.url;
-    const key = uuid.v4();
-    const newRefreshToken = JWT.sign(
-      { id: checkUser._id, isAdmin: checkUser.isAdmin },
-      key
-    );
 
-    checkUser.refreshToken = newRefreshToken;
-    await checkUser.save();
-
-    const data = { ...checkUser._doc, avatarUrl: url };
     res.status(200).json({
       success: true,
-      message: "Đăng nhập thành công",
+      message: "Đăng ký thành công",
       data: {
-        ...data,
         accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
       },
     });
-  } catch (error) {
-    console.log(error);
-    res.status(404).json({
-      error: error,
-    });
-  }
-});
+  });
 
-router.post("/logout", verifyToken, async (req, res) => {
-  if (!req.user.id)
-    return res
-      .status(400)
-      .json({ success: false, message: "Yêu cầu gửi lên thông tin đăng xuất" });
-  const id = req.user.id;
-  const check = await user.findById(id);
+  router.post("/login-facebook", async (req, res) => {
+    const { accessToken, userID } = req.body;
 
-  if (!check)
-    return res
-      .status(400)
-      .json({ success: false, message: "Không tìm thấy ngươi dùng" });
-
-  check.refreshToken = "";
-  await check.save();
-  res.status(200).json({ success: true, message: "Đã đăng xuất" });
-});
-
-router.post("/register-facebook", async (req, res) => {
-  const { accessToken, userID, email, district, school, province } = req.body;
-  const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
+    const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
     &access_token=${accessToken}`;
-  const data = await axios.get(url);
-  const { id, name, picture } = data.data;
+    const data = await axios.get(url);
 
-  const checkUser = await user.findOne({
-    $or: [
-      { username: id },
-      {
-        email: email,
-      },
-    ],
-  });
-  if (checkUser)
-    return res.status(401).json({
-      message: "Tài khoản facebook hoặc email này đã được sử dụng",
-      success: false,
-    });
-
-  const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
-  const unsignedName = removeVietnameseTones(name);
-  const newUser = new user({
-    username: id,
-    password: await argon2.hash(password),
-    name,
-    unsignedName,
-    avatarUrl: { url: picture.data.url },
-    credit: undefined,
-    favorite: undefined,
-    isAdmin: undefined,
-    email,
-    district,
-    province,
-    school,
-  });
-  await newUser.save();
-
-  const newAccessToken = JWT.sign(
-    { id: newUser._id, isAdmin: newUser.isAdmin },
-    process.env.accessToken,
-    { expiresIn: "10m" }
-  );
-
-  res.status(200).json({
-    success: true,
-    message: "Đăng ký thành công",
-    data: {
-      accessToken: newAccessToken,
-    },
-  });
-});
-
-router.post("/login-facebook", async (req, res) => {
-  const { accessToken, userID } = req.body;
-
-  const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
-    &access_token=${accessToken}`;
-  const data = await axios.get(url);
-
-  const { id } = data.data;
-  const checkUser = await user.findOne({ username: id });
-  if (!checkUser)
-    return res.status(200).json({
-      message: "Cần bổ sung một số dữ liệu để hoàn tất",
-      success: false,
-    });
-  const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
-  const isMatch = await argon2.verify(checkUser.password, password);
-  if (!isMatch)
-    return res.status(400).json({ message: "Mật khẩu bị sai", success: false });
-
-  //good
-  const newAccessToken = JWT.sign(
-    { id: checkUser._id, isAdmin: checkUser.isAdmin },
-    process.env.accessToken,
-    { expiresIn: "10m" }
-  );
-
-  res.status(200).json({
-    success: true,
-    message: "Đăng nhập thành công",
-    data: {
-      accessToken: newAccessToken,
-    },
-  });
-});
-
-router.post("/register-google", async (req, res) => {
-  const { tokenId, school, district, province } = req.body;
-
-  const result = await client.verifyIdToken({
-    idToken: tokenId,
-    audience: process.env.SERVICE_CLIENT_ID,
-  });
-  const userGmail = result.getPayload();
-
-  if (!userGmail.email_verified)
-    return res
-      .status(400)
-      .json({ success: false, message: "Email chưa xác thực" });
-  const checkUser = await user.findOne({
-    $or: [{ username: userGmail.email }, { email: userGmail.email }],
-  });
-  if (checkUser)
-    return res
-      .status(401)
-      .json({ success: false, message: "Email đã được sử dụng" });
-  const password = userGmail.email + process.env.PASSWORD_SECRET_GOOGLE;
-  const { email, picture, name } = userGmail;
-  const unsignedName = removeVietnameseTones(name);
-  const newUser = new user({
-    username: email,
-    password: await argon2.hash(password),
-    name,
-    unsignedName,
-    avatarUrl: { url: picture },
-    credit: undefined,
-    favorite: undefined,
-    isAdmin: undefined,
-    email,
-    district,
-    province,
-    school,
-  });
-  await newUser.save();
-  const newAccessToken = JWT.sign(
-    { id: newUser._id, isAdmin: newUser.isAdmin },
-    process.env.accessToken,
-    { expiresIn: "10m" }
-  );
-  res.status(200).json({
-    success: true,
-    message: "Đăng ký thành công",
-    data: {
-      accessToken: newAccessToken,
-    },
-  });
-});
-
-router.post("/login-google", async (req, res) => {
-  const { tokenId } = req.body;
-  console.log(tokenId);
-  const result = await client.verifyIdToken({
-    idToken: tokenId,
-    audience: process.env.SERVICE_CLIENT_ID,
-  });
-  const userGmail = result.getPayload();
-  const checkUser = await user.findOne({ email: userGmail.email });
-
-  if (!userGmail.email_verified)
-    return res
-      .status(400)
-      .json({ success: false, message: "Email chưa được sử dụng" });
-
-  if (!checkUser)
-    return res.status(200).json({
-      success: false,
-      message: "Cần bổ sung một số dữ liệu để hoàn tất",
-    });
-
-  if (!tokenId) {
-    const password = userGmail.email + process.env.PASSWORD_SECRET_GOOGLE;
+    const { id } = data.data;
+    const checkUser = await user.findOne({ username: id, deleted: false });
+    if (!checkUser)
+      return res.status(200).json({
+        message: "Cần bổ sung một số dữ liệu để hoàn tất",
+        success: false,
+      });
+    const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
     const isMatch = await argon2.verify(checkUser.password, password);
     if (!isMatch)
       return res
         .status(400)
-        .json({ success: false, message: "Mật khẩu bị sai" });
-  }
+        .json({ message: "Mật khẩu bị sai", success: false });
 
-  const newAccessToken = JWT.sign(
-    { id: checkUser._id, isAdmin: checkUser.isAdmin },
-    process.env.accessToken,
-    { expiresIn: "10m" }
-  );
+    //good
+    const newAccessToken = JWT.sign(
+      {
+        id: checkUser._id,
+        isAdmin: checkUser.isAdmin,
+        credit: checkUser.credit,
+      },
+      process.env.accessToken,
+      { expiresIn: "10m" }
+    );
 
-  res.status(200).json({
-    success: true,
-    message: "Đăng ký thành công",
-    data: {
-      accessToken: newAccessToken,
-    },
+    res.status(200).json({
+      success: true,
+      message: "Đăng nhập thành công",
+      data: {
+        accessToken: newAccessToken,
+      },
+    });
   });
-});
-module.exports = router;
+
+  router.post("/register-google", async (req, res) => {
+    const { tokenId, school, district, province } = req.body;
+
+    const result = await client.verifyIdToken({
+      idToken: tokenId,
+      audience: process.env.SERVICE_CLIENT_ID,
+    });
+    const userGmail = result.getPayload();
+
+    if (!userGmail.email_verified)
+      return res
+        .status(400)
+        .json({ success: false, message: "Email chưa xác thực" });
+    const checkUser = await user.findOne({
+      $or: [{ username: userGmail.email }, { email: userGmail.email }],
+      deleted: false,
+    });
+    if (checkUser)
+      return res
+        .status(401)
+        .json({ success: false, message: "Email đã được sử dụng" });
+    const password = userGmail.email + process.env.PASSWORD_SECRET_GOOGLE;
+    const { email, picture, name } = userGmail;
+    const unsignedName = removeVietnameseTones(name);
+    const newUser = new user({
+      username: email,
+      password: await argon2.hash(password),
+      name,
+      unsignedName,
+      avatarUrl: { url: picture },
+      credit: undefined,
+      favorite: undefined,
+      isAdmin: undefined,
+      email,
+      district,
+      province,
+      school,
+    });
+    await newUser.save();
+    const newAccessToken = JWT.sign(
+      { id: newUser._id, isAdmin: newUser.isAdmin, credit: 0 },
+      process.env.accessToken,
+      { expiresIn: "10m" }
+    );
+    res.status(200).json({
+      success: true,
+      message: "Đăng ký thành công",
+      data: {
+        accessToken: newAccessToken,
+      },
+    });
+  });
+
+  router.post("/login-google", async (req, res) => {
+    const { tokenId } = req.body;
+    console.log(tokenId);
+    const result = await client.verifyIdToken({
+      idToken: tokenId,
+      audience: process.env.SERVICE_CLIENT_ID,
+    });
+    const userGmail = result.getPayload();
+    const checkUser = await user.findOne({
+      email: userGmail.email,
+      deleted: false,
+    });
+
+    if (!userGmail.email_verified)
+      return res
+        .status(400)
+        .json({ success: false, message: "Email chưa được sử dụng" });
+
+    if (!checkUser)
+      return res.status(200).json({
+        success: false,
+        message: "Cần bổ sung một số dữ liệu để hoàn tất",
+      });
+
+    if (!tokenId) {
+      const password = userGmail.email + process.env.PASSWORD_SECRET_GOOGLE;
+      const isMatch = await argon2.verify(checkUser.password, password);
+      if (!isMatch)
+        return res
+          .status(400)
+          .json({ success: false, message: "Mật khẩu bị sai" });
+    }
+
+    const newAccessToken = JWT.sign(
+      {
+        id: checkUser._id,
+        isAdmin: checkUser.isAdmin,
+        credit: checkUser.credit,
+      },
+      process.env.accessToken,
+      { expiresIn: "10m" }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Đăng nhap thành công",
+      data: {
+        accessToken: newAccessToken,
+      },
+    });
+  });
+  return router;
+};
+module.exports = authRouter;

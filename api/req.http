@@ -261,11 +261,11 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmI4Njc4ZGQxZTgw
 ###
 POST http://localhost:5000/api/comments/6195d0ea8b995acd0afd726d
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTYzNzY1NTg1NywiZXhwIjoxNjM3NjU2NDU3fQ.BhvcNjw1kTGtj6Z2uk6N-ssN4D_Yfds6hWfYlp15ypQ
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImNyZWRpdCI6MCwiaWF0IjoxNjM4NjEwNTUwLCJleHAiOjE2Mzg2MTExNTB9.xpUrrSYeTV-FfUF7mQa5i5ANmK8pLl5UezaXGdJ1Fz0
 
 {
-    "commentId":"619a5423c18357725465481c",
-    "user":"616b8678dd1e8090c8c17259",
+    "commentId":"6196f9feb3c5925e427b18b1",
+    "userId":"614fd8d7f4d715fae7dd4bf1",
     "content":"Comment này thật mất dạy 6"
 }
 ###
@@ -375,4 +375,11 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1
     }
 }
 ###
-POST http://localhost:5000/api/posts
+DELETE http://localhost:5000/api/notify/a50c87f9-37fe-42a4-a1e8-6227c8e793d3
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImNyZWRpdCI6OTksImlhdCI6MTYzODYyNjQ2NiwiZXhwIjoxNjM4NjI3MDY2fQ.Avsd_0BRHwlatoxSr9J2ZEaRbJxPojBUzwazb2td8E0
+###
+PATCH http://localhost:5000/api/notify/read/f14e326c-623e-4242-96e0-c0f8c4cf3abf
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImNyZWRpdCI6OTksImlhdCI6MTYzODYyNzQwMywiZXhwIjoxNjM4NjI4MDAzfQ.y2LEy-jX2y7cAkgGr83wRBEQ8zOrXuwNUKcGM-w-D0s
+###
+PATCH http://localhost:5000/api/notify/read-all/
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImNyZWRpdCI6OTksImlhdCI6MTYzODYyODA1NiwiZXhwIjoxNjM4NjI4NjU2fQ.5Nf7Vz1fpqrPN8l4qDE8YQy-OmQLpjRZahpq-9lH9nE
