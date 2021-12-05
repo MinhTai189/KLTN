@@ -383,3 +383,6 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1
 ###
 PATCH http://localhost:5000/api/notify/read-all/
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImNyZWRpdCI6OTksImlhdCI6MTYzODYyODA1NiwiZXhwIjoxNjM4NjI4NjU2fQ.5Nf7Vz1fpqrPN8l4qDE8YQy-OmQLpjRZahpq-9lH9nE
+###
+GET http://localhost:5000/api/notify/?_page=1&_limit=2&_read[]=true&_read[]=true
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImNyZWRpdCI6OTksImlhdCI6MTYzODcxMDA0NywiZXhwIjoxNjM4NzEwNjQ3fQ.4rJvYIwuVvmgEf0JF0fTwX4srM4ejqeyoKXYxe2el48
