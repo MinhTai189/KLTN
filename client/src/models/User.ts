@@ -12,6 +12,7 @@ export interface User {
   rank?: string;
   favorite?: string[];
   posts?: number;
+  notify?: Notify[];
   createdAt?: string;
   updatedAt?: string;
   accessToken?: string;
@@ -32,3 +33,12 @@ export interface UserDataTable {
 }
 
 export type UserUpdate = Omit<UserDataTable, 'number' | 'username'>;
+
+export interface Notify {
+  _id: string;
+  message: string;
+  url: string;
+  read: boolean;
+  createdAt: string;
+  imageUrl: string;
+}

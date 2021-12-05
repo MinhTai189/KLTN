@@ -115,7 +115,7 @@ const postRouter = (io) => {
         const icons = ["💙", "😍", "🤣", "😮", "😭", "🤬"];
         io.notifyToUser(findPost.owner, {
           message: `${getNameUser.name} vừa bày tỏ cảm xúc ${icons[type]} về bài viết của bạn`,
-          url: `${process.env.ORIGIN}/posts/${findPost._id}`,
+          url: `/posts/${findPost._id}`,
           imageUrl:
             "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/like_wjr6hk.png",
         });

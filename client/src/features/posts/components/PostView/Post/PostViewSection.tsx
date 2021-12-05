@@ -123,7 +123,7 @@ export const PostViewSection = memo(({ postData }: Props) => {
                         Trang chủ
                     </Link>
                     <Link to='/posts'>
-                        Danh sách chủ đề
+                        Danh sách bài viết
                     </Link>
                     <Typography color="textPrimary">
                         {postData.subject.name}

@@ -1,9 +1,13 @@
 import { Box, Theme, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
-import Bell from 'assets/images/bell.png'
+import { useAppDispatch } from "app/hooks"
+import { notifyActions } from "features/notification/notifySlice"
+import { Notify } from "models"
+import { useHistory } from "react-router"
+import { calculateCreatedTimeHDMY } from "utils/convert-date/calculateCreatedTime"
 
 interface Props {
-    isUnread?: boolean
+    data: Notify
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -13,6 +17,12 @@ const useStyles = makeStyles((theme: Theme) => ({
         padding: theme.spacing(1),
         borderRadius: 10,
         marginBottom: theme.spacing(2.5),
+        cursor: 'pointer',
+        transition: '300ms',
+
+        '&:hover': {
+            background: '#ccc'
+        },
 
         [theme.breakpoints.down('xs')]: {
             marginBottom: theme.spacing(1.5),
@@ -20,21 +30,23 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
 
         '& .left': {
-            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
             marginRight: theme.spacing(1),
 
             '& .icon': {
-                width: 55,
-                height: 55,
+                width: 40,
+                height: 40,
 
                 [theme.breakpoints.down('xs')]: {
-                    height: 45,
-                    width: 45,
+                    height: 38,
+                    width: 38,
                 }
             },
 
             '& .led-green': {
-                marginTop: theme.spacing(1.3),
+                marginTop: theme.spacing(0.5),
                 display: 'inline-block',
                 width: 10,
                 height: 10,
@@ -68,13 +80,6 @@ const useStyles = makeStyles((theme: Theme) => ({
                         fontSize: '0.85em'
                     }
                 },
-
-                '& .type': {
-                    fontSize: '0.65em',
-                    background: '#edeef2',
-                    padding: theme.spacing(0.2, 0.8),
-                    borderRadius: 10
-                }
             }
         }
     },
@@ -92,20 +97,30 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const NotificationItem = ({ isUnread }: Props) => {
+export const NotificationItem = ({ data }: Props) => {
     const classes = useStyles()
+    const history = useHistory()
+    const dispatch = useAppDispatch()
+
+    const handleReadAndNavigate = () => {
+        data.url && history.push(data.url)
+        dispatch(notifyActions.read(data._id))
+    }
 
     return (
-        <Box className={classes.root}>
+        <Box
+            className={classes.root}
+            onClick={handleReadAndNavigate}
+        >
             <Box className='left'>
-                <img className='icon' src={Bell} alt="bell icon" />
+                <img className='icon' src={data.imageUrl} alt="bell icon" />
 
-                {isUnread && <span className="led-green"></span>}
+                {!data.read && <span className="led-green"></span>}
             </Box>
 
             <Box className='body'>
                 <Typography className='title' variant='h4'>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatum at nam repudiandae explicabo quam necessitatibus maxime consectetur iusto?
+                    {data.message}
                 </Typography>
 
                 <Box className='bottom'>
@@ -113,14 +128,7 @@ export const NotificationItem = ({ isUnread }: Props) => {
                         className='date'
                         component='small'
                     >
-                        5:30 30/1/2012
-                    </Typography>
-
-                    <Typography
-                        className='type'
-                        component='span'
-                    >
-                        Chung
+                        {calculateCreatedTimeHDMY(data.createdAt)}
                     </Typography>
                 </Box>
             </Box>

@@ -1,9 +1,11 @@
 import { Theme } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
+import { Notify } from "models"
+import { memo } from "react"
 import { NotificationItem } from "./NotificationItem"
 
 interface Props {
-
+    listNotify: Notify[]
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -16,17 +18,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const ListNotification = (props: Props) => {
+export const ListNotification = memo(({ listNotify }: Props) => {
     const classes = useStyles()
 
     return (
         <ul className={classes.root}>
-            {new Array(10).fill(1).map((_, index) => (
+            {listNotify.map(notify => (
                 <NotificationItem
-                    key={index}
-                    isUnread={index < 4}
+                    key={notify._id}
+                    data={notify}
                 />
             ))}
         </ul>
     )
-}
+})

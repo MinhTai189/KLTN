@@ -833,10 +833,10 @@ const motelRouter = (io) => {
           const renameImage = await upload.rename(
             checkMotel.images[i].public_id,
             newMotel._id +
-              "/" +
-              checkMotel.images[i].public_id.substr(
-                checkMotel.images[i].public_id.indexOf("/") + 1
-              )
+            "/" +
+            checkMotel.images[i].public_id.substr(
+              checkMotel.images[i].public_id.indexOf("/") + 1
+            )
           );
           if (renameImage.success)
             newMotel.images.push({
@@ -852,10 +852,10 @@ const motelRouter = (io) => {
         const renameThumbnail = await upload.rename(
           checkMotel.thumbnail.public_id,
           newMotel._id +
-            "/" +
-            checkMotel.thumbnail.public_id.substr(
-              checkMotel.thumbnail.public_id.indexOf("/") + 1
-            )
+          "/" +
+          checkMotel.thumbnail.public_id.substr(
+            checkMotel.thumbnail.public_id.indexOf("/") + 1
+          )
         );
         if (renameThumbnail.success)
           newMotel.thumbnail = {
@@ -1030,8 +1030,8 @@ const motelRouter = (io) => {
         const renameImage = await upload.rename(
           images[i].public_id,
           newMotel._id +
-            "/" +
-            images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
+          "/" +
+          images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
         );
         if (renameImage.success == true)
           newMotel.images.push({
@@ -1054,8 +1054,8 @@ const motelRouter = (io) => {
       const renameThumbnail = await upload.rename(
         thumbnail.public_id,
         newMotel._id +
-          "/" +
-          thumbnail.public_id.substr(thumbnail.public_id.indexOf("/") + 1)
+        "/" +
+        thumbnail.public_id.substr(thumbnail.public_id.indexOf("/") + 1)
       );
       if (renameThumbnail.success)
         newMotel.thumbnail = {
@@ -1123,7 +1123,7 @@ const motelRouter = (io) => {
         const getNameUser = await user.findById(req.user.id).select("name");
         io.notifyToAllUser({
           message: `${getNameUser.name} vừa đăng nhà trọ mới, hãy tham khảo ngay`,
-          url: `${process.env.ORIGIN}/motels/${newMotel._id}`,
+          url: `/motels/${newMotel._id}`,
           imageUrl:
             "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/motel_opx8rh.png",
         });

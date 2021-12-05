@@ -265,7 +265,7 @@ const rateRouter = (io) => {
         if (req.user.isAdmin)
           io.notifyToUser(findMotel.owner, {
             message: ` vừa đánh giá về nhà trọ bạn đăng`,
-            url: `${process.env.ORIGIN}/motels/${findMotel._id}`,
+            url: `/motels/${findMotel._id}`,
             ownerId: req.user.id,
             imageUrl:
               "https://res.cloudinary.com/dpregsdt9/image/upload/v1638662093/notify/rating_x9e2j5.png",

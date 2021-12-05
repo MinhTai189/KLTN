@@ -17,6 +17,7 @@ import rootSaga from './rootSaga';
 import threadReducer from 'features/communicate/threadSlice';
 import commentReducer from 'features/comment/commentSlice';
 import createdPostReducer from 'features/posts/openCreatePostModalSlice';
+import notifyReducer from 'features/notification/notifySlice';
 
 const reducer = combineReducers({
   auth: authReducer,
@@ -28,6 +29,7 @@ const reducer = combineReducers({
   comment: commentReducer,
   showCreateModal: showCreateModalReducer,
   createdPostModal: createdPostReducer,
+  notify: notifyReducer,
   router: connectRouter(history),
 });
 const sagaMiddleware = createSagaMiddleware();

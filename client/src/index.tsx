@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@material-ui/styles';
+import { GlobalSocket } from 'components/Common';
 import { ConnectedRouter } from 'connected-react-router';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -14,7 +15,9 @@ ReactDOM.render(
     <Provider store={store}>
       <ConnectedRouter history={history}>
         <ThemeProvider theme={themeMUI}>
-          <App />
+          <GlobalSocket>
+            <App />
+          </GlobalSocket>
         </ThemeProvider>
       </ConnectedRouter>
 

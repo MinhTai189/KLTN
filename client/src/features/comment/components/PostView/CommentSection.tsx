@@ -3,7 +3,7 @@ import { NotInterested } from '@material-ui/icons'
 import commentApi from 'api/comment'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { commentAction, selectFilterComment } from 'features/comment/commentSlice'
-import { selectDataPost } from 'features/posts/postSlice'
+import { postAction, selectDataPost, selectFilterPost } from 'features/posts/postSlice'
 import { Profiler, useCallback, useRef, useState } from 'react'
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify'
@@ -15,6 +15,7 @@ import { ListComment } from '../ListComment'
 export const CommentSection = () => {
     const dispatch = useAppDispatch()
     const commentFilter = useAppSelector(selectFilterComment)
+    const postFilter = useAppSelector(selectFilterPost)
     const postData = useAppSelector(selectDataPost)
 
     const { id } = useParams<{ id: string }>()
@@ -35,9 +36,10 @@ export const CommentSection = () => {
 
         commentApi.add(id, content)
             .then(() => {
-                toast.success("Đăng bình luận thành công!!!")
                 dispatch(commentAction.setFilter({ ...commentFilter }))
+                dispatch(postAction.setFilter({ ...postFilter }))
                 typingRef.current?.resetValue()
+                toast.success("Đăng bình luận thành công!!!")
             })
             .catch(err => {
                 toast.error(err.response.data.message)
@@ -47,12 +49,13 @@ export const CommentSection = () => {
     const handleSubmitReply = useCallback((commentReplyId: string, userId: string, content: string) => {
         commentApi.addReply(id, content, commentReplyId, userId)
             .then(() => {
-                toast.success("Đăng bình luận thành công!!!")
                 dispatch(commentAction.setFilter({ ...commentFilter }))
+                dispatch(postAction.setFilter({ ...postFilter }))
                 setTyping({
                     id: '',
                     username: ''
                 })
+                toast.success("Đăng bình luận thành công!!!")
             })
             .catch(err => {
                 toast.error(err.response.data.message)

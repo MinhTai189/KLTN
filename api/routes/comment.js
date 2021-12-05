@@ -110,7 +110,7 @@ const commentRouter = (io) => {
         const icons = ["💙", "😍", "🤣", "😮", "😭", "🤬"];
         io.notifyToUser(findComment.owner, {
           message: `${getNameUser.name} vừa bày tỏ cảm xúc ${icons[type]} về bình luận của bạn`,
-          url: `${process.env.ORIGIN}/posts/${findComment.post}`,
+          url: `/posts/${findComment.post}`,
           imageUrl:
             "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/like_wjr6hk.png",
         });
@@ -182,7 +182,7 @@ const commentRouter = (io) => {
       if (JSON.stringify(req.user.id) !== JSON.stringify(findPost.owner))
         io.notifyToUser(findPost.owner, {
           message: ` vừa bình luận bài viết của bạn`,
-          url: `${process.env.ORIGIN}/posts/${findPost._id}`,
+          url: `/posts/${findPost._id}`,
           ownerId: req.user.id,
           imageUrl:
             "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/comment_iaa4wh.png",
@@ -192,7 +192,7 @@ const commentRouter = (io) => {
         if (JSON.stringify(req.user.id) !== JSON.stringify(userId))
           io.notifyToUser(userId, {
             message: ` vừa trả lời bình luận của bạn`,
-            url: `${process.env.ORIGIN}/posts/${findPost._id}`,
+            url: `/posts/${findPost._id}`,
             ownerId: req.user.id,
             imageUrl:
               "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661946/notify/discussion_vjlxsw.png",

@@ -1,6 +1,12 @@
 import { Box, Divider, makeStyles, Theme, Typography } from "@material-ui/core"
-import Bell from 'assets/images/bell.png'
-import { Link } from "react-router-dom"
+import { useAppSelector } from "app/hooks"
+import { NoData } from "components/Common"
+import { selectCurrentUser } from "features/auth/authSlice"
+import { User } from "models"
+import { Link, useHistory } from "react-router-dom"
+import { calculateCreatedTime } from "utils/convert-date/calculateCreatedTime"
+import { useAppDispatch } from 'app/hooks'
+import { notifyActions } from 'features/notification/notifySlice'
 
 interface Props {
 }
@@ -96,6 +102,18 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const NotifDropDown = ({ }: Props) => {
     const classes = useStyles()
+    const currentUser: User = useAppSelector(selectCurrentUser)
+    const history = useHistory()
+    const dispatch = useAppDispatch()
+
+    const handleReadAll = () => {
+        dispatch(notifyActions.readAll())
+    }
+
+    const handleReadAndNavigate = (notifyId: string, url: string) => {
+        url && history.push(url)
+        dispatch(notifyActions.read(notifyId))
+    }
 
     return (
         <Box className={classes.root}>
@@ -106,41 +124,45 @@ export const NotifDropDown = ({ }: Props) => {
             <Divider style={{ marginTop: 4 }} />
 
             <Box className='body'>
-                {<>
+                {currentUser.notify && currentUser.notify.length > 0 ? <>
                     <ul className='notif-list'>
-                        {new Array(8).fill(1).map((_, index) => (
+                        {currentUser.notify.slice(0, 8).map(notify => (
                             <li
-                                key={index}
-                                className={`notif ${index < 4 ? 'unread' : ''}`}
+                                key={notify._id}
+                                className={`notif ${!notify.read ? 'unread' : ''}`}
+                                onClick={() => handleReadAndNavigate(notify._id, notify.url)}
                             >
                                 <img
                                     className='icon'
-                                    src={Bell}
+                                    src={notify.imageUrl}
                                     alt="bell icon"
                                 />
 
                                 <Box className='detail'>
                                     <Typography className='message'>
-                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora, illum consectetur commodi.
+                                        {notify.message}
                                     </Typography>
 
                                     <Typography className="date" component='small'>
-                                        4 ngày trước
+                                        {calculateCreatedTime(notify.createdAt)}
                                     </Typography>
                                 </Box>
                             </li>
                         ))}
                     </ul>
 
-                    <Link to='/notifications' className='see-more'>
+                    {currentUser.notify.length > 0 && <Link to='/notifications' className='see-more'>
                         Xem tất cả...
-                    </Link>
-                </>}
+                    </Link>}
+                </>
 
-                {/* <NoData content='Hiện tại bạn không có thông báo!' /> */}
+                    : <NoData content='Hiện tại bạn không có thông báo!' />}
             </Box>
 
-            <Box className='mark-all'>
+            <Box
+                className='mark-all'
+                onClick={handleReadAll}
+            >
                 <Typography className='text'>
                     Đánh dấu đã đọc tất cả
                 </Typography>

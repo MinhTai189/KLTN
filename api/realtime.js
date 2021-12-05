@@ -8,6 +8,7 @@ module.exports.listen = function socket(server) {
   io.users = [];
   io.on("connection", (socket) => {
     console.log(socket.id + " connected");
+
     socket.on("auth", (msg) => {
       console.log(msg);
       JWT.verify(
@@ -37,6 +38,7 @@ module.exports.listen = function socket(server) {
       console.log(io.users);
     });
   });
+
   io.notifyToUser = async (userId, data) => {
     const newId = uuid.v4();
     console.log(io.users);
@@ -56,14 +58,15 @@ module.exports.listen = function socket(server) {
       _id: newId,
       createdAt: new Date(),
     };
-    findUser.notify.push(notify);
+    findUser.notify.unshift(notify);
     findUser.save();
     const userToSend = io.users.find(
       (user) => JSON.stringify(user.id) === JSON.stringify(userId)
     );
     if (!userToSend) return;
-    io.to(userToSend.socketId).emit("notify", { ...notify });
+    io.to(userToSend.socketId).emit("notify", notify);
   };
+
   io.notifyToAllUser = async (data) => {
     const newId = uuid.v4();
     const notify = { ...data, read: false, _id: newId, createdAt: new Date() };

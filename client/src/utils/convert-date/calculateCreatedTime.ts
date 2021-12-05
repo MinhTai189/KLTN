@@ -22,3 +22,25 @@ export const calculateCreatedTime = (timeCreated: string) => {
 
   return 'Mới đây';
 };
+
+export const calculateCreatedTimeDMY = (date: string) => {
+  const convertedDate = new Date(date);
+
+  return convertedDate.toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+};
+
+export const calculateCreatedTimeHDMY = (date: string) => {
+  const convertedDate = new Date(date);
+
+  return convertedDate.toLocaleDateString('vi-VN', {
+    hour: 'numeric',
+    minute: 'numeric',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+};

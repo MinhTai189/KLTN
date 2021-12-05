@@ -205,12 +205,13 @@ export const Header = ({ isChangeNav }: Props) => {
                     })}
                 </ul>
 
-                {currentUser?.avatarUrl ?
+                {currentUser ?
                     <Box className={classes.ctaWrapper}>
                         <Box className='badge' component='span'>
                             <Badge
-                                badgeContent={4}
+                                badgeContent={currentUser.notify?.length || 0}
                                 color="secondary"
+                                showZero
                                 onClick={() => setShowNotif(!showNotif)}
                             >
                                 <Notifications />

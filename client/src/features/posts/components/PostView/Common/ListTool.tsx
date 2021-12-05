@@ -2,11 +2,13 @@ import { Box, List, ListItem, ListItemText, makeStyles, Theme } from "@material-
 import { MoreHoriz } from "@material-ui/icons"
 import commentApi from "api/comment"
 import postApi from "api/post"
-import { useAppSelector } from "app/hooks"
+import { useAppDispatch, useAppSelector } from "app/hooks"
 import { ModalReport } from "components/Common"
 import { selectCurrentUser } from "features/auth/authSlice"
+import { commentAction, selectFilterComment } from "features/comment/commentSlice"
+import { useDetectClickOutside } from "hooks"
 import { Comment, Post, ReplingComment, User } from "models"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useHistory } from "react-router"
 import { toast } from "react-toastify"
 
@@ -57,7 +59,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const ListTool = ({ isPost, isOwner, data }: Props) => {
     const classes = useStyles()
     const history = useHistory()
+    const listRef = useRef<any>()
 
+    const dispatch = useAppDispatch()
+    const filterComment = useAppSelector(selectFilterComment)
     const { _id } = data
 
     const currentUser: User = useAppSelector(selectCurrentUser)
@@ -66,6 +71,8 @@ export const ListTool = ({ isPost, isOwner, data }: Props) => {
     const [reportContent, setReportContent] = useState('')
     const [showList, setShowList] = useState(false)
     const [showConfirmModal, setShowConfirmModal] = useState(false)
+
+    useDetectClickOutside(listRef, () => setShowList(false))
 
     const handleSubmitReport = async () => {
         if (reportContent.length > 100) {
@@ -132,6 +139,7 @@ export const ListTool = ({ isPost, isOwner, data }: Props) => {
                 : await commentApi.remove(_id)
 
             toast.success('Xóa bài viết thành công!')
+            !isPost && dispatch(commentAction.setFilter({ ...filterComment }))
             setShowList(false)
 
             isPost && history.push('/posts')
@@ -145,12 +153,13 @@ export const ListTool = ({ isPost, isOwner, data }: Props) => {
             <Box className={classes.root}>
                 <MoreHoriz
                     className='icon'
-                    onClick={() => setShowList(!showList)}
+                    onClick={() => setTimeout(() => setShowList(!showList), 100)}
                 />
 
                 <List
                     className={`list-tool ${showList ? 'active' : ''}`}
                     component="ul"
+                    ref={listRef}
                 >
                     <ListItem
                         className='tool'

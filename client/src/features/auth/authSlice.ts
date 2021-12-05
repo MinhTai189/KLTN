@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User } from 'models';
+import { Notify, User } from 'models';
 import { LoginData } from './models';
 
 interface AuthState {
@@ -69,6 +69,14 @@ const authSlice = createSlice({
     unlikeMotelFailed(state, action: PayloadAction<string>) {
       state.loading = false;
       state.error = action.payload;
+    },
+    setNotify(state, action: PayloadAction<Notify>) {
+      if (!state.currentUser || !state.currentUser.notify) return;
+
+      state.currentUser = {
+        ...state.currentUser,
+        notify: [action.payload, ...state.currentUser.notify],
+      };
     },
   },
 });

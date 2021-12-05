@@ -1,10 +1,16 @@
-import { Box, Checkbox, FormControlLabel, Paper, Theme, Button } from "@material-ui/core"
+import { Box, Button, Checkbox, FormControlLabel, Paper, Theme } from "@material-ui/core"
 import { Pagination } from "@material-ui/lab"
 import { makeStyles } from "@material-ui/styles"
-import { ChangeEvent, useState } from "react"
+import { useAppDispatch } from "app/hooks"
+import { notifyActions } from "features/notification/notifySlice"
+import { ChangeEvent } from "react"
 
 interface Props {
-
+    totalPage: number
+    handlePagination: (e: any, page: number) => void
+    status: { read: boolean; unread: boolean }
+    setStatus: (state: any) => void
+    handleChecked: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -48,16 +54,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const Controls = (props: Props) => {
+const Controls = ({ status, totalPage, setStatus, handlePagination, handleChecked }: Props) => {
     const classes = useStyles()
-    const [status, setStatus] = useState({
-        read: true,
-        unread: true
-    })
+    const dispatch = useAppDispatch()
 
-    const handleChecked = (e: ChangeEvent<HTMLInputElement>) => {
-        setStatus(prev => ({ ...prev, [e.target.name]: e.target.checked }))
+    const handleReadAll = () => {
+        dispatch(notifyActions.readAll())
     }
+
+
 
     return (
         <Paper className={classes.root}>
@@ -69,6 +74,7 @@ const Controls = (props: Props) => {
                     style={{
                         textTransform: 'initial'
                     }}
+                    onClick={handleReadAll}
                 >
                     Đánh dấu xem tất cả
                 </Button>
@@ -91,7 +97,8 @@ const Controls = (props: Props) => {
                 justifyContent='center'
             >
                 <Pagination
-                    count={2}
+                    count={totalPage}
+                    onChange={handlePagination}
                     variant="outlined"
                     shape="rounded"
                     size='small'

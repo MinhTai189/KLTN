@@ -324,7 +324,7 @@ const userRouter = (io) => {
           if (req.user.isAdmin)
             io.notifyToUser(userUpdated._id, {
               message: `Thông tin cá nhân của bạn đã được cập nhật`,
-              url: `${process.env.ORIGIN}/users/${userUpdated._id}`,
+              url: `/users/${userUpdated._id}`,
               imageUrl:
                 "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/security_bsszl5.png",
             });

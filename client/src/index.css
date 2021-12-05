@@ -33,6 +33,10 @@ ul {
   margin: 0;
 }
 
+p {
+  word-break: break-word;
+}
+
 .container {
   width: 100%;
   max-width: 1400px;

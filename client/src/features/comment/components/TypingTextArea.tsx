@@ -143,7 +143,7 @@ export const TypingTextArea =
                     <span className='emoji-wrapper'>
                         <Emoij onClick={() => setShowEmoji(!showEmoji)} />
 
-                        {showEmoji && <DetectClickOutsize cb={() => () => setTimeout(() => setShowEmoji(false), 100)}>
+                        {showEmoji && <DetectClickOutsize cb={() => setTimeout(() => setShowEmoji(false), 100)}>
                             <span className='emoji-picker'>
                                 <Picker onEmojiClick={onEmojiClick} native />
                             </span>
