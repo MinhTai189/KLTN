@@ -205,11 +205,11 @@ export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', co
                                 </Typography>
                             </Box>
 
-                            <ListTool
+                            {currentUser && <ListTool
                                 isOwner={currentUser._id === userId}
                                 isPost={false}
                                 data={comment}
-                            />
+                            />}
                         </Box>
 
                         <Typography className={classes.content}>
@@ -233,11 +233,17 @@ export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', co
                         </Box>}
                     </Box>
 
-                    {currentUser && currentUser._id !== userId && <Box
+                    <Box
                         className={classes.controls}
                         display='flex'
                         justifyContent='flex-end'
                         alignItems='center'
+                        style={currentUser && currentUser._id !== userId ? {}
+                            : {
+                                opacity: 0,
+                                visibility: 'hidden'
+                            }
+                        }
                     >
                         <BtnAction
                             positionAction={positionAction}
@@ -257,7 +263,7 @@ export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', co
                         >
                             {value.typing.id === _id ? 'Hủy' : 'Trả lời'}
                         </Button>
-                    </Box>}
+                    </Box>
 
                     {currentUser && <ModalStaticAction
                         open={showModalStatic}
