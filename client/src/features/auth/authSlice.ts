@@ -78,6 +78,36 @@ const authSlice = createSlice({
         notify: [action.payload, ...state.currentUser.notify],
       };
     },
+    setReadOneNotify: (state, action: PayloadAction<string>) => {
+      if (!state.currentUser || !state.currentUser.notify) return;
+
+      const newNotifies = state.currentUser.notify.map((notify) => {
+        if (notify._id === action.payload)
+          return {
+            ...notify,
+            read: true,
+          };
+        return notify;
+      });
+
+      state.currentUser = {
+        ...state.currentUser,
+        notify: newNotifies,
+      };
+    },
+    setReadAllNotify: (state) => {
+      if (!state.currentUser || !state.currentUser.notify) return;
+
+      const newNotifies = state.currentUser.notify.map((notify) => ({
+        ...notify,
+        read: true,
+      }));
+
+      state.currentUser = {
+        ...state.currentUser,
+        notify: newNotifies,
+      };
+    },
   },
 });
 

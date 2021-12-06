@@ -165,7 +165,7 @@ export const MotelPreview = ({ motelData }: Props) => {
                         </span>
 
                         <Typography className='text'>
-                            {`${motelData.mark?.toFixed(2)}/5`}
+                            {`${motelData.mark ? motelData.mark.toFixed(2) : '--'}/5`}
                         </Typography>
                     </Box>
                 </Box>

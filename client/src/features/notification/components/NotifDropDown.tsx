@@ -2,7 +2,7 @@ import { Box, Divider, makeStyles, Theme, Typography } from "@material-ui/core"
 import { useAppDispatch, useAppSelector } from "app/hooks"
 import { NoData } from "components/Common"
 import { selectCurrentUser } from "features/auth/authSlice"
-import { notifyActions, selectDataNotify } from 'features/notification/notifySlice'
+import { notifyActions } from 'features/notification/notifySlice'
 import { User } from "models"
 import { Link, useHistory } from "react-router-dom"
 import { calculateCreatedTime } from "utils/convert-date/calculateCreatedTime"

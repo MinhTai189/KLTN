@@ -1,6 +1,7 @@
 import { put, takeLatest } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { notifyApi } from 'api/notify';
+import { authActions } from 'features/auth/authSlice';
 import { Filter, ListResponseNotif } from 'models';
 import { notifyActions } from './notifySlice';
 
@@ -19,6 +20,8 @@ function* handleReadNotify(action: PayloadAction<string>) {
     yield notifyApi.read(action.payload);
 
     yield put(notifyActions.readSucceeded());
+
+    yield put(authActions.setReadOneNotify(action.payload));
   } catch (error: any) {
     yield put(notifyActions.readFailed(error.response.data.message));
   }
@@ -29,6 +32,8 @@ function* handleReadAllNotify() {
     yield notifyApi.readAll();
 
     yield put(notifyActions.readAllSucceeded());
+
+    yield put(authActions.setReadAllNotify());
   } catch (error: any) {
     yield put(notifyActions.readAllFailed(error.response.data.message));
   }
