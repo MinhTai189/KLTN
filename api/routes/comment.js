@@ -85,11 +85,13 @@ const commentRouter = (io) => {
         return res
           .status(400)
           .json({ success: false, message: "Không tìm thấy bình luận" });
+      let isLiked = false;
       if (
         findComment.likes.some((item) => {
           return JSON.stringify(item.owner) === JSON.stringify(req.user.id);
         })
       ) {
+        isLiked = true;
         findComment.likes = findComment.likes.filter((item) => {
           return JSON.stringify(item.owner) !== JSON.stringify(req.user.id);
         });
@@ -105,16 +107,23 @@ const commentRouter = (io) => {
 
       await findComment.save();
       res.status(200).json({ success: true, message: "Like thành công" });
-      if (JSON.stringify(req.user.id) !== JSON.stringify(findComment.owner)) {
-        const getNameUser = await user.findById(req.user.id).select("name");
-        const icons = ["💙", "😍", "🤣", "😮", "😭", "🤬"];
-        io.notifyToUser(findComment.owner, {
-          message: `${getNameUser.name} vừa bày tỏ cảm xúc ${icons[type]} về bình luận của bạn`,
-          url: `/posts/${findComment.post}`,
-          imageUrl:
-            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/like_wjr6hk.png",
-        });
-      }
+      if (!isLiked)
+        if (JSON.stringify(req.user.id) !== JSON.stringify(findComment.owner)) {
+          const getNameUser = await user.findById(req.user.id).select("name");
+          const icons = [
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638789495/emoji/heart_wwwpss.png",
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638789496/emoji/in-love_rt8m8i.png",
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638789495/emoji/laughing_s2kbam.png",
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638789495/emoji/wow_ipppod.png",
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638789496/emoji/crying_tlhrrm.png",
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638789495/emoji/angry_abxzbn.png",
+          ];
+          io.notifyToUser(findComment.owner, {
+            message: `${getNameUser.name} vừa bày tỏ cảm xúc về bình luận của bạn`,
+            url: `/posts/${findComment.post}`,
+            imageUrl: icons[type],
+          });
+        }
     } catch (err) {
       console.log(err);
       return res

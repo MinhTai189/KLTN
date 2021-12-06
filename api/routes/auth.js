@@ -344,6 +344,9 @@ const authRouter = (io) => {
         message: "Đăng nhập thành công",
         data: {
           ...data,
+          notify: [...data.notify].sort((n1, n2) => {
+            return new Date(n2.createdAt) - new Date(n1.createdAt);
+          }),
           accessToken: newAccessToken,
           refreshToken: newRefreshToken,
         },

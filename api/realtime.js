@@ -41,7 +41,7 @@ module.exports.listen = function socket(server) {
 
   io.notifyToUser = async (userId, data) => {
     const newId = uuid.v4();
-    console.log(io.users);
+
     const findUser = await user.findById(userId);
     let findOwner;
     let message = data.message;
