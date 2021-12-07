@@ -130,35 +130,19 @@ const approveRouter = (io) => {
           .status(400)
           .json({ success: false, message: "Bài viết này đã được duyệt rồi" });
       response = { ...getPostInvalid._doc };
+      let owner = {
+        avatarUrl: response.owner.avatarUrl.url,
+        name: response.owner.name,
+        isAdmin: response.owner.isAdmin,
+        _id: response.owner.id,
+        credit: response.owner.credit,
+        email: response.owner.email,
+        //   school: ownerSchool,
+        motels: response.owner.motels,
+        rank: response.owner.rank,
+      };
 
-      if (
-        getPostInvalid.subject._id.toString() === "6173ba553c954151dcc8fdf9"
-      ) {
-        const getReviewInvalid = await review.findOne({
-          post: getPostInvalid._id,
-        });
-        if (!getReviewInvalid)
-          return res.status(400).json({
-            success: false,
-            message: "Không tìm thấy nội dung review",
-          });
-        const ownerSchool = await school
-          .findOne({ codeName: response.owner.school })
-          .select("-nameDistricts");
-        let owner = {
-          avatarUrl: response.owner.avatarUrl.url,
-          name: response.owner.name,
-          isAdmin: response.owner.isAdmin,
-          _id: response.owner.id,
-          credit: response.owner.credit,
-          email: response.owner.email,
-          school: ownerSchool,
-          motels: response.owner.motels,
-          rank: response.owner.rank,
-        };
-        response.review = getReviewInvalid;
-        res.owner = owner;
-      }
+      response.owner = owner;
     } else if (_type === "report") {
       const getReport = await report
         .findById(_id1)
@@ -496,9 +480,9 @@ const approveRouter = (io) => {
             motel: { id: allMotel[i]._id, name: allMotel[i].name },
           });
     for (let i = 0; i < rates.length; i++) {
-      const ownerSchool = await school
-        .findOne({ codeName: rates[i].user.school })
-        .select("-nameDistricts");
+      // const ownerSchool = await school
+      //   .findOne({ codeName: rates[i].user.school })
+      //   .select("-nameDistricts");
       let owner = {
         avatarUrl: rates[i].user.avatarUrl.url,
         name: rates[i].user.name,
@@ -506,7 +490,7 @@ const approveRouter = (io) => {
         _id: rates[i].user.id,
         credit: rates[i].user.credit,
         email: rates[i].user.email,
-        school: ownerSchool,
+        //  school: ownerSchool,
         motels: rates[i].user.motels,
         rank: rates[i].user.rank,
       };
@@ -521,9 +505,9 @@ const approveRouter = (io) => {
       });
     }
     for (let i = 0; i < newMotel.length; i++) {
-      const ownerSchool = await school
-        .findOne({ codeName: newMotel[i].owner.school })
-        .select("-nameDistricts");
+      // const ownerSchool = await school
+      //   .findOne({ codeName: newMotel[i].owner.school })
+      //   .select("-nameDistricts");
       let owner = {
         avatarUrl: newMotel[i].owner.avatarUrl.url,
         name: newMotel[i].owner.name,
@@ -531,7 +515,7 @@ const approveRouter = (io) => {
         _id: newMotel[i].owner.id,
         credit: newMotel[i].owner.credit,
         email: newMotel[i].owner.email,
-        school: ownerSchool,
+        // school: ownerSchool,
         motels: newMotel[i].owner.motels,
         rank: newMotel[i].owner.rank,
       };
@@ -546,9 +530,9 @@ const approveRouter = (io) => {
       });
     }
     for (let i = 0; i < updateMotel.length; i++) {
-      const ownerSchool = await school
-        .findOne({ codeName: updateMotel[i].user.school })
-        .select("-nameDistricts");
+      // const ownerSchool = await school
+      //   .findOne({ codeName: updateMotel[i].user.school })
+      //   .select("-nameDistricts");
       let owner = {
         avatarUrl: updateMotel[i].user.avatarUrl.url,
         name: updateMotel[i].user.name,
@@ -556,7 +540,7 @@ const approveRouter = (io) => {
         _id: updateMotel[i].user.id,
         credit: updateMotel[i].user.credit,
         email: updateMotel[i].user.email,
-        school: ownerSchool,
+        //  school: ownerSchool,
         motels: updateMotel[i].user.motels,
         rank: updateMotel[i].user.rank,
       };
@@ -570,9 +554,9 @@ const approveRouter = (io) => {
       });
     }
     for (let i = 0; i < updateRoom.length; i++) {
-      const ownerSchool = await school
-        .findOne({ codeName: updateRoom[i].user.school })
-        .select("-nameDistricts");
+      // const ownerSchool = await school
+      //   .findOne({ codeName: updateRoom[i].user.school })
+      //   .select("-nameDistricts");
       let owner = {
         avatarUrl: updateRoom[i].user.avatarUrl.url,
         name: updateRoom[i].user.name,
@@ -580,7 +564,7 @@ const approveRouter = (io) => {
         _id: updateRoom[i].user.id,
         credit: updateRoom[i].user.credit,
         email: updateRoom[i].user.email,
-        school: ownerSchool,
+        // school: ownerSchool,
         motels: updateRoom[i].user.motels,
         rank: updateRoom[i].user.rank,
       };
@@ -596,9 +580,9 @@ const approveRouter = (io) => {
       });
     }
     for (let i = 0; i < newPost.length; i++) {
-      const ownerSchool = await school
-        .findOne({ codeName: newPost[i].owner.school })
-        .select("-nameDistricts");
+      // const ownerSchool = await school
+      //   .findOne({ codeName: newPost[i].owner.school })
+      //   .select("-nameDistricts");
       let owner = {
         avatarUrl: newPost[i].owner.avatarUrl.url,
         name: newPost[i].owner.name,
@@ -606,7 +590,7 @@ const approveRouter = (io) => {
         _id: newPost[i].owner.id,
         credit: newPost[i].owner.credit,
         email: newPost[i].owner.email,
-        school: ownerSchool,
+        //  school: ownerSchool,
         motels: newPost[i].owner.motels,
         rank: newPost[i].owner.rank,
       };
@@ -620,9 +604,9 @@ const approveRouter = (io) => {
       });
     }
     for (let i = 0; i < newFeedBack.length; i++) {
-      const ownerSchool = await school
-        .findOne({ codeName: newFeedBack[i].owner.school })
-        .select("-nameDistricts");
+      // const ownerSchool = await school
+      //   .findOne({ codeName: newFeedBack[i].owner.school })
+      //   .select("-nameDistricts");
       let owner = {
         avatarUrl: newFeedBack[i].owner.avatarUrl.url,
         name: newFeedBack[i].owner.name,
@@ -630,7 +614,7 @@ const approveRouter = (io) => {
         _id: newFeedBack[i].owner.id,
         credit: newFeedBack[i].owner.credit,
         email: newFeedBack[i].owner.email,
-        school: ownerSchool,
+        //   school: ownerSchool,
         motels: newFeedBack[i].owner.motels,
         rank: newFeedBack[i].owner.rank,
       };
@@ -649,9 +633,9 @@ const approveRouter = (io) => {
       else if (reports[i].type === "post") type = "Tố cáo bài viết";
       else if (reports[i].type === "comment") type = "Tố cáo bình luận";
 
-      const ownerSchool = await school
-        .findOne({ codeName: reports[i].owner.school })
-        .select("-nameDistricts");
+      // const ownerSchool = await school
+      //   .findOne({ codeName: reports[i].owner.school })
+      //   .select("-nameDistricts");
       let owner = {
         avatarUrl: reports[i].owner.avatarUrl.url,
         name: reports[i].owner.name,
@@ -659,7 +643,7 @@ const approveRouter = (io) => {
         _id: reports[i].owner.id,
         credit: reports[i].owner.credit,
         email: reports[i].owner.email,
-        school: ownerSchool,
+        // school: ownerSchool,
         motels: reports[i].owner.motels,
         rank: reports[i].owner.rank,
       };

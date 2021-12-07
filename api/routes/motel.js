@@ -833,10 +833,10 @@ const motelRouter = (io) => {
           const renameImage = await upload.rename(
             checkMotel.images[i].public_id,
             newMotel._id +
-            "/" +
-            checkMotel.images[i].public_id.substr(
-              checkMotel.images[i].public_id.indexOf("/") + 1
-            )
+              "/" +
+              checkMotel.images[i].public_id.substr(
+                checkMotel.images[i].public_id.indexOf("/") + 1
+              )
           );
           if (renameImage.success)
             newMotel.images.push({
@@ -852,10 +852,10 @@ const motelRouter = (io) => {
         const renameThumbnail = await upload.rename(
           checkMotel.thumbnail.public_id,
           newMotel._id +
-          "/" +
-          checkMotel.thumbnail.public_id.substr(
-            checkMotel.thumbnail.public_id.indexOf("/") + 1
-          )
+            "/" +
+            checkMotel.thumbnail.public_id.substr(
+              checkMotel.thumbnail.public_id.indexOf("/") + 1
+            )
         );
         if (renameThumbnail.success)
           newMotel.thumbnail = {
@@ -1030,8 +1030,8 @@ const motelRouter = (io) => {
         const renameImage = await upload.rename(
           images[i].public_id,
           newMotel._id +
-          "/" +
-          images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
+            "/" +
+            images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
         );
         if (renameImage.success == true)
           newMotel.images.push({
@@ -1054,8 +1054,8 @@ const motelRouter = (io) => {
       const renameThumbnail = await upload.rename(
         thumbnail.public_id,
         newMotel._id +
-        "/" +
-        thumbnail.public_id.substr(thumbnail.public_id.indexOf("/") + 1)
+          "/" +
+          thumbnail.public_id.substr(thumbnail.public_id.indexOf("/") + 1)
       );
       if (renameThumbnail.success)
         newMotel.thumbnail = {
@@ -1263,9 +1263,7 @@ const motelRouter = (io) => {
         if (findMotel.room[i].optional[property] == true)
           optional[property] = true;
       }
-    const ownerSchool = await school
-      .findOne({ codeName: findMotel.owner.school })
-      .select("-nameDistricts");
+
     let owner = {
       avatarUrl: findMotel.owner.avatarUrl.url,
       name: findMotel.owner.name,
@@ -1273,7 +1271,7 @@ const motelRouter = (io) => {
       _id: findMotel.owner.id,
       credit: findMotel.owner.credit,
       email: findMotel.owner.email,
-      school: ownerSchool,
+
       motels: findMotel.owner.motels,
       rank: findMotel.owner.rank,
     };
@@ -1281,9 +1279,7 @@ const motelRouter = (io) => {
     for (let i = 0; i < findMotel.editor.length; i++) {
       let editorDataUser;
       const avatarUrl = findMotel.editor[i].user.avatarUrl.url;
-      const editorSchool = await school
-        .findOne({ codeName: findMotel.editor[i].user.school })
-        .select("-nameDistricts");
+
       editorDataUser = {
         avatarUrl,
         name: findMotel.editor[i].user.name,
@@ -1291,7 +1287,7 @@ const motelRouter = (io) => {
         isAdmin: findMotel.editor[i].user.isAdmin,
         email: findMotel.editor[i].user.email,
         credit: findMotel.editor[i].user.credit,
-        school: editorSchool,
+
         motels: findMotel.owner.motels,
         rank: findMotel.owner.rank,
       };

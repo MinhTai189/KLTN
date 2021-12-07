@@ -7,6 +7,7 @@ const school = require("../models/school");
 const user = require("../models/user");
 const report = require("../models/report");
 const router = express.Router();
+const ObjectId = require("mongoose").Types.ObjectId;
 const commentRouter = (io) => {
   router.post("/reports", verifyToken, async (req, res) => {
     try {
@@ -75,6 +76,7 @@ const commentRouter = (io) => {
         .json({ success: false, message: "Lỗi không xác định" });
     }
   });
+
   router.post("/likes/:id", verifyToken, async (req, res) => {
     const id = req.params.id;
     const findComment = await comment.findById(id);
@@ -129,6 +131,65 @@ const commentRouter = (io) => {
       return res
         .status(500)
         .json({ success: false, message: "Lỗi không xác định" });
+    }
+  });
+  router.get("/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const getByRootComment = await comment
+        .find({
+          "reply.rootComment": new ObjectId(id),
+        })
+        .populate("reply.user owner");
+      let responseComments = [];
+
+      for (let j = 0; j < getByRootComment.length; j++) {
+        const user = {
+          avatarUrl: getByRootComment[j].reply.user.avatarUrl.url,
+          name: getByRootComment[j].reply.user.name,
+          isAdmin: getByRootComment[j].reply.user.isAdmin,
+          _id: getByRootComment[j].reply.user.id,
+          credit: getByRootComment[j].reply.user.credit,
+          email: getByRootComment[j].reply.user.email,
+
+          posts: getByRootComment[j].reply.user.posts,
+          rank: getByRootComment[j].reply.user.rank,
+        };
+        const owner = {
+          avatarUrl: getByRootComment[j].owner.avatarUrl.url,
+          name: getByRootComment[j].owner.name,
+          isAdmin: getByRootComment[j].owner.isAdmin,
+          _id: getByRootComment[j].owner.id,
+          credit: getByRootComment[j].owner.credit,
+          email: getByRootComment[j].owner.email,
+          posts: getByRootComment[j].owner.posts,
+          rank: getByRootComment[j].owner.rank,
+        };
+
+        responseComments.push({
+          ...getByRootComment[j]._doc,
+          user: user,
+          owner: owner,
+          comment: getByRootComment[j].reply.comment,
+          numLikes: [
+            getByRootComment[j].likes.filter((like) => like.type === 0).length,
+            getByRootComment[j].likes.filter((like) => like.type === 1).length,
+            getByRootComment[j].likes.filter((like) => like.type === 2).length,
+            getByRootComment[j].likes.filter((like) => like.type === 3).length,
+            getByRootComment[j].likes.filter((like) => like.type === 4).length,
+            getByRootComment[j].likes.filter((like) => like.type === 5).length,
+          ],
+          totalLikes: getByRootComment[j].likes.length,
+        });
+        delete responseComments[j].reply;
+      }
+      responseComments = responseComments.sort((cmt1, cmt2) => {
+        return new Date(cmt1.createdAt) - new Date(cmt2.createdAt);
+      });
+      res.status(200).json({ success: true, data: responseComments });
+    } catch (err) {
+      res.status(500).json({ success: false, message: "Lỗi không xác định" });
     }
   });
   router.post("/:idPost", verifyToken, async (req, res) => {
@@ -236,9 +297,6 @@ const commentRouter = (io) => {
       } = req.query;
       let responseComments = [];
       for (let i = 0; i < comments.length; i++) {
-        const ownerSchool = await school
-          .findOne({ codeName: comments[i].owner.school })
-          .select("-nameDistricts");
         const owner = {
           avatarUrl: comments[i].owner.avatarUrl.url,
           name: comments[i].owner.name,
@@ -246,7 +304,7 @@ const commentRouter = (io) => {
           _id: comments[i].owner.id,
           credit: comments[i].owner.credit,
           email: comments[i].owner.email,
-          school: ownerSchool,
+
           posts: comments[i].owner.posts,
           rank: comments[i].owner.rank,
         };
@@ -277,7 +335,7 @@ const commentRouter = (io) => {
       }
 
       responseComments = responseComments.sort((cmt1, cmt2) => {
-        return new Date(cmt2.createdAt) - new Date(cmt1.createdAt);
+        return new Date(cmt1.createdAt) - new Date(cmt2.createdAt);
       });
       if (typeof _keysearch === "string")
         responseComments = responseComments.filter((item) => {
@@ -353,9 +411,7 @@ const commentRouter = (io) => {
                 delete responseComments[i].reply[
                   responseComments[i].reply.length - 1
                 ].post;
-                const userSchool = await school
-                  .findOne({ codeName: responseComments[j].reply.user.school })
-                  .select("-nameDistricts");
+
                 const user = {
                   avatarUrl: responseComments[j].reply.user.avatarUrl.url,
                   name: responseComments[j].reply.user.name,
@@ -363,7 +419,7 @@ const commentRouter = (io) => {
                   _id: responseComments[j].reply.user.id,
                   credit: responseComments[j].reply.user.credit,
                   email: responseComments[j].reply.user.email,
-                  school: userSchool,
+
                   posts: responseComments[j].reply.user.posts,
                   rank: responseComments[j].reply.user.rank,
                 };
@@ -387,6 +443,22 @@ const commentRouter = (io) => {
           );
         });
       }
+      responseComments = responseComments.sort((cmt1, cmt2) => {
+        return new Date(cmt2.createdAt) - new Date(cmt1.createdAt);
+      });
+
+      if (_order && _sort)
+        if (_sort === "createdat") {
+          if ((_order = "asc"))
+            responseComments = responseComments.sort((cmt1, cmt2) => {
+              return new Date(cmt1.createdAt) - new Date(cmt2.createdAt);
+            });
+          else if ((_order = "desc"))
+            responseComments = responseComments.sort((cmt1, cmt2) => {
+              return new Date(cmt2.createdAt) - new Date(cmt1.createdAt);
+            });
+        }
+
       let page = 1;
       let limit = responseComments.length;
       let totalRows = responseComments.length;

@@ -109,9 +109,7 @@ const rateRouter = (io) => {
       for (let i = 0; i < motelRates.length; i++)
         for (let j = 0; j < motelRates[i].rate.length; j++) {
           const mt = { _id: motelRates[i]._id, name: motelRates[i].name };
-          const ownerSchool = await school
-            .findOne({ codeName: motelRates[i].rate[j].user.school })
-            .select("-nameDistricts");
+
           const user = {
             avatarUrl: motelRates[i].rate[j].user.avatarUrl.url,
             name: motelRates[i].rate[j].user.name,
@@ -119,7 +117,7 @@ const rateRouter = (io) => {
             _id: motelRates[i].rate[j].user.id,
             credit: motelRates[i].rate[j].user.credit,
             email: motelRates[i].rate[j].user.email,
-            school: ownerSchool,
+
             motels: motelRates[i].rate[j].user.motels,
             rank: motelRates[i].rate[j].user.rank,
           };
@@ -300,14 +298,23 @@ const rateRouter = (io) => {
         req.user.isAdmin == true
       )
         try {
-          await motel.findOneAndUpdate(
-            { _id: id },
-            {
-              $pull: { rate: { _id: idRate } },
-              vote: findMotel.vote - rate.star,
-              mark: (findMotel.vote - rate.star) / (findMotel.rate.length - 1),
-            }
-          );
+          if (rate.valid)
+            await motel.findOneAndUpdate(
+              { _id: id },
+              {
+                $pull: { rate: { _id: idRate } },
+                vote: findMotel.vote - rate.star,
+                mark:
+                  (findMotel.vote - rate.star) / (findMotel.rate.length - 1),
+              }
+            );
+          else
+            await motel.findOneAndUpdate(
+              { _id: id },
+              {
+                $pull: { rate: { _id: idRate } },
+              }
+            );
 
           return res
             .status(200)

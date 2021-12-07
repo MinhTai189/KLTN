@@ -58,7 +58,8 @@ module.exports.listen = function socket(server) {
       _id: newId,
       createdAt: new Date(),
     };
-    findUser.notify.unshift(notify);
+    findUser.notify.push(notify);
+    if (findUser.notify.length > 30) findUser.notify.pop();
     findUser.save();
     const userToSend = io.users.find(
       (user) => JSON.stringify(user.id) === JSON.stringify(userId)
@@ -71,6 +72,10 @@ module.exports.listen = function socket(server) {
     const newId = uuid.v4();
     const notify = { ...data, read: false, _id: newId, createdAt: new Date() };
     await user.updateMany({ deleted: false }, { $push: { notify: notify } });
+    await user.updateMany(
+      { deleted: false, notify: { $size: { $gt: 30 } } },
+      { $pop: { notify: 1 } }
+    );
     io.emit("notify", { ...notify });
   };
   io.auth = (accessToken) => {

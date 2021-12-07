@@ -170,9 +170,6 @@ const postRouter = (io) => {
       }
       let responsePosts = [];
       for (let i = 0; i < posts.length; i++) {
-        const ownerSchool = await schoolModel
-          .findOne({ codeName: posts[i].owner.school })
-          .select("-nameDistricts");
         const owner = {
           avatarUrl: posts[i].owner.avatarUrl.url,
           name: posts[i].owner.name,
@@ -180,7 +177,7 @@ const postRouter = (io) => {
           _id: posts[i].owner.id,
           credit: posts[i].owner.credit,
           email: posts[i].owner.email,
-          school: ownerSchool,
+
           posts: posts[i].owner.posts,
           rank: posts[i].owner.rank,
         };
