@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import Logo from 'assets/images/logo.png';
 import { authActions, selectCurrentUser } from 'features/auth/authSlice';
 import { User } from 'models';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { DropDownInfor } from '../Home';
 import { ButtonCustom } from './Button';
 import { Link, NavLink } from 'react-router-dom'
@@ -165,6 +165,12 @@ export const Header = ({ isChangeNav }: Props) => {
     const [showDropdown, setShowDropdown] = useState(false)
     const [sizeBtn, setSizeBtn] = useState<any>('large')
 
+    const amountNotif = useCallback(() => {
+        if (!currentUser.notify) return 0
+
+        return currentUser.notify.filter(notify => !notify.read).length
+    }, [currentUser])
+
     useEffect(() => {
         setSizeBtn(calcSizeBtn(window.innerWidth))
 
@@ -209,7 +215,7 @@ export const Header = ({ isChangeNav }: Props) => {
                     <Box className={classes.ctaWrapper}>
                         <Box className='badge' component='span'>
                             <Badge
-                                badgeContent={currentUser.notify?.length || 0}
+                                badgeContent={amountNotif()}
                                 color="secondary"
                                 showZero
                                 onClick={() => setShowNotif(!showNotif)}

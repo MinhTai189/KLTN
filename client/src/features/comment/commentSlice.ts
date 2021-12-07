@@ -44,18 +44,6 @@ const commentSlice = createSlice({
     setFilter: (state, action: PayloadAction<Filter>) => {
       state.filter = action.payload;
     },
-    // add: (state, action: PayloadAction<string>) => {
-    //   state.loading = true;
-    // },
-    // addSucceeded: (state, action: PayloadAction<ListResponse<Comment>>) => {
-    //   state.loading = false;
-    //   state.data = action.payload.data;
-    //   state.pagination = action.payload.pagination;
-    // },
-    // addFailed: (state, action: PayloadAction<string>) => {
-    //   state.loading = false;
-    //   state.errMessage = action.payload;
-    // },
   },
 });
 
