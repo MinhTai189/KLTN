@@ -190,13 +190,22 @@ const commentRouter = (io) => {
       });
       let limit = responseComments.length;
       let page = 1;
+      let totalRows = responseComments.length;
       if (_limit) limit = parseInt(_limit);
       if (_page) page = parseInt(_page);
       responseComments = responseComments.slice(
         (page - 1) * limit,
         page * limit
       );
-      res.status(200).json({ success: true, data: responseComments });
+      res.status(200).json({
+        success: true,
+        data: responseComments,
+        pagination: {
+          _page: page,
+          _limit: limit,
+          _totalRows: totalRows,
+        },
+      });
     } catch (err) {
       res.status(500).json({ success: false, message: "Lỗi không xác định" });
     }
