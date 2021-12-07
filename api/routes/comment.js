@@ -135,6 +135,7 @@ const commentRouter = (io) => {
   });
   router.get("/:id", async (req, res) => {
     try {
+      const { _page, _limit } = req.query;
       const { id } = req.params;
 
       const getByRootComment = await comment
@@ -187,6 +188,14 @@ const commentRouter = (io) => {
       responseComments = responseComments.sort((cmt1, cmt2) => {
         return new Date(cmt1.createdAt) - new Date(cmt2.createdAt);
       });
+      let limit = responseComments.length;
+      let page = 1;
+      if (_limit) limit = parseInt(_limit);
+      if (_page) page = parseInt(_page);
+      responseComments = responseComments.slice(
+        (page - 1) * limit,
+        page * limit
+      );
       res.status(200).json({ success: true, data: responseComments });
     } catch (err) {
       res.status(500).json({ success: false, message: "Lỗi không xác định" });
