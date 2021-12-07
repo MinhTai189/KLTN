@@ -59,7 +59,7 @@ module.exports.listen = function socket(server) {
       createdAt: new Date(),
     };
     findUser.notify.push(notify);
-    if (findUser.notify.length > 30) findUser.notify.pop();
+    if (findUser.notify.length > 30) findUser.notify.shift();
     findUser.save();
     const userToSend = io.users.find(
       (user) => JSON.stringify(user.id) === JSON.stringify(userId)
@@ -74,7 +74,7 @@ module.exports.listen = function socket(server) {
     await user.updateMany({ deleted: false }, { $push: { notify: notify } });
     await user.updateMany(
       { deleted: false, notify: { $size: { $gt: 30 } } },
-      { $pop: { notify: 1 } }
+      { $pop: { notify: -1 } }
     );
     io.emit("notify", { ...notify });
   };
