@@ -89,7 +89,7 @@ export const ModalStaticAction = ({ open, onCancel, staticLike, totalQuantity, l
             return listLike
 
         return listLike.filter(like => like.type === currentTab)
-    }, [currentTab])
+    }, [currentTab, listLike])
 
     const handleClickTab = (tab: number) => {
         setCurrentTab(tab)

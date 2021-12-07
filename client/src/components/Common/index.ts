@@ -1,5 +1,5 @@
 export * from './Header';
-export * from './NotFound';
+export { NotFound as default } from './NotFound';
 export * from './AdminRoute';
 export * from './UserRoute';
 export * from './Button';

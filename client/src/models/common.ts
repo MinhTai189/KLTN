@@ -29,6 +29,7 @@ export interface Filter {
   _optional?: string[];
   _subject?: string;
   _read?: boolean[];
+  _count?: number;
 
   [key: string]: any;
 }

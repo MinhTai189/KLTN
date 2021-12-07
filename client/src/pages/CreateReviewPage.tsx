@@ -6,7 +6,7 @@ import { motelActions } from 'features/motels/motelSlice'
 import { useEffect } from 'react'
 import { CreateReview } from 'features/posts/components/CreatePost/Review/CreateReview'
 
-export const CreateReviewPage = () => {
+const CreateReviewPage = () => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -23,3 +23,5 @@ export const CreateReviewPage = () => {
         </MainLayout>
     )
 }
+
+export default CreateReviewPage

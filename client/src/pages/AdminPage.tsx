@@ -8,7 +8,7 @@ import { Switch, Route } from 'react-router-dom'
 
 const { Header, Content } = Layout
 
-export const AdminLayout = () => {
+const AdminPage = () => {
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Header />
@@ -39,3 +39,5 @@ export const AdminLayout = () => {
         </Layout>
     )
 }
+
+export default AdminPage

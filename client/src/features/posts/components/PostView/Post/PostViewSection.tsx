@@ -90,7 +90,7 @@ export const PostViewSection = memo(({ postData }: Props) => {
                     type: checkLikePost.type
                 })
         }
-    }, [currentUser])
+    }, [currentUser, postData])
 
     const handleLikePost = async (type: number, isClickBtn?: boolean) => {
         try {

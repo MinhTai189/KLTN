@@ -1,7 +1,9 @@
 import { Avatar, Box, Theme } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import { Comment as CommentType } from 'models'
+import commentApi from 'api/comment'
+import { Comment as CommentType, Filter, ReplingComment } from 'models'
 import { memo, useContext, useEffect, useRef, useState } from 'react'
+import { toast } from 'react-toastify'
 import { CommentContext } from '../contexts/CommentContext'
 import { CommentBody } from './CommentBody'
 import { CommentLayout } from './Layout/CommentLayout'
@@ -21,11 +23,40 @@ export const Comment = memo(({ comment }: Props) => {
     const replyRef = useRef<any>()
     const value = useContext(CommentContext)
 
-    const { _id, owner: { avatarUrl, _id: userId }, reply } = comment
+    const [listRepling, setListRepling] = useState<Array<ReplingComment>>([])
+    const [filter, setFilter] = useState<Filter>({
+        _limit: 5,
+        _page: 1,
+        _count: 1
+    })
+
+    const totalReply = useRef(0)
+
+    const { _id, owner: { avatarUrl, _id: userId } } = comment
 
     const handleReply = () => {
         if (replyRef.current)
             value.handleSubmitReply(_id, userId, replyRef.current.getValue())
+    }
+
+    useEffect(() => {
+        commentApi.getSubcomment(_id, filter)
+            .then(res => {
+                totalReply.current = res.pagination._totalRows
+                setListRepling(res.data)
+            })
+            .catch(() => toast.error('Không thể tải danh sách trả lời!'))
+    }, [comment, filter])
+
+    const handleLoadMoreReply = () => {
+        if (filter._limit! >= totalReply.current)
+            return
+
+        setFilter({
+            ...filter,
+            _limit: filter._limit! + 5,
+            _count: filter._count! + 1
+        })
     }
 
     return (
@@ -54,9 +85,12 @@ export const Comment = memo(({ comment }: Props) => {
                         handleSubmit={() => handleReply()}
                     />}
 
-                    <ListSubComment
-                        listReply={reply}
-                    />
+                    {listRepling.length > 0 && <ListSubComment
+                        listReply={listRepling}
+                        totalReply={totalReply.current}
+                        currentReply={filter._count ?? 1}
+                        handleLoadMoreReply={handleLoadMoreReply}
+                    />}
                 </>
             </CommentLayout>
         </Box>

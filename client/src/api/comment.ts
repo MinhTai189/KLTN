@@ -1,9 +1,22 @@
-import { Comment, Filter, ListResponse, Response } from 'models';
+import {
+  Comment,
+  Filter,
+  ListResponse,
+  ReplingComment,
+  Response,
+} from 'models';
 import axiosClient from './axiosClient';
 
 const commentApi = {
   get: (params: Filter): Promise<ListResponse<Comment>> => {
     const url = '/comments';
+    return axiosClient.get(url, { params });
+  },
+  getSubcomment: (
+    commentId: string,
+    params: Filter
+  ): Promise<ListResponse<ReplingComment>> => {
+    const url = `/comments/${commentId}`;
     return axiosClient.get(url, { params });
   },
   add: (postId: string, content: string): Promise<Response<any>> => {

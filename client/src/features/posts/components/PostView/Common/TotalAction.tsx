@@ -23,7 +23,8 @@ const useStyles = makeStyles((theme: Theme) => ({
             },
 
             '& .number': {
-                fontSize: '0.8em'
+                fontSize: '0.8em',
+                paddingTop: 2
             }
         },
 
@@ -58,8 +59,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         '& .number': {
             marginLeft: 4,
             fontSize: '1em',
-            fontWeiht: 500,
-            lineHeight: 1.2,
+            fontWeight: 500,
+            lineHeight: 1,
             color: theme.palette.text.primary
         }
     }

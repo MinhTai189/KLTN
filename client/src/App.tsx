@@ -1,20 +1,22 @@
 import 'antd/dist/antd.css';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { AdminRoute, NotFound, ScrollToTop, UserRoute } from 'components/Common';
-import { AdminLayout } from 'components/Layouts';
+import { AdminRoute, ScrollToTop, UserRoute } from 'components/Common';
 import { authActions, selectIsLogged } from 'features/auth/authSlice';
 import { CreatePost } from 'features/posts/components';
-import { CreateReviewPage } from 'pages/CreateReviewPage';
-import HomePage from 'pages/HomePage';
-import MotelDetailPage from 'pages/MotelDetailPage';
-import MotelPage from 'pages/MotelPage';
-import NotificationPage from 'pages/NotificationPage';
-import PostPage from 'pages/PostPage';
-import PostViewPage from 'pages/PostViewPage';
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
-import Auth from "./features/auth";
+
+const HomePage = lazy(() => import('pages/HomePage'))
+const MotelDetailPage = lazy(() => import('pages/MotelDetailPage'))
+const MotelPage = lazy(() => import('pages/MotelPage'))
+const PostViewPage = lazy(() => import('pages/PostViewPage'))
+const PostPage = lazy(() => import('pages/PostPage'))
+const CreateReviewPage = lazy(() => import('pages/CreateReviewPage'))
+const NotificationPage = lazy(() => import('pages/NotificationPage'))
+const Auth = lazy(() => import('features/auth'))
+const AdminPage = lazy(() => import('pages/AdminPage'))
+const NotFound = lazy(() => import('components/Common'))
 
 const App = () => {
   const isLogged = useAppSelector(selectIsLogged)
@@ -29,47 +31,49 @@ const App = () => {
   return (
     <>
       <ScrollToTop>
-        <Switch>
-          <Route path="/" exact>
-            <HomePage />
-          </Route>
+        <Suspense fallback='Loading...'>
+          <Switch>
+            <Route path="/" exact>
+              <HomePage />
+            </Route>
 
-          <Route path="/motels/:id">
-            <MotelDetailPage />
-          </Route>
+            <Route path="/motels/:id">
+              <MotelDetailPage />
+            </Route>
 
-          <Route path="/motels">
-            <MotelPage />
-          </Route>
+            <Route path="/motels">
+              <MotelPage />
+            </Route>
 
-          <Route path='/posts/:id'>
-            <PostViewPage />
-          </Route>
+            <Route path='/posts/:id'>
+              <PostViewPage />
+            </Route>
 
-          <Route path='/posts'>
-            <PostPage />
-          </Route>
+            <Route path='/posts'>
+              <PostPage />
+            </Route>
 
-          <UserRoute path='/create-post/review'>
-            <CreateReviewPage />
-          </UserRoute>
+            <UserRoute path='/create-post/review'>
+              <CreateReviewPage />
+            </UserRoute>
 
-          <UserRoute path='/notifications'>
-            <NotificationPage />
-          </UserRoute>
+            <UserRoute path='/notifications'>
+              <NotificationPage />
+            </UserRoute>
 
-          <Route path="/auth">
-            <Auth />
-          </Route>
+            <Route path="/auth">
+              <Auth />
+            </Route>
 
-          <AdminRoute path="/admin">
-            <AdminLayout />
-          </AdminRoute>
+            <AdminRoute path="/admin">
+              <AdminPage />
+            </AdminRoute>
 
-          <Route>
-            <NotFound />
-          </Route>
-        </Switch>
+            <Route>
+              <NotFound />
+            </Route>
+          </Switch>
+        </Suspense>
       </ScrollToTop>
 
       <CreatePost />

@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "app/hooks"
 import { ModalReport } from "components/Common"
 import { selectCurrentUser } from "features/auth/authSlice"
 import { commentAction, selectFilterComment } from "features/comment/commentSlice"
-import { useDetectClickOutside } from "hooks"
+import { postAction, selectFilterPost } from "features/posts/postSlice"
 import { Comment, Post, ReplingComment, User } from "models"
 import { useRef, useState } from "react"
 import { useHistory } from "react-router"
@@ -63,6 +63,7 @@ export const ListTool = ({ isPost, isOwner, data }: Props) => {
 
     const dispatch = useAppDispatch()
     const filterComment = useAppSelector(selectFilterComment)
+    const filterPost = useAppSelector(selectFilterPost)
     const { _id } = data
 
     const currentUser: User = useAppSelector(selectCurrentUser)
@@ -71,8 +72,6 @@ export const ListTool = ({ isPost, isOwner, data }: Props) => {
     const [reportContent, setReportContent] = useState('')
     const [showList, setShowList] = useState(false)
     const [showConfirmModal, setShowConfirmModal] = useState(false)
-
-    useDetectClickOutside(listRef, () => setShowList(false))
 
     const handleSubmitReport = async () => {
         if (reportContent.length > 100) {
@@ -140,6 +139,7 @@ export const ListTool = ({ isPost, isOwner, data }: Props) => {
 
             toast.success('Xóa bài viết thành công!')
             !isPost && dispatch(commentAction.setFilter({ ...filterComment }))
+            !isPost && dispatch(postAction.setFilter({ ...filterPost }))
             setShowList(false)
 
             isPost && history.push('/posts')
@@ -153,7 +153,7 @@ export const ListTool = ({ isPost, isOwner, data }: Props) => {
             <Box className={classes.root}>
                 <MoreHoriz
                     className='icon'
-                    onClick={() => setTimeout(() => setShowList(!showList), 100)}
+                    onClick={() => setShowList(!showList)}
                 />
 
                 <List

@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         '& .total-action-wrapper': {
             position: 'absolute',
             bottom: -8,
-            padding: theme.spacing(0.2, 0.5),
+            padding: theme.spacing(0.2, 0.6),
             background: '#fff',
             borderRadius: 10,
             boxShadow: theme.shadows[3]
@@ -221,16 +221,17 @@ export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', co
                             {content}
                         </Typography>
 
-                        {totalLikes > 0 && <Box
-                            className='total-action-wrapper'
-                            onClick={() => setShowModalStatic(true)}
-                        >
-                            <TotalAction
-                                size='small'
-                                quantityLike={totalLikes}
-                                staticLike={numLikes}
-                            />
-                        </Box>}
+                        {totalLikes > 0 &&
+                            <Box
+                                className='total-action-wrapper'
+                                onClick={() => setShowModalStatic(true)}
+                            >
+                                <TotalAction
+                                    size='small'
+                                    quantityLike={totalLikes}
+                                    staticLike={numLikes}
+                                />
+                            </Box>}
                     </Box>
 
                     <Box
