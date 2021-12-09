@@ -116,12 +116,12 @@ const postRouter = (io) => {
             .findById(req.user.id)
             .select("name");
           const icons = [
-            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638789495/emoji/heart_wwwpss.png",
-            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638789496/emoji/in-love_rt8m8i.png",
-            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638789495/emoji/laughing_s2kbam.png",
-            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638789495/emoji/wow_ipppod.png",
-            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638789496/emoji/crying_tlhrrm.png",
-            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638789495/emoji/angry_abxzbn.png",
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1639060681/emoji/love_vil1yw.png",
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1639060681/emoji/kiss_l4lskr.png",
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1639060681/emoji/haha_rrtxk7.png",
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1639060681/emoji/wow_wul2rc.png",
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1639060681/emoji/cry_r0n92w.png",
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1639060680/emoji/angry_iugdix.png",
           ];
           io.notifyToUser(findPost.owner, {
             message: `${getNameUser.name} vừa bày tỏ cảm xúc về bài viết của bạn`,
