@@ -175,6 +175,8 @@ export const ProfieDetail = ({ user, init }: Props) => {
     const handleSubmitEdit = async (data: UpdateData, avatar: File | undefined) => {
         setLoading(true)
 
+        const { avatarUrl, ...updateData } = data
+
         try {
             if (avatar) {
                 const formAvatar = new FormData()
@@ -183,10 +185,11 @@ export const ProfieDetail = ({ user, init }: Props) => {
 
                 const response: Response<any> = await axiosClient.post('/uploads', formAvatar, { headers: { "Content-type": "multipart/form-data" } })
 
-                data.avatarUrl = response.data
+                //@ts-ignore
+                updateData.avatarUrl = response.data
             }
 
-            await userApi.updateUser(data, id)
+            await userApi.updateUser(updateData, id)
 
             init()
 
