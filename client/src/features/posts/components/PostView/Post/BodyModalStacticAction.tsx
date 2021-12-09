@@ -72,7 +72,7 @@ export const BodyModalStacticAction = ({ listLike }: Props) => {
             style={style}
         >
             <Link
-                to='/'
+                to={`/profile/${listLike[index].owner._id}`}
                 className='wrapper'
             >
                 <Badge

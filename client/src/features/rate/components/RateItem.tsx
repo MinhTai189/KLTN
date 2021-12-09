@@ -2,6 +2,7 @@ import { Theme, Tooltip, Typography } from '@material-ui/core'
 import { Report, Star, StarBorder, StarHalf } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import { Rate } from 'models'
+import { Link } from 'react-router-dom'
 import { roundMark } from 'utils'
 
 interface Props {
@@ -149,7 +150,9 @@ export const RateItem = ({ data, handleReport }: Props) => {
             <div className={classes.colRight}>
                 <div className="top">
                     <Typography className='name' variant='h6'>
-                        {data.user.name}
+                        <Link to={`/profile/${data.user._id}`}>
+                            {data.user.name}
+                        </Link>
                     </Typography>
 
                     <div className={`stars ${colorStar}`}>

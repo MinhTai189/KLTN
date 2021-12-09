@@ -188,7 +188,7 @@ export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', co
                                     variant='h6'
                                     className='author-name'
                                 >
-                                    <Link to='/'>
+                                    <Link to={`/profile/${userId}`}>
                                         {name}
                                     </Link>
                                 </Typography>

@@ -139,7 +139,7 @@ export const PostViewSection = memo(({ postData }: Props) => {
             </Typography>
 
             <Box className={classes.authorWrapper}>
-                <Link to='/'>
+                <Link to={`/profile/${postData.owner._id}`}>
                     <Avatar
                         className='avatar'
                         src={postData.owner.avatarUrl}
@@ -149,7 +149,7 @@ export const PostViewSection = memo(({ postData }: Props) => {
                 </Link>
 
                 <Box className='author-info'>
-                    <Link to='/'>
+                    <Link to={`/profile/${postData.owner._id}`}>
                         <Typography
                             className='name'
                             variant='h3'
