@@ -4,6 +4,7 @@ import commentApi from "api/comment"
 import postApi from "api/post"
 import { useAppDispatch, useAppSelector } from "app/hooks"
 import { ModalReport } from "components/Common"
+import { DetectClickOutsize } from "components/Common/DetectClickOutsize"
 import { selectCurrentUser } from "features/auth/authSlice"
 import { commentAction, selectFilterComment } from "features/comment/commentSlice"
 import { postAction, selectFilterPost } from "features/posts/postSlice"
@@ -40,14 +41,6 @@ const useStyles = makeStyles((theme: Theme) => ({
             width: 135,
             zIndex: 100,
             borderRadius: 5,
-            opacity: 0,
-            transform: 'scale(0)',
-            transition: '200ms',
-
-            '&.active': {
-                opacity: 1,
-                transform: 'scale(1)',
-            },
 
             '& .MuiTypography-root': {
                 fontSize: '1em'
@@ -156,51 +149,53 @@ export const ListTool = ({ isPost, isOwner, data }: Props) => {
                     onClick={() => setShowList(!showList)}
                 />
 
-                <List
-                    className={`list-tool ${showList ? 'active' : ''}`}
-                    component="ul"
-                    ref={listRef}
-                >
-                    <ListItem
-                        className='tool'
-                        button
-                        component="li"
-                        onClick={() => setShowConfirmModal(true)}
+                {showList && <DetectClickOutsize cb={() => setTimeout(() => setShowList(false), 100)}>
+                    <List
+                        className='list-tool'
+                        component="ul"
+                        ref={listRef}
                     >
-                        <ListItemText primary="Báo xấu" />
-                    </ListItem>
-
-                    {currentUser && currentUser.isAdmin && <ListItem
-                        className='tool'
-                        button
-                        component="li"
-                        onClick={handleSubmitRemove}
-                    >
-                        <ListItemText primary="Xóa" />
-                    </ListItem>}
-
-
-                    {// @ts-ignore
-                        isOwner && isPost && !data?.block && <ListItem
+                        <ListItem
                             className='tool'
                             button
                             component="li"
-                            onClick={handleSubmitCloseComment}
+                            onClick={() => setShowConfirmModal(true)}
                         >
-                            <ListItemText primary="Đóng bình luận" />
-                        </ListItem>}
+                            <ListItemText primary="Báo xấu" />
+                        </ListItem>
 
-
-                    {// @ts-ignore
-                        isOwner && isPost && !data?.status && <ListItem
+                        {currentUser && currentUser.isAdmin && <ListItem
                             className='tool'
                             button
                             component="li"
-                            onClick={handleSubmitCompletedPost}
+                            onClick={handleSubmitRemove}
                         >
-                            <ListItemText primary="Đã hoàn thành" />
+                            <ListItemText primary="Xóa" />
                         </ListItem>}
-                </List>
+
+
+                        {// @ts-ignore
+                            isOwner && isPost && !data?.block && <ListItem
+                                className='tool'
+                                button
+                                component="li"
+                                onClick={handleSubmitCloseComment}
+                            >
+                                <ListItemText primary="Đóng bình luận" />
+                            </ListItem>}
+
+
+                        {// @ts-ignore
+                            isOwner && isPost && !data?.status && <ListItem
+                                className='tool'
+                                button
+                                component="li"
+                                onClick={handleSubmitCompletedPost}
+                            >
+                                <ListItemText primary="Đã hoàn thành" />
+                            </ListItem>}
+                    </List>
+                </DetectClickOutsize>}
             </Box>
 
             <ModalReport

@@ -14,6 +14,7 @@ const PostViewPage = lazy(() => import('pages/PostViewPage'))
 const PostPage = lazy(() => import('pages/PostPage'))
 const CreateReviewPage = lazy(() => import('pages/CreateReviewPage'))
 const NotificationPage = lazy(() => import('pages/NotificationPage'))
+const PersonalPage = lazy(() => import('pages/PersonalPage'))
 const Auth = lazy(() => import('features/auth'))
 const AdminPage = lazy(() => import('pages/AdminPage'))
 const NotFound = lazy(() => import('components/Common'))
@@ -24,7 +25,7 @@ const App = () => {
 
   useEffect(() => {
     if (!isLogged && Boolean(localStorage.getItem('accessToken'))) {
-      dispatch(authActions.login({ username: '', password: '', rememberMe: true, isAutoLogin: true }))
+      dispatch(authActions.login({ rememberMe: true, isAutoLogin: true }))
     }
   }, [dispatch, isLogged])
 
@@ -51,6 +52,10 @@ const App = () => {
 
             <Route path='/posts'>
               <PostPage />
+            </Route>
+
+            <Route path='/profile/:id'>
+              <PersonalPage />
             </Route>
 
             <UserRoute path='/create-post/review'>

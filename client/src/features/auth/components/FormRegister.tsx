@@ -50,17 +50,6 @@ const useStyles = makeStyles(theme => ({
     grid: {
         padding: theme.spacing(1),
     },
-    wrap: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '100%',
-
-        "& a": {
-            textDecoration: 'none',
-            color: theme.palette.primary.main
-        }
-    },
     center: {
         marginLeft: '50%',
         transform: 'translateX(-50%)',
@@ -166,36 +155,32 @@ function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactE
                                 Thông tin tài khoản
                             </Typography>
 
-                            <Box>
-                                <InputField type="text" control={control} name='username' label='Tài khoản*' required={true} />
+                            <InputField type="text" control={control} name='username' label='Tài khoản*' required={true} />
 
-                                <InputPasswordField name='password' control={control} label='Mật khẩu*' labelWidth={70} required={true} />
-                                <InputPasswordField name='confirmPassword' control={control} label='Xác nhận mật khẩu*' labelWidth={140} required={true} />
+                            <InputPasswordField name='password' control={control} label='Mật khẩu*' labelWidth={70} required={true} />
+                            <InputPasswordField name='confirmPassword' control={control} label='Xác nhận mật khẩu*' labelWidth={140} required={true} />
 
-                                <InputField type="email" control={control} name='email' label='Email' required={true} />
-                            </Box>
+                            <InputField type="email" control={control} name='email' label='Email' required={true} />
                         </Grid>
                         <Grid item className={classes.grid} xs={12} md={7}>
                             <Typography variant='h6'>
                                 Thông tin cá nhân
                             </Typography>
 
-                            <Box>
-                                <InputField type="text" control={control} name='name' label='Họ và tên*' required={true} />
+                            <InputField type="text" control={control} name='name' label='Họ và tên*' required={true} />
 
-                                <Grid container justifyContent='space-between'>
-                                    <Grid item xs={12} md={6}>
-                                        <AutoCompleteField label="Tỉnh*" title='name' onChange={handleProvinceSelected} options={optionsProvince} disabled={optionsProvince.length === 0 ? true : false} />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <AutoCompleteField label="Quận/Huyện/TP*" title='name' value={district} onChange={handleDistrictSelected} options={optionsDistrict} disabled={optionsDistrict.length === 0 ? true : false} />
-                                    </Grid>
+                            <Grid container spacing={1}>
+                                <Grid item md={12} lg={6}>
+                                    <AutoCompleteField label="Tỉnh*" title='name' onChange={handleProvinceSelected} options={optionsProvince} disabled={optionsProvince.length === 0 ? true : false} />
                                 </Grid>
+                                <Grid item md={12} lg={6}>
+                                    <AutoCompleteField label="Quận/Huyện/TP*" title='name' value={district} onChange={handleDistrictSelected} options={optionsDistrict} disabled={optionsDistrict.length === 0 ? true : false} />
+                                </Grid>
+                            </Grid>
 
-                                <SelectField label='Trường*' name='school' control={control} disabled={optionsSchool.length === 0 ? true : false} options={optionsSchool} mt={19} mb={8} />
+                            <SelectField label='Trường*' name='school' control={control} disabled={optionsSchool.length === 0 ? true : false} options={optionsSchool} />
 
-                                <FileInputField name='avatarUrl' onChange={onChange} label='Ảnh đại diện' accept='.png, .jpg, .jpeg' error={errAvatar} />
-                            </Box>
+                            <FileInputField name='avatarUrl' onChange={onChange} label='Ảnh đại diện' accept='.png, .jpg, .jpeg' error={errAvatar} />
                         </Grid>
                     </Grid>
 

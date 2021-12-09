@@ -16,6 +16,41 @@ const authRouter = (io) => {
   router.get("/", async (req, res) => {
     await user.updateMany({}, { likes: [] });
   });
+
+  router.patch('/change-password', verifyToken, async (req, res) => {
+    const { oldPassword, password } = req.body
+
+    try {
+      const foundUser = await user.findOne({ _id: req.user.id })
+
+      if (!foundUser)
+        return res
+          .status(404)
+          .json({ success: false, message: "Không tìm thấy tài khoản!" });
+
+      const checkPass = await argon2.verify(foundUser.password, oldPassword);
+
+      if (!checkPass)
+        return res
+          .status(400)
+          .json({ success: false, message: "Mật khẩu cũ không chính xác!" });
+
+      const hashedPassword = await argon2.hash(password)
+
+      await user.findOneAndUpdate({ _id: req.user.id }, {
+        password: hashedPassword
+      })
+
+      return res
+        .status(200)
+        .json({ success: true, message: "Đổi mật khẩu thành công!" });
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Đổi mật khẩu thất bại!" });
+    }
+  })
+
   router.post("/reset-password", async (req, res) => {
     const { password, token } = req.body;
     let data;

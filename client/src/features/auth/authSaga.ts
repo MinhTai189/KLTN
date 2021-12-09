@@ -16,15 +16,7 @@ function* handleLogin(action: PayloadAction<LoginData>) {
       password: action.payload.password,
     };
 
-    const accessToken = action.payload.accessToken;
-
-    const responseData: Response<User> = accessToken
-      ? yield axiosClient.post('/login', data, {
-          headers: {
-            authorization: accessToken,
-          },
-        })
-      : yield axiosClient.post('/login', data);
+    const responseData: Response<User> = yield axiosClient.post('/login', data);
 
     clearToken();
     if (action.payload.rememberMe) {
@@ -91,8 +83,8 @@ function* handleUnlikeMotel(action: PayloadAction<string>) {
 }
 
 export default function* authSaga() {
-  yield takeLatest(authActions.login.type, handleLogin);
-  yield takeLatest(authActions.logout.type, handleLogout);
+  yield takeLatest(authActions.login, handleLogin);
+  yield takeLatest(authActions.logout, handleLogout);
   yield takeLatest(authActions.likeMotel, handleLikeMotel);
   yield takeLatest(authActions.unlikeMotel, handleUnlikeMotel);
 }

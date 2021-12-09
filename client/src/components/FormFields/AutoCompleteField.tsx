@@ -1,4 +1,4 @@
-import { FormHelperText, makeStyles, TextField } from '@material-ui/core'
+import { FormControl, FormHelperText, makeStyles, TextField } from '@material-ui/core'
 import { Autocomplete } from '@material-ui/lab'
 
 interface Props {
@@ -10,16 +10,14 @@ interface Props {
     value?: any;
     error?: string
     size?: 'medium' | 'small'
+    margin?: 'dense' | 'none' | 'normal'
 
     [key: string]: any
 }
 
-export const AutoCompleteField = ({ options, onChange, label, disabled = false, title, value, error, size = 'medium', ...props }: Props) => {
+export const AutoCompleteField = ({ options, onChange, label, disabled = false, title, value, error, size = 'medium', margin = 'normal', ...props }: Props) => {
     const useStyles = makeStyles(theme => ({
         root: {
-            marginTop: theme.spacing(2),
-            marginBottom: theme.spacing(1),
-
             "& .MuiOutlinedInput-notchedOutline": {
                 borderColor: error ? '#f44336' : 'rgba(0, 0, 0, 0.23)',
             },
@@ -36,7 +34,7 @@ export const AutoCompleteField = ({ options, onChange, label, disabled = false, 
     const classes = useStyles()
 
     return (
-        <>
+        <FormControl margin={margin} fullWidth>
             <Autocomplete
                 className={classes.root}
                 size={size}
@@ -50,6 +48,6 @@ export const AutoCompleteField = ({ options, onChange, label, disabled = false, 
                 {...props}
             />
             {error && error.length > 0 && <FormHelperText style={{ color: '#f44336', marginLeft: 16 }} id="component-error-text">{error}</FormHelperText>}
-        </>
+        </FormControl>
     )
 }

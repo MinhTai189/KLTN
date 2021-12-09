@@ -2,6 +2,7 @@ import { Theme, Tooltip, Typography } from '@material-ui/core'
 import { AccountBalance, CloudUpload, DateRange, Email, Redeem } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import { OwnerDetail } from 'models'
+import { Link } from 'react-router-dom'
 
 interface Props {
     owner: OwnerDetail
@@ -88,7 +89,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const CreatedUser = ({ owner }: Props) => {
     const classes = useStyles()
-    const { avatarUrl, name, rank, email, motels, credit, createdAt } = owner
+    const { _id, avatarUrl, name, rank, email, motels, credit, createdAt } = owner
 
     const createdDate = new Date(createdAt)
     const date = createdDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -100,7 +101,9 @@ export const CreatedUser = ({ owner }: Props) => {
 
             <div className="info">
                 <Typography className='name'>
-                    {name}
+                    <Link to={`/profile/${_id}`}>
+                        {name}
+                    </Link>
                 </Typography>
 
                 <div>

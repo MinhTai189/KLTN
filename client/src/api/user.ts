@@ -1,5 +1,4 @@
-import { Filter, ListResponse } from 'models';
-import { User } from 'react-easy-facebook/dist/types';
+import { Filter, ListResponse, ProfileUser, Response, User } from 'models';
 import axiosClient from './axiosClient';
 
 export const userApi = {
@@ -10,6 +9,10 @@ export const userApi = {
   getUser: (params: Filter): Promise<ListResponse<User>> => {
     const url = '/users';
     return axiosClient.get(url, { params });
+  },
+  getUserById: (id: string): Promise<Response<ProfileUser>> => {
+    const url = `/users/${id}`;
+    return axiosClient.get(url);
   },
   removeUser: (id: string): Promise<any> => {
     const url = `/users/${id}`;

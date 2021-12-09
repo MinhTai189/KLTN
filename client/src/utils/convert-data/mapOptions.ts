@@ -1,4 +1,4 @@
-import { School } from 'models';
+import { District, Province, School } from 'models';
 
 export const mapOptions = {
   school: (school: School[]) => {
@@ -7,9 +7,9 @@ export const mapOptions = {
       value: x.codeName,
     }));
   },
-  schoolAutoComp: (school: School[]) => {
-    return school.map((x) => ({
-      ...school,
+  autoComp: (listData: Province[] | District[] | School[]) => {
+    //@ts-ignore
+    return listData.map((x: any) => ({
       label: x.name,
       key: x._id,
       value: x.codeName,

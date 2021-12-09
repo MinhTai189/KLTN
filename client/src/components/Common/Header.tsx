@@ -197,11 +197,8 @@ export const Header = ({ isChangeNav }: Props) => {
                 >
                     {routes.map((route, index) => {
                         return (
-                            <NavLink to={route.route} exact>
-                                <li
-                                    key={index}
-                                    className='nav-link'
-                                >
+                            <NavLink key={index} to={route.route} exact>
+                                <li className='nav-link'>
                                     <Typography>
                                         {route.name}
                                     </Typography>

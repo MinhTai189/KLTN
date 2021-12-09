@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { Notify, User } from 'models';
 import { LoginData } from './models';
 
@@ -119,6 +119,21 @@ export const selectIsLogged = (state: any) => state.auth.isLogged;
 export const selectLoading = (state: any) => state.auth.loading;
 export const selectCurrentUser = (state: any) => state.auth.currentUser;
 export const selectErr = (state: any) => state.auth.error;
+export const selectUpdateUserData = createSelector(
+  selectCurrentUser,
+  (currentUser: User) => {
+    if (!currentUser) return;
+
+    return {
+      avatarUrl: currentUser.avatarUrl,
+      name: currentUser.name,
+      email: currentUser.email,
+      province: currentUser.province,
+      district: currentUser.district,
+      school: currentUser.school,
+    };
+  }
+);
 
 //reducer
 const authReducer = authSlice.reducer;

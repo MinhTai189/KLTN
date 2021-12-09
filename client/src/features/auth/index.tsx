@@ -13,6 +13,7 @@ import FormRegister from './components/FormRegister';
 import ResetPassword from './components/ResetPassword';
 import { AddiRegisterData, ForgotPasswordData, LoginData, RegisterData } from './models';
 import Background from '../../assets/images/background-auth.jpg'
+import ChangePassword from './components/ChangePassword';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -190,6 +191,10 @@ export default function Auth() {
 
                 <Route path="/auth/reset-password/:token">
                     <ResetPassword />
+                </Route>
+
+                <Route path="/auth/change-password">
+                    <ChangePassword />
                 </Route>
             </Switch>
         </Container>

@@ -7,6 +7,7 @@ import { all, call } from 'redux-saga/effects';
 import threadSaga from 'features/communicate/threadSaga';
 import commentSaga from 'features/comment/commentSaga';
 import notifySaga from 'features/notification/notifySaga';
+import provinceSaga from 'features/province/provinceSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -14,9 +15,10 @@ export default function* rootSaga() {
     call(userSaga),
     call(motelSaga),
     call(postSaga),
-    call(schoolSaga),
     call(threadSaga),
     call(commentSaga),
     call(notifySaga),
+    call(provinceSaga),
+    call(schoolSaga),
   ]);
 }

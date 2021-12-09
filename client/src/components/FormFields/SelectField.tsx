@@ -13,19 +13,19 @@ interface Props {
     options: Array<FieldOption>;
     disabled: boolean;
     defaultValue?: any;
-    mt: number;
-    mb: number;
+    size?: 'medium' | 'small'
+    margin?: 'dense' | 'none' | 'normal'
     [key: string]: any
 }
 
-export const SelectField = ({ label, name, control, options, disabled, defaultValue, mb, mt, ...props }: Props) => {
+export const SelectField = ({ label, name, control, options, disabled, defaultValue, size = 'medium', margin = 'normal', ...props }: Props) => {
     const { field: { value, onChange, onBlur, ref }, fieldState: { invalid, error } } = useController({
         name,
         control
     })
 
     return (
-        <FormControl style={{ marginTop: mt, marginBottom: mb }} variant="outlined" fullWidth disabled={disabled}>
+        <FormControl variant="outlined" fullWidth disabled={disabled} size={size} margin={margin}>
             <InputLabel>{label}</InputLabel>
             <Select
                 labelId="demo-simple-select-outlined-label"

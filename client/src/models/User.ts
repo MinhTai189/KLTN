@@ -1,3 +1,5 @@
+import { School } from 'models';
+
 export interface User {
   _id: string;
   username: string;
@@ -17,6 +19,20 @@ export interface User {
   updatedAt?: string;
   accessToken?: string;
   refreshToken?: string;
+}
+
+export interface ProfileUser {
+  _id: string;
+  name: string;
+  avatarUrl: string;
+  credit: number;
+  isAdmin: boolean;
+  school: School;
+  rank?: string;
+  favorite?: string[];
+  posts?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface UserDataTable {
@@ -41,4 +57,13 @@ export interface Notify {
   read: boolean;
   createdAt: string;
   imageUrl: string;
+}
+
+export interface UpdateData {
+  avatarUrl: string | undefined;
+  name: string;
+  email: string;
+  province: string;
+  district: string;
+  school: string;
 }

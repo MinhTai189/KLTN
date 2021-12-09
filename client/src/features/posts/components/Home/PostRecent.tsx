@@ -172,7 +172,9 @@ export const PostRecent = ({ post }: Props) => {
                         className='name'
                         variant='h6'
                     >
-                        {name}
+                        <Link to={`/profile/${userId}`}>
+                            {name}
+                        </Link>
                     </Typography>
 
                     <Typography

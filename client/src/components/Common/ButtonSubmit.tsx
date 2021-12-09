@@ -9,7 +9,7 @@ const BtnCustom = styled(Button)(({ theme }) => ({
 
     "& .MuiButton-label": {
         color: '#ffffffde',
-        textTransform: 'capitalize'
+        textTransform: 'initial'
     }
 }))
 

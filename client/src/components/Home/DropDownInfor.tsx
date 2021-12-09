@@ -56,9 +56,13 @@ export const DropDownInfor = ({ }: Props) => {
                 </ListItemText>
             </ListItem>}
 
-            <ListItem button>
-                <ListItemText primary='Trang cá nhân' />
-            </ListItem>
+            {currentUser && <ListItem button>
+                <ListItemText>
+                    <Link to={`/profile/${currentUser._id}`}>
+                        Trang cá nhân
+                    </Link>
+                </ListItemText>
+            </ListItem>}
 
             <ListItem
                 button

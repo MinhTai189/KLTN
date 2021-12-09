@@ -129,7 +129,7 @@ export const ModalSelectTypePost = ({ open, setTypeModalOpen }: Props) => {
             <Box className='body-wrapper'>
                 <ul className="list-option">
                     {options.map((option, index) => (
-                        <li className='option'>
+                        <li key={index} className='option'>
                             <Button
                                 onClick={() => {
                                     handleClickSelectPost(index + 1)

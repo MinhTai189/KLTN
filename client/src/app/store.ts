@@ -18,18 +18,20 @@ import threadReducer from 'features/communicate/threadSlice';
 import commentReducer from 'features/comment/commentSlice';
 import createdPostReducer from 'features/posts/openCreatePostModalSlice';
 import notifyReducer from 'features/notification/notifySlice';
+import provinceReducer from 'features/province/provinceSlice';
 
 const reducer = combineReducers({
   auth: authReducer,
   users: userReducer,
   motels: motelReducer,
-  school: schoolReducer,
   post: postReducer,
   thread: threadReducer,
   comment: commentReducer,
   showCreateModal: showCreateModalReducer,
   createdPostModal: createdPostReducer,
   notify: notifyReducer,
+  school: schoolReducer,
+  province: provinceReducer,
   router: connectRouter(history),
 });
 const sagaMiddleware = createSagaMiddleware();

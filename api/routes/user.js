@@ -213,25 +213,17 @@ const userRouter = (io) => {
       const getUser = await user
         .findById(id)
         .select(
-          "-notify -refreshToken -favorite -unsignedName -password -deleted"
+          "-notify -refreshToken -username -email -unsignedName -password -deleted -province -district"
         );
 
       const getUserSchool = await school
         .findOne({ codeName: getUser.school })
         .select("-nameDistricts");
-      const getUserDistrict = await district.findOne({
-        codeName: getUser.district,
-      });
-      const getUserProvince = await province.findOne({
-        codeName: getUser.province,
-      });
+
       let responseUser = {
         ...getUser._doc,
         avatarUrl: getUser.avatarUrl.url,
-        district: getUserDistrict,
-        province: getUserProvince,
         school: getUserSchool,
-        totalLikes: getUser.likes.length,
       };
       res.status(200).json({ data: responseUser, success: true });
     } catch (err) {
