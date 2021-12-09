@@ -31,12 +31,23 @@ const userRouter = (io) => {
       },
       { $push: { likes: req.user.id } }
     );
-    console.log(likeUser);
+
+    const likedUser = await user.findOne({ _id: req.user.id })
+
     if (!likeUser)
       return res
         .status(400)
         .json({ message: "Like không thành công", success: false });
     res.status(200).json({ message: "Thành công", success: true });
+
+    if (likeUser && likedUser) {
+      io.notifyToUser(likeUser._id, {
+        message: `${likedUser.name} đã yêu thích bạn!`,
+        url: `/profile/${likedUser._id}`,
+        imageUrl: 'https://res.cloudinary.com/dpregsdt9/image/upload/v1639059634/emoji/Pngtree_hand_drawn_explosion_flower_like_5455515_majure.png',
+      });
+    }
+
   });
   router.get("/users", verifyToken, async (req, res) => {
     if (!req.user.isAdmin)
