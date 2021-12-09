@@ -13,6 +13,7 @@ export interface User {
   school: string;
   rank?: string;
   favorite?: string[];
+  likes?: string[];
   posts?: number;
   notify?: Notify[];
   createdAt?: string;
@@ -28,9 +29,10 @@ export interface ProfileUser {
   credit: number;
   isAdmin: boolean;
   school: School;
-  rank?: string;
-  favorite?: string[];
-  posts?: number;
+  rank: string;
+  favorite: string[];
+  likes: string[];
+  posts: number;
   createdAt?: string;
   updatedAt?: string;
 }

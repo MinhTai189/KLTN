@@ -6,8 +6,6 @@ const argon2 = require("argon2");
 const verifyToken = require("../middleware/verifyToken");
 const upload = require("../middleware/upload");
 const school = require("../models/school");
-const district = require("../models/districts");
-const province = require("../models/province");
 const ObjectId = require("mongoose").Types.ObjectId;
 const userRouter = (io) => {
   router.delete("/users/likes/:id", verifyToken, async (req, res) => {
@@ -213,7 +211,7 @@ const userRouter = (io) => {
       const getUser = await user
         .findById(id)
         .select(
-          "-notify -refreshToken -username -email -unsignedName -password -deleted -province -district"
+          "-notify -refreshToken -username -email -unsignedName -password -favorite -deleted -province -district"
         );
 
       const getUserSchool = await school

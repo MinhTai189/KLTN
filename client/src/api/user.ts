@@ -22,6 +22,14 @@ export const userApi = {
     const url = `/users/${id}`;
     return axiosClient.patch(url, data);
   },
+  likeUser: (userId: string): Promise<any> => {
+    const url = `/users/likes/${userId}`;
+    return axiosClient.post(url);
+  },
+  unlikeUser: (userId: string): Promise<any> => {
+    const url = `/users/likes/${userId}`;
+    return axiosClient.delete(url);
+  },
   likeMotel: (id: string): Promise<any> => {
     const url = `/users/favorites/${id}`;
     return axiosClient.post(url);

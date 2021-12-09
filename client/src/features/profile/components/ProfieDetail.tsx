@@ -1,12 +1,12 @@
 import { Avatar, Box, Button, List, ListItem, ListItemText, makeStyles, Theme, Typography } from '@material-ui/core'
-import { CardGiftcard, CloudUpload, Loyalty, QuestionAnswer, SupervisedUserCircle, VerifiedUser } from '@material-ui/icons'
+import { CardGiftcard, CloudUpload, Favorite, Loyalty, QuestionAnswer, SupervisedUserCircle, VerifiedUser } from '@material-ui/icons'
 import { Modal } from 'antd'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import Background from 'assets/images/profile-background.jpg'
 import { DetectClickOutsize } from 'components/Common/DetectClickOutsize'
 import { authActions, selectCurrentUser, selectUpdateUserData } from 'features/auth/authSlice'
 import { ProfileUser, Response, UpdateData, User } from 'models'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useHistory } from 'react-router'
 import { ModalBodyEdit } from './ModalBodyEdit'
 import axiosClient from 'api/axiosClient'
@@ -158,18 +158,29 @@ export const ProfieDetail = ({ user, init }: Props) => {
     const history = useHistory()
 
     const dispatch = useAppDispatch()
-    const currentUser = useAppSelector(selectCurrentUser)
+    const currentUser: User = useAppSelector(selectCurrentUser)
     const updateUserData = useAppSelector(selectUpdateUserData)
 
     const [showDropdown, setShowDropdown] = useState(false)
     const [showModalEdit, setShowModalEdit] = useState(false)
     const [loading, setLoading] = useState(false)
 
+    const [isLike, setIsLike] = useState(false)
+
+    useEffect(() => {
+        if (!user || !currentUser)
+            return
+
+        const checkLiked = !!user.likes.find(x => x === currentUser._id)
+
+        setIsLike(checkLiked)
+    }, [user, currentUser])
+
     const listInfo = [
         { icon: <SupervisedUserCircle className='icon' />, label: user.rank },
         { icon: <CardGiftcard className='icon' />, label: `${user.credit} điểm uy tín` },
         { icon: <CloudUpload className='icon' />, label: `${user.posts} bài đăng` },
-        { icon: <Loyalty className='icon' />, label: '12 yêu thích' },
+        { icon: <Loyalty className='icon' />, label: `${user.likes.length} yêu thích` },
     ]
 
     const handleSubmitEdit = async (data: UpdateData, avatar: File | undefined) => {
@@ -203,6 +214,22 @@ export const ProfieDetail = ({ user, init }: Props) => {
         } catch (error: any) {
             setLoading(false)
             toast.error(error.response.data.message)
+        }
+    }
+
+    const handleLikeUser = () => {
+        if (isLike) {
+            userApi.unlikeUser(id)
+                .then(() => { init() })
+                .catch(() => {
+                    toast.error("Đã xảy ra lỗi trong quá trình xử lý!")
+                })
+        } else {
+            userApi.likeUser(id)
+                .then(() => init())
+                .catch(() => {
+                    toast.error("Đã xảy ra lỗi trong quá trình xử lý!")
+                })
         }
     }
 
@@ -260,15 +287,16 @@ export const ProfieDetail = ({ user, init }: Props) => {
                             >
                                 <Button
                                     size='small'
-                                    variant='outlined'
+                                    variant={isLike ? 'contained' : 'outlined'}
                                     color='primary'
-                                    startIcon={<Loyalty />}
+                                    startIcon={isLike ? <Favorite /> : <Loyalty />}
                                     style={{
                                         textTransform: 'initial',
                                         marginRight: 16,
                                     }}
+                                    onClick={handleLikeUser}
                                 >
-                                    Yêu thích
+                                    {isLike ? 'Đã thích' : 'Yêu thích'}
                                 </Button>
 
                                 <Button
