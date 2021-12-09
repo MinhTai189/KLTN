@@ -5,7 +5,41 @@ const removeVietNameseTones = require("../utils/removeVietnameseTones");
 const argon2 = require("argon2");
 const verifyToken = require("../middleware/verifyToken");
 const upload = require("../middleware/upload");
+const school = require("../models/school");
+const district = require("../models/districts");
+const province = require("../models/province");
+const ObjectId = require("mongoose").Types.ObjectId;
 const userRouter = (io) => {
+  router.delete("/users/likes/:id", verifyToken, async (req, res) => {
+    const likeUser = await user.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        likes: { $in: new ObjectId(req.user.id) },
+      },
+      { $pull: { likes: req.user.id } }
+    );
+    console.log(likeUser);
+    if (!likeUser)
+      return res
+        .status(400)
+        .json({ message: "unLike không thành công", success: false });
+    res.status(200).json({ message: "Thành công", success: true });
+  });
+  router.post("/users/likes/:id", verifyToken, async (req, res) => {
+    const likeUser = await user.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        likes: { $nin: new ObjectId(req.user.id) },
+      },
+      { $push: { likes: req.user.id } }
+    );
+    console.log(likeUser);
+    if (!likeUser)
+      return res
+        .status(400)
+        .json({ message: "Like không thành công", success: false });
+    res.status(200).json({ message: "Thành công", success: true });
+  });
   router.get("/users", verifyToken, async (req, res) => {
     if (!req.user.isAdmin)
       return res
@@ -173,7 +207,38 @@ const userRouter = (io) => {
         },
       });
   });
+  router.get("/users/:id", async (req, res) => {
+    try {
+      const id = req.params.id;
+      const getUser = await user
+        .findById(id)
+        .select(
+          "-notify -refreshToken -favorite -unsignedName -password -deleted"
+        );
 
+      const getUserSchool = await school
+        .findOne({ codeName: getUser.school })
+        .select("-nameDistricts");
+      const getUserDistrict = await district.findOne({
+        codeName: getUser.district,
+      });
+      const getUserProvince = await province.findOne({
+        codeName: getUser.province,
+      });
+      let responseUser = {
+        ...getUser._doc,
+        avatarUrl: getUser.avatarUrl.url,
+        district: getUserDistrict,
+        province: getUserProvince,
+        school: getUserSchool,
+        totalLikes: getUser.likes.length,
+      };
+      res.status(200).json({ data: responseUser, success: true });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ success: false, message: "Lỗi không xác định" });
+    }
+  });
   router.patch("/users/:id", verifyToken, async (req, res) => {
     const id = req.params.id;
     if (JSON.stringify(req.user.id) !== JSON.stringify(id) && !req.user.isAdmin)
@@ -214,13 +279,7 @@ const userRouter = (io) => {
           .json({ success: true, message: "Đã thay đổi mật khẩu thành công!" });
       } else {
         newDataUser = {};
-        const {
-          name,
-          school,
-          district,
-          province,
-          avatarUrl: avatar,
-        } = req.body;
+        const { name, school, district, province, avatarUrl } = req.body;
         if (
           !name &&
           typeof avatarUrl === "undefined" &&

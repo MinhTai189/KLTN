@@ -386,3 +386,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1
 ###
 GET http://localhost:5000/api/notify/?_page=1&_limit=2&_read[]=true&_read[]=true
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImNyZWRpdCI6OTksImlhdCI6MTYzODcxMDA0NywiZXhwIjoxNjM4NzEwNjQ3fQ.4rJvYIwuVvmgEf0JF0fTwX4srM4ejqeyoKXYxe2el48
+
+###
+post http://localhost:5000/api/users/likes/613c7e3ccd9544ae50e269dd
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNGZkOGQ3ZjRkNzE1ZmFlN2RkNGJmMSIsImlzQWRtaW4iOnRydWUsImNyZWRpdCI6OTksImlhdCI6MTYzOTAyNTM1MSwiZXhwIjoxNjM5MDI1OTUxfQ.Xb09OCjgtMI9u8PBwivqYodl-vlRZlLsi-KSdrxgi4g

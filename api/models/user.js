@@ -85,6 +85,9 @@ const UserSchema = new Schema(
       required: true,
       default: false,
     },
+    likes: {
+      type: [{ type: mongoose.Schema.Types.ObjectId }],
+    },
   },
   { timestamps: true }
 );
