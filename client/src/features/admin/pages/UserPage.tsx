@@ -1,7 +1,7 @@
 import { Route, Switch } from 'react-router-dom'
-import UserListPage from './pages/UserListPage'
+import UserListPage from './UserListPage'
 
-const Users = () => {
+const UserPage = () => {
 
     return (
         <Switch>
@@ -12,4 +12,4 @@ const Users = () => {
     )
 }
 
-export default Users
+export default UserPage

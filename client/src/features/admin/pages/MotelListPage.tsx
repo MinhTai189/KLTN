@@ -1,9 +1,9 @@
 import { Box, LinearProgress } from "@material-ui/core"
 import { useAppDispatch, useAppSelector } from "app/hooks"
+import { MotelTable, Operation, UpdateForm } from "features/motels/components"
 import { Filter, MotelDataTable, MotelOnly, Room } from "models"
 import { useEffect, useState } from "react"
-import { MotelTable, Operation, UpdateForm } from "../components"
-import { motelActions, selectFilterMotel, selectLoadingMotel, selectMotelSplited } from "../motelSlice"
+import { motelActions, selectFilterMotel, selectLoadingMotel, selectMotelSplited } from "features/motels/motelSlice"
 
 const MotelListPage = () => {
     const dispatch = useAppDispatch()
@@ -150,7 +150,6 @@ const MotelListPage = () => {
 
 
                 <MotelTable
-                    // setUserUpdating={setUserUpdating}
                     onClickEditMotel={onClickEditMotel}
                     handleRemove={handleRemove}
                 />

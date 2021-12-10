@@ -1,17 +1,28 @@
-import { Layout } from 'antd'
+import { ArrowLeftOutlined } from '@ant-design/icons'
+import { Button, Layout } from 'antd'
 import { AdminSider } from 'features/admin/components'
-import BrowseList from 'features/browse-list'
+import ApprovePage from 'features/admin/pages/ApprovePage'
+import MotelPage from 'features/admin/pages/MotelPage'
+import UserPage from 'features/admin/pages/UserPage'
 import Dashboard from 'features/dashboard'
-import Motel from 'features/motels'
-import Users from 'features/users'
-import { Switch, Route } from 'react-router-dom'
+import { Link, Route, Switch } from 'react-router-dom'
 
 const { Header, Content } = Layout
 
 const AdminPage = () => {
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <Header />
+            <Header>
+                <Button
+                    type="primary"
+                    icon={<ArrowLeftOutlined />}
+                    size='small'
+                >
+                    <Link to='/'>
+                        Trang chủ
+                    </Link>
+                </Button>
+            </Header>
 
             <Layout>
                 <AdminSider />
@@ -23,15 +34,15 @@ const AdminPage = () => {
                         </Route>
 
                         <Route path='/admin/users'>
-                            <Users />
+                            <UserPage />
                         </Route>
 
                         <Route path='/admin/motels'>
-                            <Motel />
+                            <MotelPage />
                         </Route>
 
-                        <Route path='/admin/browse-list'>
-                            <BrowseList />
+                        <Route path='/admin/approves'>
+                            <ApprovePage />
                         </Route>
                     </Switch>
                 </Content>

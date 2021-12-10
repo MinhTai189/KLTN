@@ -1,8 +1,8 @@
 import { useAppDispatch } from "app/hooks"
 import { Motel } from "models"
 import { useState } from "react"
-import { AddForm } from "../components/Forms/AddForm"
-import { motelActions } from "../motelSlice"
+import { AddForm } from "../../motels/components/Forms/AddForm"
+import { motelActions } from "../../motels/motelSlice"
 
 const AddPage = () => {
     const [formThumbnail, setFormThumbnail] = useState<any>()

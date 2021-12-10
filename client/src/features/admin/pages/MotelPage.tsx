@@ -1,8 +1,8 @@
 import { Switch, Route } from 'react-router-dom'
-import AddPage from './pages/AddPage'
-import MotelListPage from './pages/MotelListPage'
+import AddPage from './AddPage'
+import MotelListPage from './MotelListPage'
 
-const Motel = () => {
+const MotelPage = () => {
     return (
         <Switch>
             <Route path='/admin/motels' exact>
@@ -16,4 +16,4 @@ const Motel = () => {
     )
 }
 
-export default Motel
+export default MotelPage
