@@ -64,6 +64,14 @@ export const DropDownInfor = ({ }: Props) => {
                 </ListItemText>
             </ListItem>}
 
+            {currentUser && <ListItem button>
+                <ListItemText>
+                    <Link to='/add-motel'>
+                        Đăng nhà trọ
+                    </Link>
+                </ListItemText>
+            </ListItem>}
+
             <ListItem
                 button
                 onClick={handleClickCreatePost}

@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { AdminRoute, ScrollToTop, UserRoute } from 'components/Common';
 import { authActions, selectIsLogged } from 'features/auth/authSlice';
 import { CreatePost } from 'features/posts/components';
+import AddMotelPage from 'pages/AddMotelPage';
 import { lazy, Suspense, useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
@@ -45,6 +46,10 @@ const App = () => {
             <Route path="/motels">
               <MotelPage />
             </Route>
+
+            <UserRoute path="/add-motel">
+              <AddMotelPage />
+            </UserRoute>
 
             <Route path='/posts/:id'>
               <PostViewPage />

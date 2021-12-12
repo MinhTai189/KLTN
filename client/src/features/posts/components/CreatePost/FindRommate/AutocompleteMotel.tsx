@@ -4,6 +4,7 @@ import { Autocomplete } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/styles'
 import { Motel } from 'models'
 import { ChangeEvent, ComponentType, HTMLAttributes } from 'react'
+import { Link, useHistory } from 'react-router-dom'
 import ListboxComponent from '../ListboxComponent'
 import { MotelRowOption } from './MotelRowOption'
 
@@ -45,6 +46,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const AutocompleteMotel = ({ listMotel, errMotel, value, onChange, loading }: Props) => {
     const classes = useStyles()
+    const history = useHistory()
 
     const NoOption = (
         <Box className={classes.noOption}>
@@ -59,7 +61,11 @@ export const AutocompleteMotel = ({ listMotel, errMotel, value, onChange, loadin
                 Hãy thêm dữ liệu nhà trọ trước khi đăng tin
             </Typography>
 
-            <AddCircle className='add-icon' />
+            <Link to='/add-motel'>
+                <AddCircle
+                    className='add-icon'
+                />
+            </Link>
         </Box>
     )
 
