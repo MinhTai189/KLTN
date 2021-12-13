@@ -14,14 +14,14 @@ const axios = require("axios").default;
 const verifyToken = require("../middleware/verifyToken");
 const authRouter = (io) => {
   router.get("/", async (req, res) => {
-    await user.updateMany({}, { likes: [] });
+    await user.updateMany({}, { done: [] });
   });
 
-  router.patch('/change-password', verifyToken, async (req, res) => {
-    const { oldPassword, password } = req.body
+  router.patch("/change-password", verifyToken, async (req, res) => {
+    const { oldPassword, password } = req.body;
 
     try {
-      const foundUser = await user.findOne({ _id: req.user.id })
+      const foundUser = await user.findOne({ _id: req.user.id });
 
       if (!foundUser)
         return res
@@ -35,11 +35,14 @@ const authRouter = (io) => {
           .status(400)
           .json({ success: false, message: "Mật khẩu cũ không chính xác!" });
 
-      const hashedPassword = await argon2.hash(password)
+      const hashedPassword = await argon2.hash(password);
 
-      await user.findOneAndUpdate({ _id: req.user.id }, {
-        password: hashedPassword
-      })
+      await user.findOneAndUpdate(
+        { _id: req.user.id },
+        {
+          password: hashedPassword,
+        }
+      );
 
       return res
         .status(200)
@@ -49,7 +52,7 @@ const authRouter = (io) => {
         .status(400)
         .json({ success: false, message: "Đổi mật khẩu thất bại!" });
     }
-  })
+  });
 
   router.post("/reset-password", async (req, res) => {
     const { password, token } = req.body;

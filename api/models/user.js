@@ -88,6 +88,18 @@ const UserSchema = new Schema(
     likes: {
       type: [{ type: mongoose.Schema.Types.ObjectId }],
     },
+    done: {
+      type: [
+        {
+          title: String,
+          content: String,
+          createdAt: Date,
+          url: String,
+        },
+      ],
+      required: false,
+      default: [],
+    },
   },
   { timestamps: true }
 );

@@ -8,6 +8,20 @@ const upload = require("../middleware/upload");
 const school = require("../models/school");
 const ObjectId = require("mongoose").Types.ObjectId;
 const userRouter = (io) => {
+  router.delete("/users/done-jobs/:id", verifyToken, async (req, res) => {
+    const userDid = await user.findOneAndUpdate(
+      {
+        _id: req.user.id,
+      },
+      { $pull: { done: { _id: req.params.id } } }
+    );
+    console.log(userDid);
+    if (!userDid)
+      return res
+        .status(400)
+        .json({ message: "Không thành công", success: false });
+    res.status(200).json({ message: "Thành công", success: true });
+  });
   router.delete("/users/likes/:id", verifyToken, async (req, res) => {
     const likeUser = await user.findOneAndUpdate(
       {
@@ -32,7 +46,7 @@ const userRouter = (io) => {
       { $push: { likes: req.user.id } }
     );
 
-    const likedUser = await user.findOne({ _id: req.user.id })
+    const likedUser = await user.findOne({ _id: req.user.id });
 
     if (!likeUser)
       return res
@@ -44,10 +58,10 @@ const userRouter = (io) => {
       io.notifyToUser(likeUser._id, {
         message: `${likedUser.name} đã yêu thích bạn!`,
         url: `/profile/${likedUser._id}`,
-        imageUrl: 'https://res.cloudinary.com/dpregsdt9/image/upload/v1639059634/emoji/Pngtree_hand_drawn_explosion_flower_like_5455515_majure.png',
+        imageUrl:
+          "https://res.cloudinary.com/dpregsdt9/image/upload/v1639059634/emoji/Pngtree_hand_drawn_explosion_flower_like_5455515_majure.png",
       });
     }
-
   });
   router.get("/users", verifyToken, async (req, res) => {
     if (!req.user.isAdmin)
@@ -233,6 +247,7 @@ const userRouter = (io) => {
         ...getUser._doc,
         avatarUrl: getUser.avatarUrl.url,
         school: getUserSchool,
+        done: getUser.done.sort((d1, d2) => new Date(d2) - new Date(d1)),
       };
       res.status(200).json({ data: responseUser, success: true });
     } catch (err) {

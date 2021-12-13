@@ -9,6 +9,8 @@ const post = require("../models/post");
 const objectId = require("mongoose").Types.ObjectId;
 const verifyToken = require("../middleware/verifyToken");
 const report = require("../models/report");
+const addDone = require("../utils/done");
+const proposal = require("../utils/proposal");
 const postRouter = (io) => {
   router.post("/reports", verifyToken, async (req, res) => {
     try {
@@ -350,6 +352,7 @@ const postRouter = (io) => {
       const comments = await commentModel.find({ post: responsePost._id });
       responsePost.numComments = comments.length;
       responsePost.totalLikes = responsePost.likes.length;
+      responsePost = await proposal(responsePost);
       res.status(200).json({ success: true, data: responsePost });
       await subjectModel.findByIdAndUpdate(findPost.subject._id, {
         $inc: { views: 1 },
@@ -585,7 +588,15 @@ const postRouter = (io) => {
           await subjectModel.findByIdAndUpdate(subjectId, {
             $inc: { posts: 1 },
           });
+          addDone(req.user.id, "Đăng bài viết mới", {
+            type: "createdPost",
+            subjectId: subjectId,
+            title: title,
+            content: content,
+            postId: JSON.stringify(newPost._id),
+          });
         }
+
         return res.status(200).json({
           success: true,
           message: "Đã đăng bài bài viết thành công",
@@ -628,6 +639,13 @@ const postRouter = (io) => {
           await subjectModel.findByIdAndUpdate(subjectId, {
             $inc: { posts: 1 },
           });
+          addDone(req.user.id, "Đăng bài viết mới", {
+            type: "createdPost",
+            subjectId: subjectId,
+            title: title,
+            content: content,
+            postId: JSON.stringify(newPost._id),
+          });
         }
         return res.status(200).json({
           success: true,
@@ -667,6 +685,13 @@ const postRouter = (io) => {
           });
           await subjectModel.findByIdAndUpdate(subjectId, {
             $inc: { posts: 1 },
+          });
+          addDone(req.user.id, "Đăng bài viết mới", {
+            type: "createdPost",
+            subjectId: subjectId,
+            title: title,
+            content: content,
+            postId: JSON.stringify(newPost._id),
           });
         }
         return res.status(200).json({

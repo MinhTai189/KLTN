@@ -4,6 +4,7 @@ const motel = require("../models/motel");
 const report = require("../models/report");
 const school = require("../models/school");
 const user = require("../models/user");
+const add = require("../utils/done");
 const removeVietNameseTones = require("../utils/removeVietnameseTones");
 const router = express.Router();
 const rateRouter = (io) => {
@@ -228,7 +229,7 @@ const rateRouter = (io) => {
     else {
       try {
         const valid = req.user.isAdmin;
-        if (valid)
+        if (valid) {
           await motel.findByIdAndUpdate(req.params.id, {
             $push: {
               rate: {
@@ -242,7 +243,14 @@ const rateRouter = (io) => {
             vote: findMotel.vote + star,
             mark: (findMotel.vote + star) / (findMotel.rate.length + 1),
           });
-        else
+
+          add(req.user.id, "Đánh giá nhà trọ", {
+            type: "rating",
+            motelId: req.params.id,
+            content: content,
+            star: star,
+          });
+        } else
           await motel.findByIdAndUpdate(req.params.id, {
             $push: {
               rate: {
@@ -261,13 +269,14 @@ const rateRouter = (io) => {
               "Đánh giá thành công, hãy chờ người quản trị duyệt thông tin này, xin cảm ơn bạn đã góp ý",
           });
         if (req.user.isAdmin)
-          io.notifyToUser(findMotel.owner, {
-            message: ` vừa đánh giá về nhà trọ bạn đăng`,
-            url: `/motels/${findMotel._id}`,
-            ownerId: req.user.id,
-            imageUrl:
-              "https://res.cloudinary.com/dpregsdt9/image/upload/v1638662093/notify/rating_x9e2j5.png",
-          });
+          if (JSON.stringify(req.user.id !== JSON.stringify(findMotel.owner)))
+            io.notifyToUser(findMotel.owner, {
+              message: ` vừa đánh giá về nhà trọ bạn đăng`,
+              url: `/motels/${findMotel._id}`,
+              ownerId: req.user.id,
+              imageUrl:
+                "https://res.cloudinary.com/dpregsdt9/image/upload/v1638662093/notify/rating_x9e2j5.png",
+            });
         res.status(200).json({
           success: true,
           message: "Đánh giá thành công, xin cảm ơn bạn đã góp ý",

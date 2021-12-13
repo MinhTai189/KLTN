@@ -7,6 +7,7 @@ const school = require("../models/school");
 const user = require("../models/user");
 const report = require("../models/report");
 const router = express.Router();
+const add = require("../utils/done");
 const ObjectId = require("mongoose").Types.ObjectId;
 const commentRouter = (io) => {
   router.post("/reports", verifyToken, async (req, res) => {
@@ -275,7 +276,19 @@ const commentRouter = (io) => {
           imageUrl:
             "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/comment_iaa4wh.png",
         });
-
+      if (newComment.reply)
+        add(req.user.id, "Trả lời bình luận", {
+          type: "repComment",
+          commentId: commentId,
+          content: content,
+          postId: postId,
+        });
+      else
+        add(req.user.id, "Bình luận bài viết", {
+          type: "createdComment",
+          postId: postId,
+          content: content,
+        });
       if (newComment.reply)
         if (JSON.stringify(req.user.id) !== JSON.stringify(userId))
           io.notifyToUser(userId, {
