@@ -4,6 +4,12 @@ import { Link } from 'react-router-dom'
 
 interface Props {
     children: any
+    isUpdate?: boolean
+    isReview?: boolean
+    isReport?: boolean
+    openCompareModal?: () => void
+    openPreviewModal?: () => void
+    type: string
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -48,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) => ({
                     fontSize: '0.65em',
                     padding: theme.spacing(0.2, 0.7),
                     borderRadius: 10,
-                    background: '#ccc'
+                    background: '#edeef2'
                 }
             },
         },
@@ -56,13 +62,12 @@ const useStyles = makeStyles((theme: Theme) => ({
         '& > .body': {
             padding: theme.spacing(0.1, 1.5),
             marginTop: theme.spacing(1),
-            height: 300,
             boxShadow: theme.shadows[4]
         }
     }
 }))
 
-export const ApproveItem = ({ children }: Props) => {
+export const ApproveItem = ({ children, isUpdate, isReview, isReport, type, openCompareModal, openPreviewModal }: Props) => {
     const classes = useStyles()
 
     return (
@@ -86,7 +91,7 @@ export const ApproveItem = ({ children }: Props) => {
                             <span className="dot" />
 
                             <Typography className='type'>
-                                Thêm mới
+                                {type}
                             </Typography>
                         </span>
                     </span>
@@ -108,14 +113,45 @@ export const ApproveItem = ({ children }: Props) => {
                         Xóa
                     </Button>
 
-                    <Button
+                    {isUpdate || isReview && <Button
+                        className='btn btn-remove'
+                        color='primary'
+                        variant='outlined'
+                        size='small'
+                        style={{
+                            borderColor: '#bb86fc',
+                            color: '#bb86fc',
+                            marginRight: 16,
+                            textTransform: 'initial'
+                        }}
+                        onClick={() => { openCompareModal?.(); openPreviewModal?.() }}
+                    >
+                        {isReview ? 'Xem trước' : 'So sánh'}
+                    </Button>}
+
+                    {!isReport ? <Button
                         className='btn btn-accept'
                         color='primary'
                         variant='contained'
                         size='small'
+                        style={{
+                            textTransform: 'initial'
+                        }}
                     >
                         Duyệt
                     </Button>
+
+                        : <Button
+                            className='btn btn-accept'
+                            color='primary'
+                            variant='contained'
+                            size='small'
+                            style={{
+                                textTransform: 'initial'
+                            }}
+                        >
+                            Xem xét
+                        </Button>}
                 </Box>
             </Box>
 

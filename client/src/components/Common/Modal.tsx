@@ -42,6 +42,10 @@ export const Modal = ({ open, children, onCancel }: Props) => {
         } else {
             body.style.overflow = "auto"
         }
+
+        return () => {
+            body.style.overflow = "auto"
+        }
     }, [open])
 
     return (

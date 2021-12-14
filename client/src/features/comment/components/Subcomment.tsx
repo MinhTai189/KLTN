@@ -22,7 +22,7 @@ export const Subcomment = ({ replyData }: Props) => {
 
     const handleReply = () => {
         if (replyRef.current)
-            value.handleSubmitReply(_id, userId, replyRef.current.value)
+            value.handleSubmitReply(_id, userId, replyRef.current.getValue())
     }
 
     return (
@@ -49,6 +49,7 @@ export const Subcomment = ({ replyData }: Props) => {
                         isRely
                         repliedUserName={value.typing.username}
                         handleSubmit={() => handleReply()}
+                        ref={replyRef}
                     />}
                 </>
             </CommentLayout>

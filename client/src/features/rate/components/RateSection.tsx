@@ -90,7 +90,7 @@ export const RateSection = ({ motelName, rateList, motelId }: Props) => {
                 motelId,
             })
 
-            toast.success('Đã thực hiện đánh giá thành công!')
+            toast.success('Đã thực hiện đánh giá thành công! Hãy chờ "Người quản trị web" xác thực đánh giá của bạn')
 
             setLoading(false)
             setOpenRateModal(false)
@@ -135,12 +135,12 @@ export const RateSection = ({ motelName, rateList, motelId }: Props) => {
 
             setLoading(false)
             setOpenReportModal(false)
-            
+
             toast.success('Đã thực hiện tố cáo thành công!')
         } catch (error: any) {
             setLoading(false)
             setOpenReportModal(false)
-            
+
             toast.error(error.response.data.message)
         }
     }

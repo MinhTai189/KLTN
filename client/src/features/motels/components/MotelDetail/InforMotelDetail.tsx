@@ -258,9 +258,9 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
         },
     }))(Tooltip);
 
-    const TopToolTip = (avatar: string, name: string, isAdmin: boolean) => {
+    const TopToolTip = (userId: string, avatar: string, name: string, isAdmin: boolean) => {
         return (
-            <Link to='/'>
+            <Link to={`/profile/${userId}`}>
                 <Box className='top-tooltip'>
                     <img src={avatar} alt="avatar" />
 
@@ -413,7 +413,7 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
                                             <Box
                                                 className='tooltip-wrraper'
                                             >
-                                                {TopToolTip(e.user.avatarUrl, e.user.name, e.user.isAdmin)}
+                                                {TopToolTip(e.user._id, e.user.avatarUrl, e.user.name, e.user.isAdmin)}
                                                 {BottomToolTip(e.edited, e.createdAt)}
                                             </Box>
                                         }
