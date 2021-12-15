@@ -113,7 +113,7 @@ export const ApproveItem = ({ children, isUpdate, isReview, isReport, type, open
                         Xóa
                     </Button>
 
-                    {isUpdate || isReview && <Button
+                    {(isUpdate || isReview) && <Button
                         className='btn btn-remove'
                         color='primary'
                         variant='outlined'

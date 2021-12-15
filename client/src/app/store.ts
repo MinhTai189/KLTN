@@ -19,6 +19,10 @@ import commentReducer from 'features/comment/commentSlice';
 import createdPostReducer from 'features/posts/openCreatePostModalSlice';
 import notifyReducer from 'features/notification/notifySlice';
 import provinceReducer from 'features/province/provinceSlice';
+import motelApproveReducer from 'features/approves/motelApprove';
+import postApproveReducer from 'features/approves/postApprove';
+import rateApproveReducer from 'features/approves/rateApprove';
+import reportApproveReducer from 'features/approves/reportApprove';
 
 const reducer = combineReducers({
   auth: authReducer,
@@ -32,6 +36,10 @@ const reducer = combineReducers({
   notify: notifyReducer,
   school: schoolReducer,
   province: provinceReducer,
+  motelApprove: motelApproveReducer,
+  postApprove: postApproveReducer,
+  rateApprove: rateApproveReducer,
+  reportApprove: reportApproveReducer,
   router: connectRouter(history),
 });
 const sagaMiddleware = createSagaMiddleware();
