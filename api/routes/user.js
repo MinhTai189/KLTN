@@ -8,6 +8,40 @@ const upload = require("../middleware/upload");
 const school = require("../models/school");
 const ObjectId = require("mongoose").Types.ObjectId;
 const userRouter = (io) => {
+  router.get("/users/done-jobs", verifyToken, async (req, res) => {
+    try {
+      const done = await user.findById(req.user.id).select("done");
+      if (!done)
+        return res
+          .status(400)
+          .json({ success: false, message: "Không tìm thấy người dùng" });
+      const { _page, _limit, _read } = req.query;
+      let responseDone = [...done.done].sort((n1, n2) => {
+        return new Date(n2.createdAt) - new Date(n1.createdAt);
+      });
+      let page = 1,
+        limit = responseDone.length,
+        totalRows = responseDone.length;
+
+      if (!isNaN(parseInt(_limit))) {
+        limit = parseInt(_limit);
+      }
+      if (!isNaN(parseInt(_page))) page = parseInt(_page);
+      responseDone = responseDone.slice((page - 1) * limit, limit * page);
+      res.status(200).json({
+        success: true,
+        data: responseDone,
+        pagination: {
+          _page: page,
+          _limit: limit,
+          _totalRows: totalRows,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
+    }
+  });
   router.delete("/users/done-jobs/:id", verifyToken, async (req, res) => {
     const userDid = await user.findOneAndUpdate(
       {

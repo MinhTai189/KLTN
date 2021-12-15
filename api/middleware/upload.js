@@ -7,6 +7,11 @@ cloudinary.config({
 });
 
 const upload = async (req, res, next) => {
+  cloudinary.config({
+    cloud_name: process.env.CLOUND_NAME,
+    api_key: process.env.CLOUND_API_KEY,
+    api_secret: process.env.CLOUND_API_SECRET,
+  });
   if (!req.files)
     return res.status(400).json({ success: false, message: "Khong co file" });
   var files;
@@ -81,9 +86,13 @@ const upload = async (req, res, next) => {
 };
 
 const unlink = async (public_id) => {
+  cloudinary.config({
+    cloud_name: process.env.CLOUND_NAME,
+    api_key: process.env.CLOUND_API_KEY,
+    api_secret: process.env.CLOUND_API_SECRET,
+  });
   try {
     let rel;
-    if (public_id.split("/")[0] === "post") cloudinary = cloudinary2;
     await cloudinary.v2.uploader.destroy(public_id, (err, result) => {
       if (err) console.log(err);
       rel = result;
@@ -95,6 +104,11 @@ const unlink = async (public_id) => {
   }
 };
 const rename = async (public_id, newPublic_id) => {
+  cloudinary.config({
+    cloud_name: process.env.CLOUND_NAME,
+    api_key: process.env.CLOUND_API_KEY,
+    api_secret: process.env.CLOUND_API_SECRET,
+  });
   let res;
   await cloudinary.v2.uploader.rename(
     public_id,
@@ -108,7 +122,8 @@ const rename = async (public_id, newPublic_id) => {
   );
   const folderToDelete = public_id.split("/");
   cloudinary.v2.api.delete_folder(folderToDelete[0], async (err, result) => {
-    if (err) throw err;
+    if (err) {
+    }
   });
   if (res == undefined) return { success: false };
   else return { success: true, data: res };

@@ -7,6 +7,11 @@ cloudinary.config({
 });
 
 const upload = async (req, res, next) => {
+  cloudinary.config({
+    cloud_name: process.env.CLOUND_NAME2,
+    api_key: process.env.CLOUND_API_KEY2,
+    api_secret: process.env.CLOUND_API_SECRET2,
+  });
   if (!req.files)
     return res.status(400).json({
       error: {
