@@ -70,6 +70,10 @@ module.exports.listen = function socket(server) {
 
   io.notifyToAllUser = async (data) => {
     const newId = uuid.v4();
+    if (data.ownerId) {
+      findOwner = await user.findById(data.ownerId).select("name");
+      data.message = `${findOwner.name}${data.message}`;
+    }
     const notify = { ...data, read: false, _id: newId, createdAt: new Date() };
     await user.updateMany({ deleted: false }, { $push: { notify: notify } });
     await user.updateMany(

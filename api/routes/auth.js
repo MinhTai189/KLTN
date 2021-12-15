@@ -13,9 +13,9 @@ const removeVietnameseTones = require("../utils/removeVietnameseTones");
 const axios = require("axios").default;
 const verifyToken = require("../middleware/verifyToken");
 const authRouter = (io) => {
-  router.get("/", async (req, res) => {
-    await user.updateMany({}, { done: [] });
-  });
+  // router.get("/", async (req, res) => {
+  //   await user.updateMany({}, { done: [] });
+  // });
 
   router.patch("/change-password", verifyToken, async (req, res) => {
     const { oldPassword, password } = req.body;
