@@ -1,17 +1,17 @@
 import { Avatar, Box, Button, List, ListItem, ListItemText, makeStyles, Theme, Typography } from '@material-ui/core'
 import { CardGiftcard, CloudUpload, Favorite, Loyalty, QuestionAnswer, SupervisedUserCircle, VerifiedUser } from '@material-ui/icons'
 import { Modal } from 'antd'
+import axiosClient from 'api/axiosClient'
+import { userApi } from 'api/user'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import Background from 'assets/images/profile-background.jpg'
 import { DetectClickOutsize } from 'components/Common/DetectClickOutsize'
 import { authActions, selectCurrentUser, selectUpdateUserData } from 'features/auth/authSlice'
 import { ProfileUser, Response, UpdateData, User } from 'models'
 import { useEffect, useState } from 'react'
-import { useParams, useHistory } from 'react-router'
-import { ModalBodyEdit } from './ModalBodyEdit'
-import axiosClient from 'api/axiosClient'
-import { userApi } from 'api/user'
+import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
+import { ModalBodyEdit } from './ModalBodyEdit'
 
 interface Props {
     user: ProfileUser
@@ -25,6 +25,10 @@ const useStyles = makeStyles((theme: Theme) => ({
             height: '50vh',
             background: `url(${Background}) no-repeat right bottom`,
             backgroundSize: 'cover',
+
+            [theme.breakpoints.down('xs')]: {
+                height: '30vh',
+            },
         },
 
         '& .container-profile': {
@@ -34,12 +38,25 @@ const useStyles = makeStyles((theme: Theme) => ({
             padding: theme.spacing(0, 1),
             margin: 'auto',
 
+            [theme.breakpoints.down('xs')]: {
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                transform: 'translateY(-25%)',
+            },
+
             '& > .avatar': {
                 width: '17vw',
                 height: '17vw',
                 boxShadow: theme.shadows[10],
                 transform: 'translateY(-40%)',
-                border: '5px solid #fff'
+                border: '5px solid #fff',
+
+                [theme.breakpoints.down('xs')]: {
+                    width: '40vw',
+                    height: '40vw',
+                    transform: 'translateY(0)',
+                },
             },
 
             '& > .wrapper': {
@@ -48,41 +65,67 @@ const useStyles = makeStyles((theme: Theme) => ({
                 display: 'flex',
                 width: '100%',
 
+                [theme.breakpoints.down('md')]: {
+                    marginLeft: theme.spacing(3),
+                },
+
                 '& .detail-info': {
                     flex: 1,
 
                     '& .name': {
                         fontSize: '2.3rem',
                         fontWeight: 600,
+
+                        [theme.breakpoints.down('md')]: {
+                            fontSize: '1.9rem',
+                        }
                     },
 
                     '& .school': {
                         fontSize: '1.05rem',
                         paddingLeft: theme.spacing(0.5),
                         fontWeight: 500,
+
+                        [theme.breakpoints.down('md')]: {
+                            fontSize: '0.95rem',
+                        }
                     },
 
                     '& .list-info': {
                         display: 'flex',
+                        flexWrap: 'wrap',
                         marginTop: theme.spacing(1),
                         paddingLeft: theme.spacing(0.5),
+                        gap: theme.spacing(2),
+
+                        [theme.breakpoints.down('xs')]: {
+                            justifyContent: 'center'
+                        },
 
                         '& .item': {
                             display: 'flex',
                             alignItems: 'center',
-                            marginRight: theme.spacing(2),
 
                             '& .icon': {
                                 fill: theme.palette.text.secondary,
                                 marginRight: theme.spacing(0.5),
                                 width: 16,
                                 height: 16,
+
+                                [theme.breakpoints.down('md')]: {
+                                    width: 14,
+                                    height: 14,
+                                }
                             },
 
                             '& .text': {
                                 color: theme.palette.text.secondary,
                                 fontSize: '0.825rem',
-                                lineHeight: 1
+                                lineHeight: 1,
+
+                                [theme.breakpoints.down('md')]: {
+                                    fontSize: '0.775rem',
+                                }
                             },
                         }
                     },
@@ -93,20 +136,30 @@ const useStyles = makeStyles((theme: Theme) => ({
                     width: 32,
                     height: 32,
 
+                    [theme.breakpoints.down('sm')]: {
+                        position: 'fixed',
+                        top: 65,
+                        right: 10
+                    },
+
                     '& .btn-action': {
                         display: 'grid',
                         placeItems: 'center',
                         width: 32,
                         height: 32,
-                        background: '#fff',
+                        background: 'transparent',
                         border: '1px solid #aaa',
                         outline: 'none',
                         borderRadius: 100,
                         cursor: 'pointer',
                         transition: '300ms',
 
+                        [theme.breakpoints.down('sm')]: {
+                            background: '#4646466b'
+                        },
+
                         '&:hover': {
-                            background: '#efefef'
+                            background: '#efefef',
                         },
 
                         '& .dots': {

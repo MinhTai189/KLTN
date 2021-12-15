@@ -33,6 +33,7 @@ export interface ProfileUser {
   favorite: string[];
   likes: string[];
   posts: number;
+  done: Activity[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -68,4 +69,12 @@ export interface UpdateData {
   province: string;
   district: string;
   school: string;
+}
+
+export interface Activity {
+  _id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  url: string;
 }
