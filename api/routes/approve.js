@@ -415,6 +415,29 @@ const approveRouter = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
+  router.post("/posts/:id", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false)
+      res.status(403).json({
+        message: "Bạn không đủ quyền hạn",
+      });
+    try {
+      const id = req.params.id;
+      const approvePost = await post.findOneAndUpdate(
+        { _id: id, valid: false },
+        { valid: true }
+      );
+      io.notifyToUser(approvePost.owner, {
+        message: `Bài viết của bạn đã được duyệt`,
+        url: `/posts/${approvePost._id}`,
+        imageUrl:
+          "https://res.cloudinary.com/dpregsdt9/image/upload/v1639490398/notify/verified_rrd4yn.png",
+      });
+      res.status(200).json({ message: "Đã duyệt bài viết", success: true });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
+    }
+  });
   router.get("/posts", verifyToken, async (req, res) => {
     if (req.user.isAdmin == false)
       res.status(403).json({
@@ -464,7 +487,7 @@ const approveRouter = (io) => {
       const motelId = req.params.motelId;
       const id = req.params.id;
       const approveRate = await motel.findOneAndUpdate(
-        { _id: motelId, "rate._id": id },
+        { _id: motelId, "rate._id": id, "rate.valid": false },
         { $set: { "rate.$.valid": true } }
       );
       if (!approveRate)
