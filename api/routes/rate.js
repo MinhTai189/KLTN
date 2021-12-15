@@ -269,7 +269,7 @@ const rateRouter = (io) => {
               "Đánh giá thành công, hãy chờ người quản trị duyệt thông tin này, xin cảm ơn bạn đã góp ý",
           });
         if (req.user.isAdmin)
-          if (JSON.stringify(req.user.id !== JSON.stringify(findMotel.owner)))
+          if (JSON.stringify(req.user.id) !== JSON.stringify(findMotel.owner))
             io.notifyToUser(findMotel.owner, {
               message: ` vừa đánh giá về nhà trọ bạn đăng`,
               url: `/motels/${findMotel._id}`,

@@ -14,7 +14,11 @@ const comment = require("../models/comment");
 const upload = require("../middleware/upload");
 const router = express.Router();
 const approveRouter = (io) => {
-  router.post("/motels/:id", async (req, res) => {
+  router.post("/motels/:id", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false)
+      res.status(403).json({
+        message: "Bạn không đủ quyền hạn",
+      });
     try {
       const checkMotel = await unapprovedMotel.findById(req.params.id);
       if (!checkMotel)
@@ -120,351 +124,450 @@ const approveRouter = (io) => {
       res.status(500).json({ success: false, message: "Lỗi không xác định" });
     }
   });
-  router.get("/motels/comparisons/:id", async (req, res) => {
-    const newMotel = await userUpdateMotel
-      .findById(req.params.id)
-      .populate("user", "-notify -refreshToken -done -deleted -password")
-      .select("-unsignedName -rate")
-      .populate("school", "-nameDistricts");
-    if (!newMotel)
-      return res
-        .status(400)
-        .json({ message: "Không tìm thấy thông tin cập nhật", success: false });
-    const oldMotel = await motel
-      .findById(newMotel.motel)
-      .populate("owner", "-notify -refreshToken -done -deleted -password")
-      .select("-unsignedName -rate")
-      .populate("school", "-nameDistricts");
-    if (!oldMotel)
-      return res
-        .status(400)
-        .json({ message: "Nhà trọ cần cập nhật đã bị xóa", success: false });
-    let responseOldMotel = {
-      ...oldMotel._doc,
-      owner: {
-        ...oldMotel.owner._doc,
-        avatarUrl: oldMotel.owner.avatarUrl.url,
-      },
-      images: oldMotel.images.map((image) => {
-        if (image.url) return image.url;
-        else return image;
-      }),
-      thumbnail: oldMotel.thumbnail.url,
-    };
-    const getThumbnail = (t) => {
-      if (t.url) return t.url;
-      else return t;
-    };
-    let responseNewMotel = {
-      ...newMotel._doc,
-      owner: { ...newMotel.user._doc, avatarUrl: newMotel.user.avatarUrl.url },
-      images: oldMotel.images.map((image) => {
-        if (image.url) return image.url;
-        else return image;
-      }),
-      thumbnail: getThumbnail(newMotel.thumbnail),
-    };
-    delete responseNewMotel.user;
-    res.status(200).json({
-      data: { old: responseOldMotel, new: responseNewMotel },
-      success: true,
-    });
-  });
-  router.get("/motels", async (req, res) => {
-    const allMotel = await motel.find();
-    const motelNewUpdate = await userUpdateMotel
-      .find()
-      .populate("user", "-notify -refreshToken -done -deleted -password")
-      .select("-unsignedName -rate")
-      .populate("school", "-nameDistricts");
-    const newMotel = await unapprovedMotel
-      .find()
-      .populate(
-        "owner",
-        "-notify -refreshToken -done -deleted -password -unsignedName"
-      )
-      .select("-unsignedName -rate")
-      .populate("school", "-nameDistricts");
-
-    // let owner = {
-    //   avatarUrl: newMotel.owner.avatarUrl.url,
-    //   name: newMotel.owner.name,
-    //   isAdmin: newMotel.owner.isAdmin,
-    //   _id: newMotel.owner._id,
-    //   credit: newMotel.owner.credit,
-    //   email: newMotel.owner.email,
-    //   school: ownerSchool,
-    //   motels: newMotel.owner.motels,
-    //   rank: newMotel.owner.rank,
-    // };
-    const arrayAll = [...motelNewUpdate.concat(newMotel)];
-    let response = [];
-    const getThumbnail = (t) => {
-      if (t.url) return t.url;
-      else return t;
-    };
-    for (let i = 0; i < arrayAll.length; i++) {
-      let owner;
-      if (arrayAll[i].owner == undefined)
-        owner = {
-          ...arrayAll[i].user._doc,
-          avatarUrl: arrayAll[i].user.avatarUrl.url,
-        };
-      else
-        owner = {
-          ...arrayAll[i].owner._doc,
-          avatarUrl: arrayAll[i].owner.avatarUrl.url,
-        };
-
-      response.push({
-        ...arrayAll[i]._doc,
-        thumbnail: getThumbnail(arrayAll[i].thumbnail),
-        images: arrayAll[i].images.map((image) => {
+  router.get("/motels/comparisons/:id", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false)
+      res.status(403).json({
+        message: "Bạn không đủ quyền hạn",
+      });
+    try {
+      const newMotel = await userUpdateMotel
+        .findById(req.params.id)
+        .populate("user", "-notify -refreshToken -done -deleted -password")
+        .select("-unsignedName -rate")
+        .populate("school", "-nameDistricts");
+      if (!newMotel)
+        return res.status(400).json({
+          message: "Không tìm thấy thông tin cập nhật",
+          success: false,
+        });
+      const oldMotel = await motel
+        .findById(newMotel.motel)
+        .populate("owner", "-notify -refreshToken -done -deleted -password")
+        .select("-unsignedName -rate")
+        .populate("school", "-nameDistricts");
+      if (!oldMotel)
+        return res
+          .status(400)
+          .json({ message: "Nhà trọ cần cập nhật đã bị xóa", success: false });
+      let responseOldMotel = {
+        ...oldMotel._doc,
+        owner: {
+          ...oldMotel.owner._doc,
+          avatarUrl: oldMotel.owner.avatarUrl.url,
+        },
+        images: oldMotel.images.map((image) => {
           if (image.url) return image.url;
           else return image;
         }),
-        owner: owner,
+        thumbnail: oldMotel.thumbnail.url,
+      };
+      const getThumbnail = (t) => {
+        if (t.url) return t.url;
+        else return t;
+      };
+      let responseNewMotel = {
+        ...newMotel._doc,
+        owner: {
+          ...newMotel.user._doc,
+          avatarUrl: newMotel.user.avatarUrl.url,
+        },
+        images: oldMotel.images.map((image) => {
+          if (image.url) return image.url;
+          else return image;
+        }),
+        thumbnail: getThumbnail(newMotel.thumbnail),
+      };
+      delete responseNewMotel.user;
+      res.status(200).json({
+        data: { old: responseOldMotel, new: responseNewMotel },
+        success: true,
       });
-      if (response[i].user) response[i].type = "update";
-      else {
-        response[i].type = "add";
-        response[i].nhaTroTrung = [];
-        for (let j = 0; j < response[i].duplicate.length; j++) {
-          const getDuplicateMotel = allMotel.find((item) => {
-            return (
-              JSON.stringify(item._id) ===
-              JSON.stringify(response[i].duplicate[j])
-            );
-          });
-          if (getDuplicateMotel)
-            response[i].nhaTroTrung.push({
-              _id: getDuplicateMotel._id,
-              name: getDuplicateMotel.name,
-            });
-        }
-        response[i].nhaTroChuaDuyetTrung = [];
-        for (let j = 0; j < response[i].duplicateUnapproved.length; j++) {
-          const getDuplicateMotel = newMotel.find((item) => {
-            return (
-              JSON.stringify(item._id) ===
-              JSON.stringify(response[i].duplicateUnapproved[j])
-            );
-          });
-          if (getDuplicateMotel)
-            response[i].nhaTroChuaDuyetTrung.push({
-              _id: getDuplicateMotel._id,
-              name: getDuplicateMotel.name,
-            });
-        }
-      }
-      delete response[i].user;
-      delete response[i].duplicateUnapproved;
-      delete response[i].duplicate;
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
-    const { _limit, _page } = req.query;
-
-    let page = 1,
-      limit = response.length,
-      totalRows = response.length;
-
-    if (!isNaN(parseInt(_page))) {
-      page = parseInt(_page);
-    }
-    if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
-    response = response.slice((page - 1) * limit, limit * page);
-    res.status(200).json({
-      success: true,
-      data: response,
-      pagination: {
-        _page: page,
-        _limit: limit,
-        _totalRows: totalRows,
-      },
-    });
   });
-  router.get("/reports", async (req, res) => {
-    const { _limit, _page } = req.query;
-    let rates = [];
-    const allMotel = await motel
-      .find({})
-      .populate(
-        "rate.user",
-        "avatarUrl: rates[i].user.avatarUrl.url name isAdmin _id credit email posts motels rank"
-      );
-    for (let i = 0; i < allMotel.length; i++)
-      for (let j = 0; j < allMotel[i].rate.length; j++)
-        if (allMotel[i].rate[j].valid == true)
-          rates.push({
-            ...allMotel[i].rate[j]._doc,
-            motel: { _id: allMotel[i]._id, name: allMotel[i].name },
-          });
-    for (let i = 0; i < rates.length; i++) {
-      // const ownerSchool = await school
-      //   .findOne({ codeName: rates[i].user.school })
-      //   .select("-nameDistricts");
-      let owner = {
-        avatarUrl: rates[i].user.avatarUrl.url,
-        name: rates[i].user.name,
-        isAdmin: rates[i].user.isAdmin,
-        _id: rates[i].user.id,
-        credit: rates[i].user.credit,
-        email: rates[i].user.email,
-        //  school: ownerSchool,
-        motels: rates[i].user.motels,
-        rank: rates[i].user.rank,
-      };
-      rates[i].owner = owner;
-      delete rates[i].user;
-    }
-    const getComments = await comment.find();
-    const getPosts = await post.find();
-    const getReports = await report
-      .find()
-      .populate(
-        "owner",
-        "-done -notify -refreshToken -username -email -unsignedName -password -favorite -deleted -province -district"
-      );
+  router.get("/motels", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false)
+      res.status(403).json({
+        message: "Bạn không đủ quyền hạn",
+      });
+    try {
+      const allMotel = await motel.find();
+      const motelNewUpdate = await userUpdateMotel
+        .find()
+        .populate("user", "-notify -refreshToken -done -deleted -password")
+        .select("-unsignedName -rate")
+        .populate("school", "-nameDistricts");
+      const newMotel = await unapprovedMotel
+        .find()
+        .populate(
+          "owner",
+          "-notify -refreshToken -done -deleted -password -unsignedName"
+        )
+        .select("-unsignedName -rate")
+        .populate("school", "-nameDistricts");
 
-    let response = [];
-    for (let i = 0; i < getReports.length; i++) {
-      let getData;
-      if (getReports[i].type === "rate")
-        getData = rates.find((item) => {
-          return (
-            JSON.stringify(item._id) === JSON.stringify(getReports[i].id2) &&
-            JSON.stringify(item.motel._id) === JSON.stringify(getReports[i].id1)
-          );
+      // let owner = {
+      //   avatarUrl: newMotel.owner.avatarUrl.url,
+      //   name: newMotel.owner.name,
+      //   isAdmin: newMotel.owner.isAdmin,
+      //   _id: newMotel.owner._id,
+      //   credit: newMotel.owner.credit,
+      //   email: newMotel.owner.email,
+      //   school: ownerSchool,
+      //   motels: newMotel.owner.motels,
+      //   rank: newMotel.owner.rank,
+      // };
+      const arrayAll = [...motelNewUpdate.concat(newMotel)];
+      let response = [];
+      const getThumbnail = (t) => {
+        if (t.url) return t.url;
+        else return t;
+      };
+      for (let i = 0; i < arrayAll.length; i++) {
+        let owner;
+        if (arrayAll[i].owner == undefined)
+          owner = {
+            ...arrayAll[i].user._doc,
+            avatarUrl: arrayAll[i].user.avatarUrl.url,
+          };
+        else
+          owner = {
+            ...arrayAll[i].owner._doc,
+            avatarUrl: arrayAll[i].owner.avatarUrl.url,
+          };
+
+        response.push({
+          ...arrayAll[i]._doc,
+          thumbnail: getThumbnail(arrayAll[i].thumbnail),
+          images: arrayAll[i].images.map((image) => {
+            if (image.url) return image.url;
+            else return image;
+          }),
+          owner: owner,
         });
-      else if (getReports[i].type === "post")
-        getData = getPosts.find(
-          (item) =>
-            JSON.stringify(item._id) === JSON.stringify(getReports[i].id1)
-        );
-      else if (getReports[i].type === "comment")
-        getData = getComments.find(
-          (item) =>
-            JSON.stringify(item._id) === JSON.stringify(getReports[i].id1)
-        );
-      if (getData)
-        response = [
-          ...response,
-          {
-            ...getReports[i]._doc,
-            id1: undefined,
-            id2: undefined,
-            owner: {
-              ...getReports[i].owner._doc,
-              avatarUrl: getReports[i].owner.avatarUrl.url,
-            },
-            data: getData,
-          },
-        ];
-    }
-    let page = 1,
-      limit = response.length,
-      totalRows = response.length;
+        if (response[i].user) response[i].type = "update";
+        else {
+          response[i].type = "add";
+          response[i].nhaTroTrung = [];
+          for (let j = 0; j < response[i].duplicate.length; j++) {
+            const getDuplicateMotel = allMotel.find((item) => {
+              return (
+                JSON.stringify(item._id) ===
+                JSON.stringify(response[i].duplicate[j])
+              );
+            });
+            if (getDuplicateMotel)
+              response[i].nhaTroTrung.push({
+                _id: getDuplicateMotel._id,
+                name: getDuplicateMotel.name,
+              });
+          }
+          response[i].nhaTroChuaDuyetTrung = [];
+          for (let j = 0; j < response[i].duplicateUnapproved.length; j++) {
+            const getDuplicateMotel = newMotel.find((item) => {
+              return (
+                JSON.stringify(item._id) ===
+                JSON.stringify(response[i].duplicateUnapproved[j])
+              );
+            });
+            if (getDuplicateMotel)
+              response[i].nhaTroChuaDuyetTrung.push({
+                _id: getDuplicateMotel._id,
+                name: getDuplicateMotel.name,
+              });
+          }
+        }
+        delete response[i].user;
+        delete response[i].duplicateUnapproved;
+        delete response[i].duplicate;
+      }
+      const { _limit, _page } = req.query;
 
-    if (!isNaN(parseInt(_page))) {
-      page = parseInt(_page);
+      let page = 1,
+        limit = response.length,
+        totalRows = response.length;
+
+      if (!isNaN(parseInt(_page))) {
+        page = parseInt(_page);
+      }
+      if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
+      response = response.slice((page - 1) * limit, limit * page);
+      res.status(200).json({
+        success: true,
+        data: response,
+        pagination: {
+          _page: page,
+          _limit: limit,
+          _totalRows: totalRows,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
-    if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
-    response = response.slice((page - 1) * limit, limit * page);
-    res.status(200).json({
-      success: true,
-      data: response,
-      pagination: {
-        _page: page,
-        _limit: limit,
-        _totalRows: totalRows,
-      },
-    });
   });
-  router.get("/posts", async (req, res) => {
-    const getPosts = await post
-      .find({ valid: false })
-      .select("-unsignedTitle")
-      .populate("subject", "name");
-    let response = [];
-    const { _limit, _page } = req.query;
+  router.get("/reports", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false)
+      res.status(403).json({
+        message: "Bạn không đủ quyền hạn",
+      });
+    try {
+      const { _limit, _page } = req.query;
+      let rates = [];
+      const allMotel = await motel
+        .find({})
+        .populate(
+          "rate.user",
+          "avatarUrl: rates[i].user.avatarUrl.url name isAdmin _id credit email posts motels rank"
+        );
+      for (let i = 0; i < allMotel.length; i++)
+        for (let j = 0; j < allMotel[i].rate.length; j++)
+          if (allMotel[i].rate[j].valid == true)
+            rates.push({
+              ...allMotel[i].rate[j]._doc,
+              motel: { _id: allMotel[i]._id, name: allMotel[i].name },
+            });
+      for (let i = 0; i < rates.length; i++) {
+        // const ownerSchool = await school
+        //   .findOne({ codeName: rates[i].user.school })
+        //   .select("-nameDistricts");
+        let owner = {
+          avatarUrl: rates[i].user.avatarUrl.url,
+          name: rates[i].user.name,
+          isAdmin: rates[i].user.isAdmin,
+          _id: rates[i].user.id,
+          credit: rates[i].user.credit,
+          email: rates[i].user.email,
+          //  school: ownerSchool,
+          motels: rates[i].user.motels,
+          rank: rates[i].user.rank,
+        };
+        rates[i].owner = owner;
+        delete rates[i].user;
+      }
+      const getComments = await comment.find();
+      const getPosts = await post.find();
+      const getReports = await report
+        .find()
+        .populate(
+          "owner",
+          "-done -notify -refreshToken -username -email -unsignedName -password -favorite -deleted -province -district"
+        );
 
-    for (let i = 0; i < getPosts.length; i++) {
-      response = [...response, { ...getPosts[i]._doc }];
-    }
-
-    let page = 1,
-      limit = response.length,
-      totalRows = response.length;
-
-    if (!isNaN(parseInt(_page))) {
-      page = parseInt(_page);
-    }
-    if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
-    response = response.slice((page - 1) * limit, limit * page);
-    res.status(200).json({
-      success: true,
-      data: response,
-      pagination: {
-        _page: page,
-        _limit: limit,
-        _totalRows: totalRows,
-      },
-    });
-  });
-  router.post("/rates/:id", async (req, res) => {});
-  router.get("/rates", async (req, res) => {
-    let rates = [];
-    const allMotel = await motel
-      .find({})
-      .populate(
-        "rate.user",
-        "avatarUrl name isAdmin _id credit email posts motels rank"
-      );
-    for (let i = 0; i < allMotel.length; i++)
-      for (let j = 0; j < allMotel[i].rate.length; j++)
-        if (allMotel[i].rate[j].valid == false)
-          rates.push({
-            ...allMotel[i].rate[j]._doc,
-            motel: { _id: allMotel[i]._id, name: allMotel[i].name },
+      let response = [];
+      for (let i = 0; i < getReports.length; i++) {
+        let getData;
+        if (getReports[i].type === "rate")
+          getData = rates.find((item) => {
+            return (
+              JSON.stringify(item._id) === JSON.stringify(getReports[i].id2) &&
+              JSON.stringify(item.motel._id) ===
+                JSON.stringify(getReports[i].id1)
+            );
           });
-    for (let i = 0; i < rates.length; i++) {
-      // const ownerSchool = await school
-      //   .findOne({ codeName: rates[i].user.school })
-      //   .select("-nameDistricts");
-      let owner = {
-        avatarUrl: rates[i].user.avatarUrl.url,
-        name: rates[i].user.name,
-        isAdmin: rates[i].user.isAdmin,
-        _id: rates[i].user.id,
-        credit: rates[i].user.credit,
-        email: rates[i].user.email,
-        //  school: ownerSchool,
-        motels: rates[i].user.motels,
-        rank: rates[i].user.rank,
-      };
-      rates[i].owner = owner;
-      delete rates[i].user;
-    }
-    let response = [...rates];
-    const { _limit, _page } = req.query;
+        else if (getReports[i].type === "post")
+          getData = getPosts.find(
+            (item) =>
+              JSON.stringify(item._id) === JSON.stringify(getReports[i].id1)
+          );
+        else if (getReports[i].type === "comment")
+          getData = getComments.find(
+            (item) =>
+              JSON.stringify(item._id) === JSON.stringify(getReports[i].id1)
+          );
+        if (getData)
+          response = [
+            ...response,
+            {
+              ...getReports[i]._doc,
+              id1: undefined,
+              id2: undefined,
+              owner: {
+                ...getReports[i].owner._doc,
+                avatarUrl: getReports[i].owner.avatarUrl.url,
+              },
+              data: getData,
+            },
+          ];
+      }
+      let page = 1,
+        limit = response.length,
+        totalRows = response.length;
 
-    let page = 1,
-      limit = response.length,
-      totalRows = response.length;
-
-    if (!isNaN(parseInt(_page))) {
-      page = parseInt(_page);
+      if (!isNaN(parseInt(_page))) {
+        page = parseInt(_page);
+      }
+      if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
+      response = response.slice((page - 1) * limit, limit * page);
+      res.status(200).json({
+        success: true,
+        data: response,
+        pagination: {
+          _page: page,
+          _limit: limit,
+          _totalRows: totalRows,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
-    if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
-    response = response.slice((page - 1) * limit, limit * page);
-    res.status(200).json({
-      success: true,
-      data: response,
-      pagination: {
-        _page: page,
-        _limit: limit,
-        _totalRows: totalRows,
-      },
-    });
+  });
+  router.get("/posts", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false)
+      res.status(403).json({
+        message: "Bạn không đủ quyền hạn",
+      });
+    try {
+      const getPosts = await post
+        .find({ valid: false })
+        .select("-unsignedTitle")
+        .populate("subject", "name");
+      let response = [];
+      const { _limit, _page } = req.query;
+
+      for (let i = 0; i < getPosts.length; i++) {
+        response = [...response, { ...getPosts[i]._doc }];
+      }
+
+      let page = 1,
+        limit = response.length,
+        totalRows = response.length;
+
+      if (!isNaN(parseInt(_page))) {
+        page = parseInt(_page);
+      }
+      if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
+      response = response.slice((page - 1) * limit, limit * page);
+      res.status(200).json({
+        success: true,
+        data: response,
+        pagination: {
+          _page: page,
+          _limit: limit,
+          _totalRows: totalRows,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
+    }
+  });
+  router.post("/rates/:motelId/:id", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false)
+      res.status(403).json({
+        message: "Bạn không đủ quyền hạn",
+      });
+    try {
+      const motelId = req.params.motelId;
+      const id = req.params.id;
+      const approveRate = await motel.findOneAndUpdate(
+        { _id: motelId, "rate._id": id },
+        { $set: { "rate.$.valid": true } }
+      );
+      if (!approveRate)
+        return res
+          .status(400)
+          .json({ message: "Không tìm thấy thông tin", success: false });
+      res.status(200).json({ message: "Thành công", success: true });
+
+      io.notifyToUser(
+        approveRate.rate.find(
+          (item) => JSON.stringify(item._id) === JSON.stringify(id)
+        ).user,
+        {
+          message: `Đánh giá nhà trọ bạn gửi đã được duyệt! Xin chân thành cảm ơn`,
+          url: `/motels/${approveRate._id}`,
+          imageUrl:
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1639490398/notify/verified_rrd4yn.png",
+        }
+      );
+      if (
+        JSON.stringify(
+          approveRate.rate.find(
+            (item) => JSON.stringify(item._id) === JSON.stringify(id)
+          ).user
+        ) !== JSON.stringify(approveRate.owner)
+      )
+        io.notifyToUser(approveRate.owner, {
+          message: ` vừa đánh giá về nhà trọ bạn đăng`,
+          url: `/motels/${approveRate._id}`,
+          ownerId: approveRate.rate.find(
+            (item) => JSON.stringify(item._id) === JSON.stringify(id)
+          ).user,
+          imageUrl:
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638662093/notify/rating_x9e2j5.png",
+        });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
+    }
+  });
+  router.get("/rates", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false)
+      res.status(403).json({
+        message: "Bạn không đủ quyền hạn",
+      });
+    try {
+      let rates = [];
+      const allMotel = await motel
+        .find({})
+        .populate(
+          "rate.user",
+          "avatarUrl name isAdmin _id credit email posts motels rank"
+        );
+      for (let i = 0; i < allMotel.length; i++)
+        for (let j = 0; j < allMotel[i].rate.length; j++)
+          if (allMotel[i].rate[j].valid == false)
+            rates.push({
+              ...allMotel[i].rate[j]._doc,
+              motel: { _id: allMotel[i]._id, name: allMotel[i].name },
+            });
+      for (let i = 0; i < rates.length; i++) {
+        // const ownerSchool = await school
+        //   .findOne({ codeName: rates[i].user.school })
+        //   .select("-nameDistricts");
+        let owner = {
+          avatarUrl: rates[i].user.avatarUrl.url,
+          name: rates[i].user.name,
+          isAdmin: rates[i].user.isAdmin,
+          _id: rates[i].user.id,
+          credit: rates[i].user.credit,
+          email: rates[i].user.email,
+          //  school: ownerSchool,
+          motels: rates[i].user.motels,
+          rank: rates[i].user.rank,
+        };
+        rates[i].owner = owner;
+        delete rates[i].user;
+      }
+      let response = [...rates];
+      const { _limit, _page } = req.query;
+
+      let page = 1,
+        limit = response.length,
+        totalRows = response.length;
+
+      if (!isNaN(parseInt(_page))) {
+        page = parseInt(_page);
+      }
+      if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
+      response = response.slice((page - 1) * limit, limit * page);
+      res.status(200).json({
+        success: true,
+        data: response,
+        pagination: {
+          _page: page,
+          _limit: limit,
+          _totalRows: totalRows,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
+    }
   });
 
   // router.delete("/", async (req, res) => {
