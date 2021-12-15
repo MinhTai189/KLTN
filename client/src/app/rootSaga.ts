@@ -8,6 +8,7 @@ import threadSaga from 'features/communicate/threadSaga';
 import commentSaga from 'features/comment/commentSaga';
 import notifySaga from 'features/notification/notifySaga';
 import provinceSaga from 'features/province/provinceSaga';
+import approveSaga from 'features/approves/approveSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -20,5 +21,6 @@ export default function* rootSaga() {
     call(notifySaga),
     call(provinceSaga),
     call(schoolSaga),
+    call(approveSaga),
   ]);
 }

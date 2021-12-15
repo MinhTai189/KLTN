@@ -8,3 +8,5 @@ export * from './Rate';
 export * from './Post';
 export * from './Comment';
 export * from './Notify';
+export * from './Approve';
+export * from './Report';
