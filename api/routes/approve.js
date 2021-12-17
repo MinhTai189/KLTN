@@ -14,7 +14,9 @@ const comment = require("../models/comment");
 const upload = require("../middleware/upload");
 const router = express.Router();
 const approveRouter = (io) => {
+  //good
   router.post("/motels/:id", verifyToken, async (req, res) => {
+    // duyệt nhà trọ mới
     if (req.user.isAdmin == false)
       res.status(403).json({
         message: "Bạn không đủ quyền hạn",
@@ -124,7 +126,9 @@ const approveRouter = (io) => {
       res.status(500).json({ success: false, message: "Lỗi không xác định" });
     }
   });
+  ///ok
   router.get("/motels/comparisons/:id", verifyToken, async (req, res) => {
+    // so sánh nhà trọ cũ và mới trong upadate nhà trọ
     if (req.user.isAdmin == false)
       res.status(403).json({
         message: "Bạn không đủ quyền hạn",
@@ -187,7 +191,9 @@ const approveRouter = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
+  //good
   router.get("/motels", verifyToken, async (req, res) => {
+    // lấy nhà trọ mới và update nhà trọ mới
     if (req.user.isAdmin == false)
       res.status(403).json({
         message: "Bạn không đủ quyền hạn",
@@ -308,7 +314,70 @@ const approveRouter = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
+  //chưa test kỹ
+  router.post("/reports/:id", verifyToken, async (req, res) => {
+    // Xóa tó cáo+ xóa nội dung + trừ điểm thằng tố cáo
+    if (req.user.isAdmin == false)
+      res.status(403).json({
+        message: "Bạn không đủ quyền hạn",
+      });
+    try {
+      const id = req.params.id;
+      const delReport = await report.findByIdAndDelete(id);
+      if (!delReport)
+        return res
+          .status(400)
+          .json({ message: "Không tìm được nội dung báo cáo", success: false });
+
+      res.status(200).json({ message: "Thành công", success: true });
+      let dataReport;
+      if (delReport.type === "comment") {
+        dataReport = await comment.findByIdAndDelete(delReport.id1);
+        if (dataReport)
+          io.notifyToUser(dataReport.owner, {
+            message: `Bình luận của bạn đã bị xóa vì vi phạm nguyên tắc cộng đồng`,
+            url: `/posts/${dataReport.post}`,
+            imageUrl:
+              "https://res.cloudinary.com/dpregsdt9/image/upload/v1639744800/notify/b2ff8pc5qbbtc9sqbvq4.png",
+          });
+      } else if (delReport.type === "post") {
+        dataReport = await post.findById(delReport.id1);
+        if (dataReport)
+          io.notifyToUser(dataReport.owner, {
+            message: `Bài viết của bạn đã bị xóa vì vi phạm nguyên tắc cộng đồng`,
+            url: `/posts/`,
+            imageUrl:
+              "https://res.cloudinary.com/dpregsdt9/image/upload/v1639744800/notify/b2ff8pc5qbbtc9sqbvq4.png",
+          });
+      } else if (delReport.type == "rate") {
+        getReportRateMotel = await motel.findById(delReport.id1);
+        dataReport = getReportRateMotel.find(
+          (item) => JSON.stringify(item._id) === JSON.stringify(delReport.id2)
+        );
+        if (dataReport)
+          io.notifyToUser(dataReport.owner, {
+            message: `Đánh giá nhà trọ của bạn đã bị xóa vì vi phạm nguyên tắc cộng đồng`,
+            url: `/motels/${getReportRateMotel._id}`,
+            imageUrl:
+              "https://res.cloudinary.com/dpregsdt9/image/upload/v1639744800/notify/b2ff8pc5qbbtc9sqbvq4.png",
+          });
+      }
+
+      io.notifyToUser(delReport.owner, {
+        message: `Chúng tôi đã xem xét thông tin tố cáo bạn đã gửi. Chân thành cám ơn sự đóng góp của bạn`,
+        url: `/`,
+        imageUrl:
+          "hhttps://res.cloudinary.com/dpregsdt9/image/upload/v1639490398/notify/verified_rrd4yn.png",
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
+    }
+  });
+
+  //ok
   router.get("/reports", verifyToken, async (req, res) => {
+    // lấy các tố cáo
     if (req.user.isAdmin == false)
       res.status(403).json({
         message: "Bạn không đủ quyền hạn",
@@ -415,7 +484,37 @@ const approveRouter = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
+
+  // Chưa test kỹ
+  router.delete("/posts/:id", verifyToken, async (req, res) => {
+    //Xóa post khôgn duyệt
+
+    if (req.user.isAdmin == false)
+      res.status(403).json({
+        message: "Bạn không đủ quyền hạn",
+      });
+    try {
+      const id = req.params.id;
+      const deletePost = await post.findOneAndDelete({ _id: id, valid: false });
+      if (!deletePost)
+        return res
+          .status(400)
+          .json({ message: "Không tìm thấy thông tin", success: false });
+      res.status(200).json({ success: true, message: "Thành công" });
+      io.notifyToUser(deletePost.owner, {
+        message: `Bài viết bạn gửi đã bị người quản lý xóa`,
+        url: `/post/`,
+        imageUrl:
+          "https://res.cloudinary.com/dpregsdt9/image/upload/v1639701129/notify/qqorbp63avq7cpiygrxj.png",
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
+    }
+  });
+  //Chưa test kỹ
   router.post("/posts/:id", verifyToken, async (req, res) => {
+    // duyệt post
     if (req.user.isAdmin == false)
       res.status(403).json({
         message: "Bạn không đủ quyền hạn",
@@ -438,7 +537,10 @@ const approveRouter = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
+
+  //good
   router.get("/posts", verifyToken, async (req, res) => {
+    // lấy post chưa duyệt
     if (req.user.isAdmin == false)
       res.status(403).json({
         message: "Bạn không đủ quyền hạn",
@@ -478,7 +580,54 @@ const approveRouter = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
+
+  // good
+  router.delete("/rates/:motelId/:id", verifyToken, async (req, res) => {
+    //Xóa đánh giá không duyệt
+    if (req.user.isAdmin == false)
+      res.status(403).json({
+        message: "Bạn không đủ quyền hạn",
+      });
+    try {
+      const motelId = req.params.motelId;
+      const id = req.params.id;
+      const unapproveRate = await motel.findOneAndUpdate(
+        { _id: motelId },
+        {
+          $pull: { rate: { _id: id, valid: false } },
+        }
+      );
+      if (!unapproveRate)
+        return res
+          .status(400)
+          .json({ message: "Có lỗi xảy ra", success: false });
+
+      res.status(200).json({ success: true, message: "Thành công" });
+      if (
+        unapproveRate.rate.find(
+          (item) => JSON.stringify(item._id) === JSON.stringify(id)
+        )
+      )
+        io.notifyToUser(
+          unapproveRate.rate.find(
+            (item) => JSON.stringify(item._id) === JSON.stringify(id)
+          ).user,
+          {
+            message: `Đánh giá nhà trọ bạn gửi đã bị người quản lý xóa`,
+            url: `/motels/${unapproveRate._id}`,
+            imageUrl:
+              "https://res.cloudinary.com/dpregsdt9/image/upload/v1639701129/notify/qqorbp63avq7cpiygrxj.png",
+          }
+        );
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
+    }
+  });
+
+  //good
   router.post("/rates/:motelId/:id", verifyToken, async (req, res) => {
+    // Duyệt đánh giá
     if (req.user.isAdmin == false)
       res.status(403).json({
         message: "Bạn không đủ quyền hạn",
@@ -490,12 +639,23 @@ const approveRouter = (io) => {
         { _id: motelId, "rate._id": id, "rate.valid": false },
         { $set: { "rate.$.valid": true } }
       );
+      const findRate = approveRate.rate.find(
+        (item) => JSON.stringify(id) === JSON.stringify(item._id)
+      );
       if (!approveRate)
         return res
           .status(400)
           .json({ message: "Không tìm thấy thông tin", success: false });
       res.status(200).json({ message: "Thành công", success: true });
-
+      await motel.findOneAndUpdate(
+        { _id: motelId },
+        {
+          vote: approveRate.vote + findRate.star,
+          mark:
+            (approveRate.vote + findRate.star) /
+            (approveRate.rate.filter((item) => item.valid == true).length + 1),
+        }
+      );
       io.notifyToUser(
         approveRate.rate.find(
           (item) => JSON.stringify(item._id) === JSON.stringify(id)
@@ -528,7 +688,9 @@ const approveRouter = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
+  // good
   router.get("/rates", verifyToken, async (req, res) => {
+    // lấy dánh sách đánh giá chưa duyệt
     if (req.user.isAdmin == false)
       res.status(403).json({
         message: "Bạn không đủ quyền hạn",

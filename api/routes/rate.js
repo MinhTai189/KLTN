@@ -241,7 +241,9 @@ const rateRouter = (io) => {
               },
             },
             vote: findMotel.vote + star,
-            mark: (findMotel.vote + star) / (findMotel.rate.length + 1),
+            mark:
+              (findMotel.vote + star) /
+              (findMotel.rate.filter((item) => item.valid == true).length + 1),
           });
 
           add(req.user.id, "Đánh giá nhà trọ", {
@@ -314,7 +316,9 @@ const rateRouter = (io) => {
                 $pull: { rate: { _id: idRate } },
                 vote: findMotel.vote - rate.star,
                 mark:
-                  (findMotel.vote - rate.star) / (findMotel.rate.length - 1),
+                  (findMotel.vote - rate.star) /
+                  (findMotel.rate.filter((item) => item.valid == true).length -
+                    1),
               }
             );
           else

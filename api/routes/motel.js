@@ -1209,7 +1209,6 @@ const motelRouter = (io) => {
     if (accessToken)
       JWT.verify(accessToken, process.env.accessToken, (err, data) => {
         if (err) {
-          console.log("hello world");
         } else userAuth = data;
       });
 
