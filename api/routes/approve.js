@@ -14,6 +14,35 @@ const comment = require("../models/comment");
 const upload = require("../middleware/upload");
 const router = express.Router();
 const approveRouter = (io) => {
+  router.delete("/motels/:type/:id", verifyToken, async (req, res) => {
+    const type = req.params.type;
+    const id = req.params.id;
+    if (type == "add") {
+      const addMotel = await unapprovedMotel.findByIdAndDelete(id);
+      if (!addMotel)
+        if (!addMotel)
+          return res
+            .status(400)
+            .json({ message: "Không tìm thấy thông tin mới", success: false });
+      for (let i = 0; i < addMotel.images.length; i++) {
+        await upload.unlink(addMotel.images[i].public_id);
+      }
+      await upload.unlink(addMotel.thumbnail.public_id);
+    } else if (type == "update") {
+      const updateMotel = await userUpdateMotel.findByIdAndDelete(id);
+      for (let i = 0; i < updateMotel.images.length; i++) {
+        if (updateMotel.images[i].public_id)
+          await upload.unlink(updateMotel.images[i].public_id);
+      }
+      if (updateMotel.thumbnail.public_id)
+        await upload.unlink(updateMotel.thumbnail.public_id);
+    }
+    res.status(200).json({ success: true, message: "Thành công" });
+  });
+  router.patch("/motels/:id", verifyToken, async (req, res) => {
+    //duyệt motel update
+    res.status(400).json({ message: "Chưa có gì cả", success: false });
+  });
   //good
   router.post("/motels/:id", verifyToken, async (req, res) => {
     // duyệt nhà trọ mới
@@ -549,12 +578,25 @@ const approveRouter = (io) => {
       const getPosts = await post
         .find({ valid: false })
         .select("-unsignedTitle")
-        .populate("subject", "name");
+        .populate("subject", "name")
+        .populate(
+          "owner",
+          "avatarUrl name isAdmin _id credit email posts motels rank"
+        );
       let response = [];
       const { _limit, _page } = req.query;
 
       for (let i = 0; i < getPosts.length; i++) {
-        response = [...response, { ...getPosts[i]._doc }];
+        response = [
+          ...response,
+          {
+            ...getPosts[i]._doc,
+            owner: {
+              ...getPosts[i].owner._doc,
+              avatarUrl: getPosts[i].owner.avatarUrl.url,
+            },
+          },
+        ];
       }
 
       let page = 1,
