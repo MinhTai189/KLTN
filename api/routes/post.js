@@ -11,6 +11,7 @@ const verifyToken = require("../middleware/verifyToken");
 const report = require("../models/report");
 const addDone = require("../utils/done");
 const proposal = require("../utils/proposal");
+const nullMotel = require("../utils/nullMotel");
 const postRouter = (io) => {
   router.post("/reports", verifyToken, async (req, res) => {
     try {
@@ -349,6 +350,8 @@ const postRouter = (io) => {
             return image.url;
           }),
         };
+      if (responsePost.motel == null && responsePost.type != 1)
+        responsePost.motel = nullMotel;
       const comments = await commentModel.find({ post: responsePost._id });
       responsePost.numComments = comments.length;
       responsePost.totalLikes = responsePost.likes.length;
