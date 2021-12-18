@@ -39,6 +39,8 @@ const approveRouter = (io) => {
     }
     res.status(200).json({ success: true, message: "Thành công" });
   });
+
+  //chua co gi ca
   router.patch("/motels/:id", verifyToken, async (req, res) => {
     //duyệt motel update
     res.status(400).json({ message: "Chưa có gì cả", success: false });
@@ -80,8 +82,8 @@ const approveRouter = (io) => {
         const renameImage = await upload.rename(
           images[i].public_id,
           newMotel._id +
-          "/" +
-          images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
+            "/" +
+            images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
         );
         if (renameImage.success == true)
           newMotel.images = [
@@ -96,10 +98,10 @@ const approveRouter = (io) => {
             await upload.rename(
               newMotel.images[j].public_id,
               newMotel.name +
-              "/" +
-              newMotel.images[j].public_id.substr(
-                newMotel.images[j].public_id.indexOf("/") + 1
-              )
+                "/" +
+                newMotel.images[j].public_id.substr(
+                  newMotel.images[j].public_id.indexOf("/") + 1
+                )
             );
 
           return res
@@ -110,20 +112,20 @@ const approveRouter = (io) => {
       const renameThumbnail = await upload.rename(
         newMotel.thumbnail.public_id,
         newMotel._id +
-        "/" +
-        newMotel.thumbnail.public_id.substr(
-          newMotel.thumbnail.public_id.indexOf("/") + 1
-        )
+          "/" +
+          newMotel.thumbnail.public_id.substr(
+            newMotel.thumbnail.public_id.indexOf("/") + 1
+          )
       );
       if (renameThumbnail.success == false) {
         for (let j = 0; j < newMotel.images.length; j++)
           await upload.rename(
             newMotel.images[j].public_id,
             newMotel.name +
-            "/" +
-            newMotel.images[j].public_id.substr(
-              newMotel.images[j].public_id.indexOf("/") + 1
-            )
+              "/" +
+              newMotel.images[j].public_id.substr(
+                newMotel.images[j].public_id.indexOf("/") + 1
+              )
           );
 
         return res
@@ -343,9 +345,39 @@ const approveRouter = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
-  //chưa test kỹ
+  //good
+  router.delete("/reports/:id", verifyToken, async (req, res) => {
+    // Xóa tó cáo
+    if (req.user.isAdmin == false)
+      res.status(403).json({
+        message: "Bạn không đủ quyền hạn",
+      });
+    try {
+      const id = req.params.id;
+      const delReport = await report.findByIdAndDelete(id);
+      if (!delReport)
+        return res
+          .status(400)
+          .json({ message: "Không tìm được nội dung báo cáo", success: false });
+
+      res.status(200).json({ message: "Thành công", success: true });
+      let url = "";
+      if (delReport.type === "post") url = "posts/" + delReport.id1;
+      else if (delReport.type === "rate") url = "motels/" + delReport.id1;
+      io.notifyToUser(delReport.owner, {
+        message: `Thông tin tố cáo bạn gửi là sai sự thật.`,
+        url: `/${url}`,
+        imageUrl:
+          "https://res.cloudinary.com/dpregsdt9/image/upload/v1639701129/notify/qqorbp63avq7cpiygrxj.png",
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
+    }
+  });
+  //good
   router.post("/reports/:id", verifyToken, async (req, res) => {
-    // Xóa tó cáo+ xóa nội dung + trừ điểm thằng tố cáo
+    // Xóa tó cáo+ xóa nội dung + trừ điểm thằng bi tố cáo
     if (req.user.isAdmin == false)
       res.status(403).json({
         message: "Bạn không đủ quyền hạn",
@@ -370,7 +402,7 @@ const approveRouter = (io) => {
               "https://res.cloudinary.com/dpregsdt9/image/upload/v1639744800/notify/b2ff8pc5qbbtc9sqbvq4.png",
           });
       } else if (delReport.type === "post") {
-        dataReport = await post.findById(delReport.id1);
+        dataReport = await post.findByIdAndDelete(delReport.id1);
         if (dataReport)
           io.notifyToUser(dataReport.owner, {
             message: `Bài viết của bạn đã bị xóa vì vi phạm nguyên tắc cộng đồng`,
@@ -396,7 +428,7 @@ const approveRouter = (io) => {
         message: `Chúng tôi đã xem xét thông tin tố cáo bạn đã gửi. Chân thành cám ơn sự đóng góp của bạn`,
         url: `/`,
         imageUrl:
-          "hhttps://res.cloudinary.com/dpregsdt9/image/upload/v1639490398/notify/verified_rrd4yn.png",
+          "http://res.cloudinary.com/dpregsdt9/image/upload/v1639808792/notify/dpebhnmfzkxu6ojekj3r.png",
       });
     } catch (err) {
       console.log(err);
@@ -462,7 +494,7 @@ const approveRouter = (io) => {
             return (
               JSON.stringify(item._id) === JSON.stringify(getReports[i].id2) &&
               JSON.stringify(item.motel._id) ===
-              JSON.stringify(getReports[i].id1)
+                JSON.stringify(getReports[i].id1)
             );
           });
         else if (getReports[i].type === "post")
@@ -514,7 +546,7 @@ const approveRouter = (io) => {
     }
   });
 
-  // Chưa test kỹ
+  //good
   router.delete("/posts/:id", verifyToken, async (req, res) => {
     //Xóa post khôgn duyệt
 
@@ -541,7 +573,7 @@ const approveRouter = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
-  //Chưa test kỹ
+  //good
   router.post("/posts/:id", verifyToken, async (req, res) => {
     // duyệt post
     if (req.user.isAdmin == false)

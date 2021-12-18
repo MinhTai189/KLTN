@@ -334,6 +334,7 @@ const authRouter = (io) => {
       } else {
         let userData;
         try {
+          console.log(authorization);
           userData = JWT.verify(authorization, process.env.accessToken);
         } catch (err) {
           console.log(err);
