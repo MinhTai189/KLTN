@@ -15,7 +15,8 @@ interface Props {
     type: string
     user: Owner
     createdAt: string
-
+    onApprove: () => void
+    onRefuse: () => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -73,7 +74,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, type, user, createdAt }: Props) => {
+export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, type, user, createdAt, onApprove, onRefuse }: Props) => {
     const classes = useStyles()
     const valueContext = useContext(ApproveContext)
 
@@ -134,6 +135,7 @@ export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, t
                             marginRight: 16,
                             textTransform: 'initial'
                         }}
+                        onClick={onRefuse}
                     >
                         Xóa
                     </Button>
@@ -162,6 +164,7 @@ export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, t
                         style={{
                             textTransform: 'initial'
                         }}
+                        onClick={onApprove}
                     >
                         Duyệt
                     </Button>
