@@ -80,8 +80,8 @@ const approveRouter = (io) => {
         const renameImage = await upload.rename(
           images[i].public_id,
           newMotel._id +
-            "/" +
-            images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
+          "/" +
+          images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
         );
         if (renameImage.success == true)
           newMotel.images = [
@@ -96,10 +96,10 @@ const approveRouter = (io) => {
             await upload.rename(
               newMotel.images[j].public_id,
               newMotel.name +
-                "/" +
-                newMotel.images[j].public_id.substr(
-                  newMotel.images[j].public_id.indexOf("/") + 1
-                )
+              "/" +
+              newMotel.images[j].public_id.substr(
+                newMotel.images[j].public_id.indexOf("/") + 1
+              )
             );
 
           return res
@@ -110,20 +110,20 @@ const approveRouter = (io) => {
       const renameThumbnail = await upload.rename(
         newMotel.thumbnail.public_id,
         newMotel._id +
-          "/" +
-          newMotel.thumbnail.public_id.substr(
-            newMotel.thumbnail.public_id.indexOf("/") + 1
-          )
+        "/" +
+        newMotel.thumbnail.public_id.substr(
+          newMotel.thumbnail.public_id.indexOf("/") + 1
+        )
       );
       if (renameThumbnail.success == false) {
         for (let j = 0; j < newMotel.images.length; j++)
           await upload.rename(
             newMotel.images[j].public_id,
             newMotel.name +
-              "/" +
-              newMotel.images[j].public_id.substr(
-                newMotel.images[j].public_id.indexOf("/") + 1
-              )
+            "/" +
+            newMotel.images[j].public_id.substr(
+              newMotel.images[j].public_id.indexOf("/") + 1
+            )
           );
 
         return res
@@ -462,7 +462,7 @@ const approveRouter = (io) => {
             return (
               JSON.stringify(item._id) === JSON.stringify(getReports[i].id2) &&
               JSON.stringify(item.motel._id) ===
-                JSON.stringify(getReports[i].id1)
+              JSON.stringify(getReports[i].id1)
             );
           });
         else if (getReports[i].type === "post")

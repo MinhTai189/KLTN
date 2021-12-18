@@ -1,10 +1,13 @@
 import { Box, Theme } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
+import { MotelApprove } from "models"
+import { useMemo } from "react"
 import Carousel from 'react-elastic-carousel'
 import AddRowContent from "../common/AddRowContent"
 import TableRoom from "./TableRoom"
-interface Props {
 
+interface Props {
+    dataMotel: MotelApprove
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -59,16 +62,56 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const AddBodyMotel = (props: Props) => {
+const AddBodyMotel = ({ dataMotel }: Props) => {
     const classes = useStyles()
+
+    const desc = dataMotel.desc.length > 120 ? `${dataMotel.desc.slice(0, 120)}...` : dataMotel.desc
+
+    const listImg = [dataMotel.thumbnail, ...dataMotel.images]
+
+    const school = useMemo(() => {
+        return dataMotel.school.map(x => x.name).join(',')
+    }, [dataMotel])
 
     return (
         <Box className={classes.root}>
-            <AddRowContent />
-            <AddRowContent />
-            <AddRowContent />
+            <AddRowContent
+                labelLeft='Tên nhà trọ'
+                contentLeft={dataMotel.name}
+                labelRight="Địa chỉ"
+                contentRight={dataMotel.address}
+            />
 
-            <TableRoom />
+            <AddRowContent
+                labelLeft='Mô tả'
+                contentLeft={desc}
+                titleContentLeft={dataMotel.desc}
+                labelRight="Trường học"
+                contentRight={school}
+            />
+
+            <AddRowContent
+                labelLeft='Điện thoại'
+                contentLeft={dataMotel.contact.phone || ''}
+                labelRight="Email"
+                contentRight={dataMotel.contact.email || ''}
+            />
+
+            <AddRowContent
+                labelLeft='Facebook'
+                contentLeft={dataMotel.contact.facebook || ''}
+                labelRight="Zalo"
+                contentRight={dataMotel.contact.zalo || ''}
+            />
+
+            <AddRowContent
+                labelLeft='Trạng thái'
+                contentLeft={dataMotel.status ? 'Còn phòng' : 'Hết phòng'}
+                labelRight="Phòng trống"
+                contentRight={dataMotel.available ? `${dataMotel.available} phòng` : ''}
+            />
+
+            {dataMotel.room && <TableRoom rooms={dataMotel.room} />}
 
             <Box mt={2} mb={1}>
                 <Carousel
@@ -82,16 +125,14 @@ const AddBodyMotel = (props: Props) => {
                     itemPadding={[0, 4, 0, 4]}
                     showEmptySlots={true}
                 >
-                    {new Array(8).fill(1).map((_, index) => {
+                    {listImg.map((url, index) => {
 
                         return (
                             <img
                                 key={index.toString()}
                                 className="images"
-                                src={'https://static.vecteezy.com/packs/media/components/global/search-explore-nav/img/vectors/term-bg-1-666de2d941529c25aa511dc18d727160.jpg'}
+                                src={url}
                                 alt="Tìm nhà trọ sinh viên"
-                            // onMouseOver={() => { setCurrentImg(index); serCurrentPreviewImg(index) }}
-                            // onClick={() => setOpenPreviewModal(true)}
                             />
                         )
                     })}

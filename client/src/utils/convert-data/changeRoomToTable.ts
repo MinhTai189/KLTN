@@ -1,7 +1,5 @@
 import { Room } from 'models';
-import { ReactElement } from 'react';
-import React from 'react';
-import { twoNumber } from 'utils';
+import React, { ReactElement } from 'react';
 import { mapPriceMonth } from '../getPriceMotel';
 
 interface RoomTable {
@@ -45,10 +43,6 @@ export const changeRoomToTable = (rooms: Room[]): RoomTable[] => {
   const result: RoomTable[] = rooms.map((room, index) => {
     const price = mapPriceMonth(room.price);
 
-    // 9 => 09
-    const remain = twoNumber(room.remain);
-    const total = twoNumber(room.total);
-
     const status = React.createElement(
       'span',
       {
@@ -58,8 +52,9 @@ export const changeRoomToTable = (rooms: Room[]): RoomTable[] => {
           fontSize: 12,
           borderRadius: 15,
         },
+        className: 'status',
       },
-      `${remain}/${total}`
+      `${room.remain}/${room.total}`
     );
 
     const area = `${room.area.length}m x ${room.area.width}m`;

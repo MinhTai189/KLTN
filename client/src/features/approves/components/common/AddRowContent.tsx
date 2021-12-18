@@ -1,8 +1,13 @@
-import { Box, Grid, Theme, Typography } from "@material-ui/core"
+import { Box, Grid, Theme, Tooltip, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
 
 interface Props {
-
+    labelLeft: string
+    contentLeft: string
+    titleContentLeft?: string
+    labelRight?: string
+    contentRight?: string
+    titleContentRight?: string
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -15,23 +20,27 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const AddRowContent = (props: Props) => {
+const AddRowContent = ({ labelLeft, contentLeft, titleContentLeft, labelRight, contentRight, titleContentRight }: Props) => {
     const classes = useStyles()
 
     return (
         <Box className={classes.root}>
             <Grid container>
                 <Grid item sm={6}>
-                    <Typography className="row-content">
-                        Tiêu đề:&#xa0;&#xa0;&#xa0;This is a title
-                    </Typography>
+                    <Tooltip title={titleContentLeft ?? ''} arrow>
+                        <Typography className="row-content" >
+                            {labelLeft}:&#xa0;&#xa0;&#xa0;{contentLeft}
+                        </Typography>
+                    </Tooltip>
                 </Grid>
 
-                <Grid item sm={6}>
-                    <Typography className="row-content">
-                        Giá:&#xa0;&#xa0;&#xa0;800k/tháng
-                    </Typography>
-                </Grid>
+                {labelRight && <Grid item sm={6}>
+                    <Tooltip title={titleContentRight ?? ''} arrow>
+                        <Typography className="row-content">
+                            {labelRight}:&#xa0;&#xa0;&#xa0;{contentRight}
+                        </Typography>
+                    </Tooltip>
+                </Grid>}
             </Grid>
         </Box>
     )

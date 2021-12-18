@@ -1,15 +1,22 @@
 import { Theme, makeStyles, Box, Avatar, Typography, Button, Paper } from '@material-ui/core'
+import ApproveContext from 'contexts/ApproveContext'
+import { Owner, User } from 'models'
+import { useContext } from 'react'
 import { Link } from 'react-router-dom'
+import { calculateCreatedTimeHDMY } from 'utils/convert-date/calculateCreatedTime'
 
 
 interface Props {
     children: any
+    modalId: string
     isUpdate?: boolean
     isReview?: boolean
     isReport?: boolean
-    openCompareModal?: () => void
-    openPreviewModal?: () => void
     type: string
+    user: Owner
+    createdAt: string
+    onApprove: () => void
+    onRefuse: () => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -67,25 +74,44 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const ApproveItem = ({ children, isUpdate, isReview, isReport, type, openCompareModal, openPreviewModal }: Props) => {
+export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, type, user, createdAt, onApprove, onRefuse }: Props) => {
     const classes = useStyles()
+    const valueContext = useContext(ApproveContext)
+
+    const handleOpenModal = () => {
+        if (isUpdate) valueContext.setOpenModalApprove({
+            type: 'update',
+            id: modalId
+        })
+        if (isReview) valueContext.setOpenModalApprove({
+            type: 'review',
+            id: modalId
+        })
+    }
 
     return (
         <Box className={classes.root}>
             <Box className='top-wrapper'>
                 <Box className="left-info">
-                    <Avatar className='avatar'>A</Avatar>
+                    <Link to={`/profile/${user._id}`}>
+                        <Avatar
+                            className='avatar'
+                            src={user.avatarUrl}
+                        >
+                            {user.name[0]}
+                        </Avatar>
+                    </Link>
 
                     <span className="details">
                         <Typography className='name'>
-                            <Link to='/'>
-                                Trần Minh Tài
+                            <Link to={`/profile/${user._id}`}>
+                                {user.name}
                             </Link>
                         </Typography>
 
                         <span className="rows">
                             <Typography className='date'>
-                                18:30, 16/12/2021
+                                {calculateCreatedTimeHDMY(createdAt)}
                             </Typography>
 
                             <span className="dot" />
@@ -109,6 +135,7 @@ export const ApproveItem = ({ children, isUpdate, isReview, isReport, type, open
                             marginRight: 16,
                             textTransform: 'initial'
                         }}
+                        onClick={onRefuse}
                     >
                         Xóa
                     </Button>
@@ -124,7 +151,7 @@ export const ApproveItem = ({ children, isUpdate, isReview, isReport, type, open
                             marginRight: 16,
                             textTransform: 'initial'
                         }}
-                        onClick={() => { openCompareModal?.(); openPreviewModal?.() }}
+                        onClick={handleOpenModal}
                     >
                         {isReview ? 'Xem trước' : 'So sánh'}
                     </Button>}
@@ -137,6 +164,7 @@ export const ApproveItem = ({ children, isUpdate, isReview, isReport, type, open
                         style={{
                             textTransform: 'initial'
                         }}
+                        onClick={onApprove}
                     >
                         Duyệt
                     </Button>

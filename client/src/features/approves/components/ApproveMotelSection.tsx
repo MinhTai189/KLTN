@@ -1,81 +1,142 @@
 import { Box, Grid } from "@material-ui/core"
 import { Pagination } from "@material-ui/lab"
+import { useAppDispatch, useAppSelector } from "app/hooks"
+import { LoadingAdmin } from "components/Common"
 import ModalUp from "components/Common/ModalUp"
+import ApproveContext, { OpenModalApprove } from "contexts/ApproveContext"
 import { useState } from "react"
 import { ApproveItem } from "."
+import { motelApproveActions, selectDataMotelApprove, selectFilterMotelApprove, selectLoadingMotelApprove, selectPaginationMotelApprove } from "../motelApprove"
+import { postApproveActions } from "../postApprove"
+import { rateApproveActions } from "../rateApprove"
+import { reportApproveActions } from "../reportApprove"
 import ComparingBody from "./common/ComparingBody"
 import ApproveLayout from "./layouts/ApproveLayout"
 import AddBodyMotel from "./Motels/AddBodyMotel"
-import AddBodyPost from "./Posts/AddBodyPost"
-import PreviewingBody from "./Posts/PreviewingBody"
-import AddBodyRate from "./Rates/AddBodyRate"
-import BodyReport from "./Reports/BodyReport"
 
+export const ApproveMotelSection = () => {
+    const dispatch = useAppDispatch()
 
-interface Props {
+    const dataMotelApprove = useAppSelector(selectDataMotelApprove)
+    const loadingMotelApprove = useAppSelector(selectLoadingMotelApprove)
+    const paginationMotelApprove = useAppSelector(selectPaginationMotelApprove)
 
-}
-
-export const ApproveMotelSection = (props: Props) => {
-    const [open, setOpen] = useState('')
+    const [open, setOpen] = useState<OpenModalApprove>({
+        type: '',
+        id: ''
+    })
     const [showAccordion, setShowAccordion] = useState('')
 
     const handleShowAccordion = (panel: string) => {
         setShowAccordion(prev => prev === panel ? '' : panel)
     }
 
+    const actionApprovalMotel = {
+        handlePagination(e: any, page: number) {
+            dispatch(motelApproveActions.setFilter({
+                _page: page,
+            }))
+        },
+        handleApprove(motelId: string) {
+            dispatch(motelApproveActions.approve(motelId))
+        },
+        handleRefuse(motelId: string) {
+            dispatch(motelApproveActions.refuse(motelId))
+        }
+    }
+
+    const actionApprovalPost = {
+        handlePagination(e: any, page: number) {
+            dispatch(postApproveActions.setFilter({
+                _page: page,
+            }))
+        },
+        handleApprove(postId: string) {
+            dispatch(postApproveActions.approve(postId))
+        },
+        handleRefuse(postId: string) {
+            dispatch(postApproveActions.refuse(postId))
+        }
+    }
+
+    const actionApprovalRate = {
+        handlePagination(e: any, page: number) {
+            dispatch(rateApproveActions.setFilter({
+                _page: page,
+            }))
+        },
+        handleApprove(rateId: string) {
+            dispatch(rateApproveActions.approve(rateId))
+        },
+        handleRefuse(rateId: string) {
+            dispatch(rateApproveActions.refuse(rateId))
+        }
+    }
+
+    const actionApprovalReport = {
+        handlePagination(e: any, page: number) {
+            dispatch(reportApproveActions.setFilter({
+                _page: page,
+            }))
+        },
+        handleApprove(reportId: string) {
+            dispatch(reportApproveActions.approve(reportId))
+        },
+        handleRefuse(reportId: string) {
+            dispatch(reportApproveActions.refuse(reportId))
+        }
+    }
+
     return (
         <>
-            <ApproveLayout
-                label='Nhà trọ chờ duyệt'
-                isExpand={showAccordion === 'motel'}
-                onClose={() => handleShowAccordion('motel')}
-            >
-                <Box display='flex' justifyContent='flex-end' my={2}>
-                    <Pagination
-                        count={5}
-                        variant='outlined'
-                        shape="rounded"
-                        size='small'
-                    />
-                </Box>
+            <ApproveContext.Provider value={{
+                openModalApprove: open,
+                setOpenModalApprove: setOpen
+            }}>
+                <ApproveLayout
+                    label='Nhà trọ chờ duyệt'
+                    isExpand={showAccordion === 'motel'}
+                    onClose={() => handleShowAccordion('motel')}
+                >
+                    {loadingMotelApprove ? <LoadingAdmin />
+                        : <>
+                            <Box display='flex' justifyContent='flex-end' my={2}>
+                                <Pagination
+                                    count={Math.ceil(paginationMotelApprove._totalRows / paginationMotelApprove._limit)}
+                                    page={paginationMotelApprove._page}
+                                    onChange={actionApprovalMotel.handlePagination}
+                                    variant='outlined'
+                                    shape="rounded"
+                                    size='small'
+                                />
+                            </Box>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                        <ApproveItem type="Thêm mới">
-                            <AddBodyMotel />
-                        </ApproveItem>
-                    </Grid>
+                            <Grid container spacing={2}>
+                                {dataMotelApprove && dataMotelApprove.map(data => {
+                                    const type = data.type === 'update' ? 'Cập nhật' : 'Thêm mới'
 
-                    <Grid item xs={6}>
-                        <ApproveItem
-                            isUpdate
-                            type='Chỉnh sửa'
-                            openCompareModal={() => setOpen('update')}
-                        >
-                            <AddBodyMotel />
-                        </ApproveItem>
-                    </Grid>
+                                    return (
+                                        <Grid key={data._id} item xs={6}>
+                                            <ApproveItem
+                                                modalId={data._id}
+                                                type={type}
+                                                isUpdate={data.type === 'update'}
+                                                user={data.owner}
+                                                createdAt={data.createdAt}
+                                                onApprove={() => actionApprovalMotel.handleApprove(data._id)}
+                                                onRefuse={() => actionApprovalMotel.handleRefuse(data._id)}
+                                            >
+                                                <AddBodyMotel dataMotel={data} />
+                                            </ApproveItem>
+                                        </Grid>
+                                    )
+                                })}
+                            </Grid>
+                        </>
+                    }
+                </ApproveLayout>
 
-                    <Grid item xs={6}>
-                        <ApproveItem type='Thêm mới'>
-                            <AddBodyMotel />
-                        </ApproveItem>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                        <ApproveItem
-                            isUpdate
-                            type='Chỉnh sửa'
-                            openCompareModal={() => setOpen('update')}
-                        >
-                            <AddBodyMotel />
-                        </ApproveItem>
-                    </Grid>
-                </Grid>
-            </ApproveLayout>
-
-            <ApproveLayout
+                {/* <ApproveLayout
                 label='Bài đăng chờ duyệt'
                 isExpand={showAccordion === 'post'}
                 onClose={() => handleShowAccordion('post')}
@@ -186,15 +247,23 @@ export const ApproveMotelSection = (props: Props) => {
                         </ApproveItem>
                     </Grid>
                 </Grid>
-            </ApproveLayout>
+            </ApproveLayout> */}
+            </ApproveContext.Provider>
 
-            <ModalUp open={open === 'update'} onClose={() => setOpen('')}>
-                <ComparingBody />
-            </ModalUp>
+            {open.type === 'update' &&
+                <ModalUp
+                    open={open.type === 'update'}
+                    onClose={() => setOpen({
+                        type: '',
+                        id: ''
+                    })}
+                >
+                    <ComparingBody motelId={open.id} />
+                </ModalUp>}
 
-            <ModalUp open={open === 'review'} onClose={() => setOpen('')}>
+            {/* <ModalUp open={valueContext.openModalApprove === 'review'} onClose={() => valueContext.setOpenModalApprove('')}>
                 <PreviewingBody />
-            </ModalUp>
+            </ModalUp> */}
         </>
     )
 }

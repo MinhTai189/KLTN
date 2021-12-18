@@ -41,6 +41,29 @@ const motelApproveSlice = createSlice({
       state.loading = false;
       state.err = action.payload;
     },
+    approve(state, action: PayloadAction<string>) {
+      state.loading = true;
+    },
+    approveSucceeded(state) {
+      state.loading = false;
+    },
+    approveFailded(state, action: PayloadAction<string>) {
+      state.loading = false;
+      state.err = action.payload;
+    },
+    refuse(state, action: PayloadAction<string>) {
+      state.loading = true;
+    },
+    refuseSucceeded(state) {
+      state.loading = false;
+    },
+    refuseFailded(state, action: PayloadAction<string>) {
+      state.loading = false;
+      state.err = action.payload;
+    },
+    setFilter(state, action: PayloadAction<Filter>) {
+      state.filter = { ...state.filter, ...action.payload };
+    },
   },
 });
 

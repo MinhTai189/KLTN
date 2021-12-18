@@ -8,10 +8,10 @@ interface Props {
 const BodyReport = (props: Props) => {
     return (
         <Box>
+            {/* <AddRowContent />
             <AddRowContent />
             <AddRowContent />
-            <AddRowContent />
-            <AddRowContent />
+            <AddRowContent /> */}
         </Box>
     )
 }
