@@ -8,7 +8,7 @@ interface Props {
 const AddBodyRate = (props: Props) => {
     return (
         <Box>
-            <AddRowContent />
+            {/* <AddRowContent /> */}
         </Box>
     )
 }

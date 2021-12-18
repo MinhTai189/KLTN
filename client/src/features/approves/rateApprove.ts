@@ -41,6 +41,9 @@ const rateApproveSlice = createSlice({
       state.loading = false;
       state.err = action.payload;
     },
+    setFilter(state, action: PayloadAction<Filter>) {
+      state.filter = action.payload;
+    },
   },
 });
 

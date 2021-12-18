@@ -93,7 +93,7 @@ export interface OwnerDetail extends Owner {
   createdAt: string;
 }
 
-interface Contact {
+export interface Contact {
   phone?: string;
   email?: string;
   facebook?: string;
@@ -112,7 +112,7 @@ interface Area {
   width: number;
 }
 
-interface Optional {
+export interface Optional {
   wifi: boolean;
   ml: boolean;
   gac: boolean;
