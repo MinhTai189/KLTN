@@ -12,6 +12,7 @@ const removeVietnameseTones = require("../utils/removeVietnameseTones");
 const review = require("../models/review");
 const comment = require("../models/comment");
 const upload = require("../middleware/upload");
+const nullMotel = require("../utils/nullMotel");
 const router = express.Router();
 const approveRouter = (io) => {
   router.delete("/motels/:type/:id", verifyToken, async (req, res) => {
@@ -611,6 +612,7 @@ const approveRouter = (io) => {
         .find({ valid: false })
         .select("-unsignedTitle")
         .populate("subject", "name")
+        .populate("motel", "-rate")
         .populate(
           "owner",
           "avatarUrl name isAdmin _id credit email posts motels rank"
@@ -629,6 +631,17 @@ const approveRouter = (io) => {
             },
           },
         ];
+
+        if (getPosts[i].motel != undefined && getPosts[i].motel != null) {
+          const motelPost = {
+            ...getPosts[i].motel._doc,
+            thumbnail: getPosts[i].motel.thumbnail.url,
+            images: getPosts[i].motel.images.map((item) => item.url),
+          };
+          response[i].motel = motelPost;
+        }
+        if (getPosts[i].motel == null && getPosts[i].type != 1)
+          response[i].motel = nullMotel;
       }
 
       let page = 1,
