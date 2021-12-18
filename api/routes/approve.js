@@ -41,10 +41,89 @@ const approveRouter = (io) => {
     res.status(200).json({ success: true, message: "Thành công" });
   });
 
-  //chua co gi ca
+  //working
   router.patch("/motels/:id", verifyToken, async (req, res) => {
-    //duyệt motel update
-    res.status(400).json({ message: "Chưa có gì cả", success: false });
+    //duyệt motel update\
+    try {
+      const getNewUpdateMotel = await userUpdateMotel
+        .findById(req.params.id)
+        .populate("motel");
+      const oldMotel = getNewUpdateMotel.motel;
+      let userAtr = getNewUpdateMotel.user;
+
+      let edited = "Chỉnh sửa nhà trọ: ";
+      if (oldMotel.name !== getNewUpdateMotel.name) edited += "tên nhà trọ";
+
+      if (oldMotel.thumbnail.public_id != getNewUpdateMotel.thumbnail.public_id)
+        if (edited === "Chỉnh sửa nhà trọ: ") edited += "ảnh bìa";
+        else edited += ", ảnh bìa";
+      if (getNewUpdateMotel.address !== oldMotel.address)
+        if (edited === "Chỉnh sửa nhà trọ: ") edited += "địa chỉ";
+        else edited += ", địa chỉ";
+      if (getNewUpdateMotel.desc !== oldMotel.desc)
+        if (edited === "Chỉnh sửa nhà trọ: ") edited += "giới thiệu";
+        else edited += ", giới thiệu";
+
+      if (
+        oldMotel.contact.zalo !== getNewUpdateMotel.contact.zalo ||
+        oldMotel.contact.phone !== getNewUpdateMotel.contact.phone ||
+        oldMotel.contact.facebook !== getNewUpdateMotel.contact.facebook ||
+        oldMotel.contact.email !== getNewUpdateMotel.contact.email
+      )
+        if (edited === "Chỉnh sửa nhà trọ: ") edited += "thông tin liên hệ";
+        else edited += ", thông tin liên hệ";
+
+      if (getNewUpdateMotel.status !== getNewUpdateMotel.status)
+        if (edited === "Chỉnh sửa nhà trọ: ") edited += "trang thái";
+        else edited += ", trạng thái";
+      if (oldMotel.available != getNewUpdateMotel.available)
+        if (edited === "Chỉnh sửa nhà trọ: ") edited += "phòng trống";
+        else edited += ", phòng trống";
+
+      for (let i = 0; i < getNewUpdateMotel.school.length; i++) {
+        if (
+          !getNewUpdateMotel.school.some((item) => {
+            JSON.stringify(item) === JSON.stringify(oldMotel.school[i]._id);
+          })
+        ) {
+          if (edited === "Chỉnh sửa nhà trọ: ") edited += "lân cận";
+          else edited += ", lân cận";
+          break;
+        }
+      }
+
+      if (oldMotel.editor.length >= 3) oldMotel.editor.shift();
+      oldMotel.editor.push({
+        user: userAtr,
+        edited: edited,
+        createdAt: Date.now(),
+      });
+      const updateProps = {
+        name: getNewUpdateMotel.name,
+        thumbnail: getNewUpdateMotel.thumbnail,
+        images: getNewUpdateMotel.images,
+        address: getNewUpdateMotel.address,
+        desc: getNewUpdateMotel.desc,
+        contact: getNewUpdateMotel.contact,
+        status: getNewUpdateMotel.status,
+        school: getNewUpdateMotel.school,
+        available: getNewUpdateMotel.available,
+        editor: oldMotel.editor,
+      };
+      await motel.findByIdAndUpdate(oldMotel._id, { $set: updateProps });
+
+      res.status(200).json({ message: "Thành công", success: true });
+      io.notifyToUser(getNewUpdateMotel.user, {
+        message: `Chúng tôi đã duyệt thông tin chỉnh sửa nhà trọ. Chân thành cám ơn sự đóng góp của bạn`,
+        url: `/motels/${oldMotel._id}`,
+        imageUrl:
+          "http://res.cloudinary.com/dpregsdt9/image/upload/v1639808792/notify/dpebhnmfzkxu6ojekj3r.png",
+      });
+    } catch (err) {
+      console.log(err);
+
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
+    }
   });
   //good
   router.post("/motels/:id", verifyToken, async (req, res) => {

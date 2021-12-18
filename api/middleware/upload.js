@@ -12,8 +12,11 @@ const upload = async (req, res, next) => {
     api_key: process.env.CLOUND_API_KEY,
     api_secret: process.env.CLOUND_API_SECRET,
   });
+  console.log(req);
   if (!req.files)
-    return res.status(400).json({ success: false, message: "Khong co file" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Không tìm thấy file" });
   var files;
 
   const f = Object.values(req.files);

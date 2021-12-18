@@ -273,44 +273,6 @@ const motelRouter = (io) => {
       else edited += ", hình ảnh";
     if (req.user.isAdmin == true) {
       try {
-        if (id) {
-          const findUserUpdateMotel = await userUpdateMotel.findById(id);
-          if (!findUserUpdateMotel) {
-            console.log(findUserUpdateMotel);
-            return res.status(400).json({
-              success: false,
-              message: "Không thể tìm thông tin cập nhật này",
-            });
-          }
-          if (
-            JSON.stringify(motelUpdate._id) !==
-            JSON.stringify(findUserUpdateMotel.motel)
-          ) {
-            return res.status(400).json({
-              success: false,
-              message: "Không thể tìm thông tin cập nhật này",
-            });
-          }
-          userAtr = findUserUpdateMotel.user;
-          if (newImage.length == 0)
-            for (let i = 0; i < findUserUpdateMotel.images.length; i++) {
-              if (findUserUpdateMotel.images[i].public_id != undefined)
-                await upload.unlink(findUserUpdateMotel.images[i].public_id);
-            }
-          if (thumbnail) {
-            if (typeof thumbnail === "object")
-              if (thumbnail.public_id === oldThumbnail)
-                if (findUserUpdateMotel.thumbnail.public_id !== oldThumbnail)
-                  await upload.unlink(findUserUpdateMotel.thumbnail.public_id);
-          } else {
-            if (findUserUpdateMotel.thumbnail.public_id !== oldThumbnail)
-              await upload.unlink(findUserUpdateMotel.thumbnail.public_id);
-          }
-          if (typeof thumbnail === "string")
-            if (findUserUpdateMotel.thumbnail.public_id !== oldThumbnail)
-              await upload.unlink(findUserUpdateMotel.thumbnail.public_id);
-          await userUpdateMotel.findByIdAndDelete(id);
-        }
         if (motelUpdate.editor.length >= 3) motelUpdate.editor.shift();
         motelUpdate.editor.push({
           user: userAtr,
@@ -353,16 +315,30 @@ const motelRouter = (io) => {
         res.status(500).json({ success: false, message: "Lỗi không xác định" });
       }
     } else {
-      if (id)
-        return res
-          .status(403)
-          .json({ success: false, message: "Bạn không đủ quyền" });
+      if (Array.isArray(images)) {
+        var removeImages = oldImages.reduce((arr, image) => {
+          if (!oldImage.includes(image.url)) arr.push(image);
+          return arr;
+        }, []);
 
+        oldImages = oldImages.filter((image) => {
+          let result = true;
+          removeImages.forEach((remove) => {
+            if (remove.url === image.url) {
+              result = false;
+              return;
+            }
+          });
+          return result;
+        });
+        oldImages = [...oldImages, ...newImage];
+        motelUpdate.images = oldImages;
+      }
       let newUserUpdateMotel = new userUpdateMotel({
         name: motelUpdate.name,
         unsignedName: motelUpdate.unsignedName,
         thumbnail: motelUpdate.thumbnail,
-        images: images,
+        images: motelUpdate.images,
         address: motelUpdate.address,
         desc: motelUpdate.desc,
         contact: motelUpdate.contact,
