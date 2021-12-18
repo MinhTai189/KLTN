@@ -336,6 +336,7 @@ const authRouter = (io) => {
         try {
           userData = JWT.verify(authorization, process.env.accessToken);
         } catch (err) {
+          console.log(err);
           if (err.name === "TokenExpiredError")
             return res
               .status(401)
