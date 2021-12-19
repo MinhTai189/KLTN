@@ -12,7 +12,6 @@ const upload = async (req, res, next) => {
     api_key: process.env.CLOUND_API_KEY,
     api_secret: process.env.CLOUND_API_SECRET,
   });
-  console.log(req);
   if (!req.files)
     return res
       .status(400)

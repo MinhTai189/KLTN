@@ -126,153 +126,153 @@ const motelRouter = (io) => {
   });
 
   router.patch("/:id", verifyToken, async (req, res) => {
-    const motelUpdate = await motel
-      .findById(req.params.id)
-      .select("-room -rate");
-    if (!motelUpdate)
-      return res
-        .status(404)
-        .json({ success: true, message: "Không tìm thấy nhà trọ" });
+    try {
+      const motelUpdate = await motel
+        .findById(req.params.id)
+        .select("-room -rate");
+      if (!motelUpdate)
+        return res
+          .status(404)
+          .json({ success: true, message: "Không tìm thấy nhà trọ" });
 
-    let {
-      id,
-      name,
-      thumbnail,
-      images,
-      address,
-      desc,
-      contact,
-      status,
-      school,
-      available,
-    } = req.body;
-    if (
-      !name &&
-      !thumbnail &&
-      !images &&
-      !address &&
-      !desc &&
-      !contact &&
-      typeof status === "undefined" &&
-      !school &&
-      !available
-    )
-      return res.status(400).json({
-        success: false,
-        message: "Không tìm thấy dữ liệu cần cập nhật",
-      });
-    if (Array.isArray(images) == false)
-      if (typeof images !== "undefined") images = images.old;
-
-    let userAtr = req.user.id;
-
-    let edited = "Chỉnh sửa nhà trọ: ";
-    if (typeof name === "string")
-      if (motelUpdate.name != name) edited += "tên nhà trọ";
-
-    if (thumbnail)
-      if (thumbnail.public_id)
-        if (thumbnail.url != motelUpdate.thumbnail.url)
-          if (edited === "Chỉnh sửa nhà trọ: ") edited += "ảnh bìa";
-          else edited += ", ảnh bìa";
-    if (typeof address === "string")
-      if (address != motelUpdate.address)
-        if (edited === "Chỉnh sửa nhà trọ: ") edited += "địa chỉ";
-        else edited += ", địa chỉ";
-    if (typeof desc === "string")
-      if (desc != motelUpdate.desc)
-        if (edited === "Chỉnh sửa nhà trọ: ") edited += "giới thiệu";
-        else edited += ", giới thiệu";
-    if (contact)
+      let {
+        id,
+        name,
+        thumbnail,
+        images,
+        address,
+        desc,
+        contact,
+        status,
+        school,
+        available,
+      } = req.body;
       if (
-        typeof contact.phone === "string" ||
-        typeof contact.zalo === "string" ||
-        typeof contact.email === "string" ||
-        typeof contact.facebook === "string"
+        !name &&
+        !thumbnail &&
+        !images &&
+        !address &&
+        !desc &&
+        !contact &&
+        typeof status === "undefined" &&
+        !school &&
+        !available
       )
+        return res.status(400).json({
+          success: false,
+          message: "Không tìm thấy dữ liệu cần cập nhật",
+        });
+      if (Array.isArray(images) == false)
+        if (typeof images !== "undefined") images = images.old;
+
+      let userAtr = req.user.id;
+
+      let edited = "Chỉnh sửa nhà trọ: ";
+      if (typeof name === "string")
+        if (motelUpdate.name != name) edited += "tên nhà trọ";
+
+      if (thumbnail)
+        if (thumbnail.public_id)
+          if (thumbnail.url != motelUpdate.thumbnail.url)
+            if (edited === "Chỉnh sửa nhà trọ: ") edited += "ảnh bìa";
+            else edited += ", ảnh bìa";
+      if (typeof address === "string")
+        if (address != motelUpdate.address)
+          if (edited === "Chỉnh sửa nhà trọ: ") edited += "địa chỉ";
+          else edited += ", địa chỉ";
+      if (typeof desc === "string")
+        if (desc != motelUpdate.desc)
+          if (edited === "Chỉnh sửa nhà trọ: ") edited += "giới thiệu";
+          else edited += ", giới thiệu";
+      if (contact)
         if (
-          motelUpdate.contact.zalo != contact.zalo ||
-          motelUpdate.contact.phone != contact.phone ||
-          motelUpdate.contact.facebook != contact.facebook ||
-          motelUpdate.contact.email != contact.email
+          typeof contact.phone === "string" ||
+          typeof contact.zalo === "string" ||
+          typeof contact.email === "string" ||
+          typeof contact.facebook === "string"
         )
-          if (edited === "Chỉnh sửa nhà trọ: ") edited += "thông tin liên hệ";
-          else edited += ", thông tin liên hệ";
-    if (typeof status === "boolean")
-      if (motelUpdate.status != status)
-        if (edited === "Chỉnh sửa nhà trọ: ") edited += "trang thái";
-        else edited += ", trạng thái";
-    if (typeof available === "number")
-      if (available != motelUpdate.available)
-        if (edited === "Chỉnh sửa nhà trọ: ") edited += "phòng trống";
-        else edited += ", phòng trống";
+          if (
+            motelUpdate.contact.zalo != contact.zalo ||
+            motelUpdate.contact.phone != contact.phone ||
+            motelUpdate.contact.facebook != contact.facebook ||
+            motelUpdate.contact.email != contact.email
+          )
+            if (edited === "Chỉnh sửa nhà trọ: ") edited += "thông tin liên hệ";
+            else edited += ", thông tin liên hệ";
+      if (typeof status === "boolean")
+        if (motelUpdate.status != status)
+          if (edited === "Chỉnh sửa nhà trọ: ") edited += "trang thái";
+          else edited += ", trạng thái";
+      if (typeof available === "number")
+        if (available != motelUpdate.available)
+          if (edited === "Chỉnh sửa nhà trọ: ") edited += "phòng trống";
+          else edited += ", phòng trống";
 
-    if (Array.isArray(school))
-      for (let i = 0; i < school.length; i++) {
+      if (Array.isArray(school))
+        for (let i = 0; i < school.length; i++) {
+          if (
+            !motelUpdate.school.some((item) => {
+              JSON.stringify(item) === JSON.stringify(school[i]._id);
+            })
+          ) {
+            if (edited === "Chỉnh sửa nhà trọ: ") edited += "lân cận";
+            else edited += ", lân cận";
+            break;
+          }
+        }
+
+      if (name) {
+        if (typeof name === "string") {
+          motelUpdate.name = name;
+          motelUpdate.unsignedName = removeVietNameseTones(name);
+        }
+      }
+
+      const oldThumbnail = motelUpdate.thumbnail.public_id;
+
+      if (thumbnail)
+        if (typeof thumbnail === "object")
+          if (thumbnail.public_id !== oldThumbnail) {
+            motelUpdate.thumbnail = thumbnail;
+          }
+      if (address)
+        if (typeof address === "string") {
+          motelUpdate.address = address;
+        }
+      if (desc) if (typeof desc === "string") motelUpdate.desc = desc;
+      if (contact)
         if (
-          !motelUpdate.school.some((item) => {
-            JSON.stringify(item) === JSON.stringify(school[i]._id);
-          })
+          typeof contact.phone === "string" ||
+          typeof contact.zalo === "string" ||
+          typeof contact.email === "string" ||
+          typeof contact.facebook === "string"
         ) {
-          if (edited === "Chỉnh sửa nhà trọ: ") edited += "lân cận";
-          else edited += ", lân cận";
-          break;
+          motelUpdate.contact = contact;
+        }
+      if (typeof status === "boolean") {
+        motelUpdate.status = status;
+      }
+      if (Array.isArray(school) == true) {
+        motelUpdate.school = school;
+      }
+      if (typeof available === "number") {
+        motelUpdate.available = available;
+      }
+      let oldImages = motelUpdate.images;
+      let newImage = [];
+      let oldImage = [];
+
+      if (Array.isArray(images) == true) {
+        for (let i = 0; i < images.length; i++) {
+          typeof images[i] === "string"
+            ? oldImage.push(images[i])
+            : newImage.push(images[i]);
         }
       }
-
-    if (name) {
-      if (typeof name === "string") {
-        motelUpdate.name = name;
-        motelUpdate.unsignedName = removeVietNameseTones(name);
-      }
-    }
-
-    const oldThumbnail = motelUpdate.thumbnail.public_id;
-
-    if (thumbnail)
-      if (typeof thumbnail === "object")
-        if (thumbnail.public_id !== oldThumbnail) {
-          motelUpdate.thumbnail = thumbnail;
-        }
-    if (address)
-      if (typeof address === "string") {
-        motelUpdate.address = address;
-      }
-    if (desc) if (typeof desc === "string") motelUpdate.desc = desc;
-    if (contact)
-      if (
-        typeof contact.phone === "string" ||
-        typeof contact.zalo === "string" ||
-        typeof contact.email === "string" ||
-        typeof contact.facebook === "string"
-      ) {
-        motelUpdate.contact = contact;
-      }
-    if (typeof status === "boolean") {
-      motelUpdate.status = status;
-    }
-    if (Array.isArray(school) == true) {
-      motelUpdate.school = school;
-    }
-    if (typeof available === "number") {
-      motelUpdate.available = available;
-    }
-    let oldImages = motelUpdate.images;
-    let newImage = [];
-    let oldImage = [];
-
-    if (Array.isArray(images) == true) {
-      for (let i = 0; i < images.length; i++) {
-        typeof images[i] === "string"
-          ? oldImage.push(images[i])
-          : newImage.push(images[i]);
-      }
-    }
-    if (newImage.length > 0)
-      if (edited === "Chỉnh sửa nhà trọ: ") edited += "hình ảnh";
-      else edited += ", hình ảnh";
-    if (req.user.isAdmin == true) {
-      try {
+      if (newImage.length > 0)
+        if (edited === "Chỉnh sửa nhà trọ: ") edited += "hình ảnh";
+        else edited += ", hình ảnh";
+      if (req.user.isAdmin == true) {
         if (motelUpdate.editor.length >= 3) motelUpdate.editor.shift();
         motelUpdate.editor.push({
           user: userAtr,
@@ -310,54 +310,50 @@ const motelRouter = (io) => {
         res
           .status(200)
           .json({ success: true, message: "Đã cập nhật thành công" });
-      } catch (err) {
-        console.log(err);
-        res.status(500).json({ success: false, message: "Lỗi không xác định" });
-      }
-    } else {
-      if (Array.isArray(images)) {
-        var removeImages = oldImages.reduce((arr, image) => {
-          if (!oldImage.includes(image.url)) arr.push(image);
-          return arr;
-        }, []);
+      } else {
+        if (Array.isArray(images)) {
+          var removeImages = oldImages.reduce((arr, image) => {
+            if (!oldImage.includes(image.url)) arr.push(image);
+            return arr;
+          }, []);
 
-        oldImages = oldImages.filter((image) => {
-          let result = true;
-          removeImages.forEach((remove) => {
-            if (remove.url === image.url) {
-              result = false;
-              return;
-            }
+          oldImages = oldImages.filter((image) => {
+            let result = true;
+            removeImages.forEach((remove) => {
+              if (remove.url === image.url) {
+                result = false;
+                return;
+              }
+            });
+            return result;
           });
-          return result;
+          oldImages = [...oldImages, ...newImage];
+          motelUpdate.images = oldImages;
+        }
+        let newUserUpdateMotel = new userUpdateMotel({
+          name: motelUpdate.name,
+          unsignedName: motelUpdate.unsignedName,
+          thumbnail: motelUpdate.thumbnail,
+          images: motelUpdate.images,
+          address: motelUpdate.address,
+          desc: motelUpdate.desc,
+          contact: motelUpdate.contact,
+          status: motelUpdate.status,
+          available: motelUpdate.available,
+          school: motelUpdate.school,
+          user: req.user.id,
+          motel: motelUpdate.id,
         });
-        oldImages = [...oldImages, ...newImage];
-        motelUpdate.images = oldImages;
-      }
-      let newUserUpdateMotel = new userUpdateMotel({
-        name: motelUpdate.name,
-        unsignedName: motelUpdate.unsignedName,
-        thumbnail: motelUpdate.thumbnail,
-        images: motelUpdate.images,
-        address: motelUpdate.address,
-        desc: motelUpdate.desc,
-        contact: motelUpdate.contact,
-        status: motelUpdate.status,
-        available: motelUpdate.available,
-        school: motelUpdate.school,
-        user: req.user.id,
-        motel: motelUpdate.id,
-      });
-      try {
+
         await newUserUpdateMotel.save();
 
         res
           .status(200)
           .json({ success: true, message: "Thành công, vui lòng chờ duyệt" });
-      } catch (err) {
-        console.log(err);
-        res.status(500).json({ success: false, message: "Lỗi không xác định" });
       }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ success: false, message: "Lỗi không xác định" });
     }
   });
 

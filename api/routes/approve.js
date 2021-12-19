@@ -15,6 +15,7 @@ const upload = require("../middleware/upload");
 const nullMotel = require("../utils/nullMotel");
 const router = express.Router();
 const approveRouter = (io) => {
+  //working
   router.delete("/motels/:type/:id", verifyToken, async (req, res) => {
     const type = req.params.type;
     const id = req.params.id;
@@ -30,12 +31,21 @@ const approveRouter = (io) => {
       }
       await upload.unlink(addMotel.thumbnail.public_id);
     } else if (type == "update") {
-      const updateMotel = await userUpdateMotel.findByIdAndDelete(id);
+      const updateMotel = await userUpdateMotel
+        .findByIdAndDelete(id)
+        .populate("motel");
       for (let i = 0; i < updateMotel.images.length; i++) {
-        if (updateMotel.images[i].public_id)
+        if (
+          !updateMotel.motel.images.some(
+            (item) => item.public_id === updateMotel.images[i].public_id
+          )
+        )
           await upload.unlink(updateMotel.images[i].public_id);
       }
-      if (updateMotel.thumbnail.public_id)
+      if (
+        updateMotel.thumbnail.public_id !==
+        updateMotel.motel.thumbnail.public_id
+      )
         await upload.unlink(updateMotel.thumbnail.public_id);
     }
     res.status(200).json({ success: true, message: "Thành công" });
