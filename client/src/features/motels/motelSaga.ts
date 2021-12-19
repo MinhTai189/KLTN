@@ -76,7 +76,10 @@ function* handleUpdateMotel(action: PayloadAction<MotelOnly>) {
       ? 'Thông tin của bạn đã được lưu. Hãy chờ Người quản trị web xác thực!'
       : 'Đã cập nhật dữ liệu thành công!';
 
-    if (typeof action.payload.thumbnail !== 'string') {
+    if (
+      typeof action.payload.thumbnail !== 'string' &&
+      action.payload.thumbnail
+    ) {
       const response: Response<any> = yield call(
         uploadApi.byFormData,
         action.payload.thumbnail
@@ -120,7 +123,7 @@ function* handleRemoveMotel(action: PayloadAction<string>) {
 function* handleUpdateRoom(action: PayloadAction<Room>) {
   try {
     const successText = action.payload.invalid
-      ? 'Thông tin của bạn đã được lưu! Hãy chờ Người quản trị web xác thưc!'
+      ? 'Thông tin của bạn đã được lưu! Hãy chờ Người quản trị web xác thực!'
       : 'Đã cập nhật dữ liệu thành công!';
 
     yield call(motelApi.updateRoom, action.payload);

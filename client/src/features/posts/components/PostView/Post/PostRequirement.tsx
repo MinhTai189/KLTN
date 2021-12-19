@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const PostRequirement = ({ require }: Props) => {
     const classes = useStyles()
-    const schools = require.school ? require.school.map(sch => sch.name).join(',') : ''
+    const schools = require.schools ? require.schools.map(sch => sch.name).join(',') : ''
 
     return (
         <Box className={classes.root}>

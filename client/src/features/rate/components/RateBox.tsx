@@ -308,7 +308,7 @@ export const RateBox = ({ handleOpenRateForm, rateList, handleReport }: Props) =
 
                 <div className="rateWrapper" style={{ height: rateList.length > 0 ? 'unset' : '100%' }}>
                     {data.length > 0 ? data.map(rate => (
-                        <span className="items">
+                        <span key={rate._id} className="items">
                             <RateItem data={rate} handleReport={handleReport} />
                         </span>
                     ))

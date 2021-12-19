@@ -3,16 +3,20 @@ import { Pagination } from "@material-ui/lab"
 import { useAppDispatch, useAppSelector } from "app/hooks"
 import { LoadingAdmin } from "components/Common"
 import ModalUp from "components/Common/ModalUp"
-import ApproveContext, { OpenModalApprove } from "contexts/ApproveContext"
+import ApproveContext, { initialApproveContext, OpenModalApprove } from "contexts/ApproveContext"
 import { useState } from "react"
 import { ApproveItem } from "."
-import { motelApproveActions, selectDataMotelApprove, selectFilterMotelApprove, selectLoadingMotelApprove, selectPaginationMotelApprove } from "../motelApprove"
-import { postApproveActions } from "../postApprove"
-import { rateApproveActions } from "../rateApprove"
-import { reportApproveActions } from "../reportApprove"
+import { motelApproveActions, selectDataMotelApprove, selectLoadingMotelApprove, selectPaginationMotelApprove } from "../motelApprove"
+import { postApproveActions, selectDataPostApprove, selectLoadingPostApprove, selectPaginationPostApprove } from "../postApprove"
+import { rateApproveActions, selectDataRateApprove, selectLoadingRateApprove, selectPaginationRateApprove } from "../rateApprove"
+import { reportApproveActions, selectDataReportApprove, selectLoadingReportApprove, selectPaginationReportApprove } from "../reportApprove"
 import ComparingBody from "./common/ComparingBody"
 import ApproveLayout from "./layouts/ApproveLayout"
 import AddBodyMotel from "./Motels/AddBodyMotel"
+import AddBodyPost from "./Posts/AddBodyPost"
+import PreviewingBody from "./Posts/PreviewingBody"
+import AddBodyRate from "./Rates/AddBodyRate"
+import BodyReport from "./Reports/BodyReport"
 
 export const ApproveMotelSection = () => {
     const dispatch = useAppDispatch()
@@ -21,10 +25,23 @@ export const ApproveMotelSection = () => {
     const loadingMotelApprove = useAppSelector(selectLoadingMotelApprove)
     const paginationMotelApprove = useAppSelector(selectPaginationMotelApprove)
 
-    const [open, setOpen] = useState<OpenModalApprove>({
-        type: '',
-        id: ''
+    const dataPostApprove = useAppSelector(selectDataPostApprove)
+    const loadingPostApprove = useAppSelector(selectLoadingPostApprove)
+    const paginationPostApprove = useAppSelector(selectPaginationPostApprove)
+
+    const dataRateApprove = useAppSelector(selectDataRateApprove)
+    const loadingRateApprove = useAppSelector(selectLoadingRateApprove)
+    const paginationRateApprove = useAppSelector(selectPaginationRateApprove)
+
+    const dataReportApprove = useAppSelector(selectDataReportApprove)
+    const loadingReportApprove = useAppSelector(selectLoadingReportApprove)
+    const paginationReportApprove = useAppSelector(selectPaginationReportApprove)
+
+    const [dataPreviewModal, setDataPreviewModal] = useState({
+        title: '',
+        content: ''
     })
+    const [open, setOpen] = useState<OpenModalApprove>(initialApproveContext)
     const [showAccordion, setShowAccordion] = useState('')
 
     const handleShowAccordion = (panel: string) => {
@@ -95,6 +112,7 @@ export const ApproveMotelSection = () => {
             }}>
                 <ApproveLayout
                     label='Nhà trọ chờ duyệt'
+                    quantity={paginationMotelApprove._totalRows}
                     isExpand={showAccordion === 'motel'}
                     onClose={() => handleShowAccordion('motel')}
                 >
@@ -136,134 +154,152 @@ export const ApproveMotelSection = () => {
                     }
                 </ApproveLayout>
 
-                {/* <ApproveLayout
-                label='Bài đăng chờ duyệt'
-                isExpand={showAccordion === 'post'}
-                onClose={() => handleShowAccordion('post')}
-            >
-                <Box display='flex' justifyContent='flex-end' my={2}>
-                    <Pagination
-                        count={5}
-                        variant='outlined'
-                        shape="rounded"
-                        size='small'
-                    />
-                </Box>
+                <ApproveLayout
+                    label='Bài đăng chờ duyệt'
+                    quantity={paginationPostApprove._totalRows}
+                    isExpand={showAccordion === 'post'}
+                    onClose={() => handleShowAccordion('post')}
+                >
+                    {loadingPostApprove ? <LoadingAdmin />
+                        : <>
+                            <Box display='flex' justifyContent='flex-end' my={2}>
+                                <Pagination
+                                    count={Math.ceil(paginationPostApprove._totalRows / paginationPostApprove._limit)}
+                                    page={paginationPostApprove._page}
+                                    onChange={actionApprovalPost.handlePagination}
+                                    variant='outlined'
+                                    shape="rounded"
+                                    size='small'
+                                />
+                            </Box>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                        <ApproveItem
-                            type="Review"
-                            isReview
-                            openPreviewModal={() => setOpen('review')}
-                        >
-                            <AddBodyPost />
-                        </ApproveItem>
-                    </Grid>
+                            <Grid container spacing={2}>
+                                {dataPostApprove && dataPostApprove.map(post => {
+                                    return (
+                                        <Grid key={post._id} item xs={6}>
+                                            <ApproveItem
+                                                type={post.subject.name}
+                                                isReview={post.type === 3}
+                                                modalId={post._id}
+                                                user={post.owner}
+                                                createdAt={post.createdAt}
+                                                title={post.title}
+                                                content={post.content}
+                                                setDataPreviewModal={setDataPreviewModal}
+                                                onApprove={() => actionApprovalPost.handleApprove(post._id)}
+                                                onRefuse={() => actionApprovalPost.handleRefuse(post._id)}
+                                            >
+                                                <AddBodyPost data={post} />
+                                            </ApproveItem>
+                                        </Grid>
+                                    )
+                                })}
+                            </Grid>
+                        </>}
+                </ApproveLayout>
 
-                    <Grid item xs={6}>
-                        <ApproveItem
-                            type='Tìm bạn ở ghép'
-                        >
-                            <AddBodyPost />
-                        </ApproveItem>
-                    </Grid>
 
-                    <Grid item xs={6}>
-                        <ApproveItem type='Tìm nhà trọ'>
-                            <AddBodyPost />
-                        </ApproveItem>
-                    </Grid>
-                </Grid>
-            </ApproveLayout>
+                <ApproveLayout
+                    label='Đánh giá nhà trọ chờ duyệt'
+                    quantity={paginationRateApprove._totalRows}
+                    isExpand={showAccordion === 'rate'}
+                    onClose={() => handleShowAccordion('rate')}
+                >
+                    {loadingRateApprove ? <LoadingAdmin />
+                        : <>
+                            <Box display='flex' justifyContent='flex-end' my={2}>
+                                <Pagination
+                                    count={Math.ceil(paginationRateApprove._totalRows / paginationRateApprove._limit)}
+                                    page={paginationRateApprove._page}
+                                    onChange={actionApprovalRate.handlePagination}
+                                    variant='outlined'
+                                    shape="rounded"
+                                    size='small'
+                                />
+                            </Box>
 
-            <ApproveLayout
-                label='Đánh giá nhà trọ chờ duyệt'
-                isExpand={showAccordion === 'rate'}
-                onClose={() => handleShowAccordion('rate')}
-            >
-                <Box display='flex' justifyContent='flex-end' my={2}>
-                    <Pagination
-                        count={5}
-                        variant='outlined'
-                        shape="rounded"
-                        size='small'
-                    />
-                </Box>
+                            <Grid container spacing={2}>
+                                {dataRateApprove && dataRateApprove.map(rate => (
+                                    <Grid key={rate._id} item xs={6}>
+                                        <ApproveItem
+                                            type="Đánh giá nhà trọ"
+                                            user={rate.owner}
+                                            createdAt={rate.createAt}
+                                            onApprove={() => actionApprovalRate.handleApprove(rate._id)}
+                                            onRefuse={() => actionApprovalRate.handleRefuse(rate._id)}
+                                        >
+                                            <AddBodyRate rate={rate} />
+                                        </ApproveItem>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </>}
+                </ApproveLayout>
 
-                <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                        <ApproveItem
-                            type="Đánh giá nhà trọ"
-                            openPreviewModal={() => setOpen('rate')}
-                        >
-                            <AddBodyRate />
-                        </ApproveItem>
-                    </Grid>
 
-                    <Grid item xs={6}>
-                        <ApproveItem
-                            type="Đánh giá nhà trọ"
-                            openPreviewModal={() => setOpen('rate')}
-                        >
-                            <AddBodyRate />
-                        </ApproveItem>
-                    </Grid>
-                </Grid>
-            </ApproveLayout>
+                <ApproveLayout
+                    label='Báo cáo nội dung xấu'
+                    quantity={paginationReportApprove._totalRows}
+                    isExpand={showAccordion === 'report'}
+                    onClose={() => handleShowAccordion('report')}
+                >
+                    {loadingReportApprove ? <LoadingAdmin />
+                        : <>
+                            <Box display='flex' justifyContent='flex-end' my={2}>
+                                <Pagination
+                                    count={Math.ceil(paginationReportApprove._totalRows / paginationReportApprove._limit)}
+                                    page={paginationReportApprove._page}
+                                    onChange={actionApprovalReport.handlePagination}
+                                    variant='outlined'
+                                    shape="rounded"
+                                    size='small'
+                                />
+                            </Box>
 
-            <ApproveLayout
-                label='Báo cáo nội dung xấu'
-                isExpand={showAccordion === 'report'}
-                onClose={() => handleShowAccordion('report')}
-            >
-                <Box display='flex' justifyContent='flex-end' my={2}>
-                    <Pagination
-                        count={5}
-                        variant='outlined'
-                        shape="rounded"
-                        size='small'
-                    />
-                </Box>
+                            <Grid container spacing={2}>
+                                {dataReportApprove && dataReportApprove.map(report => {
+                                    const listType = {
+                                        rate: 'Báo cáo đánh giá',
+                                        post: 'Báo cáo bài viết',
+                                        comment: 'Báo cáo bình luận'
+                                    }
 
-                <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                        <ApproveItem
-                            isReport
-                            type="Báo cáo nhà trọ"
-                            openPreviewModal={() => setOpen('report')}
-                        >
-                            <BodyReport />
-                        </ApproveItem>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                        <ApproveItem
-                            isReport
-                            type="Báo cáo bình luận"
-                            openPreviewModal={() => setOpen('report')}
-                        >
-                            <BodyReport />
-                        </ApproveItem>
-                    </Grid>
-                </Grid>
-            </ApproveLayout> */}
+                                    return (
+                                        <Grid key={report._id} item xs={6}>
+                                            <ApproveItem
+                                                isReport
+                                                // @ts-ignore
+                                                type={listType[report.type]}
+                                                user={report.owner}
+                                                createdAt={report.createdAt}
+                                                onApprove={() => actionApprovalReport.handleApprove(report._id)}
+                                                onRefuse={() => actionApprovalReport.handleRefuse(report._id)}
+                                            >
+                                                <BodyReport data={report} />
+                                            </ApproveItem>
+                                        </Grid>
+                                    )
+                                })}
+                            </Grid>
+                        </>}
+                </ApproveLayout>
             </ApproveContext.Provider>
 
-            {open.type === 'update' &&
-                <ModalUp
-                    open={open.type === 'update'}
-                    onClose={() => setOpen({
-                        type: '',
-                        id: ''
-                    })}
-                >
-                    <ComparingBody motelId={open.id} />
-                </ModalUp>}
+            {open.type === 'update' && <ModalUp
+                open={open.type === 'update'}
+                onClose={() => setOpen(initialApproveContext)}
+            >
+                <ComparingBody motelId={open.id} />
+            </ModalUp>}
 
-            {/* <ModalUp open={valueContext.openModalApprove === 'review'} onClose={() => valueContext.setOpenModalApprove('')}>
-                <PreviewingBody />
-            </ModalUp> */}
+            {open.type === 'review' && <ModalUp
+                open={open.type === 'review'}
+                onClose={() => setOpen(initialApproveContext)}
+            >
+                <PreviewingBody
+                    data={dataPreviewModal}
+                />
+            </ModalUp>}
         </>
     )
 }

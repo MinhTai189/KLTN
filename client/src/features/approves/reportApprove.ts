@@ -26,7 +26,7 @@ const initialState: State = {
 };
 
 const reportApproveSlice = createSlice({
-  name: 'rate-approve',
+  name: 'report-approve',
   initialState,
   reducers: {
     get(state, action: PayloadAction<Filter>) {
@@ -62,7 +62,7 @@ const reportApproveSlice = createSlice({
       state.err = action.payload;
     },
     setFilter(state, action: PayloadAction<Filter>) {
-      state.filter = action.payload;
+      state.filter = { ...state.filter, ...action.payload };
     },
   },
 });

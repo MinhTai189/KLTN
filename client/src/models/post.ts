@@ -1,9 +1,10 @@
 import { Motel, School, User } from 'models';
+import { Owner } from './Motel';
 import { Thread } from './Thread';
 
 export interface Post {
   _id: string;
-  owner: User;
+  owner: Owner;
   title: string;
   subject: Thread;
   content: string;
@@ -29,7 +30,7 @@ export interface LikePost {
 }
 
 export interface Require {
-  school: School[];
+  schools: School[];
   price: number;
   additional: string;
 }

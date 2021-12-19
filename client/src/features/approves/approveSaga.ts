@@ -6,8 +6,8 @@ import {
   MotelApprove,
   Post,
   Rate,
+  RateApprove,
   Report,
-  Response,
 } from 'models';
 import { toast } from 'react-toastify';
 import { call, put, takeLatest } from 'redux-saga/effects';
@@ -47,7 +47,7 @@ function* handleRefuseMotel(action: PayloadAction<string>) {
 
     yield put(motelApproveActions.refuseSucceeded());
     yield put(motelApproveActions.setFilter({}));
-    yield call(toast.success, 'Duyệt thành công!');
+    yield call(toast.success, 'Xóa thành công!');
   } catch (error: any) {
     yield put(motelApproveActions.refuseFailded(error.response.data.message));
     yield call(toast.error, error.response.data.message);
@@ -85,7 +85,7 @@ function* handleRefusePost(action: PayloadAction<string>) {
 
     yield put(postApproveActions.refuseSucceeded());
     yield put(postApproveActions.setFilter({}));
-    yield call(toast.success, 'Duyệt thành công!');
+    yield call(toast.success, 'Xóa thành công!');
   } catch (error: any) {
     yield put(postApproveActions.refuseFailded(error.response.data.message));
     yield call(toast.error, error.response.data.message);
@@ -94,7 +94,7 @@ function* handleRefusePost(action: PayloadAction<string>) {
 
 function* handleGetRate(action: PayloadAction<Filter>) {
   try {
-    const response: ListResponse<Rate> = yield approveApis.getRate(
+    const response: ListResponse<RateApprove> = yield approveApis.getRate(
       action.payload
     );
 
@@ -123,7 +123,7 @@ function* handleRefuseRate(action: PayloadAction<string>) {
 
     yield put(rateApproveActions.refuseSucceeded());
     yield put(rateApproveActions.setFilter({}));
-    yield call(toast.success, 'Duyệt thành công!');
+    yield call(toast.success, 'Xóa thành công!');
   } catch (error: any) {
     yield put(rateApproveActions.refuseFailded(error.response.data.message));
     yield call(toast.error, error.response.data.message);
@@ -161,7 +161,7 @@ function* handleRefuseReport(action: PayloadAction<string>) {
 
     yield put(reportApproveActions.refuseSucceeded());
     yield put(reportApproveActions.setFilter({}));
-    yield call(toast.success, 'Duyệt thành công!');
+    yield call(toast.success, 'Xóa thành công!');
   } catch (error: any) {
     yield put(reportApproveActions.refuseFailded(error.response.data.message));
     yield call(toast.error, error.response.data.message);

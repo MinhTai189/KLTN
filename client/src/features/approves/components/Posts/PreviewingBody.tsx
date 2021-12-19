@@ -1,8 +1,13 @@
 import { Box, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
+import ApproveContext from 'contexts/ApproveContext'
+import { useContext } from 'react'
 
 interface Props {
-
+    data: {
+        title: string
+        content: string
+    }
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -111,19 +116,18 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const PreviewingBody = (props: Props) => {
+const PreviewingBody = ({ data }: Props) => {
     const classes = useStyles()
-    const temp = '<p>sapiente ipsam alias quam perspiciatis est ratione id quibusdam laborum ex quo accusamus?</p><h2>sapiente ipsam alias quam perspiciatis est ratione id quibusdam laborum ex quo accusamus?</h2><h3>sapiente ipsam alias quam perspiciatis est ratione id quibusdam laborum ex quo accusamus?</h3><h4>sapiente ipsam alias quam perspiciatis est ratione id quibusdam laborum ex quo accusamus?</h4><p><strong>sapiente ipsam alias quam perspiciatis est ratione id quibusdam laborum ex quo accusamus?</strong></p><p><i>sapiente ipsam alias quam perspiciatis est ratione id quibusdam laborum ex quo accusamus?</i></p><p><a href="http://localhost:3000/create-post/review">http://localhost:3000/create-post/review</a></p><ul><li>adfadfadsf</li><li>adsfa</li><li>adsfa</li></ul><ol><li>ádfá</li><li>adsfads</li><li>ádfa</li><li>adf</li><li>adsf</li><li>ádfadaadfád</li></ol><ul><li>adsfadsfads</li><li>adsfad</li><li>adfad</li></ul><figure class="media"><oembed url="https://www.youtube.com/watch?v=817GLMC9Jxc"></oembed></figure><figure class="table"><table><tbody><tr><td><strong>ádfa</strong></td><td><strong>adsfa</strong></td><td><strong>adsfa</strong></td><td><strong>adsfad</strong></td><td><strong>adfa</strong></td><td><strong>adsfa</strong></td><td><strong>adsf</strong></td></tr><tr><td>đa</td><td>à</td><td>adfa</td><td><figure class="media"><oembed url="https://www.youtube.com/watch?v=817GLMC9Jxc"></oembed></figure></td><td>af</td><td>adfa</td><td>adfa</td></tr><tr><td>adf</td><td>a</td><td>àd</td><td>ad</td><td>adff</td><td>a</td><td>âd</td></tr><tr><td>a</td><td>d</td><td>a</td><td>f</td><td>fda</td><td>d</td><td>fa</td></tr></tbody></table></figure><blockquote><p>ádfadsfads</p></blockquote><blockquote><p>ádfads</p></blockquote>'
 
     return (
         <Box className={classes.root}>
             <Typography className='title' variant='h2'>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt, officiis. Odit odio porro iste? Quasi accusamus ipsum harum
+                {data.title}
             </Typography>
 
             <Box
                 className='content'
-                dangerouslySetInnerHTML={{ __html: temp }}
+                dangerouslySetInnerHTML={{ __html: data.content }}
             />
         </Box>
     )

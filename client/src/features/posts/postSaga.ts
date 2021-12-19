@@ -5,7 +5,9 @@ import { Filter, ListResponse, Response } from 'models';
 import { Post } from 'models';
 import { toast } from 'react-toastify';
 import { DataPostFinal } from './components/CreatePost/models/create-post';
+import { createPostModalActions } from './openCreatePostModalSlice';
 import { postAction } from './postSlice';
+import { showCreateModalAction } from './showCreateModalSlice';
 
 function* handleGetPost(action: PayloadAction<Filter>) {
   try {
@@ -37,10 +39,13 @@ function* handleAddPost(action: PayloadAction<DataPostFinal>) {
       toast.success,
       'Đã đăng bài viết thành công. Hãy chờ "Quản trị web" duyệt!!!'
     );
+
+    yield put(createPostModalActions.setShowModal(0));
   } catch (error: any) {
     yield call(toast.error, error.response?.data.message);
 
     yield put(postAction.addPostFailed(error.response?.data.message));
+    yield put(createPostModalActions.setShowModal(0));
   }
 }
 

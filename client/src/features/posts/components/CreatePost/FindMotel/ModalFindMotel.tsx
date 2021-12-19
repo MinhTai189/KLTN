@@ -3,8 +3,9 @@ import { makeStyles } from '@material-ui/styles'
 import { Modal } from 'antd'
 import { useAppSelector } from 'app/hooks'
 import { Loading } from 'components/Common/Loading'
+import { selectOpenCreatedPostModal } from 'features/posts/openCreatePostModalSlice'
 import { selectLoadingSchool } from 'features/school/schoolSlice'
-import { ChangeEvent, useRef, useState } from 'react'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-toastify'
 import { checkCommaLastString, mapTrimStringArray } from 'utils'
 import { checkTags } from 'utils/check-valid/checkTag'
@@ -30,26 +31,36 @@ const useStyles = makeStyles(() => ({
     }
 }))
 
+const initialDataPost: DataPost = {
+    title: '',
+    tags: {
+        input: '',
+        suggest: []
+    },
+    schools: [],
+    price: 0,
+    additional: {
+        input: '',
+        suggest: []
+    },
+    content: ''
+}
+
 export const ModalFindMotel = ({ open, onCancel, handleSubmitCreatedPost }: Props) => {
     const classes = useStyles()
     const loading = useAppSelector(selectLoadingSchool)
     const contentRef = useRef<any>()
 
+    const showModalCreatePost = useAppSelector(selectOpenCreatedPostModal)
     const [errSchools, setErrSchool] = useState('')
-    const [dataPost, setDataPost] = useState<DataPost>({
-        title: '',
-        tags: {
-            input: '',
-            suggest: []
-        },
-        schools: [],
-        price: 0,
-        additional: {
-            input: '',
-            suggest: []
-        },
-        content: ''
-    })
+    const [dataPost, setDataPost] = useState<DataPost>(initialDataPost)
+
+    useEffect(() => {
+        if (showModalCreatePost === 0) {
+            setDataPost(initialDataPost)
+            contentRef.current && contentRef.current.resetValue()
+        }
+    }, [showModalCreatePost])
 
     const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault()

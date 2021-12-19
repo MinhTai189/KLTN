@@ -1,6 +1,6 @@
-import { Theme, makeStyles, Box, Avatar, Typography, Button, Paper } from '@material-ui/core'
+import { Avatar, Box, Button, makeStyles, Paper, Theme, Typography } from '@material-ui/core'
 import ApproveContext from 'contexts/ApproveContext'
-import { Owner, User } from 'models'
+import { Owner } from 'models'
 import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { calculateCreatedTimeHDMY } from 'utils/convert-date/calculateCreatedTime'
@@ -8,13 +8,16 @@ import { calculateCreatedTimeHDMY } from 'utils/convert-date/calculateCreatedTim
 
 interface Props {
     children: any
-    modalId: string
+    modalId?: string
     isUpdate?: boolean
     isReview?: boolean
     isReport?: boolean
     type: string
     user: Owner
     createdAt: string
+    title?: string
+    content?: string
+    setDataPreviewModal?: (state: any) => void
     onApprove: () => void
     onRefuse: () => void
 }
@@ -74,19 +77,29 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, type, user, createdAt, onApprove, onRefuse }: Props) => {
+export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, type, user, createdAt, title, content, setDataPreviewModal, onApprove, onRefuse }: Props) => {
     const classes = useStyles()
     const valueContext = useContext(ApproveContext)
 
     const handleOpenModal = () => {
-        if (isUpdate) valueContext.setOpenModalApprove({
-            type: 'update',
-            id: modalId
-        })
-        if (isReview) valueContext.setOpenModalApprove({
-            type: 'review',
-            id: modalId
-        })
+        if (isUpdate) {
+            valueContext.setOpenModalApprove({
+                ...valueContext.openModalApprove,
+                type: 'update',
+                id: modalId!
+            })
+        }
+        else if (isReview) {
+            setDataPreviewModal?.({
+                title: title || '',
+                content: content || ''
+            })
+            valueContext.setOpenModalApprove({
+                ...valueContext.openModalApprove,
+                type: 'review',
+                id: modalId!,
+            })
+        }
     }
 
     return (

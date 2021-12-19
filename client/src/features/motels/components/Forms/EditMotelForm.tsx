@@ -155,20 +155,23 @@ const radioOptions: Array<FieldOption> = [
     }
 ]
 
-type FormState = Omit<MotelOnly, 'invalid' | 'images' | 'thumbnail' | '_id'>
+type FormState = Omit<MotelOnly, 'invalid'>
 
 export const EditMotelForm = ({ updateData, onClickUpdateMotel, handleUploadThumbnail, handleUploadImages }: Props) => {
     const classes = useStyles()
 
     const { handleSubmit, control, setError, formState: { errors }, setValue, getValues } = useForm<FormState>({
         defaultValues: {
+            _id: updateData._id,
             name: updateData.name,
             address: updateData.address,
             desc: updateData.desc,
             contact: updateData.contact,
             school: updateData.school,
             status: updateData.status,
-            available: updateData.available
+            available: updateData.available,
+            thumbnail: updateData.thumbnail,
+            images: updateData.images
         },
         resolver: yupResolver(schema)
     })

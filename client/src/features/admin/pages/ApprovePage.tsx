@@ -5,8 +5,6 @@ import { motelApproveActions, selectFilterMotelApprove } from "features/approves
 import { postApproveActions, selectFilterPostApprove } from "features/approves/postApprove"
 import { rateApproveActions, selectFilterRateApprove } from "features/approves/rateApprove"
 import { reportApproveActions, selectFilterReportApprove } from "features/approves/reportApprove"
-import { motelActions } from "features/motels/motelSlice"
-import { postAction } from "features/posts/postSlice"
 import { useEffect } from "react"
 
 interface Props {

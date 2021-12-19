@@ -1,4 +1,4 @@
-import { User } from 'models';
+import { User } from './User';
 
 export interface Rate {
   user: User;

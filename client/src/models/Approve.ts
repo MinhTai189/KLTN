@@ -29,3 +29,11 @@ export interface ComparisonMotel {
   old: MotelApprove;
   new: MotelApprove;
 }
+
+export interface RateApprove extends Rate {
+  owner: Owner;
+  motel: {
+    _id: string;
+    name: string;
+  };
+}

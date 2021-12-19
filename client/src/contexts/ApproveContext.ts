@@ -10,11 +10,13 @@ interface ApproveContextState {
   setOpenModalApprove: (state: OpenModalApprove) => void;
 }
 
+export const initialApproveContext = {
+  type: '',
+  id: '',
+};
+
 const ApproveContext = createContext<ApproveContextState>({
-  openModalApprove: {
-    type: '',
-    id: '',
-  },
+  openModalApprove: initialApproveContext,
   setOpenModalApprove: () => {},
 });
 

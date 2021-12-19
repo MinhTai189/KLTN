@@ -5,6 +5,7 @@ import {
   MotelApprove,
   Post,
   Rate,
+  RateApprove,
   Report,
   Response,
 } from 'models';
@@ -39,7 +40,7 @@ const approveApis = {
     const url = `/approves/posts/${postId}`;
     return axiosClient.delete(url);
   },
-  getRate(params: Filter): Promise<ListResponse<Rate>> {
+  getRate(params: Filter): Promise<ListResponse<RateApprove>> {
     const url = '/approves/rates';
     return axiosClient.get(url, { params });
   },

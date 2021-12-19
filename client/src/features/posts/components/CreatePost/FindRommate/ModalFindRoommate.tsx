@@ -2,8 +2,9 @@ import { Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { Modal } from 'antd'
 import { motelApi } from 'api/motel'
-import { useAppDispatch } from 'app/hooks'
+import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { Loading } from 'components/Common/Loading'
+import { selectOpenCreatedPostModal } from 'features/posts/openCreatePostModalSlice'
 import { Motel } from 'models'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-toastify'
@@ -31,26 +32,30 @@ const useStyles = makeStyles(() => ({
     }
 }))
 
+const initialDataPost: DataPost = {
+    title: '',
+    tags: {
+        input: '',
+        suggest: []
+    },
+    motel: undefined,
+    additional: {
+        input: '',
+        suggest: []
+    },
+    content: ''
+}
+
 export const ModalFindRoommate = ({ open, onCancel, handleSubmitCreatedPost }: Props) => {
     const classes = useStyles()
     const contentRef = useRef<any>()
+    const showModalCreatePost = useAppSelector(selectOpenCreatedPostModal)
+
     const [errMotel, setErrMotel] = useState('')
 
     const [listMotel, setListMotel] = useState<Array<Motel>>([])
     const [loading, setLoading] = useState(false)
-    const [dataPost, setDataPost] = useState<DataPost>({
-        title: '',
-        tags: {
-            input: '',
-            suggest: []
-        },
-        motel: undefined,
-        additional: {
-            input: '',
-            suggest: []
-        },
-        content: ''
-    })
+    const [dataPost, setDataPost] = useState<DataPost>(initialDataPost)
 
     useEffect(() => {
         setLoading(true)
@@ -65,6 +70,13 @@ export const ModalFindRoommate = ({ open, onCancel, handleSubmitCreatedPost }: P
                 console.log(err)
             })
     }, [])
+
+    useEffect(() => {
+        if (showModalCreatePost === 0) {
+            setDataPost(initialDataPost)
+            contentRef.current && contentRef.current.resetValue()
+        }
+    }, [showModalCreatePost])
 
     const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
         e.preventDefault()

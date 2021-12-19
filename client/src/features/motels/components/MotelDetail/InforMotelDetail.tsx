@@ -388,9 +388,8 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
                             {listPrice.length > 0 && listPrice.map((price, index) => {
                                 const color = getColorChip()
 
-                                return <li className="chip">
+                                return <li key={index} className="chip">
                                     <ChipCustom
-                                        key={index}
                                         // @ts-ignore
                                         style={styleChips[color]}
                                         label={price}
@@ -403,9 +402,8 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
                             {editor.length > 0 && editor.map((e, index) => {
                                 const color = getColorChip()
 
-                                return <li className="chip">
+                                return <li key={index} className="chip">
                                     <HtmlTooltip
-                                        key={index}
                                         arrow
                                         interactive
                                         TransitionComponent={Zoom}

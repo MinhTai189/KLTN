@@ -11,10 +11,8 @@ import { DataPost, DataPostFinal } from '../models/create-post'
 import { TagInput } from '../TagInput'
 import { checkTags } from 'utils/check-valid/checkTag'
 import SmallScreen from 'assets/images/small-screen.jpg'
-
-interface Props {
-    handleCreateReview: (data: DataPostFinal) => void
-}
+import postApi from 'api/post'
+import { useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -95,23 +93,27 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const CreateReview = ({ handleCreateReview }: Props) => {
+const initialDataPost: DataPost = {
+    title: '',
+    tags: {
+        input: '',
+        suggest: [],
+    },
+    motel: undefined,
+    content: ''
+}
+
+export const CreateReview = () => {
     const classes = useStyles()
+    const history = useHistory()
+
     const areaRef = useRef<HTMLAreaElement>(null)
     const loadingCreateReview = useAppSelector(selectLoadingPost)
     const [isHidden, setIsHidden] = useState(false)
 
     const listMotel = useAppSelector(selectDataMotel)
     const loading = useAppSelector(selectLoadingMotel)
-    const [reviewData, setReviewData] = useState<DataPost>({
-        title: '',
-        tags: {
-            input: '',
-            suggest: [],
-        },
-        motel: undefined,
-        content: ''
-    })
+    const [reviewData, setReviewData] = useState<DataPost>(initialDataPost)
 
     useEffect(() => {
         const detectSmallScreen = () => {
@@ -169,6 +171,18 @@ export const CreateReview = ({ handleCreateReview }: Props) => {
         }
 
         handleCreateReview(submitData)
+    }
+
+    const handleCreateReview = async (data: Omit<DataPostFinal, 'additional'>) => {
+        try {
+            await postApi.add(data as any)
+
+            toast.success('Đã đăng bài viết thành công. Hãy chờ "Quản trị web" duyệt!!!')
+            setReviewData(initialDataPost)
+            history.push('/')
+        } catch (error: any) {
+            toast.error(error.response?.data.message)
+        }
     }
 
     if (isHidden)

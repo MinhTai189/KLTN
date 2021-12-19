@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import { Filter, ListResponse, Pagination, Rate } from 'models';
+import { Filter, ListResponse, Pagination, RateApprove } from 'models';
 
 interface State {
-  data: Rate[] | undefined;
+  data: RateApprove[] | undefined;
   loading: boolean;
   pagination: Pagination;
   filter: Filter;
@@ -32,7 +32,7 @@ const rateApproveSlice = createSlice({
     get(state, action: PayloadAction<Filter>) {
       state.loading = true;
     },
-    getSucceeded(state, action: PayloadAction<ListResponse<Rate>>) {
+    getSucceeded(state, action: PayloadAction<ListResponse<RateApprove>>) {
       state.loading = false;
       state.data = action.payload.data;
       state.pagination = action.payload.pagination;
@@ -62,7 +62,7 @@ const rateApproveSlice = createSlice({
       state.err = action.payload;
     },
     setFilter(state, action: PayloadAction<Filter>) {
-      state.filter = action.payload;
+      state.filter = { ...state.filter, ...action.payload };
     },
   },
 });

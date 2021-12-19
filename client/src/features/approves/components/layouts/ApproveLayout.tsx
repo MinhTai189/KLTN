@@ -6,6 +6,7 @@ interface Props {
     children: any
     label: string
     isExpand: boolean
+    quantity: number
     onClose: () => void
 }
 
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const ApproveLayout = ({ children, label, isExpand, onClose }: Props) => {
+const ApproveLayout = ({ children, label, isExpand, quantity, onClose }: Props) => {
     const classes = useStyles()
 
     return (
@@ -58,7 +59,7 @@ const ApproveLayout = ({ children, label, isExpand, onClose }: Props) => {
                 </Typography>
 
                 <Typography className="amount" component='span'>
-                    1
+                    {quantity}
                 </Typography>
             </AccordionSummary>
 

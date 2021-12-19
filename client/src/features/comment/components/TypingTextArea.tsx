@@ -97,8 +97,10 @@ export const TypingTextArea =
         useImperativeHandle(ref, () => ({
             getValue: () => areaRef.current?.value || '',
             resetValue: () => {
-                if (areaRef.current)
+                if (areaRef.current) {
                     areaRef.current.value = ''
+                    areaRef.current.style.height = "40px";
+                }
             }
         }))
 

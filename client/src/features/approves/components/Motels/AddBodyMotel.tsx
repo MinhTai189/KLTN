@@ -78,6 +78,7 @@ const AddBodyMotel = ({ dataMotel }: Props) => {
             <AddRowContent
                 labelLeft='Tên nhà trọ'
                 contentLeft={dataMotel.name}
+                linkContentLeft={dataMotel.type === 'update' ? `/motels/${dataMotel._id}` : undefined}
                 labelRight="Địa chỉ"
                 contentRight={dataMotel.address}
             />

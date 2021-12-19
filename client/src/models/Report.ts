@@ -1,10 +1,10 @@
-import { User } from './User';
+import { Owner } from './Motel';
 
 export interface Report {
   _id: string;
   type: string;
   content: string;
-  owner: User;
+  owner: Owner;
   createdAt: string;
   data: any;
 }
