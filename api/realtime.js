@@ -3,6 +3,7 @@ const JWT = require("jsonwebtoken");
 const user = require("./models/user");
 const uuid = require("uuid");
 const listOnline = require("./online");
+const access = require("./models/access");
 const addUser = async (id) => {
   const getUser = await user
     .findById(id)
@@ -16,12 +17,30 @@ const addUser = async (id) => {
   };
   listOnline.addUserOnline(addUser);
 };
+
+const plusQuantityAccess = async () => {
+  const currDate = new Date();
+
+  const plusCurrentMonth = await access.findOneAndUpdate(
+    { year: currDate.getFullYear(), month: currDate.getMonth() + 1 },
+    { $inc: { quantity: 1 } }
+  );
+  if (!plusCurrentMonth) {
+    const newMonth = new access({
+      year: currDate.getFullYear(),
+      month: currDate.getMonth() + 1,
+      quantity: 1,
+    });
+    await newMonth.save();
+  }
+};
+
 module.exports.listen = function socket(server) {
   const io = socketio(server);
   io.users = [];
   io.on("connection", (socket) => {
+    plusQuantityAccess();
     console.log(socket.id + " connected");
-
     socket.on("auth", (msg) => {
       console.log(msg);
       JWT.verify(

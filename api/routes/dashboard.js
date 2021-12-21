@@ -6,9 +6,39 @@ const user = require("../models/user");
 const approval = require("../models/approval");
 const router = express.Router();
 const online = require("../online");
+const access = require("../models/access");
 
-const statisticalRoute = (io) => {
-  router.get("/statistical", (req, res) => {});
+const dashboardRoute = (io) => {
+  router.get("/statisticals", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false)
+      return res
+        .status(403)
+        .json({ message: "Bạn không có quyền", success: false });
+    try {
+      const quantityAccount = await user.count({ deleted: false });
+      const quantityApproval = await approval.count({});
+      const quantityMotel = await motel.count({});
+      const currDate = new Date();
+      const quantityAccessingCurrMonth = await access
+        .findOne({
+          year: currDate.getFullYear(),
+          month: currDate.getMonth() + 1,
+        })
+        .select("quantity");
+      res.status(200).json({
+        data: {
+          account: quantityAccount,
+          motel: quantityMotel,
+          approval: quantityApproval,
+          access: quantityAccessingCurrMonth.quantity,
+        },
+        success: true,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định" });
+    }
+  });
   router.get("/approvals", (req, res) => {});
   router.get("/recents", async (req, res) => {});
   router.get("/list-important-users", verifyToken, async (req, res) => {
@@ -160,4 +190,4 @@ const statisticalRoute = (io) => {
   return router;
 };
 
-module.exports = statisticalRoute;
+module.exports = dashboardRoute;
