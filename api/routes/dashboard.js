@@ -5,12 +5,63 @@ const post = require("../models/post");
 const user = require("../models/user");
 const approval = require("../models/approval");
 const router = express.Router();
+const online = require("../online");
 
 const statisticalRoute = (io) => {
   router.get("/statistical", (req, res) => {});
   router.get("/approvals", (req, res) => {});
-  router.get("/recents", (req, res) => {});
-  router.get("/lists", (req, res) => {});
+  router.get("/recents", async (req, res) => {});
+  router.get("/list-important-users", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false)
+      return res
+        .status(403)
+        .json({ message: "Bạn không có quyền", success: false });
+    try {
+      const users = await user
+        .find({
+          deleted: false,
+          $or: [{ credit: { $gt: 99 } }, { isAdmin: true }],
+        })
+        .select(
+          "-notify -refreshToken -username -email -unsignedName -password -favorite -deleted -province -district"
+        );
+      const { _page, _limit } = req.query;
+      let page = 1,
+        limit = users.length;
+      if (!isNaN(parseInt(_page))) {
+        page = parseInt(_page);
+      }
+      if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
+      let responseUsers = [...users].map((item) => {
+        return { ...item._doc, avatarUrl: item.avatarUrl.url };
+      });
+      responseUsers = responseUsers.slice((page - 1) * limit, page * limit);
+      res.status(200).json({ success: true, data: responseUsers });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định" });
+    }
+  });
+  router.get("/list-ononlines", verifyToken, (req, res) => {
+    if (req.user.isAdmin == false)
+      return res
+        .status(403)
+        .json({ message: "Bạn không có quyền", success: false });
+    try {
+      const { _page, _limit } = req.query;
+      let page = 1,
+        limit = -1;
+      if (!isNaN(parseInt(_page))) {
+        page = parseInt(_page);
+      }
+      if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
+      let responseOnline = online.getUsers(page, limit);
+      res.status(200).json({ success: true, data: responseOnline });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định" });
+    }
+  });
   router.get("/charts", verifyToken, async (req, res) => {
     if (req.user.isAdmin == false)
       return res

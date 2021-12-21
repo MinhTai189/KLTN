@@ -17,7 +17,10 @@ class Online {
   };
   getUsers = (page, limit) => {
     return {
-      list: this.users.slice((page - 1) * limit, page * limit),
+      list:
+        limit > -1
+          ? this.users.slice((page - 1) * limit, page * limit)
+          : this.users,
       total: this.users.length,
       totalRoleUser: this.users.filter((item) => item.isAdmin === false).length,
       totalRoleAdmin: this.users.filter((item) => item.isAdmin === true).length,
