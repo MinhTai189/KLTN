@@ -15,6 +15,7 @@ const upload = require("../middleware/upload");
 const nullMotel = require("../utils/nullMotel");
 const router = express.Router();
 const approvalStat = require("../utils/approvalStat");
+const add = require("../utils/done");
 const approveRouter = (io) => {
   //working
   router.delete("/motels/:type/:id", verifyToken, async (req, res) => {
@@ -251,7 +252,12 @@ const approveRouter = (io) => {
         });
         res.status(200).json({ message: "Duyệt thành công", success: true });
         await unapprovedMotel.findByIdAndDelete(req.params.id);
-
+        add(newMotel.owner, "Đăng nhà trọ mới", {
+          type: "createdMotel",
+          motelId: newMotel._id,
+          desc: newMotel.desc,
+          name: newMotel.name,
+        });
         approvalStat.addMotelApproval(
           newMotel._id,
           `"${newMotel.name}" của `,
@@ -343,6 +349,12 @@ const approveRouter = (io) => {
           req.user.id,
           userAtr
         );
+        add(userAtr, "Chỉnh sửa nhà trọ", {
+          type: "updatedMotel",
+          motelId: getNewUpdateMotel._id,
+          edited: edited,
+          name: getNewUpdateMotel.name,
+        });
       } catch (err) {
         console.log(err);
 
@@ -778,6 +790,10 @@ const approveRouter = (io) => {
         { _id: id, valid: false },
         { valid: true }
       );
+      if (!approvePost)
+        return res
+          .status(400)
+          .json({ message: "Không tìm thấy thông tin", success: false });
       io.notifyToUser(approvePost.owner, {
         message: `Bài viết của bạn đã được duyệt`,
         url: `/posts/${approvePost._id}`,
@@ -791,6 +807,13 @@ const approveRouter = (io) => {
         req.user.id,
         approvePost.owner
       );
+      add(approvePost.owner, "Đăng bài viết mới", {
+        type: "createdPost",
+        subjectId: approvePost.subject,
+        title: approvePost.title,
+        content: approvePost.content,
+        postId: JSON.stringify(approvePost._id),
+      });
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Lỗi không xác định", success: false });
@@ -962,6 +985,12 @@ const approveRouter = (io) => {
         req.user.id,
         findRate.user
       );
+      add(req.user.id, "Đánh giá nhà trọ", {
+        type: "rating",
+        motelId: motelId,
+        content: findRate.content,
+        star: findRate.star,
+      });
       if (
         JSON.stringify(
           approveRate.rate.find(

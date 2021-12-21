@@ -310,6 +310,12 @@ const motelRouter = (io) => {
         res
           .status(200)
           .json({ success: true, message: "Đã cập nhật thành công" });
+        add(userAtr, "Chỉnh sửa nhà trọ", {
+          type: "updatedMotel",
+          motelId: motelUpdate._id,
+          edited: edited,
+          name: motelUpdate.name,
+        });
       } else {
         if (Array.isArray(images)) {
           var removeImages = oldImages.reduce((arr, image) => {
