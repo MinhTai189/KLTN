@@ -14,6 +14,7 @@ const comment = require("../models/comment");
 const upload = require("../middleware/upload");
 const nullMotel = require("../utils/nullMotel");
 const router = express.Router();
+const approvalStat = require("../utils/approvalStat");
 const approveRouter = (io) => {
   //working
   router.delete("/motels/:type/:id", verifyToken, async (req, res) => {
@@ -149,7 +150,7 @@ const approveRouter = (io) => {
     const getNewUpdateMotel = await userUpdateMotel
       .findById(req.params.id)
       .populate("motel");
-    if (!getNewUpdateMotel)
+    if (!getNewUpdateMotel && !checkMotel)
       return res
         .status(400)
         .json({ message: "Không tìm thấy thông tin mới", success: false });
@@ -250,6 +251,13 @@ const approveRouter = (io) => {
         });
         res.status(200).json({ message: "Duyệt thành công", success: true });
         await unapprovedMotel.findByIdAndDelete(req.params.id);
+
+        approvalStat.addMotelApproval(
+          newMotel._id,
+          `"${newMotel.name}" của `,
+          req.user.id,
+          newMotel.owner
+        );
       } catch (err) {
         console.log(err);
         res.status(500).json({ success: false, message: "Lỗi không xác định" });
@@ -329,6 +337,12 @@ const approveRouter = (io) => {
           imageUrl:
             "http://res.cloudinary.com/dpregsdt9/image/upload/v1639808792/notify/dpebhnmfzkxu6ojekj3r.png",
         });
+        approvalStat.addUpdateMotelApproval(
+          getNewUpdateMotel._id,
+          `"${getNewUpdateMotel.name}" của `,
+          req.user.id,
+          userAtr
+        );
       } catch (err) {
         console.log(err);
 
@@ -771,6 +785,12 @@ const approveRouter = (io) => {
           "https://res.cloudinary.com/dpregsdt9/image/upload/v1639490398/notify/verified_rrd4yn.png",
       });
       res.status(200).json({ message: "Đã duyệt bài viết", success: true });
+      approvalStat.addPostApproval(
+        approvePost._id,
+        `Bài viết "${approvePost.title}" của `,
+        req.user.id,
+        approvePost.owner
+      );
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Lỗi không xác định", success: false });
@@ -910,6 +930,10 @@ const approveRouter = (io) => {
         return res
           .status(400)
           .json({ message: "Không tìm thấy thông tin", success: false });
+      if (!findRate)
+        return res
+          .status(400)
+          .json({ message: "Không tìm thấy thông tin", success: false });
       res.status(200).json({ message: "Thành công", success: true });
       await motel.findOneAndUpdate(
         { _id: motelId },
@@ -930,6 +954,13 @@ const approveRouter = (io) => {
           imageUrl:
             "https://res.cloudinary.com/dpregsdt9/image/upload/v1639490398/notify/verified_rrd4yn.png",
         }
+      );
+
+      approvalStat.addPostApproval(
+        approveRate._id,
+        `Đánh giá về "${approveRate.name}" của `,
+        req.user.id,
+        findRate.user
       );
       if (
         JSON.stringify(

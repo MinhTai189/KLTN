@@ -19,6 +19,7 @@ const commentRouter = require("./routes/comment")(socketio);
 const approveRouter = require("./routes/approve")(socketio);
 const feedBackRouter = require("./routes/feedBack")(socketio);
 const notifyRouter = require("./routes/notify")(socketio);
+const dashboardRouter = require("./routes/dashboard")(socketio);
 
 const subjectRouter = require("./routes/subject");
 const fileUpload = require("express-fileupload");
@@ -74,6 +75,7 @@ app.use("/api/motels/room", roomRouter);
 app.use("/api/motels/rates", rateRouter);
 app.use("/api/motels", motelRouter);
 app.use("/api/notify", notifyRouter);
+app.use("/api/dashboards", dashboardRouter);
 
 // const user = require("./models/user");
 // const y = async () => {
