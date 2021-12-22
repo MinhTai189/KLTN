@@ -933,17 +933,16 @@ const approveRouter = (io) => {
   });
 
   //good
-  router.post("/rates/:motelId/:id", verifyToken, async (req, res) => {
+  router.post("/rates/:id", verifyToken, async (req, res) => {
     // Duyệt đánh giá
     if (req.user.isAdmin == false)
       res.status(403).json({
         message: "Bạn không đủ quyền hạn",
       });
     try {
-      const motelId = req.params.motelId;
       const id = req.params.id;
       const approveRate = await motel.findOneAndUpdate(
-        { _id: motelId, "rate._id": id, "rate.valid": false },
+        { "rate._id": id, "rate.valid": false },
         { $set: { "rate.$.valid": true } }
       );
       const findRate = approveRate.rate.find(
@@ -959,7 +958,7 @@ const approveRouter = (io) => {
           .json({ message: "Không tìm thấy thông tin", success: false });
       res.status(200).json({ message: "Thành công", success: true });
       await motel.findOneAndUpdate(
-        { _id: motelId },
+        { _id: approveRate._id },
         {
           vote: approveRate.vote + findRate.star,
           mark:
@@ -987,7 +986,7 @@ const approveRouter = (io) => {
       );
       add(req.user.id, "Đánh giá nhà trọ", {
         type: "rating",
-        motelId: motelId,
+        motelId: approveRate._id,
         content: findRate.content,
         star: findRate.star,
       });

@@ -39,7 +39,51 @@ const dashboardRoute = (io) => {
       res.status(500).json({ message: "Lỗi không xác định" });
     }
   });
-  router.get("/approvals", (req, res) => {});
+  router.get("/list-approvals", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false)
+      return res
+        .status(403)
+        .json({ message: "Bạn không có quyền", success: false });
+    try {
+      const approvals = await approval
+        .find({})
+        .sort({ createdAt: -1 })
+        .populate(
+          "user",
+          "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
+        )
+        .populate(
+          "owner",
+          "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
+        );
+      const { _page, _limit } = req.query;
+      let page = 1,
+        limit = approvals.length;
+      if (!isNaN(parseInt(_page))) {
+        page = parseInt(_page);
+      }
+      if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
+      let responseApprovals = [...approvals].map((item) => {
+        return {
+          ...item._doc,
+          user: { ...item.user._doc, avatarUrl: item.user.avatarUrl.url },
+          owner: {
+            ...item.owner._doc,
+            avatarUrl: item.owner.avatarUrl.url,
+          },
+          content: item.content + item.user.name,
+        };
+      });
+      responseApprovals = responseApprovals.slice(
+        (page - 1) * limit,
+        page * limit
+      );
+      res.status(200).json({ success: true, data: responseApprovals });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định", success: false });
+    }
+  });
   router.get("/recents", async (req, res) => {});
   router.get("/list-important-users", verifyToken, async (req, res) => {
     if (req.user.isAdmin == false)
