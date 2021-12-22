@@ -1,8 +1,11 @@
 import { Card, CardActionArea, CardContent, CardMedia, makeStyles, Theme, Typography } from '@material-ui/core'
 import { DateRange, LocationOn } from '@material-ui/icons'
+import { Motel } from 'models'
+import { Link } from 'react-router-dom'
+import { calculateCreatedTimeDMY } from 'utils/convert-date/calculateCreatedTime'
 
 interface Props {
-
+    motelData: Motel
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -49,45 +52,47 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const MotelRecommended = (props: Props) => {
+export const MotelRecommended = ({ motelData }: Props) => {
     const classes = useStyles()
 
     return (
         <Card className={classes.root}>
             <CardActionArea>
-                <CardMedia
-                    className='thumbnail'
-                    src='http://res.cloudinary.com/dpregsdt9/image/upload/v1634395444/6162b4dd19bac15892bfb7d1/arapmj5xfkhace340uc5.jpg'
-                    alt='motel thumbnail'
-                    component='img'
-                />
+                <Link to={`/motels/${motelData._id}`}>
+                    <CardMedia
+                        className='thumbnail'
+                        src={motelData.thumbnail as string}
+                        alt='motel thumbnail'
+                        component='img'
+                    />
 
-                <CardContent className='content'>
-                    <Typography
-                        className='name'
-                        variant='h5'
-                    >
-                        Nhà trọ Minh Tài
-                    </Typography>
+                    <CardContent className='content'>
+                        <Typography
+                            className='name'
+                            variant='h5'
+                        >
+                            {motelData.name}
+                        </Typography>
 
-                    <ul className="list-info">
-                        <li className="rows">
-                            <Typography className='info'>
-                                <LocationOn />
+                        <ul className="list-info">
+                            <li className="rows">
+                                <Typography className='info'>
+                                    <LocationOn />
 
-                                123/4 Ấp Bắc, Mỹ Tho, Tiền Giang
-                            </Typography>
-                        </li>
+                                    {motelData.address}
+                                </Typography>
+                            </li>
 
-                        <li className="rows">
-                            <Typography className='info'>
-                                <DateRange />
+                            <li className="rows">
+                                <Typography className='info'>
+                                    <DateRange />
 
-                                20/10/2021
-                            </Typography>
-                        </li>
-                    </ul>
-                </CardContent>
+                                    {calculateCreatedTimeDMY(motelData.createdAt!)}
+                                </Typography>
+                            </li>
+                        </ul>
+                    </CardContent>
+                </Link>
             </CardActionArea>
         </Card >
     )

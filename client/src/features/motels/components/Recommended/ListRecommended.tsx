@@ -1,8 +1,9 @@
 import { makeStyles } from "@material-ui/core"
+import { Motel } from "models"
 import { MotelRecommended } from "./MotelRecommended"
 
 interface Props {
-
+    listMotel: Motel[]
 }
 
 const useStyles = makeStyles({
@@ -13,13 +14,13 @@ const useStyles = makeStyles({
     },
 })
 
-export const ListRecommended = (props: Props) => {
+export const ListRecommended = ({ listMotel }: Props) => {
     const classes = useStyles()
 
     return (
         <ul className={classes.root}>
-            {new Array(4).fill(10).map((item, index) => (
-                <MotelRecommended />
+            {listMotel.map(motel => (
+                <MotelRecommended key={motel._id} motelData={motel} />
             ))}
         </ul>
     )

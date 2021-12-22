@@ -56,13 +56,13 @@ const PostViewPage = () => {
                             {postData && <PostViewSection postData={postData} />}
 
                             {paginationComment._page <= 1 && <>
-                                <Box my={4}>
-                                    <RelatedPost />
-                                </Box>
+                                {postData && <Box my={4}>
+                                    <RelatedPost listPost={postData.posts} />
+                                </Box>}
 
-                                <Box my={4}>
-                                    <MotelRecommendPost />
-                                </Box>
+                                {postData && <Box my={4}>
+                                    <MotelRecommendPost listMotel={postData.motels} />
+                                </Box>}
                             </>}
 
                             <Box
