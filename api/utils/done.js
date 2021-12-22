@@ -37,6 +37,12 @@ const add = async (userId, title, params) => {
       60
     )} . . .".`;
     url += `/motels/${params.motelId}`;
+  } else if (params.type === "updatedMotel") {
+    //params: name desc motelId
+    content += `Đã chỉnh sửa "${
+      params.name
+    }". Các thông tin: ${params.edited.substring(19)}`;
+    url += `/motels/${params.motelId}`;
   } else if (params.type === "repComment") {
     //params: name desc
     const getComment = await comment

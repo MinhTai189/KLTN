@@ -14,6 +14,8 @@ const comment = require("../models/comment");
 const upload = require("../middleware/upload");
 const nullMotel = require("../utils/nullMotel");
 const router = express.Router();
+const approvalStat = require("../utils/approvalStat");
+const add = require("../utils/done");
 const approveRouter = (io) => {
   //working
   router.delete("/motels/:type/:id", verifyToken, async (req, res) => {
@@ -50,7 +52,7 @@ const approveRouter = (io) => {
     }
     res.status(200).json({ success: true, message: "Thành công" });
   });
-
+  /*
   //working
   router.patch("/motels/:id", verifyToken, async (req, res) => {
     //duyệt motel update\
@@ -135,6 +137,7 @@ const approveRouter = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
+  */
   //good
   router.post("/motels/:id", verifyToken, async (req, res) => {
     // duyệt nhà trọ mới
@@ -142,48 +145,78 @@ const approveRouter = (io) => {
       res.status(403).json({
         message: "Bạn không đủ quyền hạn",
       });
-    try {
-      const checkMotel = await unapprovedMotel.findById(req.params.id);
-      if (!checkMotel)
-        return res
-          .status(400)
-          .json({ message: "Không tìm thấy thông tin mới", success: false });
-      const newMotel = new motel({
-        name: checkMotel.name,
-        unsignedName: checkMotel.unsignedName,
-        thumbnail: checkMotel.thumbnail,
-        images: [],
-        address: checkMotel.address,
-        desc: checkMotel.desc,
-        room: checkMotel.room,
-        contact: checkMotel.contact,
-        status: checkMotel.status,
-        vote: checkMotel.vote,
-        rate: checkMotel.rate,
-        mark: checkMotel.mark,
-        school: checkMotel.school,
-        owner: checkMotel.owner,
-        editor: [],
-        available: checkMotel.available,
-      });
-      let images = checkMotel.images;
+    let type = "add";
+    const checkMotel = await unapprovedMotel.findById(req.params.id);
+    if (!checkMotel) type = "update";
+    const getNewUpdateMotel = await userUpdateMotel
+      .findById(req.params.id)
+      .populate("motel");
+    if (!getNewUpdateMotel && !checkMotel)
+      return res
+        .status(400)
+        .json({ message: "Không tìm thấy thông tin mới", success: false });
+    if (type === "add")
+      try {
+        const newMotel = new motel({
+          name: checkMotel.name,
+          unsignedName: checkMotel.unsignedName,
+          thumbnail: checkMotel.thumbnail,
+          images: [],
+          address: checkMotel.address,
+          desc: checkMotel.desc,
+          room: checkMotel.room,
+          contact: checkMotel.contact,
+          status: checkMotel.status,
+          vote: checkMotel.vote,
+          rate: checkMotel.rate,
+          mark: checkMotel.mark,
+          school: checkMotel.school,
+          owner: checkMotel.owner,
+          editor: [],
+          available: checkMotel.available,
+        });
+        let images = checkMotel.images;
 
-      for (let i = 0; i < images.length; i++) {
-        const renameImage = await upload.rename(
-          images[i].public_id,
+        for (let i = 0; i < images.length; i++) {
+          const renameImage = await upload.rename(
+            images[i].public_id,
+            newMotel._id +
+              "/" +
+              images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
+          );
+          if (renameImage.success == true)
+            newMotel.images = [
+              ...newMotel.images,
+              {
+                public_id: renameImage.data.public_id,
+                url: renameImage.data.url,
+              },
+            ];
+          else {
+            for (let j = 0; j < newMotel.images.length; j++)
+              await upload.rename(
+                newMotel.images[j].public_id,
+                newMotel.name +
+                  "/" +
+                  newMotel.images[j].public_id.substr(
+                    newMotel.images[j].public_id.indexOf("/") + 1
+                  )
+              );
+
+            return res
+              .status(400)
+              .json({ success: false, message: "Lỗi khi xử lý hình ảnh!" });
+          }
+        }
+        const renameThumbnail = await upload.rename(
+          newMotel.thumbnail.public_id,
           newMotel._id +
             "/" +
-            images[i].public_id.substr(images[i].public_id.indexOf("/") + 1)
+            newMotel.thumbnail.public_id.substr(
+              newMotel.thumbnail.public_id.indexOf("/") + 1
+            )
         );
-        if (renameImage.success == true)
-          newMotel.images = [
-            ...newMotel.images,
-            {
-              public_id: renameImage.data.public_id,
-              url: renameImage.data.url,
-            },
-          ];
-        else {
+        if (renameThumbnail.success == false) {
           for (let j = 0; j < newMotel.images.length; j++)
             await upload.rename(
               newMotel.images[j].public_id,
@@ -197,55 +230,136 @@ const approveRouter = (io) => {
           return res
             .status(400)
             .json({ success: false, message: "Lỗi khi xử lý hình ảnh!" });
-        }
+        } else
+          newMotel.thumbnail = {
+            url: renameThumbnail.data.url,
+            public_id: renameThumbnail.data.public_id,
+          };
+        await newMotel.save();
+        await unapprovedMotel.findByIdAndDelete(req.params.id);
+        io.notifyToUser(checkMotel.owner, {
+          message: `Chúc mừng nhà trọ bạn đăng đã được duyệt!`,
+          url: `/motels/${newMotel._id}`,
+          imageUrl:
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1639490398/notify/verified_rrd4yn.png",
+        });
+        io.notifyToAllUser({
+          message: ` vừa đăng nhà trọ mới, hãy tham khảo ngay`,
+          url: `/motels/${newMotel._id}`,
+          imageUrl:
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/motel_opx8rh.png",
+          ownerId: checkMotel.owner,
+        });
+        res.status(200).json({ message: "Duyệt thành công", success: true });
+        await unapprovedMotel.findByIdAndDelete(req.params.id);
+        add(newMotel.owner, "Đăng nhà trọ mới", {
+          type: "createdMotel",
+          motelId: newMotel._id,
+          desc: newMotel.desc,
+          name: newMotel.name,
+        });
+        approvalStat.addMotelApproval(
+          newMotel._id,
+          `"${newMotel.name}" của `,
+          req.user.id,
+          newMotel.owner
+        );
+      } catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, message: "Lỗi không xác định" });
       }
-      const renameThumbnail = await upload.rename(
-        newMotel.thumbnail.public_id,
-        newMotel._id +
-          "/" +
-          newMotel.thumbnail.public_id.substr(
-            newMotel.thumbnail.public_id.indexOf("/") + 1
-          )
-      );
-      if (renameThumbnail.success == false) {
-        for (let j = 0; j < newMotel.images.length; j++)
-          await upload.rename(
-            newMotel.images[j].public_id,
-            newMotel.name +
-              "/" +
-              newMotel.images[j].public_id.substr(
-                newMotel.images[j].public_id.indexOf("/") + 1
-              )
-          );
+    else if (type === "update")
+      try {
+        const oldMotel = getNewUpdateMotel.motel;
+        let userAtr = getNewUpdateMotel.user;
 
-        return res
-          .status(400)
-          .json({ success: false, message: "Lỗi khi xử lý hình ảnh!" });
-      } else
-        newMotel.thumbnail = {
-          url: renameThumbnail.data.url,
-          public_id: renameThumbnail.data.public_id,
+        let edited = "Chỉnh sửa nhà trọ: ";
+        if (oldMotel.name !== getNewUpdateMotel.name) edited += "tên nhà trọ";
+
+        if (
+          oldMotel.thumbnail.public_id != getNewUpdateMotel.thumbnail.public_id
+        )
+          if (edited === "Chỉnh sửa nhà trọ: ") edited += "ảnh bìa";
+          else edited += ", ảnh bìa";
+        if (getNewUpdateMotel.address !== oldMotel.address)
+          if (edited === "Chỉnh sửa nhà trọ: ") edited += "địa chỉ";
+          else edited += ", địa chỉ";
+        if (getNewUpdateMotel.desc !== oldMotel.desc)
+          if (edited === "Chỉnh sửa nhà trọ: ") edited += "giới thiệu";
+          else edited += ", giới thiệu";
+
+        if (
+          oldMotel.contact.zalo !== getNewUpdateMotel.contact.zalo ||
+          oldMotel.contact.phone !== getNewUpdateMotel.contact.phone ||
+          oldMotel.contact.facebook !== getNewUpdateMotel.contact.facebook ||
+          oldMotel.contact.email !== getNewUpdateMotel.contact.email
+        )
+          if (edited === "Chỉnh sửa nhà trọ: ") edited += "thông tin liên hệ";
+          else edited += ", thông tin liên hệ";
+
+        if (getNewUpdateMotel.status !== getNewUpdateMotel.status)
+          if (edited === "Chỉnh sửa nhà trọ: ") edited += "trang thái";
+          else edited += ", trạng thái";
+        if (oldMotel.available != getNewUpdateMotel.available)
+          if (edited === "Chỉnh sửa nhà trọ: ") edited += "phòng trống";
+          else edited += ", phòng trống";
+
+        for (let i = 0; i < getNewUpdateMotel.school.length; i++) {
+          if (
+            !getNewUpdateMotel.school.some((item) => {
+              JSON.stringify(item) === JSON.stringify(oldMotel.school[i]._id);
+            })
+          ) {
+            if (edited === "Chỉnh sửa nhà trọ: ") edited += "lân cận";
+            else edited += ", lân cận";
+            break;
+          }
+        }
+
+        if (oldMotel.editor.length >= 3) oldMotel.editor.shift();
+        oldMotel.editor.push({
+          user: userAtr,
+          edited: edited,
+          createdAt: Date.now(),
+        });
+        const updateProps = {
+          name: getNewUpdateMotel.name,
+          thumbnail: getNewUpdateMotel.thumbnail,
+          images: getNewUpdateMotel.images,
+          address: getNewUpdateMotel.address,
+          desc: getNewUpdateMotel.desc,
+          contact: getNewUpdateMotel.contact,
+          status: getNewUpdateMotel.status,
+          school: getNewUpdateMotel.school,
+          available: getNewUpdateMotel.available,
+          editor: oldMotel.editor,
         };
-      await newMotel.save();
-      io.notifyToUser(checkMotel.owner, {
-        message: `Chúc mừng nhà trọ bạn đăng đã được duyệt!`,
-        url: `/motels/${newMotel._id}`,
-        imageUrl:
-          "https://res.cloudinary.com/dpregsdt9/image/upload/v1639490398/notify/verified_rrd4yn.png",
-      });
-      io.notifyToAllUser({
-        message: ` vừa đăng nhà trọ mới, hãy tham khảo ngay`,
-        url: `/motels/${newMotel._id}`,
-        imageUrl:
-          "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/motel_opx8rh.png",
-        ownerId: checkMotel.owner,
-      });
-      res.status(200).json({ message: "Duyệt thành công", success: true });
-      await unapprovedMotel.findByIdAndDelete(req.params.id);
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ success: false, message: "Lỗi không xác định" });
-    }
+        await motel.findByIdAndUpdate(oldMotel._id, { $set: updateProps });
+        await userUpdateMotel.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: "Thành công", success: true });
+        io.notifyToUser(getNewUpdateMotel.user, {
+          message: `Chúng tôi đã duyệt thông tin chỉnh sửa nhà trọ. Chân thành cám ơn sự đóng góp của bạn`,
+          url: `/motels/${oldMotel._id}`,
+          imageUrl:
+            "http://res.cloudinary.com/dpregsdt9/image/upload/v1639808792/notify/dpebhnmfzkxu6ojekj3r.png",
+        });
+        approvalStat.addUpdateMotelApproval(
+          getNewUpdateMotel._id,
+          `"${getNewUpdateMotel.name}" của `,
+          req.user.id,
+          userAtr
+        );
+        add(userAtr, "Chỉnh sửa nhà trọ", {
+          type: "updatedMotel",
+          motelId: getNewUpdateMotel._id,
+          edited: edited,
+          name: getNewUpdateMotel.name,
+        });
+      } catch (err) {
+        console.log(err);
+
+        res.status(500).json({ message: "Lỗi không xác định", success: false });
+      }
   });
   ///ok
   router.get("/motels/comparisons/:id", verifyToken, async (req, res) => {
@@ -676,6 +790,10 @@ const approveRouter = (io) => {
         { _id: id, valid: false },
         { valid: true }
       );
+      if (!approvePost)
+        return res
+          .status(400)
+          .json({ message: "Không tìm thấy thông tin", success: false });
       io.notifyToUser(approvePost.owner, {
         message: `Bài viết của bạn đã được duyệt`,
         url: `/posts/${approvePost._id}`,
@@ -683,6 +801,19 @@ const approveRouter = (io) => {
           "https://res.cloudinary.com/dpregsdt9/image/upload/v1639490398/notify/verified_rrd4yn.png",
       });
       res.status(200).json({ message: "Đã duyệt bài viết", success: true });
+      approvalStat.addPostApproval(
+        approvePost._id,
+        `Bài viết "${approvePost.title}" của `,
+        req.user.id,
+        approvePost.owner
+      );
+      add(approvePost.owner, "Đăng bài viết mới", {
+        type: "createdPost",
+        subjectId: approvePost.subject,
+        title: approvePost.title,
+        content: approvePost.content,
+        postId: JSON.stringify(approvePost._id),
+      });
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Lỗi không xác định", success: false });
@@ -802,17 +933,16 @@ const approveRouter = (io) => {
   });
 
   //good
-  router.post("/rates/:motelId/:id", verifyToken, async (req, res) => {
+  router.post("/rates/:id", verifyToken, async (req, res) => {
     // Duyệt đánh giá
     if (req.user.isAdmin == false)
       res.status(403).json({
         message: "Bạn không đủ quyền hạn",
       });
     try {
-      const motelId = req.params.motelId;
       const id = req.params.id;
       const approveRate = await motel.findOneAndUpdate(
-        { _id: motelId, "rate._id": id, "rate.valid": false },
+        { "rate._id": id, "rate.valid": false },
         { $set: { "rate.$.valid": true } }
       );
       const findRate = approveRate.rate.find(
@@ -822,9 +952,13 @@ const approveRouter = (io) => {
         return res
           .status(400)
           .json({ message: "Không tìm thấy thông tin", success: false });
+      if (!findRate)
+        return res
+          .status(400)
+          .json({ message: "Không tìm thấy thông tin", success: false });
       res.status(200).json({ message: "Thành công", success: true });
       await motel.findOneAndUpdate(
-        { _id: motelId },
+        { _id: approveRate._id },
         {
           vote: approveRate.vote + findRate.star,
           mark:
@@ -843,6 +977,19 @@ const approveRouter = (io) => {
             "https://res.cloudinary.com/dpregsdt9/image/upload/v1639490398/notify/verified_rrd4yn.png",
         }
       );
+
+      approvalStat.addPostApproval(
+        approveRate._id,
+        `Đánh giá về "${approveRate.name}" của `,
+        req.user.id,
+        findRate.user
+      );
+      add(req.user.id, "Đánh giá nhà trọ", {
+        type: "rating",
+        motelId: approveRate._id,
+        content: findRate.content,
+        star: findRate.star,
+      });
       if (
         JSON.stringify(
           approveRate.rate.find(
