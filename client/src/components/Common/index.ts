@@ -14,3 +14,4 @@ export * from './Loading';
 export * from './NoData';
 export * from './GlobalSocket';
 export * from './LoadingAdmin';
+export * from './AvatarWithBadge';

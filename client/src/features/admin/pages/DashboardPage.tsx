@@ -1,6 +1,6 @@
 import { Box, Grid, Theme } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import { RecentActivities, Statistics } from 'features/dashboard/components'
+import { ListSider, RecentActivities, Statistics } from 'features/dashboard/components'
 
 interface Props {
 
@@ -26,7 +26,7 @@ const DashboardPage = (props: Props) => {
                     </Grid>
 
                     <Grid item lg={2}>
-                        this are for list user account
+                        <ListSider />
                     </Grid>
                 </Grid>
             </Box>

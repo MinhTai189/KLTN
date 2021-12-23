@@ -1,4 +1,4 @@
-import { Avatar, Table, TableBody, TableCell, TableRow, Theme, Typography } from "@material-ui/core"
+import { Avatar, Box, Table, TableBody, TableCell, TablePagination, TableRow, Theme, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
 
 interface Props {
@@ -30,105 +30,119 @@ const ActivitiesTable = (props: Props) => {
     const classes = useStyles()
 
     return (
-        <Table className={classes.root} size='small'>
-            <TableBody>
-                <TableRow>
-                    <TableCell align="center">
-                        <Avatar className='avatar'>
-                            U
-                        </Avatar>
-                    </TableCell>
+        <Box className={classes.root}>
+            <Table size='small'>
+                <TableBody>
+                    <TableRow>
+                        <TableCell align="center">
+                            <Avatar className='avatar'>
+                                U
+                            </Avatar>
+                        </TableCell>
 
-                    <TableCell align="center">
-                        <Typography className='status' component='span'>
-                            đang hoạt động
-                        </Typography>
-                    </TableCell>
+                        <TableCell align="center">
+                            <Typography className='status' component='span'>
+                                đang hoạt động
+                            </Typography>
+                        </TableCell>
 
-                    <TableCell align="center">
-                        <Typography className="date">
-                            12:36, 12/12/1212
-                        </Typography>
-                    </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell align="center">
-                        <Avatar className='avatar'>
-                            U
-                        </Avatar>
-                    </TableCell>
+                        <TableCell align="center">
+                            <Typography className="date">
+                                12:36, 12/12/1212
+                            </Typography>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell align="center">
+                            <Avatar className='avatar'>
+                                U
+                            </Avatar>
+                        </TableCell>
 
-                    <TableCell align="center">
-                        <Typography className='status' component='span'>
-                            đang hoạt động
-                        </Typography>
-                    </TableCell>
+                        <TableCell align="center">
+                            <Typography className='status' component='span'>
+                                đang hoạt động
+                            </Typography>
+                        </TableCell>
 
-                    <TableCell align="center">
-                        <Typography className="date">
-                            12:36, 12/12/1212
-                        </Typography>
-                    </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell align="center">
-                        <Avatar className='avatar'>
-                            U
-                        </Avatar>
-                    </TableCell>
+                        <TableCell align="center">
+                            <Typography className="date">
+                                12:36, 12/12/1212
+                            </Typography>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell align="center">
+                            <Avatar className='avatar'>
+                                U
+                            </Avatar>
+                        </TableCell>
 
-                    <TableCell align="center">
-                        <Typography className='status' component='span'>
-                            đang hoạt động
-                        </Typography>
-                    </TableCell>
+                        <TableCell align="center">
+                            <Typography className='status' component='span'>
+                                đang hoạt động
+                            </Typography>
+                        </TableCell>
 
-                    <TableCell align="center">
-                        <Typography className="date">
-                            12:36, 12/12/1212
-                        </Typography>
-                    </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell align="center">
-                        <Avatar className='avatar'>
-                            U
-                        </Avatar>
-                    </TableCell>
+                        <TableCell align="center">
+                            <Typography className="date">
+                                12:36, 12/12/1212
+                            </Typography>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell align="center">
+                            <Avatar className='avatar'>
+                                U
+                            </Avatar>
+                        </TableCell>
 
-                    <TableCell align="center">
-                        <Typography className='status' component='span'>
-                            đang hoạt động
-                        </Typography>
-                    </TableCell>
+                        <TableCell align="center">
+                            <Typography className='status' component='span'>
+                                đang hoạt động
+                            </Typography>
+                        </TableCell>
 
-                    <TableCell align="center">
-                        <Typography className="date">
-                            12:36, 12/12/1212
-                        </Typography>
-                    </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell align="center">
-                        <Avatar className='avatar'>
-                            U
-                        </Avatar>
-                    </TableCell>
+                        <TableCell align="center">
+                            <Typography className="date">
+                                12:36, 12/12/1212
+                            </Typography>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell align="center">
+                            <Avatar className='avatar'>
+                                U
+                            </Avatar>
+                        </TableCell>
 
-                    <TableCell align="center">
-                        <Typography className='status' component='span'>
-                            đang hoạt động
-                        </Typography>
-                    </TableCell>
+                        <TableCell align="center">
+                            <Typography className='status' component='span'>
+                                đang hoạt động
+                            </Typography>
+                        </TableCell>
 
-                    <TableCell align="center">
-                        <Typography className="date">
-                            12:36, 12/12/1212
-                        </Typography>
-                    </TableCell>
-                </TableRow>
-            </TableBody>
-        </Table>
+                        <TableCell align="center">
+                            <Typography className="date">
+                                12:36, 12/12/1212
+                            </Typography>
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+
+            <TablePagination
+                component="div"
+                rowsPerPageOptions={[]}
+                labelDisplayedRows={({ from, to, count }) => `${from}-${to} của ${count !== -1 ? count : `nhiều hơn ${to}`}`}
+                nextIconButtonText='Trang tiếp theo'
+                backIconButtonText='Trang trước'
+                count={2}
+                rowsPerPage={5}
+                page={1}
+                onPageChange={() => { }}
+            />
+        </Box>
     )
 }
 
