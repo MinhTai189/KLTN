@@ -18,7 +18,7 @@ import PreviewingBody from "./Posts/PreviewingBody"
 import AddBodyRate from "./Rates/AddBodyRate"
 import BodyReport from "./Reports/BodyReport"
 
-export const ApproveMotelSection = () => {
+export const ApproveSection = () => {
     const dispatch = useAppDispatch()
 
     const dataMotelApprove = useAppSelector(selectDataMotelApprove)
@@ -57,8 +57,11 @@ export const ApproveMotelSection = () => {
         handleApprove(motelId: string) {
             dispatch(motelApproveActions.approve(motelId))
         },
-        handleRefuse(motelId: string) {
-            dispatch(motelApproveActions.refuse(motelId))
+        handleRefuse(motelId: string, type: string) {
+            dispatch(motelApproveActions.refuse({
+                motelId,
+                type
+            }))
         }
     }
 
@@ -85,8 +88,11 @@ export const ApproveMotelSection = () => {
         handleApprove(rateId: string) {
             dispatch(rateApproveActions.approve(rateId))
         },
-        handleRefuse(rateId: string) {
-            dispatch(rateApproveActions.refuse(rateId))
+        handleRefuse(rateId: string, motelId: string) {
+            dispatch(rateApproveActions.refuse({
+                rateId,
+                motelId
+            }))
         }
     }
 
@@ -142,7 +148,7 @@ export const ApproveMotelSection = () => {
                                                 user={data.owner}
                                                 createdAt={data.createdAt}
                                                 onApprove={() => actionApprovalMotel.handleApprove(data._id)}
-                                                onRefuse={() => actionApprovalMotel.handleRefuse(data._id)}
+                                                onRefuse={() => actionApprovalMotel.handleRefuse(data._id, data.type)}
                                             >
                                                 <AddBodyMotel dataMotel={data} />
                                             </ApproveItem>
@@ -226,7 +232,7 @@ export const ApproveMotelSection = () => {
                                             user={rate.owner}
                                             createdAt={rate.createAt}
                                             onApprove={() => actionApprovalRate.handleApprove(rate._id)}
-                                            onRefuse={() => actionApprovalRate.handleRefuse(rate._id)}
+                                            onRefuse={() => actionApprovalRate.handleRefuse(rate._id, rate.motel._id)}
                                         >
                                             <AddBodyRate rate={rate} />
                                         </ApproveItem>

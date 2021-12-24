@@ -7,6 +7,8 @@ import {
   Post,
   Rate,
   RateApprove,
+  RefuseMotel,
+  RefuseRate,
   Report,
 } from 'models';
 import { toast } from 'react-toastify';
@@ -41,7 +43,7 @@ function* handleApproveMotel(action: PayloadAction<string>) {
   }
 }
 
-function* handleRefuseMotel(action: PayloadAction<string>) {
+function* handleRefuseMotel(action: PayloadAction<RefuseMotel>) {
   try {
     yield approveApis.refuseMotel(action.payload);
 
@@ -117,7 +119,7 @@ function* handleApproveRate(action: PayloadAction<string>) {
   }
 }
 
-function* handleRefuseRate(action: PayloadAction<string>) {
+function* handleRefuseRate(action: PayloadAction<RefuseRate>) {
   try {
     yield approveApis.refuseRate(action.payload);
 

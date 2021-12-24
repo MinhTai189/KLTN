@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, makeStyles, Theme, Typography } from '@material-ui/core'
+import { Box, Button, ButtonGroup, makeStyles, Paper, Theme, Typography } from '@material-ui/core'
 import { useState } from 'react'
 import ListRow from './ListRow'
 
@@ -19,11 +19,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
 
         '& .list-wrapper': {
-            marginTop: theme.spacing(0.5),
-            maxHeight: 450,
+            height: 754,
             overflow: 'auto',
             boxShadow: theme.shadows[3],
-            padding: theme.spacing(0.5),
+            paddingInline: theme.spacing(1),
 
             '&::-webkit-scrollbar': {
                 width: 0
@@ -56,7 +55,7 @@ export const ListSider = (props: Props) => {
                 </ButtonGroup>
             </Box>
 
-            <Box className='list-wrapper'>
+            <Paper className='list-wrapper'>
                 <ListRow />
                 <ListRow />
                 <ListRow />
@@ -69,7 +68,7 @@ export const ListSider = (props: Props) => {
                 <ListRow />
                 <ListRow />
                 <ListRow />
-            </Box>
+            </Paper>
         </Box>
     )
 }

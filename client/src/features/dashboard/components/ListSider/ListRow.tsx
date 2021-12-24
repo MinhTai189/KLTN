@@ -8,20 +8,19 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        marginBlock: theme.spacing(1.5),
+        marginBlock: theme.spacing(2),
 
         '& > a': {
             display: 'flex',
             alignItems: 'center',
 
             '& .MuiBadge-root': {
-                width: 38,
-                height: 38,
-            },
+                width: 40,
+                height: 40,
 
-            '& .avatar': {
-                width: 38,
-                height: 38,
+                '&.hidden-badge .MuiBadge-dot': {
+                    display: 'none'
+                }
             },
 
             '& .info-wrapper': {
@@ -50,6 +49,7 @@ const ListRow = (props: Props) => {
         <Box className={classes.root}>
             <Link to='/'>
                 <AvatarWithBadge
+                    className="hidden-badge"
                     overlap="circular"
                     anchorOrigin={{
                         vertical: 'bottom',

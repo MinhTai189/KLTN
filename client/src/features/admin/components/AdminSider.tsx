@@ -15,19 +15,19 @@ export const AdminSider = (props: Props) => {
     return (
         <Sider collapsible collapsed={collapsed} onCollapse={(collapsed) => setCollapsed(collapsed)}>
             <Menu defaultSelectedKeys={['dashboard']} mode="inline" theme='dark'>
-                <Menu.Item icon={<PieChartOutlined />} style={{ marginTop: 0 }}>
+                <Menu.Item key='dashboard' icon={<PieChartOutlined />} style={{ marginTop: 0 }}>
                     <Link to='/admin/dashboard'>Thống kê</Link>
                 </Menu.Item>
 
-                <Menu.Item icon={<UserOutlined />}>
+                <Menu.Item key='users' icon={<UserOutlined />}>
                     <Link to='/admin/users'>Tài khoản</Link>
                 </Menu.Item>
 
-                <Menu.Item icon={<HomeOutlined />}>
+                <Menu.Item key='motels' icon={<HomeOutlined />}>
                     <Link to='/admin/motels'>Nhà trọ</Link>
                 </Menu.Item>
 
-                <Menu.Item icon={<FileDoneOutlined />}>
+                <Menu.Item key='approves' icon={<FileDoneOutlined />}>
                     <Link to='/admin/approves'>Danh sách duyệt</Link>
                 </Menu.Item>
             </Menu>

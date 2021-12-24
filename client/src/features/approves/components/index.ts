@@ -1,2 +1,2 @@
-export * from './ApproveMotelSection';
+export * from './ApproveSection';
 export * from './common/ApproveItem';

@@ -30,6 +30,16 @@ export interface ComparisonMotel {
   new: MotelApprove;
 }
 
+export interface RefuseMotel {
+  type: string;
+  motelId: string;
+}
+
+export interface RefuseRate {
+  rateId: string;
+  motelId: string;
+}
+
 export interface RateApprove extends Rate {
   owner: Owner;
   motel: {
