@@ -11,10 +11,14 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'inline-block',
         boxShadow: '0 0 1px 1px rgba(0,0,0,0.3)',
         padding: theme.spacing(1),
-        borderRadius: 10,
+        borderRadius: 8,
 
         '& > .label': {
             fontSize: '1.05em',
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '0.95em'
+            }
         },
 
         '& .list-require': {
@@ -25,6 +29,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 
                 '& .text': {
                     fontSize: '0.9em',
+
+                    [theme.breakpoints.down('xs')]: {
+                        fontSize: '0.8em'
+                    },
 
                     '& b': {
                         fontWeight: 500,

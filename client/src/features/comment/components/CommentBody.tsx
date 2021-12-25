@@ -30,6 +30,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         borderRadius: 10,
         position: 'relative',
 
+        [theme.breakpoints.down('xs')]: {
+            padding: theme.spacing(1.5),
+        },
+
         '& .total-action-wrapper': {
             position: 'absolute',
             bottom: -8,
@@ -53,6 +57,10 @@ const useStyles = makeStyles((theme: Theme) => ({
                 fontSize: '0.85em',
                 marginRight: 8,
 
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '0.775em'
+                },
+
                 '& a': {
                     color: theme.palette.primary.main,
                     cursor: 'pointer',
@@ -69,23 +77,39 @@ const useStyles = makeStyles((theme: Theme) => ({
                 marginRight: 8,
                 background: '#cecece',
                 padding: theme.spacing(0.2, 0.5),
-                borderRadius: 5
+                borderRadius: 5,
+
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '0.575em'
+                },
             },
 
             '& .timestamp': {
                 fontSize: '0.8em',
-                color: theme.palette.text.secondary
+                color: theme.palette.text.secondary,
+
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '0.725em'
+                },
             }
         }
     },
     content: {
         fontSize: '1em',
 
+        [theme.breakpoints.down('xs')]: {
+            fontSize: '0.9em'
+        },
+
         '& .hash-tag': {
             color: theme.palette.primary.main,
             cursor: 'pointer',
             marginRight: theme.spacing(1),
             transition: '300ms',
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '0.925em'
+            },
 
             '&:hover': {
                 color: theme.palette.primary.dark

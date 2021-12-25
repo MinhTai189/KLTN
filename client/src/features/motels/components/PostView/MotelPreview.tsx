@@ -1,4 +1,4 @@
-import { Box, makeStyles, Paper, Theme, Typography, Divider, Button } from "@material-ui/core"
+import { Box, Button, Divider, makeStyles, Paper, Theme, Typography } from "@material-ui/core"
 import { LocalOffer, LocationOn, Star } from "@material-ui/icons"
 import { Modal } from "components/Common"
 import { Motel } from "models"
@@ -21,12 +21,20 @@ const useStyles = makeStyles((theme: Theme) => ({
                 fontSize: '1.2em',
                 textTransform: 'uppercase',
                 fontWeight: 600,
+
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '1em'
+                },
             },
 
             '& .rows': {
                 display: 'flex',
                 alignItems: 'center',
                 marginBottom: theme.spacing(1.5),
+
+                [theme.breakpoints.down('xs')]: {
+                    marginBottom: theme.spacing(1)
+                },
 
                 '& .icon': {
                     marginRight: theme.spacing(1),
@@ -39,18 +47,31 @@ const useStyles = makeStyles((theme: Theme) => ({
                     '& .MuiSvgIcon-root': {
                         width: 12,
                         height: 12,
-                        fill: '#fff'
+                        fill: '#fff',
+
+                        [theme.breakpoints.down('xs')]: {
+                            width: 10,
+                            height: 10
+                        },
                     }
                 },
 
                 '& .text': {
                     fontSize: '0.9em',
+
+                    [theme.breakpoints.down('xs')]: {
+                        fontSize: '0.8em'
+                    },
                 }
             },
         },
 
         '& > .images': {
             marginTop: theme.spacing(4),
+
+            [theme.breakpoints.down('xs')]: {
+                marginTop: theme.spacing(2)
+            },
 
             '& img': {
                 width: '100%',

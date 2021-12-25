@@ -80,7 +80,6 @@ export const CommentSection = () => {
                         handleSubmit={handleSubmitComment}
                         ref={typingRef}
                     />
-
                         : <Box
                             my={3}
                             style={{
@@ -97,9 +96,7 @@ export const CommentSection = () => {
                         </Box>}
                 </Box>
 
-                <Profiler id='list-comment' onRender={(id: string) => console.log(id, 'is rendering')}>
-                    <ListComment />
-                </Profiler>
+                <ListComment />
             </Box>
         </CommentContext.Provider>
     )

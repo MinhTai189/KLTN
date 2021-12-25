@@ -23,6 +23,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         width: '100%',
         borderRadius: 10,
 
+        [theme.breakpoints.down('xs')]: {
+            padding: theme.spacing(1.5),
+        },
+
         '& textarea': {
             width: '100%',
             resize: 'none',
@@ -34,7 +38,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 
             '&::-webkit-scrollbar': {
                 width: 0
-            }
+            },
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '0.775rem'
+            },
         },
 
         '& .controls': {
@@ -42,9 +50,17 @@ const useStyles = makeStyles((theme: Theme) => ({
             alignItems: 'center',
             justifyContent: 'flex-end',
 
+            [theme.breakpoints.down('xs')]: {
+                alignItems: 'flex-end'
+            },
+
             '& .counter': {
                 fontSize: '1em',
                 color: theme.palette.text.hint,
+
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '0.85em'
+                },
             },
 
             "& .emoji-wrapper": {
@@ -55,7 +71,12 @@ const useStyles = makeStyles((theme: Theme) => ({
                 '& svg': {
                     width: '1.7em',
                     height: '1.7em',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+
+                    [theme.breakpoints.down('xs')]: {
+                        height: '1.5em',
+                        width: '1.5em',
+                    },
                 },
 
                 '& .emoji-picker': {
@@ -69,6 +90,12 @@ const useStyles = makeStyles((theme: Theme) => ({
                 textTransform: 'capitalize',
                 padding: theme.spacing(0.5, 3),
                 marginLeft: theme.spacing(2.5),
+
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '0.7rem',
+                    padding: theme.spacing(0.4, 0.8),
+                    marginLeft: theme.spacing(1.5),
+                },
             }
         }
     },
@@ -153,6 +180,7 @@ export const TypingTextArea =
                     </span>
 
                     {showBtnSubmit && <Button
+                        className="btn-submit"
                         color='primary'
                         variant='contained'
                         size='small'

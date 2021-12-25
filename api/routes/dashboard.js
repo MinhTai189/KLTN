@@ -84,7 +84,7 @@ const dashboardRoute = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
-  router.get("/recents", async (req, res) => {});
+  router.get("/recents", async (req, res) => { });
   router.get("/list-important-users", verifyToken, async (req, res) => {
     if (req.user.isAdmin == false)
       return res

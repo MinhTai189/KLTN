@@ -31,11 +31,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     name: {
         width: '100%',
-        fontSize: '1.3em',
+        fontSize: '1.7em',
         fontWeight: 700,
         textTransform: 'uppercase',
-        marginBottom: 4,
         letterSpacing: 2,
+        marginTop: theme.spacing(2)
     },
     statistics: {
         display: 'flex',
@@ -303,9 +303,7 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
         <Box className={classes.root}>
             <div>
                 <Grid container spacing={2}>
-                    <Grid item sm={12} md={8}>
-                        <h1 className={classes.name}>{name}</h1>
-
+                    <Grid item lg={12}>
                         <div className={classes.statistics}>
                             <div className="col">
                                 <span className="number">
@@ -375,78 +373,84 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
                             </div>
                         </div>
 
-                        <ul className={classes.chips}>
-                            <li className="chip">
-                                <ChipCustom
-                                    style={status ? styleChips.green : styleChips.red}
-                                    label={status ? 'Còn phòng' : 'Hết phòng'}
-                                    size='medium'
-                                    color='primary'
-                                />
-                            </li>
-
-                            {listPrice.length > 0 && listPrice.map((price, index) => {
-                                const color = getColorChip()
-
-                                return <li key={index} className="chip">
-                                    <ChipCustom
-                                        // @ts-ignore
-                                        style={styleChips[color]}
-                                        label={price}
-                                        size='medium'
-                                        color='primary'
-                                    />
-                                </li>
-                            })}
-
-                            {editor.length > 0 && editor.map((e, index) => {
-                                const color = getColorChip()
-
-                                return <li key={index} className="chip">
-                                    <HtmlTooltip
-                                        arrow
-                                        interactive
-                                        TransitionComponent={Zoom}
-                                        title={
-                                            <Box
-                                                className='tooltip-wrraper'
-                                            >
-                                                {TopToolTip(e.user._id, e.user.avatarUrl, e.user.name, e.user.isAdmin)}
-                                                {BottomToolTip(e.edited, e.createdAt)}
-                                            </Box>
-                                        }
-                                    >
+                        <Grid container spacing={1}>
+                            <Grid item lg={7}>
+                                <ul className={classes.chips}>
+                                    <li className="chip">
                                         <ChipCustom
-                                            // @ts-ignore
-                                            style={styleChips[color]}
-                                            clickable
-                                            label='Đã chỉnh sửa'
-                                            avatar={<Avatar src={e.user.avatarUrl} alt='avatar' />}
+                                            style={status ? styleChips.green : styleChips.red}
+                                            label={status ? 'Còn phòng' : 'Hết phòng'}
                                             size='medium'
                                             color='primary'
                                         />
-                                    </HtmlTooltip>
-                                </li>
-                            })}
-                        </ul>
-                    </Grid>
-                    <Grid item sm={12} md={4}>
-                        <Paper className={classes.wrapperInfor}>
-                            {owner && <CreatedUser owner={owner} />}
+                                    </li>
 
-                            <Divider style={{ marginTop: 4, marginBottom: 4 }} />
+                                    {listPrice.length > 0 && listPrice.map((price, index) => {
+                                        const color = getColorChip()
 
-                            <Box>
-                                <ButtonCustom
-                                    style={{ borderRadius: 0 }}
-                                    sizeBtn='small'
-                                    fullWidth
-                                    onClick={handleClickUpdateMotel}
-                                >
-                                    Chỉnh sửa nhà trọ
-                                </ButtonCustom>
-                            </Box>
-                        </Paper>
+                                        return <li key={index} className="chip">
+                                            <ChipCustom
+                                                // @ts-ignore
+                                                style={styleChips[color]}
+                                                label={price}
+                                                size='medium'
+                                                color='primary'
+                                            />
+                                        </li>
+                                    })}
+
+                                    {editor.length > 0 && editor.map((e, index) => {
+                                        const color = getColorChip()
+
+                                        return <li key={index} className="chip">
+                                            <HtmlTooltip
+                                                arrow
+                                                interactive
+                                                TransitionComponent={Zoom}
+                                                title={
+                                                    <Box
+                                                        className='tooltip-wrraper'
+                                                    >
+                                                        {TopToolTip(e.user._id, e.user.avatarUrl, e.user.name, e.user.isAdmin)}
+                                                        {BottomToolTip(e.edited, e.createdAt)}
+                                                    </Box>
+                                                }
+                                            >
+                                                <ChipCustom
+                                                    // @ts-ignore
+                                                    style={styleChips[color]}
+                                                    clickable
+                                                    label='Đã chỉnh sửa'
+                                                    avatar={<Avatar src={e.user.avatarUrl} alt='avatar' />}
+                                                    size='medium'
+                                                    color='primary'
+                                                />
+                                            </HtmlTooltip>
+                                        </li>
+                                    })}
+                                </ul>
+
+                                <h1 className={classes.name}>{name}</h1>
+                            </Grid>
+                            <Grid item lg={5}>
+                                <Paper className={classes.wrapperInfor}>
+                                    {owner && <CreatedUser owner={owner} />}
+
+                                    <Divider style={{ marginTop: 4, marginBottom: 4 }} />
+
+                                    <Box>
+                                        <ButtonCustom
+                                            style={{ borderRadius: 0 }}
+                                            sizeBtn='small'
+                                            fullWidth
+                                            onClick={handleClickUpdateMotel}
+                                        >
+                                            Chỉnh sửa nhà trọ
+                                        </ButtonCustom>
+                                    </Box>
+                                </Paper>
+                            </Grid>
+                        </Grid>
                     </Grid>
                 </Grid>
             </div>

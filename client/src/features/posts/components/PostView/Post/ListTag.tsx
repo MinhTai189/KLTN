@@ -11,10 +11,7 @@ const useStyles = makeStyles({
     root: {
         display: 'flex',
         flexWrap: 'wrap',
-
-        '& .tag:not(:last-child)': {
-            marginRight: 8
-        }
+        gap: 4
     }
 })
 

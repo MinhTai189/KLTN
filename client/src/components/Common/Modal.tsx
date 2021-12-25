@@ -26,7 +26,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     modal: {
         padding: theme.spacing(2),
-        minWidth: '30%',
+        maxWidth: '95%',
+        minWidth: 300,
         minHeight: '40%',
     }
 }))

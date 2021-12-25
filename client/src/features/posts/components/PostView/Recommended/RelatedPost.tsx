@@ -15,6 +15,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         listStyle: 'disc',
         marginLeft: theme.spacing(3),
 
+        [theme.breakpoints.down('xs')]: {
+            marginLeft: theme.spacing(2)
+        },
+
         '& .item': {
             marginBottom: 4,
 
@@ -25,6 +29,10 @@ const useStyles = makeStyles((theme: Theme) => ({
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
                 transition: '300ms',
+
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '0.95em'
+                },
 
                 '&:hover': {
                     color: theme.palette.primary.main

@@ -17,7 +17,13 @@ const useStyles = makeStyles((theme: Theme) => ({
         '& > .avatar': {
             width: '2em',
             height: '2em',
-            marginRight: theme.spacing(1.5)
+            marginRight: theme.spacing(1.5),
+
+            [theme.breakpoints.down('xs')]: {
+                width: '1.75em',
+                height: '1.75em',
+                marginRight: theme.spacing(1),
+            },
         },
 
         '& .left-col': {

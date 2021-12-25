@@ -14,13 +14,28 @@ interface Props {
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: '90vw',
-        maxWidth: 850
+        maxWidth: 850,
+
+        [theme.breakpoints.down('sm')]: {
+            width: '100%',
+        },
     },
     imgPreview: {
         width: '100%',
         height: 0,
         paddingBottom: '100%',
         position: 'relative',
+
+        [theme.breakpoints.down('sm')]: {
+            width: '100%',
+            paddingBottom: 0,
+            height: 220,
+            margin: 'auto'
+        },
+
+        [theme.breakpoints.down('xs')]: {
+            height: 200,
+        },
 
         '& img': {
             position: 'absolute',
@@ -29,6 +44,12 @@ const useStyles = makeStyles((theme: Theme) => ({
             width: '100%',
             height: '100%',
             objectFit: 'contain',
+
+            [theme.breakpoints.down('sm')]: {
+                position: 'unset',
+                top: 'unset',
+                left: 'unset'
+            },
         },
 
         '& .btn': {
@@ -43,10 +64,19 @@ const useStyles = makeStyles((theme: Theme) => ({
             alignItems: 'center',
             cursor: 'pointer',
 
+            [theme.breakpoints.down('sm')]: {
+                height: '20%'
+            },
+
             '& .MuiSvgIcon-root': {
                 width: '2.5em',
                 height: '2.5em',
-                fill: '#fff'
+                fill: '#fff',
+
+                [theme.breakpoints.down('sm')]: {
+                    width: '2em',
+                    height: '2em',
+                },
             },
 
             '&.btn-right': {
@@ -57,11 +87,21 @@ const useStyles = makeStyles((theme: Theme) => ({
     previewLeftCol: {
         padding: theme.spacing(2, 0, 0, 1.5),
 
+        [theme.breakpoints.down('sm')]: {
+            padding: theme.spacing(2, 0, 0)
+        },
+
         '& .name': {
             fontSize: '1.8em',
             marginBottom: theme.spacing(1.5),
             paddingBottom: theme.spacing(0.7),
             position: 'relative',
+
+            [theme.breakpoints.down('sm')]: {
+                fontSize: '1.3em',
+                marginBottom: theme.spacing(1),
+                paddingBottom: theme.spacing(0.5),
+            },
 
             '&::after': {
                 content: '""',
@@ -78,6 +118,14 @@ const useStyles = makeStyles((theme: Theme) => ({
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
             gridGap: 7,
+
+            [theme.breakpoints.down('sm')]: {
+                gridTemplateColumns: 'repeat(5, 1fr)',
+            },
+
+            [theme.breakpoints.down('xs')]: {
+                gridTemplateColumns: 'repeat(4, 1fr)',
+            },
 
             '& .img': {
                 width: '100%',
@@ -115,7 +163,7 @@ export const PreviewImages = ({ images, motelName, currentIndex, setCurrentIndex
     return (
         <Box className={classes.root}>
             <Grid container>
-                <Grid item sm={12} md={8}>
+                <Grid item xs={12} sm={12} md={8}>
                     <Box className={classes.imgPreview}>
                         <img src={images[currentIndex]} alt='motel image' />
 
@@ -135,7 +183,7 @@ export const PreviewImages = ({ images, motelName, currentIndex, setCurrentIndex
                     </Box>
                 </Grid>
 
-                <Grid item sm={12} md={4}>
+                <Grid item xs={12} sm={12} md={4}>
                     <Box className={classes.previewLeftCol}>
                         <Typography className='name' variant='h2'>
                             {motelName}

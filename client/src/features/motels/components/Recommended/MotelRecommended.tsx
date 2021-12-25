@@ -16,7 +16,11 @@ const useStyles = makeStyles((theme: Theme) => ({
         '& .thumbnail': {
             width: '100%',
             height: 120,
-            objectFit: 'cover'
+            objectFit: 'cover',
+
+            [theme.breakpoints.down('xs')]: {
+                height: 130
+            }
         },
 
         '& .content': {

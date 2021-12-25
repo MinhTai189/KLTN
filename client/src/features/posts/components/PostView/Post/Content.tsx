@@ -18,30 +18,58 @@ const useStyles = makeStyles((theme: Theme) => ({
         '& h1': {
             fontSize: '1.65em',
             marginBottom: theme.spacing(2),
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '1.55em'
+            }
         },
         '& h2': {
             fontSize: '1.6em',
             marginBottom: theme.spacing(2),
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '1.5em'
+            }
         },
         '& h3': {
             fontSize: '1.55em',
             marginBottom: theme.spacing(2),
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '1.45em'
+            }
         },
         '& h4': {
             fontSize: '1.5em',
             marginBottom: theme.spacing(2),
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '1.4em'
+            }
         },
         '& h5': {
             fontSize: '1.45em',
             marginBottom: theme.spacing(2),
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '1.35em'
+            }
         },
         '& h6': {
             fontSize: '1.4em',
             marginBottom: theme.spacing(2),
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '1.3em'
+            }
         },
 
         '& a': {
             color: theme.palette.primary.main,
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '1em'
+            }
         },
 
         '& img': {
@@ -55,6 +83,12 @@ const useStyles = makeStyles((theme: Theme) => ({
             marginInline: 'auto',
             marginBlock: theme.spacing(2),
             border: '1px solid #ccc',
+            width: '100%',
+            overflow: 'auto',
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '0.8rem'
+            },
 
             '& td': {
                 padding: theme.spacing(1, 2),
@@ -71,7 +105,11 @@ const useStyles = makeStyles((theme: Theme) => ({
             marginBlock: theme.spacing(1),
 
             "& li": {
-                fontSize: '1.25em'
+                fontSize: '1.25em',
+
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '1.15em'
+                }
             }
         },
 
@@ -90,14 +128,22 @@ const useStyles = makeStyles((theme: Theme) => ({
             margin: theme.spacing(2, 0),
             fontStyle: 'italic',
             borderLeft: '5px solid #ccc',
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '0.85em'
+            }
         },
 
         '& p': {
             fontSize: '1.3em',
             fontWeight: 400,
             lineHeight: 1,
-            marginBlock: theme.spacing(2)
-        }
+            marginBlock: theme.spacing(2),
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '1.2em'
+            }
+        },
     }
 }))
 

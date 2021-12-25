@@ -15,6 +15,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         paddingLeft: 16,
         borderLeft: '1px solid #cecece',
 
+        [theme.breakpoints.down('xs')]: {
+            paddingLeft: 6
+        },
+
         '& .load-more': {
             width: '100%',
             textAlign: 'center',

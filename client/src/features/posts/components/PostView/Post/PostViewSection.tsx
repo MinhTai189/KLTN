@@ -22,11 +22,22 @@ interface Props {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-    root: {},
+    root: {
+        '& .breadcrumb .MuiTypography-root': {
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '0.775rem'
+            }
+        }
+    },
     title: {
         fontSize: '2em',
         fontWeight: 500,
-        marginBlock: theme.spacing(3)
+        marginBlock: theme.spacing(3),
+
+        [theme.breakpoints.down('xs')]: {
+            fontSize: '1.7em',
+            marginBlock: theme.spacing(2),
+        }
     },
     authorWrapper: {
         display: 'flex',
@@ -39,18 +50,31 @@ const useStyles = makeStyles((theme: Theme) => ({
             cursor: 'pointer',
             width: '2.2em',
             height: '2.2em',
+
+            [theme.breakpoints.down('xs')]: {
+                width: '2em',
+                height: '2em',
+            }
         },
 
         '& .name': {
             fontSize: '1.25em',
             cursor: 'pointer',
             color: theme.palette.primary.main,
-            fontWeight: 500
+            fontWeight: 500,
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: '1.15em'
+            }
         },
 
         '& .date-comment': {
             '& .text': {
-                fontSize: '0.9em'
+                fontSize: '0.9em',
+
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '0.8em'
+                }
             }
         }
     },

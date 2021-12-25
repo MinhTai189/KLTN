@@ -1,5 +1,6 @@
-import { Box, Grid } from '@material-ui/core'
+import { Box, Grid, Theme } from '@material-ui/core'
 import { Pagination } from '@material-ui/lab'
+import { makeStyles } from '@material-ui/styles'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { MainLayout } from 'components/Layouts/MainLayout'
 import { commentAction, selectFilterComment, selectPaginationComment } from 'features/comment/commentSlice'
@@ -13,7 +14,28 @@ import { Pagination as PaginationModel } from 'models'
 import { useEffect } from 'react'
 import { useParams } from 'react-router'
 
+const useStyles = makeStyles((theme: Theme) => ({
+    root: {
+        '& .motel-side': {
+            [theme.breakpoints.down('md')]: {
+                display: 'none'
+            }
+        },
+
+        '& .motel-mobile': {
+            display: 'none',
+            width: '100%',
+            maxWidth: 450,
+
+            [theme.breakpoints.down('md')]: {
+                display: 'block',
+            }
+        },
+    }
+}))
+
 const PostViewPage = () => {
+    const classes = useStyles()
     const dispatch = useAppDispatch()
     const filterComment = useAppSelector(selectFilterComment)
     const filterPost = useAppSelector(selectFilterPost)
@@ -49,11 +71,15 @@ const PostViewPage = () => {
                 className='container'
                 mt={12}
             >
-                <Box>
-                    <Grid container spacing={2}>
-                        <Grid item md={1}></Grid>
-                        <Grid item md={7}>
+                <Box className={classes.root}>
+                    <Grid container>
+                        <Grid item xs={undefined} sm={undefined} md={undefined} lg={undefined} xl={1}></Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={8} xl={7}>
                             {postData && <PostViewSection postData={postData} />}
+
+                            <Box className='motel-mobile'>
+                                {postData && postData.motel && <MotelPreview motelData={postData.motel} />}
+                            </Box>
 
                             {paginationComment._page <= 1 && <>
                                 {postData && <Box my={4}>
@@ -83,10 +109,10 @@ const PostViewPage = () => {
 
                             <CommentSection />
                         </Grid>
-                        <Grid item md={3}>
+                        <Grid className='motel-side' item xs={undefined} sm={undefined} md={undefined} lg={4} xl={3}>
                             {postData && postData.motel && <MotelPreview motelData={postData.motel} />}
                         </Grid>
-                        <Grid item md={1}></Grid>
+                        <Grid item xs={undefined} sm={undefined} md={undefined} lg={undefined} xl={1}></Grid>
                     </Grid>
                 </Box>
             </Box>
