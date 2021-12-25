@@ -156,7 +156,8 @@ const dashboardRoute = (io) => {
         .status(403)
         .json({ message: "Bạn không có quyền", success: false });
     try {
-      const { _page, _limit } = req.query;
+      const { _page, _limit, _role } = req.query;
+
       let page = 1,
         limit = -1;
       if (!isNaN(parseInt(_page))) {
@@ -164,6 +165,12 @@ const dashboardRoute = (io) => {
       }
       if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
       let responseOnline = online.getUsers(page, limit);
+      if (_role)
+        responseOnline.list = responseOnline.list.filter((item) => {
+          let role = false;
+          if (_role.toLowerCase() === "admin") role = true;
+          return item.isAdmin == role;
+        });
       res.status(200).json({ success: true, data: responseOnline });
     } catch (err) {
       console.log(err);
