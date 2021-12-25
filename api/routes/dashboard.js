@@ -8,6 +8,9 @@ const router = express.Router();
 const online = require("../online");
 const access = require("../models/access");
 const mongoose = require("mongoose");
+const db = mongoose.connection;
+
+const unapprovedMotel = require("../models/unapproved-motel");
 
 const dashboardRoute = (io) => {
   router.get("/statisticals", verifyToken, async (req, res) => {
@@ -42,54 +45,27 @@ const dashboardRoute = (io) => {
       res.status(500).json({ message: "Lỗi không xác định" });
     }
   });
-  router.get("/list-approvals", verifyToken, async (req, res) => {
+
+  router.get("/recents", verifyToken, async (req, res) => {
     if (req.user.isAdmin == false)
       return res
         .status(403)
         .json({ message: "Bạn không có quyền", success: false });
     try {
-      const approvals = await approval
+      const users = await user.find({}).select("name done");
+      const motels = await motel
         .find({})
-        .sort({ createdAt: -1 })
-        .populate(
-          "user",
-          "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
-        )
+        .select("-editor -rate")
         .populate(
           "owner",
           "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
         );
-      const { _page, _limit } = req.query;
-      let page = 1,
-        limit = approvals.length;
-      if (!isNaN(parseInt(_page))) {
-        page = parseInt(_page);
-      }
-      if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
-      let responseApprovals = [...approvals].map((item) => {
-        return {
-          ...item._doc,
-          user: { ...item.user._doc, avatarUrl: item.user.avatarUrl.url },
-          owner: {
-            ...item.owner._doc,
-            avatarUrl: item.owner.avatarUrl.url,
-          },
-          content: item.content + item.user.name,
-        };
-      });
-      responseApprovals = responseApprovals.slice(
-        (page - 1) * limit,
-        page * limit
-      );
-      res.status(200).json({ success: true, data: responseApprovals });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ message: "Lỗi không xác định", success: false });
-    }
-  });
-  router.get("/recents", async (req, res) => {
-    try {
-      const users = await user.find({}).select("name done");
+      const waitingMotels = await unapprovedMotel
+        .find({})
+        .populate(
+          "owner",
+          "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
+        );
       let recentActivities = [];
       for (let i = 0; i < users.length; i++) {
         const done = users[i].done.map((item) => {
@@ -108,114 +84,135 @@ const dashboardRoute = (io) => {
             },
           ];
       }
+      let recentMotels = [];
+      for (let i = 0; i < motels.length; i++) {
+        recentMotels.push({
+          ...motels[i]._doc,
+          thumbnail: motels[i].thumbnail.url,
+          images: motels[i].images.map((item) => item.url),
+          owner: {
+            ...motels[i].owner._doc,
+            avatarUrl: motels[i].owner.avatarUrl.url,
+          },
+          type: "Đang hoạt động",
+        });
+      }
+      for (let i = 0; i < waitingMotels.length; i++) {
+        recentMotels.push({
+          ...waitingMotels[i]._doc,
+          thumbnail: waitingMotels[i].thumbnail.url,
+          images: waitingMotels[i].images.map((item) => item.url),
+          owner: {
+            ...waitingMotels[i].owner._doc,
+            avatarUrl: waitingMotels[i].owner.avatarUrl.url,
+          },
+          type: "Đang chờ duyệt",
+        });
+      }
       res.status(200).json({
         success: true,
-        data: recentActivities.sort(
-          (r1, r2) => new Date(r2.createdAt) - new Date(r1.createdAt)
-        ),
+        data: {
+          activities: recentActivities.sort(
+            (r1, r2) => new Date(r2.createdAt) - new Date(r1.createdAt)
+          ),
+          motels: recentMotels.sort(
+            (r1, r2) => new Date(r2.createdAt) - new Date(r1.createdAt)
+          ),
+        },
       });
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Lỗi không xác định" });
     }
   });
-  router.get("/list-important-users", verifyToken, async (req, res) => {
+
+  // router.get("/subjects", verifyToken, async (req, res) => {
+  //   if (req.user.isAdmin == false)
+  //     return res
+  //       .status(403)
+  //       .json({ message: "Bạn không có quyền", success: false });
+  //   try {
+  //     const posts = await post.find({ valid: true }).select("_id subject");
+  //     const subjects = [
+  //       {
+  //         _id: "6173ba553c954151dcc8fdf7",
+  //         name: "Tìm nhà trọ",
+  //         quantity: posts.filter(
+  //           (item) =>
+  //             JSON.stringify(item.subject) ===
+  //             JSON.stringify("6173ba553c954151dcc8fdf7")
+  //         ).length,
+  //       },
+  //       {
+  //         _id: "6173ba553c954151dcc8fdf8",
+  //         name: "Tìm bạn ở ghép",
+  //         quantity: posts.filter(
+  //           (item) =>
+  //             JSON.stringify(item.subject) ===
+  //             JSON.stringify("6173ba553c954151dcc8fdf8")
+  //         ).length,
+  //       },
+  //       {
+  //         _id: "6173ba553c954151dcc8fdf9",
+  //         name: "Đánh giá nhà trọ",
+  //         quantity: posts.filter(
+  //           (item) =>
+  //             JSON.stringify(item.subject) ===
+  //             JSON.stringify("6173ba553c954151dcc8fdf9")
+  //         ).length,
+  //       },
+  //     ];
+  //     res.status(200).json({
+  //       data: { subjects: subjects, total: posts.length },
+  //       success: true,
+  //     });
+  //   } catch (err) {
+  //     console.log(err);
+  //     res.status(500).json({ message: "Lỗi không xác định" });
+  //   }
+  // });
+  router.get("/lists", verifyToken, async (req, res) => {
     if (req.user.isAdmin == false)
       return res
         .status(403)
         .json({ message: "Bạn không có quyền", success: false });
     try {
-      const users = await user
+      let responseOnline = online.getUsers(1, -1);
+      const importantUsers = await user
         .find({
           deleted: false,
-          $or: [{ credit: { $gt: 99 } }, { isAdmin: true }],
+          isAdmin: true,
         })
         .select(
-          "-notify -refreshToken -username -email -unsignedName -password -favorite -deleted -province -district"
+          "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
         );
-      const { _page, _limit } = req.query;
-      let page = 1,
-        limit = users.length;
-      if (!isNaN(parseInt(_page))) {
-        page = parseInt(_page);
-      }
-      if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
-      let responseUsers = [...users].map((item) => {
-        return { ...item._doc, avatarUrl: item.avatarUrl.url };
-      });
-      responseUsers = responseUsers.slice((page - 1) * limit, page * limit);
-      res.status(200).json({ success: true, data: responseUsers });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ message: "Lỗi không xác định" });
-    }
-  });
-  router.get("/list-ononlines", verifyToken, (req, res) => {
-    if (req.user.isAdmin == false)
-      return res
-        .status(403)
-        .json({ message: "Bạn không có quyền", success: false });
-    try {
-      const { _page, _limit, _role } = req.query;
-
-      let page = 1,
-        limit = -1;
-      if (!isNaN(parseInt(_page))) {
-        page = parseInt(_page);
-      }
-      if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
-      let responseOnline = online.getUsers(page, limit);
-      if (_role)
-        responseOnline.list = responseOnline.list.filter((item) => {
-          let role = false;
-          if (_role.toLowerCase() === "admin") role = true;
-          return item.isAdmin == role;
-        });
-      res.status(200).json({ success: true, data: responseOnline });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({ message: "Lỗi không xác định" });
-    }
-  });
-  router.get("/subjects", verifyToken, async (req, res) => {
-    if (req.user.isAdmin == false)
-      return res
-        .status(403)
-        .json({ message: "Bạn không có quyền", success: false });
-    try {
-      const posts = await post.find({ valid: true }).select("_id subject");
-      const subjects = [
-        {
-          _id: "6173ba553c954151dcc8fdf7",
-          name: "Tìm nhà trọ",
-          quantity: posts.filter(
-            (item) =>
-              JSON.stringify(item.subject) ===
-              JSON.stringify("6173ba553c954151dcc8fdf7")
-          ).length,
-        },
-        {
-          _id: "6173ba553c954151dcc8fdf8",
-          name: "Tìm bạn ở ghép",
-          quantity: posts.filter(
-            (item) =>
-              JSON.stringify(item.subject) ===
-              JSON.stringify("6173ba553c954151dcc8fdf8")
-          ).length,
-        },
-        {
-          _id: "6173ba553c954151dcc8fdf9",
-          name: "Đánh giá nhà trọ",
-          quantity: posts.filter(
-            (item) =>
-              JSON.stringify(item.subject) ===
-              JSON.stringify("6173ba553c954151dcc8fdf9")
-          ).length,
-        },
-      ];
+      const approvals = await approval
+        .find({})
+        .sort({ createdAt: -1 })
+        .populate(
+          "user",
+          "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
+        )
+        .populate(
+          "owner",
+          "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
+        );
       res.status(200).json({
-        data: { subjects: subjects, total: posts.length },
-        success: true,
+        data: {
+          approvals: approvals.map((item) => {
+            return {
+              ...item._doc,
+              owner: {
+                ...item.owner._doc,
+                avatarUrl: item.owner.avatarUrl.url,
+              },
+            };
+          }),
+          ononlines: responseOnline,
+          importantUsers: importantUsers.map((item) => {
+            return { ...item._doc, avatarUrl: item.avatarUrl.url };
+          }),
+        },
       });
     } catch (err) {
       console.log(err);
@@ -322,28 +319,157 @@ const dashboardRoute = (io) => {
       return res
         .status(403)
         .json({ message: "Bạn không có quyền", success: false });
-    const db = mongoose.connection;
-    db.once("open", function () {
-      db.db.stats(function (err, stats) {
-        if (err) {
-          console.log(err);
-          res.status(500).json({ message: "Lỗi không xác định" });
-        } else {
-          const dataSize = (stats.dataSize + stats.indexSize) / 1024;
-          const totalSize = 512 * 1024;
-          const rate = 100 * (dataSize / totalSize);
-          res.status(200).json({
-            success: true,
-            data: {
-              dataSize,
-              totalSize,
-              rate,
-            },
-          });
-        }
-      });
+    const posts = await post.find({ valid: true }).select("_id subject");
+    const subjects = [
+      {
+        _id: "6173ba553c954151dcc8fdf7",
+        name: "Tìm nhà trọ",
+        quantity: posts.filter(
+          (item) =>
+            JSON.stringify(item.subject) ===
+            JSON.stringify("6173ba553c954151dcc8fdf7")
+        ).length,
+      },
+      {
+        _id: "6173ba553c954151dcc8fdf8",
+        name: "Tìm bạn ở ghép",
+        quantity: posts.filter(
+          (item) =>
+            JSON.stringify(item.subject) ===
+            JSON.stringify("6173ba553c954151dcc8fdf8")
+        ).length,
+      },
+      {
+        _id: "6173ba553c954151dcc8fdf9",
+        name: "Đánh giá nhà trọ",
+        quantity: posts.filter(
+          (item) =>
+            JSON.stringify(item.subject) ===
+            JSON.stringify("6173ba553c954151dcc8fdf9")
+        ).length,
+      },
+    ];
+    db.db.stats(function (err, stats) {
+      if (err) {
+        console.log(err);
+        res.status(500).json({ message: "Lỗi không xác định" });
+      } else {
+        const dataSize = (stats.dataSize + stats.indexSize) / 1024;
+        const totalSize = 512 * 1024;
+        const rate = 100 * (dataSize / totalSize);
+        res.status(200).json({
+          success: true,
+          data: {
+            size: { dataSize, totalSize, rate },
+            subjects,
+          },
+        });
+      }
     });
   });
+  // router.get("/list-approvals", verifyToken, async (req, res) => {
+  //   if (req.user.isAdmin == false)
+  //     return res
+  //       .status(403)
+  //       .json({ message: "Bạn không có quyền", success: false });
+  //   try {
+  //     const approvals = await approval
+  //       .find({})
+  //       .sort({ createdAt: -1 })
+  //       .populate(
+  //         "user",
+  //         "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
+  //       )
+  //       .populate(
+  //         "owner",
+  //         "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
+  //       );
+  //     const { _page, _limit } = req.query;
+  //     let page = 1,
+  //       limit = approvals.length;
+  //     if (!isNaN(parseInt(_page))) {
+  //       page = parseInt(_page);
+  //     }
+  //     if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
+  //     let responseApprovals = [...approvals].map((item) => {
+  //       return {
+  //         ...item._doc,
+  //         user: { ...item.user._doc, avatarUrl: item.user.avatarUrl.url },
+  //         owner: {
+  //           ...item.owner._doc,
+  //           avatarUrl: item.owner.avatarUrl.url,
+  //         },
+  //         content: item.content + item.user.name,
+  //       };
+  //     });
+  //     responseApprovals = responseApprovals.slice(
+  //       (page - 1) * limit,
+  //       page * limit
+  //     );
+  //     res.status(200).json({ success: true, data: responseApprovals });
+  //   } catch (err) {
+  //     console.log(err);
+  //     res.status(500).json({ message: "Lỗi không xác định", success: false });
+  //   }
+  // });
+  // router.get("/list-important-users", verifyToken, async (req, res) => {
+  //   if (req.user.isAdmin == false)
+  //     return res
+  //       .status(403)
+  //       .json({ message: "Bạn không có quyền", success: false });
+  //   try {
+  //     const users = await user
+  //       .find({
+  //         deleted: false,
+  //         $or: [{ credit: { $gt: 99 } }, { isAdmin: true }],
+  //       })
+  //       .select(
+  //         "-notify -refreshToken -username -email -unsignedName -password -favorite -deleted -province -district"
+  //       );
+  //     const { _page, _limit } = req.query;
+  //     let page = 1,
+  //       limit = users.length;
+  //     if (!isNaN(parseInt(_page))) {
+  //       page = parseInt(_page);
+  //     }
+  //     if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
+  //     let responseUsers = [...users].map((item) => {
+  //       return { ...item._doc, avatarUrl: item.avatarUrl.url };
+  //     });
+  //     responseUsers = responseUsers.slice((page - 1) * limit, page * limit);
+  //     res.status(200).json({ success: true, data: responseUsers });
+  //   } catch (err) {
+  //     console.log(err);
+  //     res.status(500).json({ message: "Lỗi không xác định" });
+  //   }
+  // });
+  // router.get("/list-ononlines", verifyToken, (req, res) => {
+  //   if (req.user.isAdmin == false)
+  //     return res
+  //       .status(403)
+  //       .json({ message: "Bạn không có quyền", success: false });
+  //   try {
+  //     const { _page, _limit, _role } = req.query;
+
+  //     let page = 1,
+  //       limit = -1;
+  //     if (!isNaN(parseInt(_page))) {
+  //       page = parseInt(_page);
+  //     }
+  //     if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
+  //     let responseOnline = online.getUsers(page, limit);
+  //     if (_role)
+  //       responseOnline.list = responseOnline.list.filter((item) => {
+  //         let role = false;
+  //         if (_role.toLowerCase() === "admin") role = true;
+  //         return item.isAdmin == role;
+  //       });
+  //     res.status(200).json({ success: true, data: responseOnline });
+  //   } catch (err) {
+  //     console.log(err);
+  //     res.status(500).json({ message: "Lỗi không xác định" });
+  //   }
+  // });
   return router;
 };
 
