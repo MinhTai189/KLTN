@@ -6,6 +6,8 @@ import {
   Post,
   Rate,
   RateApprove,
+  RefuseMotel,
+  RefuseRate,
   Report,
   Response,
 } from 'models';
@@ -20,8 +22,8 @@ const approveApis = {
     const url = `/approves/motels/${motelId}`;
     return axiosClient.post(url);
   },
-  refuseMotel(motelId: string): Promise<any> {
-    const url = `/approves/motels/${motelId}`;
+  refuseMotel(query: RefuseMotel): Promise<any> {
+    const url = `/approves/motels/${query.type}/${query.motelId}`;
     return axiosClient.delete(url);
   },
   getComparisonMotel(motelId: string): Promise<Response<ComparisonMotel>> {
@@ -48,8 +50,8 @@ const approveApis = {
     const url = `/approves/rates/${rateId}`;
     return axiosClient.post(url);
   },
-  refuseRate(rateId: string): Promise<any> {
-    const url = `/approves/rates/${rateId}`;
+  refuseRate(query: RefuseRate): Promise<any> {
+    const url = `/approves/rates/${query.motelId}/${query.rateId}`;
     return axiosClient.delete(url);
   },
   getReport(params: Filter): Promise<ListResponse<Report>> {

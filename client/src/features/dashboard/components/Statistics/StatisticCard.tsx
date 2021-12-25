@@ -1,0 +1,71 @@
+import { Box, Theme, Typography } from "@material-ui/core"
+import { Settings } from "@material-ui/icons"
+import { makeStyles } from "@material-ui/styles"
+
+interface Props {
+
+}
+
+const useStyles = makeStyles((theme: Theme) => ({
+    root: {
+        width: '100%',
+        height: 120,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        boxShadow: theme.shadows[3],
+        padding: theme.spacing(1, 2),
+        borderRadius: 5,
+
+        '& .icon': {
+            width: '4.5rem',
+            height: '4.5rem',
+            display: 'grid',
+            placeItems: 'center',
+            borderRadius: '50%',
+            background: theme.palette.primary.main,
+            marginRight: theme.spacing(2.5),
+
+            '& > svg': {
+                fill: '#fff',
+                width: '2em',
+                height: '2em',
+            }
+        },
+
+        '& .detail': {
+            '& .quantity': {
+                fontSize: '1.85rem',
+                fontWeight: 600
+            },
+
+            '& .text': {
+                color: theme.palette.text.secondary
+            }
+        }
+    }
+}))
+
+const StatisticCard = (props: Props) => {
+    const classes = useStyles()
+
+    return (
+        <Box className={classes.root}>
+            <span className="icon">
+                <Settings />
+            </span>
+
+            <span className="detail">
+                <Typography className='quantity' variant='h4'>
+                    20
+                </Typography>
+
+                <Typography className='text'>
+                    bài viết
+                </Typography>
+            </span>
+        </Box>
+    )
+}
+
+export default StatisticCard

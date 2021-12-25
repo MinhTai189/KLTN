@@ -1,6 +1,6 @@
 import { Box, makeStyles, Theme } from "@material-ui/core"
 import { useAppDispatch, useAppSelector } from "app/hooks"
-import { ApproveMotelSection } from "features/approves/components"
+import { ApproveSection } from "features/approves/components"
 import { motelApproveActions, selectFilterMotelApprove } from "features/approves/motelApprove"
 import { postApproveActions, selectFilterPostApprove } from "features/approves/postApprove"
 import { rateApproveActions, selectFilterRateApprove } from "features/approves/rateApprove"
@@ -44,7 +44,7 @@ const ApprovePage = (props: Props) => {
 
     return (
         <Box className={classes.root}>
-            <ApproveMotelSection />
+            <ApproveSection />
         </Box>
     )
 }

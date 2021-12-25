@@ -13,6 +13,11 @@ export interface Post {
   block: boolean;
   type: number;
   motel: Motel;
+  posts: {
+    _id: string;
+    title: string;
+  }[];
+  motels: Motel[];
   valid: boolean;
   require: Require;
   likes: LikePost[];

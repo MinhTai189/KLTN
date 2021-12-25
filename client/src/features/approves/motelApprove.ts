@@ -1,6 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import { Filter, ListResponse, MotelApprove, Pagination } from 'models';
+import {
+  Filter,
+  ListResponse,
+  MotelApprove,
+  Pagination,
+  RefuseMotel,
+} from 'models';
 
 interface State {
   data: MotelApprove[] | undefined;
@@ -51,7 +57,7 @@ const motelApproveSlice = createSlice({
       state.loading = false;
       state.err = action.payload;
     },
-    refuse(state, action: PayloadAction<string>) {
+    refuse(state, action: PayloadAction<RefuseMotel>) {
       state.loading = true;
     },
     refuseSucceeded(state) {

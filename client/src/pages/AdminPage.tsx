@@ -4,8 +4,8 @@ import { AdminSider } from 'features/admin/components'
 import ApprovePage from 'features/admin/pages/ApprovePage'
 import MotelPage from 'features/admin/pages/MotelPage'
 import UserPage from 'features/admin/pages/UserPage'
-import Dashboard from 'features/dashboard'
 import { Link, Route, Switch } from 'react-router-dom'
+import DashboardPage from '../features/admin/pages/DashboardPage'
 
 const { Header, Content } = Layout
 
@@ -30,7 +30,7 @@ const AdminPage = () => {
                 <Content style={{ background: '#fff' }}>
                     <Switch>
                         <Route path='/admin/dashboard'>
-                            <Dashboard />
+                            <DashboardPage />
                         </Route>
 
                         <Route path='/admin/users'>

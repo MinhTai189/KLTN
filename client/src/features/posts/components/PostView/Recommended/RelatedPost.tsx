@@ -4,7 +4,10 @@ import { Link } from 'react-router-dom'
 import { RecommendedLayout } from '../Layout/RecommendedLayout'
 
 interface Props {
-
+    listPost: {
+        _id: string
+        title: string
+    }[]
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -31,19 +34,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const RelatedPost = (props: Props) => {
+export const RelatedPost = ({ listPost }: Props) => {
     const classes = useStyles()
 
     return (
         <RecommendedLayout title='Bài viết liên quan'>
             <ul className={classes.root}>
-                {new Array(6).fill(1).map((item, index) => (
+                {listPost.map(post => (
                     <li
-                        key={index}
+                        key={post._id}
                         className="item"
                     >
-                        <Link to='/'>
-                            Lorem ipsum dolor Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui nihil eos eligendi sit. Animi expedita ab nihil? N
+                        <Link to={`/posts/${post._id}`}>
+                            {post.title}
                         </Link>
                     </li>
                 ))}

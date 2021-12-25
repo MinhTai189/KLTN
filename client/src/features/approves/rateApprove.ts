@@ -1,6 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import { Filter, ListResponse, Pagination, RateApprove } from 'models';
+import {
+  Filter,
+  ListResponse,
+  Pagination,
+  RateApprove,
+  RefuseRate,
+} from 'models';
 
 interface State {
   data: RateApprove[] | undefined;
@@ -51,7 +57,7 @@ const rateApproveSlice = createSlice({
       state.loading = false;
       state.err = action.payload;
     },
-    refuse(state, action: PayloadAction<string>) {
+    refuse(state, action: PayloadAction<RefuseRate>) {
       state.loading = true;
     },
     refuseSucceeded(state) {
