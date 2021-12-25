@@ -7,6 +7,7 @@ const approval = require("../models/approval");
 const router = express.Router();
 const online = require("../online");
 const access = require("../models/access");
+const mongoose = require("mongoose");
 
 const dashboardRoute = (io) => {
   router.get("/statisticals", verifyToken, async (req, res) => {
@@ -18,6 +19,7 @@ const dashboardRoute = (io) => {
       const quantityAccount = await user.count({ deleted: false });
       const quantityApproval = await approval.count({});
       const quantityMotel = await motel.count({});
+      const quantityPost = await post.count({ valid: true });
       const currDate = new Date();
       const quantityAccessingCurrMonth = await access
         .findOne({
@@ -31,6 +33,7 @@ const dashboardRoute = (io) => {
           motel: quantityMotel,
           approval: quantityApproval,
           access: quantityAccessingCurrMonth.quantity,
+          post: quantityPost,
         },
         success: true,
       });
@@ -84,7 +87,38 @@ const dashboardRoute = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
-  router.get("/recents", async (req, res) => {});
+  router.get("/recents", async (req, res) => {
+    try {
+      const users = await user.find({}).select("name done");
+      let recentActivities = [];
+      for (let i = 0; i < users.length; i++) {
+        const done = users[i].done.map((item) => {
+          let title = item.title;
+
+          title =
+            item.title[0].toLowerCase() + title.substring(1, title.length);
+
+          return { ...item._doc, title: users[i].name + " " + title };
+        });
+        for (let j = 0; j < done.length; j++)
+          recentActivities = [
+            ...recentActivities,
+            {
+              ...done[j],
+            },
+          ];
+      }
+      res.status(200).json({
+        success: true,
+        data: recentActivities.sort(
+          (r1, r2) => new Date(r2.createdAt) - new Date(r1.createdAt)
+        ),
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định" });
+    }
+  });
   router.get("/list-important-users", verifyToken, async (req, res) => {
     if (req.user.isAdmin == false)
       return res
@@ -131,6 +165,51 @@ const dashboardRoute = (io) => {
       if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
       let responseOnline = online.getUsers(page, limit);
       res.status(200).json({ success: true, data: responseOnline });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Lỗi không xác định" });
+    }
+  });
+  router.get("/subjects", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false)
+      return res
+        .status(403)
+        .json({ message: "Bạn không có quyền", success: false });
+    try {
+      const posts = await post.find({ valid: true }).select("_id subject");
+      const subjects = [
+        {
+          _id: "6173ba553c954151dcc8fdf7",
+          name: "Tìm nhà trọ",
+          quantity: posts.filter(
+            (item) =>
+              JSON.stringify(item.subject) ===
+              JSON.stringify("6173ba553c954151dcc8fdf7")
+          ).length,
+        },
+        {
+          _id: "6173ba553c954151dcc8fdf8",
+          name: "Tìm bạn ở ghép",
+          quantity: posts.filter(
+            (item) =>
+              JSON.stringify(item.subject) ===
+              JSON.stringify("6173ba553c954151dcc8fdf8")
+          ).length,
+        },
+        {
+          _id: "6173ba553c954151dcc8fdf9",
+          name: "Đánh giá nhà trọ",
+          quantity: posts.filter(
+            (item) =>
+              JSON.stringify(item.subject) ===
+              JSON.stringify("6173ba553c954151dcc8fdf9")
+          ).length,
+        },
+      ];
+      res.status(200).json({
+        data: { subjects: subjects, total: posts.length },
+        success: true,
+      });
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Lỗi không xác định" });
@@ -230,6 +309,33 @@ const dashboardRoute = (io) => {
       console.log(err);
       res.status(500).json({ message: "Lỗi không xác định" });
     }
+  });
+  router.get("/stats", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false)
+      return res
+        .status(403)
+        .json({ message: "Bạn không có quyền", success: false });
+    const db = mongoose.connection;
+    db.once("open", function () {
+      db.db.stats(function (err, stats) {
+        if (err) {
+          console.log(err);
+          res.status(500).json({ message: "Lỗi không xác định" });
+        } else {
+          const dataSize = (stats.dataSize + stats.indexSize) / 1024;
+          const totalSize = 512 * 1024;
+          const rate = 100 * (dataSize / totalSize);
+          res.status(200).json({
+            success: true,
+            data: {
+              dataSize,
+              totalSize,
+              rate,
+            },
+          });
+        }
+      });
+    });
   });
   return router;
 };

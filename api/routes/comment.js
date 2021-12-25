@@ -290,7 +290,7 @@ const commentRouter = (io) => {
           content: content,
         });
       if (newComment.reply)
-        if (JSON.stringify(req.user.id) !== JSON.stringify(userId))
+        if (JSON.stringify(req.user.id) !== JSON.stringify(userId)) {
           io.notifyToUser(userId, {
             message: ` vừa trả lời bình luận của bạn`,
             url: `/posts/${findPost._id}`,
@@ -298,6 +298,10 @@ const commentRouter = (io) => {
             imageUrl:
               "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661946/notify/discussion_vjlxsw.png",
           });
+        }
+      // if (newComment.reply)
+      //   recent.addReplyCommentActivity(findPost._id, userId, req.user.id);
+      // else recent.addCommentActivity(findPost._id, findPost.title, req.user.id);
       return res
         .status(200)
         .json({ success: true, message: "Đã gửi bình luận thành công" });

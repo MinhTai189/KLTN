@@ -765,7 +765,6 @@ const motelRouter = (io) => {
 
   router.post("/", verifyToken, async (req, res) => {
     let {
-      id,
       name,
       thumbnail,
       images,
@@ -1111,7 +1110,6 @@ const motelRouter = (io) => {
           imageUrl:
             "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/motel_opx8rh.png",
         });
-
         return res.status(200).json({
           success: true,
           message: "Thêm thành công",
