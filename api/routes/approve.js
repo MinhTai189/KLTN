@@ -16,6 +16,7 @@ const nullMotel = require("../utils/nullMotel");
 const router = express.Router();
 const approvalStat = require("../utils/approvalStat");
 const add = require("../utils/done");
+const subject = require("../models/subject");
 const approveRouter = (io) => {
   //working
   router.delete("/motels/:type/:id", verifyToken, async (req, res) => {
@@ -813,6 +814,12 @@ const approveRouter = (io) => {
         title: approvePost.title,
         content: approvePost.content,
         postId: JSON.stringify(approvePost._id),
+      });
+      user.findByIdAndUpdate(approvePost.owner, {
+        $inc: { posts: 1 },
+      });
+      subject.findByIdAndUpdate(approvePost.subject, {
+        $inc: { posts: 1 },
       });
     } catch (err) {
       console.log(err);

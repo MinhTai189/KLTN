@@ -23,6 +23,7 @@ import motelApproveReducer from 'features/approves/motelApprove';
 import postApproveReducer from 'features/approves/postApprove';
 import rateApproveReducer from 'features/approves/rateApprove';
 import reportApproveReducer from 'features/approves/reportApprove';
+import dashboardReducer from 'features/dashboard/dashboardSlice';
 
 const reducer = combineReducers({
   auth: authReducer,
@@ -40,6 +41,7 @@ const reducer = combineReducers({
   postApprove: postApproveReducer,
   rateApprove: rateApproveReducer,
   reportApprove: reportApproveReducer,
+  dashboard: dashboardReducer,
   router: connectRouter(history),
 });
 const sagaMiddleware = createSagaMiddleware();

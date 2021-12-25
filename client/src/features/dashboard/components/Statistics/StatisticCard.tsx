@@ -1,9 +1,10 @@
 import { Box, Theme, Typography } from "@material-ui/core"
-import { Settings } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
 
 interface Props {
-
+    icon: any
+    label: string
+    quantity: number
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -40,28 +41,29 @@ const useStyles = makeStyles((theme: Theme) => ({
             },
 
             '& .text': {
-                color: theme.palette.text.secondary
+                color: theme.palette.text.secondary,
+                textTransform: 'lowercase'
             }
         }
     }
 }))
 
-const StatisticCard = (props: Props) => {
+const StatisticCard = ({ icon, label, quantity }: Props) => {
     const classes = useStyles()
 
     return (
         <Box className={classes.root}>
             <span className="icon">
-                <Settings />
+                {icon}
             </span>
 
             <span className="detail">
                 <Typography className='quantity' variant='h4'>
-                    20
+                    {quantity}
                 </Typography>
 
                 <Typography className='text'>
-                    bài viết
+                    {label}
                 </Typography>
             </span>
         </Box>

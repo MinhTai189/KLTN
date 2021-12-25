@@ -1,17 +1,13 @@
-import { Box, Grid, Paper, Theme } from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
-import { DoughnutChart, LineChart, ListSider, RecentActivities, Statistics } from 'features/dashboard/components'
+import { Box, Grid, Paper, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-    ArcElement
+    ArcElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, LineElement, PointElement, Title,
+    Tooltip
 } from 'chart.js';
+import { DoughnutChart, LineChart, ListSider, RecentActivities, Statistics } from 'features/dashboard/components';
+import { dashboardActions, selectDataDashboard } from 'features/dashboard/dashboardSlice';
+import { useEffect } from 'react';
 
 interface Props {
 
@@ -43,10 +39,16 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const DashboardPage = (props: Props) => {
     const classes = useStyles()
+    const dispatch = useAppDispatch()
+    const dashboardData = useAppSelector(selectDataDashboard)
+
+    useEffect(() => {
+        dispatch(dashboardActions.getData())
+    }, [])
 
     return (
         <Box className={classes.root}>
-            <Statistics />
+            {dashboardData.statistics && <Statistics data={dashboardData.statistics} />}
 
             <Box my={4}>
                 <Grid container spacing={2}>
@@ -66,7 +68,7 @@ const DashboardPage = (props: Props) => {
                 </Grid>
 
                 <Box my={2}>
-                    <LineChart />
+                    <LineChart data={dashboardData.chart} />
                 </Box>
             </Box>
         </Box>

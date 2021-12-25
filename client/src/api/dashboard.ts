@@ -1,8 +1,13 @@
+import { Chart, Response, Statistic } from 'models';
 import axiosClient from './axiosClient';
 
 const dashboardApis = {
-  get(): Promise<any> {
+  getStatistic(): Promise<Response<Statistic>> {
     const url = '/dashboards/statisticals';
+    return axiosClient.get(url);
+  },
+  getChart(): Promise<Response<any>> {
+    const url = '/dashboards/charts';
     return axiosClient.get(url);
   },
 };
