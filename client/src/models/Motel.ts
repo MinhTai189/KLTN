@@ -84,6 +84,7 @@ export interface Owner {
   isAdmin: boolean;
   email: string;
   credit: number;
+  posts: number;
   school: School;
   rank: string;
   motels: number;

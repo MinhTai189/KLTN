@@ -1,4 +1,5 @@
 import { Avatar, Box, makeStyles, Theme, Typography } from '@material-ui/core'
+import { UserTooltip } from 'components/Common'
 import { REVIEW_ID } from 'constant/constant'
 import { Post as PostModel } from 'models'
 import { Link } from 'react-router-dom'
@@ -123,7 +124,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const Post = ({ postData }: Props) => {
     const classes = useStyles()
-    const { _id, title, owner: { avatarUrl, name }, createdAt, content, tags, subject: { _id: subjectId } } = postData
+    const { _id, title, owner: { avatarUrl, name }, owner, createdAt, content, tags, subject: { _id: subjectId } } = postData
 
     return (
         <Box className={classes.root} component='li'>
@@ -136,10 +137,12 @@ export const Post = ({ postData }: Props) => {
                 </Typography>
 
                 <Box className='content'>
-                    <Avatar
-                        className='avatar'
-                        src={avatarUrl as string}
-                    />
+                    <UserTooltip data={owner}>
+                        <Avatar
+                            className='avatar'
+                            src={avatarUrl as string}
+                        />
+                    </UserTooltip>
 
                     <Box className='body'>
                         <Box className='author-info'>

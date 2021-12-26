@@ -1,6 +1,7 @@
 import { Theme, Tooltip, Typography } from '@material-ui/core'
 import { Report, Star, StarBorder, StarHalf } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
+import { UserTooltip } from 'components/Common'
 import { Rate } from 'models'
 import { Link } from 'react-router-dom'
 import { roundMark } from 'utils'
@@ -145,7 +146,9 @@ export const RateItem = ({ data, handleReport }: Props) => {
     return (
         <div className={classes.root}>
             <div className={classes.colLeft}>
-                <img src={data.user.avatarUrl} alt="avatar" />
+                <UserTooltip data={data.user}>
+                    <img src={data.user.avatarUrl} alt="avatar" />
+                </UserTooltip>
             </div>
             <div className={classes.colRight}>
                 <div className="top">

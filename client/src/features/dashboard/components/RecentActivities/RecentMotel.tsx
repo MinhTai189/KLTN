@@ -1,16 +1,16 @@
 import { useAppSelector } from "app/hooks"
 import { selectDataDashboard } from "features/dashboard/dashboardSlice"
 import RecentActivitiesLayout from "../Layouts/RecentActivitiesLayout"
-import RecentActivitiesTable from "./RecentActivitiesTable"
+import RecentMotelTable from "./RecentMotelTable"
 
-const RecentActivity = () => {
+const RecentMotel = () => {
     const dashboardData = useAppSelector(selectDataDashboard)
 
     return (
-        <RecentActivitiesLayout label='Hoạt động gần đây'>
-            <RecentActivitiesTable data={dashboardData.recents.activities} />
+        <RecentActivitiesLayout label='Đăng nhà trọ gần đây'>
+            <RecentMotelTable data={dashboardData.recents.motels} />
         </RecentActivitiesLayout>
     )
 }
 
-export default RecentActivity
+export default RecentMotel

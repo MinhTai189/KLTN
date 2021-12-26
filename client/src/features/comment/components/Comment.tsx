@@ -1,6 +1,7 @@
 import { Avatar, Box, Theme } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import commentApi from 'api/comment'
+import { UserTooltip } from 'components/Common'
 import { Comment as CommentType, Filter, ReplingComment } from 'models'
 import { memo, useContext, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-toastify'
@@ -32,7 +33,7 @@ export const Comment = memo(({ comment }: Props) => {
 
     const totalReply = useRef(0)
 
-    const { _id, owner: { avatarUrl, _id: userId } } = comment
+    const { _id, owner: { avatarUrl, _id: userId }, owner } = comment
 
     const handleReply = () => {
         if (replyRef.current)
@@ -65,11 +66,12 @@ export const Comment = memo(({ comment }: Props) => {
             my={2}
         >
             <CommentLayout
-                totalAction={true}
-                avatar={<Avatar
-                    className='avatar'
-                    src={avatarUrl}
-                />}
+                avatar={<UserTooltip data={owner}>
+                    <Avatar
+                        className='avatar'
+                        src={avatarUrl}
+                    />
+                </UserTooltip>}
             >
                 <>
                     <CommentBody

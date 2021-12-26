@@ -1,3 +1,5 @@
+import { Motel, Owner } from './Motel';
+
 export interface Statistic {
   account: number;
   motel: number;
@@ -6,12 +8,18 @@ export interface Statistic {
   post: number;
 }
 
-export interface RecentActivities {
+export interface RecentData {
+  activities: RecentActivity[];
+  motels: Motel[];
+}
+
+export interface RecentActivity {
   title: string;
   content: string;
   createdAt: string;
   url: string;
   _id: string;
+  owner: Owner;
 }
 
 export interface StatisticPost {
@@ -25,5 +33,17 @@ export interface Chart {
     year: number;
     month: number;
   };
+  quantity: number;
+}
+
+export interface Size {
+  dataSize: number;
+  totalSize: number;
+  rate: number;
+}
+
+export interface RatioPost {
+  _id: string;
+  name: string;
   quantity: number;
 }

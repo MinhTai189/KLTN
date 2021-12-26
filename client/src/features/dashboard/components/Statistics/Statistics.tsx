@@ -1,5 +1,5 @@
 import { Box, Theme } from "@material-ui/core"
-import { CloudDone, Folder, Hearing, Home, People } from "@material-ui/icons"
+import { Folder, Hearing, Home, People, Queue } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
 import { Statistic } from "models"
 import StatisticCard from "./StatisticCard"
@@ -26,8 +26,8 @@ const listLabelIcon = {
         label: 'Nhà trọ'
     },
     approval: {
-        icon: <CloudDone />,
-        label: 'Đã duyệt'
+        icon: <Queue />,
+        label: 'Chờ duyệt'
     },
     access: {
         icon: <Hearing />,
