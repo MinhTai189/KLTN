@@ -9,8 +9,9 @@ const online = require("../online");
 const access = require("../models/access");
 const mongoose = require("mongoose");
 const db = mongoose.connection;
-
+const report = require("../models/report");
 const unapprovedMotel = require("../models/unapproved-motel");
+const userUpdateMotel = require("../models/user-update-motel");
 
 const dashboardRoute = (io) => {
   router.get("/statisticals", verifyToken, async (req, res) => {
@@ -20,7 +21,7 @@ const dashboardRoute = (io) => {
         .json({ message: "Bạn không có quyền", success: false });
     try {
       const quantityAccount = await user.count({ deleted: false });
-      const quantityApproval = await approval.count({});
+
       const quantityMotel = await motel.count({});
       const quantityPost = await post.count({ valid: true });
       const currDate = new Date();
@@ -30,11 +31,28 @@ const dashboardRoute = (io) => {
           month: currDate.getMonth() + 1,
         })
         .select("quantity");
+      const getCountRateMotel = await motel
+        .find({ "rate.valid": false })
+        .select("rate");
+      let rateCount = 0;
+      for (let i = 0; i < getCountRateMotel.length; i++) {
+        for (let j = 0; j < getCountRateMotel[i].rate.length; j++) {
+          if (getCountRateMotel[i].rate[j].valid == false) rateCount++;
+        }
+      }
+      const counts = await Promise.all([
+        unapprovedMotel.count().exec(),
+        userUpdateMotel.count().exec(),
+        post.count({ valid: false }).exec(),
+        report.count().exec(),
+      ]);
+      let sum =
+        counts.reduce((partial_sum, a) => partial_sum + a, 0) + rateCount;
       res.status(200).json({
         data: {
           account: quantityAccount,
           motel: quantityMotel,
-          approval: quantityApproval,
+          approval: sum,
           access: quantityAccessingCurrMonth.quantity,
           post: quantityPost,
         },
@@ -52,7 +70,11 @@ const dashboardRoute = (io) => {
         .status(403)
         .json({ message: "Bạn không có quyền", success: false });
     try {
-      const users = await user.find({}).select("name done");
+      const users = await user
+        .find({})
+        .select(
+          "-notify -refreshToken -username -email -unsignedName -password -favorite -deleted -province -district"
+        );
       const motels = await motel
         .find({})
         .select("-editor -rate")
@@ -81,6 +103,11 @@ const dashboardRoute = (io) => {
             ...recentActivities,
             {
               ...done[j],
+              owner: {
+                ...users[i]._doc,
+                avatarUrl: users[i].avatarUrl.url,
+                done: undefined,
+              },
             },
           ];
       }
