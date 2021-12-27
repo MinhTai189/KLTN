@@ -1,13 +1,10 @@
-import { Box, Theme, Avatar } from '@material-ui/core'
+import { Box, Theme } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { ReactElement } from 'react'
-import { TotalAction } from '../../../posts/components/PostView/Common/TotalAction'
 
 interface Props {
     children?: ReactElement
-    subcomment?: ReactElement
     avatar?: ReactElement
-    totalAction?: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -32,8 +29,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const CommentLayout = ({
-    children, totalAction = false, subcomment, avatar }: Props) => {
+export const CommentLayout = ({ children, avatar }: Props) => {
     const classes = useStyles()
 
     return (

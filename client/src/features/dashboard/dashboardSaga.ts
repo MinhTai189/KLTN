@@ -1,8 +1,8 @@
 import dashboardApis from 'api/dashboard';
-import { Response, Statistic } from 'models';
+import { RecentData, Response, Statistic } from 'models';
 import { toast } from 'react-toastify';
 import { all, call, put, takeLatest } from 'redux-saga/effects';
-import { Charts, dashboardActions } from './dashboardSlice';
+import { Charts, dashboardActions, Doughnut } from './dashboardSlice';
 
 function* handleGetStatistic() {
   try {
@@ -30,9 +30,39 @@ function* handleGetChart() {
   }
 }
 
+function* handleGetDoughnuts() {
+  try {
+    const response: Response<any> = yield dashboardApis.getDataDoughnut();
+
+    const data: Doughnut = {
+      size: response.data.size,
+      ratioPost: response.data.subjects,
+    };
+
+    yield put(dashboardActions.setDoughnut(data));
+  } catch (error: any) {
+    yield call(toast.error, error.response.data.message);
+  }
+}
+
+function* handleGetRecents() {
+  try {
+    const response: Response<RecentData> = yield dashboardApis.getRecentData();
+
+    yield put(dashboardActions.setRecents(response.data));
+  } catch (error: any) {
+    yield call(toast.error, error.response.data.message);
+  }
+}
+
 function* handleGetData() {
   try {
-    yield all([call(handleGetStatistic), call(handleGetChart)]);
+    yield all([
+      call(handleGetStatistic),
+      call(handleGetChart),
+      call(handleGetDoughnuts),
+      call(handleGetRecents),
+    ]);
 
     yield put(dashboardActions.getSucceeded());
   } catch (error) {

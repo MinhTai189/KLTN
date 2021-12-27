@@ -56,9 +56,9 @@ const DashboardPage = (props: Props) => {
                         <RecentActivities />
 
                         <Paper className='chart-wrapper'>
-                            <DoughnutChart />
+                            <DoughnutChart ratioPost={dashboardData.doughnut.ratioPost} />
 
-                            <DoughnutChart />
+                            <DoughnutChart size={dashboardData.doughnut.size} />
                         </Paper>
                     </Grid>
 

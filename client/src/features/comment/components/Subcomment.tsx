@@ -1,4 +1,5 @@
 import { Avatar, Box, makeStyles, Theme } from '@material-ui/core'
+import { UserTooltip } from 'components/Common'
 import { ReplingComment } from 'models'
 import { useContext, useRef } from 'react'
 import { CommentLayout, TypingComment } from '.'
@@ -18,7 +19,7 @@ export const Subcomment = ({ replyData }: Props) => {
     const replyRef = useRef<any>()
     const value = useContext(CommentContext)
 
-    const { _id, owner: { avatarUrl, _id: userId }, user } = replyData
+    const { _id, owner: { avatarUrl, _id: userId }, user, owner } = replyData
 
     const handleReply = () => {
         if (replyRef.current)
@@ -31,11 +32,12 @@ export const Subcomment = ({ replyData }: Props) => {
             my={2}
         >
             <CommentLayout
-                totalAction={true}
-                avatar={<Avatar
-                    className='avatar'
-                    src={avatarUrl}
-                />}
+                avatar={<UserTooltip data={owner}>
+                    <Avatar
+                        className='avatar'
+                        src={avatarUrl}
+                    />
+                </UserTooltip>}
             >
                 <>
                     <CommentBody

@@ -1,6 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import { Chart, RecentActivities, Statistic, StatisticPost } from 'models';
+import {
+  Chart,
+  RatioPost,
+  RecentActivity,
+  RecentData,
+  Size,
+  Statistic,
+  StatisticPost,
+} from 'models';
 
 export interface Charts {
   registerdAccount: Chart[];
@@ -8,14 +16,16 @@ export interface Charts {
   totalMotelEveryMonth: Chart[];
 }
 
+export interface Doughnut {
+  size: Size | undefined;
+  ratioPost: RatioPost[];
+}
+
 export interface DashboardState {
   data: {
     statistics: Statistic | undefined;
-    recentActivities: RecentActivities[];
-    doughnutPost: {
-      statistics: StatisticPost[];
-      total: number;
-    };
+    recents: RecentData;
+    doughnut: Doughnut;
     chart: Charts;
   };
   loading: boolean;
@@ -25,10 +35,13 @@ export interface DashboardState {
 const initialState: DashboardState = {
   data: {
     statistics: undefined,
-    recentActivities: [],
-    doughnutPost: {
-      statistics: [],
-      total: 0,
+    recents: {
+      activities: [],
+      motels: [],
+    },
+    doughnut: {
+      size: undefined,
+      ratioPost: [],
     },
     chart: {
       registerdAccount: [],
@@ -58,6 +71,12 @@ const dashboardSlice = createSlice({
     },
     setChart(state, action: PayloadAction<Charts>) {
       state.data.chart = action.payload;
+    },
+    setDoughnut(state, action: PayloadAction<Doughnut>) {
+      state.data.doughnut = action.payload;
+    },
+    setRecents(state, action: PayloadAction<RecentData>) {
+      state.data.recents = action.payload;
     },
   },
 });

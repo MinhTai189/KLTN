@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/styles"
 
 interface Props {
     children: any
+    label: string
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -22,13 +23,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const RecentActivitiesLayout = ({ children }: Props) => {
+const RecentActivitiesLayout = ({ children, label }: Props) => {
     const classes = useStyles()
 
     return (
         <Paper className={classes.root}>
             <Typography className='title'>
-                Nhà trọ đăng gần đây
+                {label}
             </Typography>
 
             <Box className="body">

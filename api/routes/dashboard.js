@@ -416,7 +416,7 @@ const dashboardRoute = (io) => {
         console.log(err);
         res.status(500).json({ message: "Lỗi không xác định" });
       } else {
-        const dataSize = (stats.dataSize + stats.indexSize) / 1024;
+        const dataSize = Math.floor((stats.dataSize + stats.indexSize) / 1024);
         const totalSize = 512 * 1024;
         const rate = 100 * (dataSize / totalSize);
         res.status(200).json({

@@ -1,8 +1,11 @@
 import { Box, makeStyles, Theme } from '@material-ui/core';
-import { Doughnut } from 'react-chartjs-2'
+import { RatioPost, Size } from 'models';
+import { useMemo } from 'react';
+import { Doughnut } from 'react-chartjs-2';
 
 interface Props {
-
+    size?: Size
+    ratioPost?: RatioPost[]
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -12,27 +15,51 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const DoughnutChart = (props: Props) => {
+export const DoughnutChart = ({ size, ratioPost }: Props) => {
     const classes = useStyles()
 
-    const data = {
-        labels: ['Tìm nhà trọ', 'Tìm bạn ở ghép', 'Đánh giá nhà trọ'],
-        datasets: [
-            {
-                label: "Tổng số bài viết đã đăng",
-                data: [33, 53, 85],
-                backgroundColor: [
-                    'rgb(255, 99, 132)',
-                    'rgb(54, 162, 235)',
-                    'rgb(255, 205, 86)'
-                ],
-            },
-        ]
-    };
+    const data = useMemo(() => {
+        if (!size && !ratioPost) return
+
+        let labels: string[] = []
+        let data: number[] = []
+        let backgroundColor: string[] = []
+
+        if (size) {
+            labels = ['Dung lượng đã dùng(MB)', 'Dung lượng trống(MB)']
+            data = [size.dataSize, size.totalSize - size.dataSize]
+            backgroundColor = [
+                'rgb(255, 99, 132)',
+                'rgb(83, 83, 83)',
+            ]
+        }
+
+        if (ratioPost) {
+            ratioPost.forEach(x => {
+                labels.push(x.name)
+                data.push(x.quantity)
+            })
+            backgroundColor = [
+                'rgb(255, 99, 132)',
+                'rgb(54, 162, 235)',
+                'rgb(255, 205, 86)'
+            ]
+        }
+
+        return {
+            labels,
+            datasets: [
+                {
+                    data,
+                    backgroundColor
+                },
+            ]
+        };
+    }, [size, ratioPost])
 
     return (
         <Box className={classes.root}>
-            <Doughnut data={data} />
+            {data && <Doughnut data={data} />}
         </Box>
     )
 }

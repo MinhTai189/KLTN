@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/styles"
 import { Post } from "models"
 import { calculateCreatedTime } from "utils/convert-date/calculateCreatedTime"
 import { Link } from 'react-router-dom'
+import { UserTooltip } from "components/Common"
 
 interface Props {
     post: Post
@@ -154,15 +155,17 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const PostRecent = ({ post }: Props) => {
     const classes = useStyles()
 
-    const { _id, createdAt, title, tags, totalLikes, numComments, subject: { name: thread }, owner: { _id: userId, avatarUrl, name } } = post
+    const { _id, createdAt, title, tags, totalLikes, numComments, subject: { name: thread }, owner: { _id: userId, avatarUrl, name }, owner } = post
 
     return (
         <Paper className={classes.root}>
             <Box className='author-info'>
-                <Avatar
-                    className='avatar'
-                    src={avatarUrl as string}
-                />
+                <UserTooltip data={owner}>
+                    <Avatar
+                        className='avatar'
+                        src={avatarUrl as string}
+                    />
+                </UserTooltip>
 
                 <Box
                     className='details'

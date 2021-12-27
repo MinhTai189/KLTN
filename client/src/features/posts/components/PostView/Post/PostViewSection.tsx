@@ -2,6 +2,7 @@ import { Avatar, Box, Breadcrumbs, Button, Divider, makeStyles, Theme, Typograph
 import { SmsTwoTone } from "@material-ui/icons"
 import postApi from "api/post"
 import { useAppDispatch, useAppSelector } from "app/hooks"
+import { UserTooltip } from "components/Common"
 import { selectCurrentUser } from "features/auth/authSlice"
 import { selectPaginationComment } from "features/comment/commentSlice"
 import { postAction, selectFilterPost } from "features/posts/postSlice"
@@ -163,14 +164,16 @@ export const PostViewSection = memo(({ postData }: Props) => {
             </Typography>
 
             <Box className={classes.authorWrapper}>
-                <Link to={`/profile/${postData.owner._id}`}>
-                    <Avatar
-                        className='avatar'
-                        src={postData.owner.avatarUrl}
-                    >
-                        {postData.owner.name[0]}
-                    </Avatar>
-                </Link>
+                <UserTooltip data={postData.owner}>
+                    <Link to={`/profile/${postData.owner._id}`}>
+                        <Avatar
+                            className='avatar'
+                            src={postData.owner.avatarUrl}
+                        >
+                            {postData.owner.name[0]}
+                        </Avatar>
+                    </Link>
+                </UserTooltip>
 
                 <Box className='author-info'>
                     <Link to={`/profile/${postData.owner._id}`}>

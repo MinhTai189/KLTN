@@ -1,18 +1,15 @@
 import { Box, Grid } from "@material-ui/core"
 import RecentActivity from "./RecentActivity"
+import RecentMotel from "./RecentMotel"
 
-interface Props {
-
-}
-
-export const RecentActivities = (props: Props) => {
+export const RecentActivities = () => {
     return (
         <Box>
             <Grid container spacing={2}>
-                <Grid item lg={6}>
-                    <RecentActivity />
+                <Grid item lg={5}>
+                    <RecentMotel />
                 </Grid>
-                <Grid item lg={6}>
+                <Grid item lg={7}>
                     <RecentActivity />
                 </Grid>
             </Grid>
