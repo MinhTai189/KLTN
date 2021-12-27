@@ -118,9 +118,11 @@ const rateRouter = (io) => {
             _id: motelRates[i].rate[j].user.id,
             credit: motelRates[i].rate[j].user.credit,
             email: motelRates[i].rate[j].user.email,
-
+            school: motelRates[i].rate[j].user.school,
             motels: motelRates[i].rate[j].user.motels,
+            posts: motelRates[i].rate[j].user.posts,
             rank: motelRates[i].rate[j].user.rank,
+            totalLikes: motelRates[i].rate[j].user.likes.length,
           };
           if (motelRates[i].rate[j].valid)
             rates.push({

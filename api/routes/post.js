@@ -180,9 +180,11 @@ const postRouter = (io) => {
           _id: posts[i].owner.id,
           credit: posts[i].owner.credit,
           email: posts[i].owner.email,
-
           posts: posts[i].owner.posts,
           rank: posts[i].owner.rank,
+          motels: posts[i].owner.motels,
+          school: posts[i].owner.school,
+          totalLikes: posts[i].owner.likes.length,
         };
         responsePosts.push({
           ...posts[i]._doc,
@@ -309,9 +311,7 @@ const postRouter = (io) => {
           success: false,
           message: "Bài viết này chưa được duyệt",
         });
-      const ownerSchool = await schoolModel
-        .findOne({ codeName: findPost.owner.school })
-        .select("-nameDistricts");
+
       const owner = {
         avatarUrl: findPost.owner.avatarUrl.url,
         name: findPost.owner.name,
@@ -319,9 +319,11 @@ const postRouter = (io) => {
         _id: findPost.owner.id,
         credit: findPost.owner.credit,
         email: findPost.owner.email,
-        school: ownerSchool,
+        school: findPost.owner.school,
         posts: findPost.owner.posts,
         rank: findPost.owner.rank,
+        totalLikes: findPost.owner.likes.length,
+        motels: findPost.owner.motels,
       };
 
       let responsePost = {

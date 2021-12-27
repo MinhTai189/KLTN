@@ -5,6 +5,9 @@ const user = require("../models/user");
 const JWT = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const uuid = require("uuid");
+const schoolModel = require("../models/school");
+const districtModel = require("../models/districts");
+const provinceModel = require("../models/province");
 const upload = require("../middleware/upload");
 const { google } = require("googleapis");
 const { OAuth2 } = google.auth;
@@ -13,9 +16,32 @@ const removeVietnameseTones = require("../utils/removeVietnameseTones");
 const axios = require("axios").default;
 const verifyToken = require("../middleware/verifyToken");
 const authRouter = (io) => {
-  // router.get("/", async (req, res) => {
-  //   await user.updateMany({}, { done: [] });
-  // });
+  router.get("/", async (req, res) => {
+    const users = await user.find();
+    for (let i = 0; i < users.length; i++) {
+      {
+        const getSchool = await schoolModel.findOne({
+          codeName: users[i].school,
+        });
+        users[i].school = getSchool;
+      }
+      {
+        const getDistrict = await districtModel.findOne({
+          codeName: users[i].district,
+        });
+        users[i].district = getDistrict;
+      }
+      {
+        const getProvince = await provinceModel.findOne({
+          codeName: users[i].province,
+        });
+        users[i].province = getProvince;
+      }
+      await users[i].save();
+      console.log(i);
+    }
+    console.log(i);
+  });
 
   router.patch("/change-password", verifyToken, async (req, res) => {
     const { oldPassword, password } = req.body;
@@ -230,7 +256,9 @@ const authRouter = (io) => {
       school,
       avatarUrl,
     } = req.body;
-
+    const getSchool = await schoolModel.findOne({ codeName: school });
+    const getDistrict = await districtModel.findOne({ codeName: district });
+    const getProvince = await provinceModel.findOne({ codeName: province });
     if (!username || !password) {
       await unlinkAvatar(avatarUrl);
       return res.status(400).json({
@@ -292,9 +320,9 @@ const authRouter = (io) => {
         favorite: undefined,
         isAdmin: undefined,
         email,
-        district,
-        province,
-        school,
+        district: getDistrict,
+        province: getProvince,
+        school: getSchool,
       });
       await newUser.save();
       res.status(200).json({ success: true, message: "Đăng ký thành công" });
@@ -439,7 +467,9 @@ const authRouter = (io) => {
         message: "Tài khoản facebook hoặc email này đã được sử dụng",
         success: false,
       });
-
+    const getSchool = await schoolModel.findOne({ codeName: school });
+    const getDistrict = await districtModel.findOne({ codeName: district });
+    const getProvince = await provinceModel.findOne({ codeName: province });
     const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
     const unsignedName = removeVietnameseTones(name);
     const newUser = new user({
@@ -452,9 +482,9 @@ const authRouter = (io) => {
       favorite: undefined,
       isAdmin: undefined,
       email,
-      district,
-      province,
-      school,
+      district: getDistrict,
+      province: getProvince,
+      school: getSchool,
     });
     await newUser.save();
 
@@ -538,6 +568,9 @@ const authRouter = (io) => {
     const password = userGmail.email + process.env.PASSWORD_SECRET_GOOGLE;
     const { email, picture, name } = userGmail;
     const unsignedName = removeVietnameseTones(name);
+    const getSchool = await schoolModel.findOne({ codeName: school });
+    const getDistrict = await districtModel.findOne({ codeName: district });
+    const getProvince = await provinceModel.findOne({ codeName: province });
     const newUser = new user({
       username: email,
       password: await argon2.hash(password),
@@ -548,9 +581,9 @@ const authRouter = (io) => {
       favorite: undefined,
       isAdmin: undefined,
       email,
-      district,
-      province,
-      school,
+      district: getDistrict,
+      province: getProvince,
+      school: getSchool,
     });
     await newUser.save();
     const newAccessToken = JWT.sign(

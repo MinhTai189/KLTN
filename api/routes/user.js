@@ -5,7 +5,9 @@ const removeVietNameseTones = require("../utils/removeVietnameseTones");
 const argon2 = require("argon2");
 const verifyToken = require("../middleware/verifyToken");
 const upload = require("../middleware/upload");
-const school = require("../models/school");
+const schoolModel = require("../models/school");
+const districtModel = require("../models/districts");
+const provinceModel = require("../models/province");
 const ObjectId = require("mongoose").Types.ObjectId;
 const userRouter = (io) => {
   router.get("/users/done-jobs", verifyToken, async (req, res) => {
@@ -130,26 +132,44 @@ const userRouter = (io) => {
         {
           unsignedName: new RegExp(_keysearch + "$", "i"),
         },
-        { school: new RegExp(_keysearch.replace(/ /g, "_"), "i") },
+        { "school.codeName": new RegExp(_keysearch.replace(/ /g, "_"), "i") },
         {
-          school: new RegExp("^" + _keysearch.replace(/ /g, "_"), "i"),
+          "school.codeName": new RegExp(
+            "^" + _keysearch.replace(/ /g, "_"),
+            "i"
+          ),
         },
         {
-          school: new RegExp(_keysearch.replace(/ /g, "_") + "$", "i"),
+          "school.codeName": new RegExp(
+            _keysearch.replace(/ /g, "_") + "$",
+            "i"
+          ),
         },
-        { district: new RegExp(_keysearch.replace(/ /g, "_"), "i") },
+        { "district.codeName": new RegExp(_keysearch.replace(/ /g, "_"), "i") },
         {
-          district: new RegExp("^" + _keysearch.replace(/ /g, "_"), "i"),
+          "district.codeName": new RegExp(
+            "^" + _keysearch.replace(/ /g, "_"),
+            "i"
+          ),
         },
         {
-          district: new RegExp(_keysearch.replace(/ /g, "_") + "$", "i"),
+          "district.codeName": new RegExp(
+            _keysearch.replace(/ /g, "_") + "$",
+            "i"
+          ),
         },
-        { province: new RegExp(_keysearch.replace(/ /g, "_"), "i") },
+        { "province.codeName": new RegExp(_keysearch.replace(/ /g, "_"), "i") },
         {
-          province: new RegExp("^" + _keysearch.replace(/ /g, "_"), "i"),
+          "province.codeName": new RegExp(
+            "^" + _keysearch.replace(/ /g, "_"),
+            "i"
+          ),
         },
         {
-          province: new RegExp(_keysearch.replace(/ /g, "_") + "$", "i"),
+          "province.codeName": new RegExp(
+            _keysearch.replace(/ /g, "_") + "$",
+            "i"
+          ),
         },
         { email: new RegExp(_keysearch.replace(/ /g, "_"), "i") },
         {
@@ -200,11 +220,16 @@ const userRouter = (io) => {
           return item.isAdmin == true;
         });
     }
-    if (_school) listUser = listUser.filter((item) => item.school === _school);
+    if (_school)
+      listUser = listUser.filter((item) => item.school.codeName === _school);
     if (_district)
-      listUser = listUser.filter((item) => item.district === _district);
+      listUser = listUser.filter(
+        (item) => item.district.codeName === _district
+      );
     if (_province)
-      listUser = listUser.filter((item) => item.province === _province);
+      listUser = listUser.filter(
+        (item) => item.province.codeName === _province
+      );
     totalRows = listUser.length;
     if (_order && _sort)
       switch (_sort) {
@@ -245,7 +270,14 @@ const userRouter = (io) => {
       res.status(200).json({
         success: true,
         message: "thanh cong",
-        data: listUser,
+        data: listUser.map((item) => {
+          return {
+            ...item._doc,
+            school: item.school.name,
+            district: item.district.name,
+            province: item.province.name,
+          };
+        }),
         pagination: {
           _page: _page,
           _limit: _limit,
@@ -270,17 +302,12 @@ const userRouter = (io) => {
       const getUser = await user
         .findById(id)
         .select(
-          "-notify -refreshToken -username -email -unsignedName -password -favorite -deleted -province -district"
+          "-notify -refreshToken -username  -unsignedName -password -favorite -deleted"
         );
-
-      const getUserSchool = await school
-        .findOne({ codeName: getUser.school })
-        .select("-nameDistricts");
 
       let responseUser = {
         ...getUser._doc,
         avatarUrl: getUser.avatarUrl.url,
-        school: getUserSchool,
         done: getUser.done.sort((d1, d2) => new Date(d2) - new Date(d1)),
       };
       res.status(200).json({ data: responseUser, success: true });
@@ -349,9 +376,22 @@ const userRouter = (io) => {
         if (avatarUrl) {
           newDataUser.avatarUrl = avatarUrl;
         }
-        if (school) newDataUser.school = school;
-        if (district) newDataUser.district = district;
-        if (province) newDataUser.province = province;
+        if (school) {
+          const getSchool = await schoolModel.findOne({ codeName: school });
+          newDataUser.school = getSchool;
+        }
+        if (district) {
+          const getDistrict = await districtModel.findOne({
+            codeName: district,
+          });
+          newDataUser.district = getDistrict;
+        }
+        if (province) {
+          const getProvince = await provinceModel.findOne({
+            codeName: province,
+          });
+          newDataUser.province = getProvince;
+        }
         const userUpdate = await user.findByIdAndUpdate(id, {
           $set: newDataUser,
         });
@@ -406,9 +446,23 @@ const userRouter = (io) => {
         if (avatarUrl) {
           newDataUser.avatarUrl = avatarUrl;
         }
-        if (school) newDataUser.school = school;
-        if (district) newDataUser.district = district;
-        if (province) newDataUser.province = province;
+        if (school) {
+          const getSchool = await schoolModel.findOne({ codeName: school });
+          newDataUser.school = getSchool;
+        }
+        if (district) {
+          const getDistrict = await districtModel.findOne({
+            codeName: district,
+          });
+          newDataUser.district = getDistrict;
+        }
+        if (province) {
+          const getProvince = await provinceModel.findOne({
+            codeName: province,
+          });
+          newDataUser.province = getProvince;
+        }
+
         if (typeof isAdmin !== "undefined") newDataUser.isAdmin = isAdmin;
         if (email) newDataUser.email = email;
         if (credit >= 0 && typeof credit === "number")

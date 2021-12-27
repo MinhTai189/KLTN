@@ -13,6 +13,7 @@ const report = require("../models/report");
 const unapprovedMotel = require("../models/unapproved-motel");
 const userUpdateMotel = require("../models/user-update-motel");
 
+const comment = require("../models/comment");
 const dashboardRoute = (io) => {
   router.get("/statisticals", verifyToken, async (req, res) => {
     if (req.user.isAdmin == false)
@@ -22,8 +23,8 @@ const dashboardRoute = (io) => {
     try {
       const quantityAccount = await user.count({ deleted: false });
 
-      const quantityMotel = await motel.count({});
-      const quantityPost = await post.count({ valid: true });
+      const quantityMotel = await motel.find({}).select("rate");
+      const quantityPost = await post.find({ valid: true });
       const currDate = new Date();
       const quantityAccessingCurrMonth = await access
         .findOne({
@@ -31,30 +32,54 @@ const dashboardRoute = (io) => {
           month: currDate.getMonth() + 1,
         })
         .select("quantity");
-      const getCountRateMotel = await motel
-        .find({ "rate.valid": false })
-        .select("rate");
+      // const getCountRateMotel = await motel.find({}).select("rate");
       let rateCount = 0;
-      for (let i = 0; i < getCountRateMotel.length; i++) {
-        for (let j = 0; j < getCountRateMotel[i].rate.length; j++) {
-          if (getCountRateMotel[i].rate[j].valid == false) rateCount++;
+      for (let i = 0; i < quantityMotel.length; i++) {
+        for (let j = 0; j < quantityMotel[i].rate.length; j++) {
+          if (quantityMotel[i].rate[j].valid == false) rateCount++;
         }
       }
+
       const counts = await Promise.all([
         unapprovedMotel.count().exec(),
         userUpdateMotel.count().exec(),
         post.count({ valid: false }).exec(),
-        report.count().exec(),
       ]);
       let sum =
         counts.reduce((partial_sum, a) => partial_sum + a, 0) + rateCount;
+      const reports = await report.find();
+      const comments = await comment.find();
+      let countReport = 0;
+      for (let i = 0; i < reports.length; i++) {
+        let getData;
+        if (reports[i].type === "rate")
+          getData = quantityMotel.find((item) => {
+            return (
+              item.rate.some(
+                (r) => JSON.stringify(r._id) === JSON.stringify(reports[i].id2)
+              ) && JSON.stringify(item._id) === JSON.stringify(reports[i].id1)
+            );
+          });
+        else if (reports[i].type === "post")
+          getData = quantityPost.find(
+            (item) =>
+              JSON.stringify(item._id) === JSON.stringify(reports[i].id1)
+          );
+        else if (reports[i].type === "comment")
+          getData = comments.find(
+            (item) =>
+              JSON.stringify(item._id) === JSON.stringify(reports[i].id1)
+          );
+
+        if (getData) countReport = countReport + 1;
+      }
       res.status(200).json({
         data: {
           account: quantityAccount,
-          motel: quantityMotel,
-          approval: sum,
+          motel: quantityMotel.length,
+          approval: sum + countReport,
           access: quantityAccessingCurrMonth.quantity,
-          post: quantityPost,
+          post: quantityPost.length,
         },
         success: true,
       });
@@ -73,20 +98,20 @@ const dashboardRoute = (io) => {
       const users = await user
         .find({})
         .select(
-          "-notify -refreshToken -username -email -unsignedName -password -favorite -deleted -province -district"
+          "-notify -refreshToken -username -email -unsignedName -password -favorite -deleted "
         );
       const motels = await motel
         .find({})
         .select("-editor -rate")
         .populate(
           "owner",
-          "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
+          "avatarUrl name isAdmin _id credit email posts motels rank school likes"
         );
       const waitingMotels = await unapprovedMotel
         .find({})
         .populate(
           "owner",
-          "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
+          "avatarUrl name isAdmin _id credit email posts motels rank school likes"
         );
       let recentActivities = [];
       for (let i = 0; i < users.length; i++) {
@@ -107,6 +132,7 @@ const dashboardRoute = (io) => {
                 ...users[i]._doc,
                 avatarUrl: users[i].avatarUrl.url,
                 done: undefined,
+                totalLikes: users[i].likes.length,
               },
             },
           ];
@@ -120,6 +146,7 @@ const dashboardRoute = (io) => {
           owner: {
             ...motels[i].owner._doc,
             avatarUrl: motels[i].owner.avatarUrl.url,
+            totalLikes: motels[i].owner.likes.length,
           },
           type: "Đang hoạt động",
         });
@@ -132,6 +159,7 @@ const dashboardRoute = (io) => {
           owner: {
             ...waitingMotels[i].owner._doc,
             avatarUrl: waitingMotels[i].owner.avatarUrl.url,
+            totalLikes: waitingMotels[i].owner.likes.length,
           },
           type: "Đang chờ duyệt",
         });
@@ -207,22 +235,28 @@ const dashboardRoute = (io) => {
       let responseOnline = online.getUsers(1, -1);
       const importantUsers = await user
         .find({
-          deleted: false,
-          isAdmin: true,
+          $and: [
+            {
+              deleted: false,
+            },
+            {
+              $or: [{ isAdmin: true }, { credit: { $gt: 200 } }],
+            },
+          ],
         })
         .select(
-          "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
+          "-notify -refreshToken -done  -unsignedName -password -favorite -deleted"
         );
       const approvals = await approval
         .find({})
         .sort({ createdAt: -1 })
         .populate(
           "user",
-          "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
+          "avatarUrl name isAdmin _id credit email posts motels rank school likes"
         )
         .populate(
           "owner",
-          "-notify -refreshToken -done -username -email -unsignedName -password -favorite -deleted -province -district"
+          "avatarUrl name isAdmin _id credit email posts motels rank school likes"
         );
       res.status(200).json({
         data: {
@@ -232,6 +266,7 @@ const dashboardRoute = (io) => {
               owner: {
                 ...item.owner._doc,
                 avatarUrl: item.owner.avatarUrl.url,
+                totalLikes: item.owner.likes.length,
               },
             };
           }),

@@ -154,9 +154,11 @@ const commentRouter = (io) => {
           _id: getByRootComment[j].reply.user.id,
           credit: getByRootComment[j].reply.user.credit,
           email: getByRootComment[j].reply.user.email,
-
+          school: getByRootComment[j].reply.user.school,
           posts: getByRootComment[j].reply.user.posts,
           rank: getByRootComment[j].reply.user.rank,
+          totalLikes: getByRootComment[j].reply.user.likes.length,
+          motels: getByRootComment[j].reply.user.motels,
         };
         const owner = {
           avatarUrl: getByRootComment[j].owner.avatarUrl.url,
@@ -167,6 +169,9 @@ const commentRouter = (io) => {
           email: getByRootComment[j].owner.email,
           posts: getByRootComment[j].owner.posts,
           rank: getByRootComment[j].owner.rank,
+          totalLikes: getByRootComment[j].owner.likes.length,
+          school: getByRootComment[j].owner.school,
+          motels: getByRootComment[j].owner.motels,
         };
 
         responseComments.push({
@@ -339,9 +344,11 @@ const commentRouter = (io) => {
           _id: comments[i].owner.id,
           credit: comments[i].owner.credit,
           email: comments[i].owner.email,
-
           posts: comments[i].owner.posts,
           rank: comments[i].owner.rank,
+          school: comments[i].owner.school,
+          totalLikes: comments[i].owner.likes.length,
+          motels: comments[i].owner.motels,
         };
 
         responseComments.push({
@@ -454,9 +461,11 @@ const commentRouter = (io) => {
                   _id: responseComments[j].reply.user.id,
                   credit: responseComments[j].reply.user.credit,
                   email: responseComments[j].reply.user.email,
-
+                  totalLikes: responseComments[j].reply.user.likes.length,
                   posts: responseComments[j].reply.user.posts,
                   rank: responseComments[j].reply.user.rank,
+                  school: responseComments[j].reply.school,
+                  motels: responseComments[j].reply.motels,
                 };
                 responseComments[i].reply[
                   responseComments[i].reply.length - 1

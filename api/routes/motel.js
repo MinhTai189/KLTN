@@ -22,8 +22,14 @@ const motelRouter = (io) => {
     let listMotel = await motel
       .find({})
       .populate("school", "-nameDistricts")
-      .populate("rate.user", "-refreshToken")
-      .populate("owner", "name avatarUrl _id isAdmin")
+      .populate(
+        "rate.user",
+        "-notify -refreshToken  -unsignedName -password -favorite -deleted -province -district"
+      )
+      .populate(
+        "owner",
+        "-notify -refreshToken  -unsignedName -password -favorite -deleted -province -district"
+      )
       .populate("editor.user", "name avatarUrl _id isAdmin");
     listMotel = shuffle(listMotel);
 
@@ -59,7 +65,12 @@ const motelRouter = (io) => {
           name: listMotel[i].rate[j].user.name,
           avatarUrl: listMotel[i].rate[j].user.avatarUrl.url,
           credit: listMotel[i].rate[j].user.credit,
+          email: listMotel[i].rate[j].user.email,
           isAdmin: listMotel[i].rate[j].user.isAdmin,
+          posts: listMotel[i].rate[j].user.posts,
+          motels: listMotel[i].rate[j].user.motels,
+          totalLikes: listMotel[i].rate[j].user.likes.length,
+          school: listMotel[i].rate[j].user.school,
         };
         if (listMotel[i].rate[j].valid)
           rateData.push({ ...listMotel[i].rate[j]._doc, user: userNewData });
@@ -70,7 +81,13 @@ const motelRouter = (io) => {
           avatarUrl,
           name: listMotel[i].owner.name,
           _id: listMotel[i].owner._id,
+          email: listMotel[i].owner.email,
           isAdmin: listMotel[i].owner.isAdmin,
+          credit: listMotel[i].owner.credit,
+          posts: listMotel[i].owner.posts,
+          motels: listMotel[i].owner.motels,
+          totalLikes: listMotel[i].owner.likes.length,
+          school: listMotel[i].owner.school,
         };
       } else ownerData = null;
       if (Array.isArray(listMotel[i].editor)) {
@@ -472,15 +489,15 @@ const motelRouter = (io) => {
         .find({ $or: keySearchs })
         .populate("school", "-nameDistricts")
         .populate("rate.user", "-refreshToken")
-        .populate("owner", "name avatarUrl _id isAdmin")
-        .populate("editor.user", "name avatarUrl _id isAdmin");
+        .populate("owner")
+        .populate("editor.user");
     else {
       var listMotel = await motel
         .find({})
         .populate("school", "-nameDistricts")
         .populate("rate.user", "-refreshToken")
-        .populate("owner", "name avatarUrl _id isAdmin")
-        .populate("editor.user", "name avatarUrl _id isAdmin");
+        .populate("owner")
+        .populate("editor.user");
     }
 
     if (_keysearch) {
@@ -501,8 +518,8 @@ const motelRouter = (io) => {
         .find({})
         .populate("school", "-nameDistricts")
         .populate("rate.user", "-refreshToken")
-        .populate("owner", "name avatarUrl _id isAdmin")
-        .populate("editor.user", "name avatarUrl _id isAdmin");
+        .populate("owner")
+        .populate("editor.user");
       addMotelUser.forEach((item) => {
         addMotelUser2.forEach((item2) => {
           if (JSON.stringify(item._id) === JSON.stringify(item2.owner._id)) {
@@ -696,6 +713,11 @@ const motelRouter = (io) => {
           credit: listMotel[i].rate[j].user.credit,
           isAdmin: listMotel[i].rate[j].user.isAdmin,
           rank: listMotel[i].rate[j].user.rank,
+          posts: listMotel[i].rate[j].user.posts,
+          school: listMotel[i].rate[j].user.school,
+          motels: listMotel[i].rate[j].user.motels,
+          email: listMotel[i].rate[j].user.email,
+          totalLikes: listMotel[i].rate[j].user.likes.length,
         };
         if (listMotel[i].rate[j].valid)
           rateData.push({ ...listMotel[i].rate[j]._doc, user: userNewData });
@@ -707,6 +729,13 @@ const motelRouter = (io) => {
           name: listMotel[i].owner.name,
           _id: listMotel[i].owner._id,
           isAdmin: listMotel[i].owner.isAdmin,
+          credit: listMotel[i].owner.credit,
+          rank: listMotel[i].owner.rank,
+          school: listMotel[i].owner.school,
+          posts: listMotel[i].owner.posts,
+          motels: listMotel[i].owner.motels,
+          totalLikes: listMotel[i].owner.likes.length,
+          email: listMotel[i].owner.email,
         };
       } else ownerData = null;
       if (Array.isArray(listMotel[i].editor)) {
@@ -1191,15 +1220,18 @@ const motelRouter = (io) => {
     const id = req.params.id;
     const findMotel = await motel
       .findById(id)
-      .populate("rate.user", "avatarUrl name _id isAdmin credit rank")
+      .populate(
+        "rate.user",
+        "name avatarUrl _id isAdmin credit email school motels rank posts likes"
+      )
       .populate("school", "-nameDistricts")
       .populate(
         "owner",
-        "name avatarUrl _id isAdmin credit email school motels rank"
+        "name avatarUrl _id isAdmin credit email school motels rank posts likes"
       )
       .populate(
         "editor.user",
-        "name avatarUrl _id isAdmin credit email school motels rank"
+        "name avatarUrl _id isAdmin credit email school motels rank posts likes"
       );
 
     if (!findMotel)
@@ -1221,6 +1253,11 @@ const motelRouter = (io) => {
         avatarUrl: findMotel.rate[i].user.avatarUrl.url,
         credit: findMotel.rate[i].user.credit,
         rank: findMotel.rate[i].user.rank,
+        school: findMotel.rate[i].user.school,
+        posts: findMotel.rate[i].user.posts,
+        motels: findMotel.rate[i].user.motels,
+        totalLikes: findMotel.rate[i].user.likes.length,
+        email: findMotel.rate[i].user.email,
       };
       if (findMotel.rate[i].valid)
         newRate.push({ ...findMotel.rate[i]._doc, user: userRate });
@@ -1252,9 +1289,11 @@ const motelRouter = (io) => {
       _id: findMotel.owner.id,
       credit: findMotel.owner.credit,
       email: findMotel.owner.email,
-
       motels: findMotel.owner.motels,
       rank: findMotel.owner.rank,
+      school: findMotel.owner.school,
+      posts: findMotel.owner.posts,
+      totalLikes: findMotel.owner.likes.length,
     };
     let editorData = [];
     for (let i = 0; i < findMotel.editor.length; i++) {
@@ -1268,9 +1307,11 @@ const motelRouter = (io) => {
         isAdmin: findMotel.editor[i].user.isAdmin,
         email: findMotel.editor[i].user.email,
         credit: findMotel.editor[i].user.credit,
-
-        motels: findMotel.owner.motels,
-        rank: findMotel.owner.rank,
+        motels: findMotel.editor[i].user.motels,
+        rank: findMotel.editor[i].user.rank,
+        school: findMotel.editor[i].user.school,
+        posts: findMotel.editor[i].user.posts,
+        totalLikes: findMotel.editor[i].user.likes.length,
       };
       editorData.push({
         user: editorDataUser,

@@ -49,13 +49,13 @@ const UserSchema = new Schema(
       unique: true,
     },
     district: {
-      type: String,
+      type: Object,
     },
     province: {
-      type: String,
+      type: Object,
     },
     school: {
-      type: String,
+      type: Object,
     },
     refreshToken: {
       type: String,
