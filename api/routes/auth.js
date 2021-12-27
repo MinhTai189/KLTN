@@ -16,32 +16,32 @@ const removeVietnameseTones = require("../utils/removeVietnameseTones");
 const axios = require("axios").default;
 const verifyToken = require("../middleware/verifyToken");
 const authRouter = (io) => {
-  router.get("/", async (req, res) => {
-    const users = await user.find();
-    for (let i = 0; i < users.length; i++) {
-      {
-        const getSchool = await schoolModel.findOne({
-          codeName: users[i].school,
-        });
-        users[i].school = getSchool;
-      }
-      {
-        const getDistrict = await districtModel.findOne({
-          codeName: users[i].district,
-        });
-        users[i].district = getDistrict;
-      }
-      {
-        const getProvince = await provinceModel.findOne({
-          codeName: users[i].province,
-        });
-        users[i].province = getProvince;
-      }
-      await users[i].save();
-      console.log(i);
-    }
-    console.log(i);
-  });
+  // router.get("/", async (req, res) => {
+  //   const users = await user.find();
+  //   for (let i = 0; i < users.length; i++) {
+  //     {
+  //       const getSchool = await schoolModel.findOne({
+  //         codeName: users[i].school,
+  //       });
+  //       users[i].school = getSchool;
+  //     }
+  //     {
+  //       const getDistrict = await districtModel.findOne({
+  //         codeName: users[i].district,
+  //       });
+  //       users[i].district = getDistrict;
+  //     }
+  //     {
+  //       const getProvince = await provinceModel.findOne({
+  //         codeName: users[i].province,
+  //       });
+  //       users[i].province = getProvince;
+  //     }
+  //     await users[i].save();
+  //     console.log(i);
+  //   }
+  //   console.log(i);
+  // });
 
   router.patch("/change-password", verifyToken, async (req, res) => {
     const { oldPassword, password } = req.body;
