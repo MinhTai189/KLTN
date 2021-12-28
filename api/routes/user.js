@@ -203,12 +203,12 @@ const userRouter = (io) => {
       listUser = await user
         .find({ $or: keySearchs, deleted: false })
         .select("-password")
-        .select("-unsignedName -deleted");
+        .select("-unsignedName -deleted -password -done -notify -favorite");
     } else {
       listUser = await user
         .find({ deleted: false })
         .select("-password")
-        .select("-unsignedName -deleted");
+        .select("-unsignedName -deleted -password -done -notify -favorite");
     }
     if (_role) {
       if (_role === "user")
@@ -269,13 +269,14 @@ const userRouter = (io) => {
     if (_page && _limit)
       res.status(200).json({
         success: true,
-        message: "thanh cong",
+        message: "Thành công",
         data: listUser.map((item) => {
           return {
             ...item._doc,
             school: item.school.name,
             district: item.district.name,
             province: item.province.name,
+            totalLikes: item.likes.length,
           };
         }),
         pagination: {
