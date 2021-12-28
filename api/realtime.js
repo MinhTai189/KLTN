@@ -196,6 +196,13 @@ module.exports.listen = function socket(server) {
         });
       }
       io.dashboardData.recents.motels = [...recentMotels];
+      if (type === "motels")
+        io.to("important").emit(
+          "motels",
+          io.dashboardData.recents.motels.sort(
+            (r1, r2) => new Date(r2.createdAt) - new Date(r1.createdAt)
+          )
+        );
     }
     if (
       type === "activities" ||
@@ -229,17 +236,24 @@ module.exports.listen = function socket(server) {
               },
             },
           ];
-        io.dashboardData.recents.activities = [...recentActivities];
       }
+      io.dashboardData.recents.activities = [...recentActivities];
+      if (type === "activities")
+        io.to("important").emit(
+          "activities",
+          io.dashboardData.recents.activities.sort(
+            (r1, r2) => new Date(r2.createdAt) - new Date(r1.createdAt)
+          )
+        );
     }
-    io.to("important").emit("recents", {
-      activities: io.dashboardData.recents.activities.sort(
-        (r1, r2) => new Date(r2.createdAt) - new Date(r1.createdAt)
-      ),
-      motels: io.dashboardData.recents.motels.sort(
-        (r1, r2) => new Date(r2.createdAt) - new Date(r1.createdAt)
-      ),
-    });
+    // io.to("important").emit("recents", {
+    //   activities: io.dashboardData.recents.activities.sort(
+    //     (r1, r2) => new Date(r2.createdAt) - new Date(r1.createdAt)
+    //   ),
+    //   motels: io.dashboardData.recents.motels.sort(
+    //     (r1, r2) => new Date(r2.createdAt) - new Date(r1.createdAt)
+    //   ),
+    // });
   };
   io.sendDashboardStatisticals = async (type) => {
     if (

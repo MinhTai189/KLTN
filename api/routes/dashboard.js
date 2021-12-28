@@ -414,15 +414,19 @@ const dashboardRoute = (io) => {
     db.db.stats(function (err, stats) {
       if (err) {
         console.log(err);
-        res.status(500).json({ message: "Lỗi không xác định" });
+        res.status(500).json({ message: "Lỗi không xác định", success: false });
       } else {
-        const dataSize = Math.floor((stats.dataSize + stats.indexSize) / 1024);
-        const totalSize = 512 * 1024;
+        const dataSize = (stats.dataSize + stats.indexSize) / 1024 / 1024;
+        const totalSize = 512;
         const rate = 100 * (dataSize / totalSize);
         res.status(200).json({
           success: true,
           data: {
-            size: { dataSize, totalSize, rate },
+            size: {
+              dataSize: dataSize.toFixed(3),
+              totalSize: totalSize.toFixed(3),
+              rate,
+            },
             subjects,
           },
         });

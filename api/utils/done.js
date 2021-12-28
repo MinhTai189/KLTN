@@ -60,7 +60,6 @@ const add = async (userId, title, params, io) => {
     },
     { $push: { done: { title, content, createdAt: Date.now(), url: url } } }
   );
-  console.log(userDone);
   io.sendDashboardRecent("activities");
 };
 
