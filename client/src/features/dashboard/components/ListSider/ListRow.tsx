@@ -1,9 +1,13 @@
 import { Avatar, Box, makeStyles, Theme, Typography } from "@material-ui/core"
+import { UserTooltip } from "components/Common"
 import AvatarWithBadge from "components/Common/AvatarWithBadge"
+import { User } from "models"
 import { Link } from "react-router-dom"
 
 interface Props {
-
+    user: User
+    isOnline?: boolean
+    style: any
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -42,14 +46,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const ListRow = (props: Props) => {
+const ListRow = ({ user, isOnline, style }: Props) => {
     const classes = useStyles()
 
     return (
-        <Box className={classes.root}>
-            <Link to='/'>
+        <Box className={classes.root} style={style}>
+            <Link to={`/profile/${user._id}`}>
                 <AvatarWithBadge
-                    className="hidden-badge"
+                    className={isOnline ? '' : "hidden-badge"}
                     overlap="circular"
                     anchorOrigin={{
                         vertical: 'bottom',
@@ -57,16 +61,20 @@ const ListRow = (props: Props) => {
                     }}
                     variant="dot"
                 >
-                    <Avatar className='avatar' alt="user image" >U</Avatar>
+                    <UserTooltip data={user}>
+                        <Avatar src={user.avatarUrl} className='avatar' alt="user image" >
+                            {user.name[0]}
+                        </Avatar>
+                    </UserTooltip>
                 </AvatarWithBadge>
 
                 <Box className="info-wrapper">
                     <Typography className="name" variant='h6'>
-                        Trần Minh Tài
+                        {user.name}
                     </Typography>
 
                     <Typography className='rank' component='span'>
-                        Người qua đường
+                        {user.rank}
                     </Typography>
                 </Box>
             </Link>

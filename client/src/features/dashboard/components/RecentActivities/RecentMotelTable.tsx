@@ -42,7 +42,7 @@ const RecentMotelTable = ({ data }: Props) => {
                 <TableBody>
                     {data.slice(currentPage * ROW_PER_PAGE, currentPage * ROW_PER_PAGE + ROW_PER_PAGE)
                         .map(motel => (
-                            <TableRow>
+                            <TableRow hover>
                                 <TableCell
                                     style={{
                                         paddingRight: 4

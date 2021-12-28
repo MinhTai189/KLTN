@@ -88,6 +88,7 @@ export interface Owner {
   school: School;
   rank: string;
   motels: number;
+  totalLikes: number;
 }
 
 export interface OwnerDetail extends Owner {
