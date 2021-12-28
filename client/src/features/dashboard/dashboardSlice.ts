@@ -1,14 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import {
-  Chart,
-  RatioPost,
-  RecentActivity,
-  RecentData,
-  Size,
-  Statistic,
-  StatisticPost,
-} from 'models';
+import { Chart, RatioPost, RecentData, Size, Statistic, User } from 'models';
 
 export interface Charts {
   registerdAccount: Chart[];
@@ -21,12 +13,18 @@ export interface Doughnut {
   ratioPost: RatioPost[];
 }
 
+export interface DashboardList {
+  onlines: User[];
+  importants: User[];
+}
+
 export interface DashboardState {
   data: {
     statistics: Statistic | undefined;
     recents: RecentData;
     doughnut: Doughnut;
     chart: Charts;
+    list: DashboardList;
   };
   loading: boolean;
   err: string;
@@ -47,6 +45,10 @@ const initialState: DashboardState = {
       registerdAccount: [],
       totalMotelEveryMonth: [],
       totalPostEveryMonth: [],
+    },
+    list: {
+      onlines: [],
+      importants: [],
     },
   },
   loading: false,
@@ -77,6 +79,9 @@ const dashboardSlice = createSlice({
     },
     setRecents(state, action: PayloadAction<RecentData>) {
       state.data.recents = action.payload;
+    },
+    setList(state, action: PayloadAction<DashboardList>) {
+      state.data.list = action.payload;
     },
   },
 });

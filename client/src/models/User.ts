@@ -14,6 +14,7 @@ export interface User {
   rank?: string;
   favorite?: string[];
   likes?: string[];
+  totalLikes?: number;
   posts?: number;
   notify?: Notify[];
   createdAt?: string;

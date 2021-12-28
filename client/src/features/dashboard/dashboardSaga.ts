@@ -2,7 +2,12 @@ import dashboardApis from 'api/dashboard';
 import { RecentData, Response, Statistic } from 'models';
 import { toast } from 'react-toastify';
 import { all, call, put, takeLatest } from 'redux-saga/effects';
-import { Charts, dashboardActions, Doughnut } from './dashboardSlice';
+import {
+  Charts,
+  dashboardActions,
+  DashboardList,
+  Doughnut,
+} from './dashboardSlice';
 
 function* handleGetStatistic() {
   try {
@@ -55,6 +60,22 @@ function* handleGetRecents() {
   }
 }
 
+function* handleGetList() {
+  try {
+    const response: Response<any> =
+      yield dashboardApis.getListOnlinePermission();
+
+    const data: DashboardList = {
+      onlines: response.data.ononlines.list,
+      importants: response.data.importantUsers,
+    };
+
+    yield put(dashboardActions.setList(data));
+  } catch (error: any) {
+    yield call(toast.error, error.response.data.message);
+  }
+}
+
 function* handleGetData() {
   try {
     yield all([
@@ -62,6 +83,7 @@ function* handleGetData() {
       call(handleGetChart),
       call(handleGetDoughnuts),
       call(handleGetRecents),
+      call(handleGetList),
     ]);
 
     yield put(dashboardActions.getSucceeded());

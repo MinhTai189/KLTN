@@ -1,5 +1,7 @@
-import { Box, Button, ButtonGroup, makeStyles, Paper, Theme, Typography } from '@material-ui/core'
+import { Box, Button, ButtonGroup, makeStyles, Paper, Theme } from '@material-ui/core'
 import { useState } from 'react'
+import ListOnline from './ListOnline'
+import ListPermission from './ListPermission'
 import ListRow from './ListRow'
 
 interface Props {
@@ -8,6 +10,8 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
+        height: '100%',
+
         '& .btn-control': {
             fontSize: '0.7rem',
             textTransform: 'initial',
@@ -19,12 +23,12 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
 
         '& .list-wrapper': {
-            height: 754,
+            height: 600,
             overflow: 'auto',
             boxShadow: theme.shadows[3],
             paddingInline: theme.spacing(1),
 
-            '&::-webkit-scrollbar': {
+            '& *::-webkit-scrollbar': {
                 width: 0
             }
         }
@@ -56,18 +60,8 @@ export const ListSider = (props: Props) => {
             </Box>
 
             <Paper className='list-wrapper'>
-                <ListRow />
-                <ListRow />
-                <ListRow />
-                <ListRow />
-                <ListRow />
-                <ListRow />
-                <ListRow />
-                <ListRow />
-                <ListRow />
-                <ListRow />
-                <ListRow />
-                <ListRow />
+                {listMode === 'online' ? <ListOnline />
+                    : <ListPermission />}
             </Paper>
         </Box>
     )

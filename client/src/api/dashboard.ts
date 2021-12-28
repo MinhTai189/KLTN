@@ -18,6 +18,10 @@ const dashboardApis = {
     const url = '/dashboards/recents';
     return axiosClient.get(url);
   },
+  getListOnlinePermission(): Promise<Response<any>> {
+    const url = '/dashboards/lists';
+    return axiosClient.get(url);
+  },
 };
 
 export default dashboardApis;

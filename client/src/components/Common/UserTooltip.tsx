@@ -121,7 +121,7 @@ const BodyTooltip = (user: User | Owner) => {
                     </Typography>
 
                     <Typography className="rank" component='span'>
-                        {user.rank}
+                        {user.isAdmin ? 'Admin' : user.rank}
                     </Typography>
                 </Box>
             </Box>
@@ -146,7 +146,7 @@ const BodyTooltip = (user: User | Owner) => {
                     </span>
 
                     <Typography className='text'>
-                        {user?.posts} bài đăng
+                        {user?.posts ?? 0} bài đăng
                     </Typography>
                 </li>
                 <li className='item'>
@@ -155,7 +155,7 @@ const BodyTooltip = (user: User | Owner) => {
                     </span>
 
                     <Typography className='text'>
-                        99 yêu thích
+                        {user?.totalLikes ?? 0} yêu thích
                     </Typography>
                 </li>
             </ul>

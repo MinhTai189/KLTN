@@ -1,5 +1,6 @@
 import { Avatar, Box, Table, TableBody, TableCell, TablePagination, TableRow, Theme, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
+import { UserTooltip } from "components/Common"
 import { RecentActivity } from "models"
 import { useState } from "react"
 import { Link } from "react-router-dom"
@@ -41,15 +42,19 @@ const RecentActivitiesTablee = ({ data }: Props) => {
                 <TableBody>
                     {data.slice(currentPage * ROW_PER_PAGE, currentPage * ROW_PER_PAGE + ROW_PER_PAGE)
                         .map(activity => (
-                            <TableRow>
+                            <TableRow hover>
                                 <TableCell
                                     style={{
                                         paddingRight: 4
                                     }}
                                 >
-                                    <Avatar className='avatar'>
-                                        U
-                                    </Avatar>
+                                    <UserTooltip data={activity.owner}>
+                                        <Link to={`/profile/${activity.owner._id}`}>
+                                            <Avatar src={activity.owner.avatarUrl} className='avatar'>
+                                                {activity.owner.name[0]}
+                                            </Avatar>
+                                        </Link>
+                                    </UserTooltip>
                                 </TableCell>
 
                                 <TableCell align="left">
