@@ -36,6 +36,8 @@ const commentRouter = (io) => {
         type: "comment",
       });
       await newReport.save();
+
+      io.sendDashboardStatisticals("approvals");
       return res
         .status(200)
         .json({ success: true, message: "Tố cáo thành công" });
@@ -282,18 +284,28 @@ const commentRouter = (io) => {
             "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/comment_iaa4wh.png",
         });
       if (newComment.reply)
-        add(req.user.id, "Trả lời bình luận", {
-          type: "repComment",
-          commentId: commentId,
-          content: content,
-          postId: postId,
-        });
+        add(
+          req.user.id,
+          "Trả lời bình luận",
+          {
+            type: "repComment",
+            commentId: commentId,
+            content: content,
+            postId: postId,
+          },
+          io
+        );
       else
-        add(req.user.id, "Bình luận bài viết", {
-          type: "createdComment",
-          postId: postId,
-          content: content,
-        });
+        add(
+          req.user.id,
+          "Bình luận bài viết",
+          {
+            type: "createdComment",
+            postId: postId,
+            content: content,
+          },
+          io
+        );
       if (newComment.reply)
         if (JSON.stringify(req.user.id) !== JSON.stringify(userId)) {
           io.notifyToUser(userId, {

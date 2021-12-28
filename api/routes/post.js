@@ -39,6 +39,8 @@ const postRouter = (io) => {
         type: "post",
       });
       await newReport.save();
+
+      io.sendDashboardStatisticals("approvals");
       return res
         .status(200)
         .json({ success: true, message: "Tố cáo thành công" });
@@ -384,6 +386,8 @@ const postRouter = (io) => {
       await subjectModel.findByIdAndUpdate(findPost.subject, {
         $inc: { posts: -1 },
       });
+
+      io.sendDashboardStatisticals("posts");
       return res.status(200).json({
         success: false,
         message: "Đã xóa bài viết thành công",
@@ -593,13 +597,20 @@ const postRouter = (io) => {
           await subjectModel.findByIdAndUpdate(subjectId, {
             $inc: { posts: 1 },
           });
-          addDone(req.user.id, "Đăng bài viết mới", {
-            type: "createdPost",
-            subjectId: subjectId,
-            title: title,
-            content: content,
-            postId: JSON.stringify(newPost._id),
-          });
+          addDone(
+            req.user.id,
+            "Đăng bài viết mới",
+            {
+              type: "createdPost",
+              subjectId: subjectId,
+              title: title,
+              content: content,
+              postId: JSON.stringify(newPost._id),
+            },
+            io
+          );
+
+          io.sendDashboardStatisticals("posts");
         }
 
         return res.status(200).json({
@@ -644,13 +655,20 @@ const postRouter = (io) => {
           await subjectModel.findByIdAndUpdate(subjectId, {
             $inc: { posts: 1 },
           });
-          addDone(req.user.id, "Đăng bài viết mới", {
-            type: "createdPost",
-            subjectId: subjectId,
-            title: title,
-            content: content,
-            postId: JSON.stringify(newPost._id),
-          });
+          addDone(
+            req.user.id,
+            "Đăng bài viết mới",
+            {
+              type: "createdPost",
+              subjectId: subjectId,
+              title: title,
+              content: content,
+              postId: JSON.stringify(newPost._id),
+            },
+            io
+          );
+
+          io.sendDashboardStatisticals("posts");
         }
         return res.status(200).json({
           success: true,
@@ -691,13 +709,20 @@ const postRouter = (io) => {
           await subjectModel.findByIdAndUpdate(subjectId, {
             $inc: { posts: 1 },
           });
-          addDone(req.user.id, "Đăng bài viết mới", {
-            type: "createdPost",
-            subjectId: subjectId,
-            title: title,
-            content: content,
-            postId: JSON.stringify(newPost._id),
-          });
+          addDone(
+            req.user.id,
+            "Đăng bài viết mới",
+            {
+              type: "createdPost",
+              subjectId: subjectId,
+              title: title,
+              content: content,
+              postId: JSON.stringify(newPost._id),
+            },
+            io
+          );
+
+          io.sendDashboardStatisticals("posts");
         }
         return res.status(200).json({
           success: true,

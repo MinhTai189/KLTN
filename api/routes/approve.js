@@ -17,6 +17,7 @@ const router = express.Router();
 const approvalStat = require("../utils/approvalStat");
 const add = require("../utils/done");
 const subject = require("../models/subject");
+const user = require("../models/user");
 const approveRouter = (io) => {
   //working
   router.delete("/motels/:type/:id", verifyToken, async (req, res) => {
@@ -52,6 +53,8 @@ const approveRouter = (io) => {
         await upload.unlink(updateMotel.thumbnail.public_id);
     }
     res.status(200).json({ success: true, message: "Thành công" });
+    io.sendDashboardRecent("motels");
+    io.sendDashboardStatisticals("motels");
   });
   /*
   //working
@@ -251,14 +254,23 @@ const approveRouter = (io) => {
             "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/motel_opx8rh.png",
           ownerId: checkMotel.owner,
         });
+        user.findByIdAndUpdate(newMotel.owner, { $inc: { motels: 1 } });
+
         res.status(200).json({ message: "Duyệt thành công", success: true });
+        io.sendDashboardRecent("motels");
         await unapprovedMotel.findByIdAndDelete(req.params.id);
-        add(newMotel.owner, "Đăng nhà trọ mới", {
-          type: "createdMotel",
-          motelId: newMotel._id,
-          desc: newMotel.desc,
-          name: newMotel.name,
-        });
+        add(
+          newMotel.owner,
+          "Đăng nhà trọ mới",
+          {
+            type: "createdMotel",
+            motelId: newMotel._id,
+            desc: newMotel.desc,
+            name: newMotel.name,
+          },
+          io
+        );
+        io.sendDashboardStatisticals("motels");
         approvalStat.addMotelApproval(
           newMotel._id,
           `"${newMotel.name}" của `,
@@ -350,12 +362,17 @@ const approveRouter = (io) => {
           req.user.id,
           userAtr
         );
-        add(userAtr, "Chỉnh sửa nhà trọ", {
-          type: "updatedMotel",
-          motelId: getNewUpdateMotel._id,
-          edited: edited,
-          name: getNewUpdateMotel.name,
-        });
+        add(
+          userAtr,
+          "Chỉnh sửa nhà trọ",
+          {
+            type: "updatedMotel",
+            motelId: getNewUpdateMotel._id,
+            edited: edited,
+            name: getNewUpdateMotel.name,
+          },
+          io
+        );
       } catch (err) {
         console.log(err);
 
@@ -825,19 +842,26 @@ const approveRouter = (io) => {
         req.user.id,
         approvePost.owner
       );
-      add(approvePost.owner, "Đăng bài viết mới", {
-        type: "createdPost",
-        subjectId: approvePost.subject,
-        title: approvePost.title,
-        content: approvePost.content,
-        postId: JSON.stringify(approvePost._id),
-      });
+      add(
+        approvePost.owner,
+        "Đăng bài viết mới",
+        {
+          type: "createdPost",
+          subjectId: approvePost.subject,
+          title: approvePost.title,
+          content: approvePost.content,
+          postId: JSON.stringify(approvePost._id),
+        },
+        io
+      );
       user.findByIdAndUpdate(approvePost.owner, {
         $inc: { posts: 1 },
       });
       subject.findByIdAndUpdate(approvePost.subject, {
         $inc: { posts: 1 },
       });
+
+      io.sendDashboardStatisticals("posts");
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Lỗi không xác định", success: false });
@@ -1009,12 +1033,17 @@ const approveRouter = (io) => {
         req.user.id,
         findRate.user
       );
-      add(req.user.id, "Đánh giá nhà trọ", {
-        type: "rating",
-        motelId: approveRate._id,
-        content: findRate.content,
-        star: findRate.star,
-      });
+      add(
+        req.user.id,
+        "Đánh giá nhà trọ",
+        {
+          type: "rating",
+          motelId: approveRate._id,
+          content: findRate.content,
+          star: findRate.star,
+        },
+        io
+      );
       if (
         JSON.stringify(
           approveRate.rate.find(

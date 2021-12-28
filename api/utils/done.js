@@ -4,7 +4,7 @@ const post = require("../models/post");
 const subject = require("../models/subject");
 const user = require("../models/user");
 
-const add = async (userId, title, params) => {
+const add = async (userId, title, params, io) => {
   let content = "",
     url = "";
   if (params.type === "createdPost") {
@@ -61,6 +61,7 @@ const add = async (userId, title, params) => {
     { $push: { done: { title, content, createdAt: Date.now(), url: url } } }
   );
   console.log(userDone);
+  io.sendDashboardRecent("activities");
 };
 
 module.exports = add;

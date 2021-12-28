@@ -327,12 +327,17 @@ const motelRouter = (io) => {
         res
           .status(200)
           .json({ success: true, message: "Đã cập nhật thành công" });
-        add(userAtr, "Chỉnh sửa nhà trọ", {
-          type: "updatedMotel",
-          motelId: motelUpdate._id,
-          edited: edited,
-          name: motelUpdate.name,
-        });
+        add(
+          userAtr,
+          "Chỉnh sửa nhà trọ",
+          {
+            type: "updatedMotel",
+            motelId: motelUpdate._id,
+            edited: edited,
+            name: motelUpdate.name,
+          },
+          io
+        );
       } else {
         if (Array.isArray(images)) {
           var removeImages = oldImages.reduce((arr, image) => {
@@ -370,6 +375,7 @@ const motelRouter = (io) => {
 
         await newUserUpdateMotel.save();
 
+        io.sendDashboardStatisticals("approvals");
         res
           .status(200)
           .json({ success: true, message: "Thành công, vui lòng chờ duyệt" });
@@ -447,7 +453,8 @@ const motelRouter = (io) => {
       checkMotel.thumbnail,
       checkMotel.images
     );
-
+    io.sendDashboardStatisticals("motels");
+    io.sendDashboardRecent("motels");
     return res.status(200).json({ success: true, message: "Đã xóa nhà trọ" });
   });
 
@@ -1117,6 +1124,8 @@ const motelRouter = (io) => {
             duplicateUnapprovedCheck.motel;
         if (duplicateCheck.dup == true || duplicateUnapprovedCheck == true) {
           await newMotelUnapproved.save();
+          io.sendDashboardRecent("motels");
+          io.sendDashboardStatisticals("approvals");
           return res.status(200).json({
             success: true,
             message:
@@ -1126,12 +1135,18 @@ const motelRouter = (io) => {
 
         await newMotel.save();
         await plus(newMotel.owner);
-        add(req.user.id, "Đăng nhà trọ mới", {
-          type: "createdMotel",
-          motelId: newMotel._id,
-          desc: desc,
-          name: name,
-        });
+        add(
+          req.user.id,
+          "Đăng nhà trọ mới",
+          {
+            type: "createdMotel",
+            motelId: newMotel._id,
+            desc: desc,
+            name: name,
+          },
+          io
+        );
+
         const getNameUser = await user.findById(req.user.id).select("name");
         io.notifyToAllUser({
           message: `${getNameUser.name} vừa đăng nhà trọ mới, hãy tham khảo ngay`,
@@ -1139,6 +1154,9 @@ const motelRouter = (io) => {
           imageUrl:
             "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/motel_opx8rh.png",
         });
+
+        io.sendDashboardRecent("motels");
+        io.sendDashboardStatisticals("motels");
         return res.status(200).json({
           success: true,
           message: "Thêm thành công",
@@ -1186,6 +1204,9 @@ const motelRouter = (io) => {
           duplicateUnapprovedCheck.dup == true
         ) {
           await newMotel.save();
+
+          io.sendDashboardRecent("motels");
+          io.sendDashboardStatisticals("approvals");
           return res.status(200).json({
             success: true,
             message:
@@ -1193,6 +1214,9 @@ const motelRouter = (io) => {
           });
         }
         await newMotel.save();
+
+        io.sendDashboardStatisticals("approvals");
+        io.sendDashboardRecent("motels");
         return res.status(200).json({
           success: true,
           message: "Thêm thành công, vui lòng chờ duyệt",

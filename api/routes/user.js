@@ -514,6 +514,7 @@ const userRouter = (io) => {
           },
         },
       });
+      io.sendDashboardStatisticals("accounts");
       if (!userDelete)
         return res
           .status(404)

@@ -41,6 +41,8 @@ const rateRouter = (io) => {
       });
       try {
         await newReport.save();
+
+        io.sendDashboardStatisticals("approvals");
         return res.status(200).json({
           success: true,
           message: "Đã báo cáo thành công đánh giá này",
@@ -248,12 +250,17 @@ const rateRouter = (io) => {
               (findMotel.rate.filter((item) => item.valid == true).length + 1),
           });
 
-          add(req.user.id, "Đánh giá nhà trọ", {
-            type: "rating",
-            motelId: req.params.id,
-            content: content,
-            star: star,
-          });
+          add(
+            req.user.id,
+            "Đánh giá nhà trọ",
+            {
+              type: "rating",
+              motelId: req.params.id,
+              content: content,
+              star: star,
+            },
+            io
+          );
         } else
           await motel.findByIdAndUpdate(req.params.id, {
             $push: {
@@ -266,12 +273,14 @@ const rateRouter = (io) => {
               },
             },
           });
-        if (!req.user.isAdmin)
+        if (!req.user.isAdmin) {
+          io.sendDashboardStatisticals("approvals");
           return res.status(200).json({
             success: true,
             message:
               "Đánh giá thành công, hãy chờ người quản trị duyệt thông tin này, xin cảm ơn bạn đã góp ý",
           });
+        }
         if (req.user.isAdmin)
           if (JSON.stringify(req.user.id) !== JSON.stringify(findMotel.owner))
             io.notifyToUser(findMotel.owner, {

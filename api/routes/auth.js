@@ -326,6 +326,7 @@ const authRouter = (io) => {
       });
       await newUser.save();
       res.status(200).json({ success: true, message: "Đăng ký thành công" });
+      io.sendDashboardStatisticals("accounts");
     } catch (err) {
       await unlinkAvatar(avatarUrl);
       res.status(401).json({
@@ -501,6 +502,7 @@ const authRouter = (io) => {
         accessToken: newAccessToken,
       },
     });
+    io.sendDashboardStatisticals("accounts");
   });
 
   router.post("/login-facebook", async (req, res) => {
@@ -591,6 +593,7 @@ const authRouter = (io) => {
       process.env.accessToken,
       { expiresIn: "10m" }
     );
+
     res.status(200).json({
       success: true,
       message: "Đăng ký thành công",
@@ -598,6 +601,7 @@ const authRouter = (io) => {
         accessToken: newAccessToken,
       },
     });
+    io.sendDashboardStatisticals("accounts");
   });
 
   router.post("/login-google", async (req, res) => {
