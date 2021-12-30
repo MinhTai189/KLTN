@@ -1,10 +1,10 @@
 import { useAppDispatch, useAppSelector } from "app/hooks"
+import { SOCKET_EVENT } from "constant/constant"
 import { authActions, selectCurrentUser } from "features/auth/authSlice"
-import { notifyActions } from "features/notification/notifySlice"
 import { Notify } from "models"
 import { useEffect, useRef } from "react"
-import { io, Socket } from 'socket.io-client'
-import { getToken } from "utils"
+import { Socket } from 'socket.io-client'
+import { getToken, socketClient } from "utils"
 
 interface Props {
     children: any
@@ -17,15 +17,15 @@ export const GlobalSocket = ({ children }: Props) => {
 
     useEffect(() => {
         if (currentUser) {
-            socket.current = io('http://localhost:5000', { transports: ['websocket', 'polling', 'flashsocket'] })
+            socket.current = socketClient
 
-            socket.current.on('connection', () => { })
+            socket.current.on(SOCKET_EVENT.connection, () => { })
 
-            socket.current.emit('auth', {
+            socket.current.emit(SOCKET_EVENT.authentication, {
                 accessToken: getToken().accessToken
             })
 
-            socket.current.on('notify', (notify: Notify) => {
+            socket.current.on(SOCKET_EVENT.notification, (notify: Notify) => {
                 dispatch(authActions.setNotify(notify))
             })
         }

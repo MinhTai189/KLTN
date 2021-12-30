@@ -1,20 +1,40 @@
-import { useAppSelector } from "app/hooks"
-import { selectDataDashboard } from "features/dashboard/dashboardSlice"
+import { useAppDispatch, useAppSelector } from "app/hooks"
+import { dashboardActions, selectDataDashboard } from "features/dashboard/dashboardSlice"
 import { FixedSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer"
 import ListRow from './ListRow'
 import { Box } from "@material-ui/core";
+import { useEffect, useRef } from "react";
+import { Socket } from "socket.io-client";
+import { socketClient } from "utils";
+import { SOCKET_EVENT } from "constant/constant";
 
 interface Props {
 
 }
 
 const ListOnline = (props: Props) => {
+    const socket = useRef<Socket>()
+    const dispatch = useAppDispatch()
     const dashboardData: any = useAppSelector(selectDataDashboard)
 
     const Row = (({ index, style }: { index: number; style: any }) => (
         <ListRow style={style} user={dashboardData.list.onlines[index]} isOnline />
     ))
+
+    useEffect(() => {
+        socket.current = socketClient
+
+        const listener = (data: any) => {
+            dispatch(dashboardActions.setListOnline(data))
+        }
+
+        socket.current.on(SOCKET_EVENT.online, listener)
+
+        return () => {
+            socket.current?.off(SOCKET_EVENT.online, listener)
+        }
+    }, [])
 
     return (
         <Box style={{
@@ -25,7 +45,7 @@ const ListOnline = (props: Props) => {
                 {({ width, height }: { width: any, height: any }) => (
                     <List
                         itemCount={dashboardData.list.onlines.length}
-                        itemSize={40}
+                        itemSize={50}
                         height={height}
                         width={width}
                     >

@@ -1,6 +1,6 @@
 import { Box, makeStyles, Theme } from '@material-ui/core';
 import { RatioPost, Size } from 'models';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 
 interface Props {
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const DoughnutChart = ({ size, ratioPost }: Props) => {
+export const DoughnutChart = memo(({ size, ratioPost }: Props) => {
     const classes = useStyles()
 
     const data = useMemo(() => {
@@ -62,4 +62,4 @@ export const DoughnutChart = ({ size, ratioPost }: Props) => {
             {data && <Doughnut data={data} />}
         </Box>
     )
-}
+})

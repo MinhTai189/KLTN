@@ -1,7 +1,7 @@
 import { makeStyles, Paper, Theme, Typography } from '@material-ui/core';
 import { Charts } from 'features/dashboard/dashboardSlice';
 import { Chart } from 'models';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { Line } from 'react-chartjs-2';
 
 interface Props {
@@ -78,7 +78,7 @@ const calcDataLine = (columns: Columns[], charts: Chart[]) => {
     })
 }
 
-export const LineChart = ({ data }: Props) => {
+export const LineChart = memo(({ data }: Props) => {
     const classes = useStyles()
 
     const createDataChart = useMemo(() => {
@@ -127,4 +127,4 @@ export const LineChart = ({ data }: Props) => {
             {createDataChart && <Line data={createDataChart} />}
         </Paper>
     )
-}
+})

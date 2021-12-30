@@ -1,6 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import { Chart, RatioPost, RecentData, Size, Statistic, User } from 'models';
+import {
+  Chart,
+  Motel,
+  RatioPost,
+  RecentActivity,
+  RecentData,
+  Size,
+  Statistic,
+  User,
+} from 'models';
 
 export interface Charts {
   registerdAccount: Chart[];
@@ -82,6 +91,15 @@ const dashboardSlice = createSlice({
     },
     setList(state, action: PayloadAction<DashboardList>) {
       state.data.list = action.payload;
+    },
+    setListOnline(state, action: PayloadAction<User[]>) {
+      state.data.list.onlines = action.payload;
+    },
+    setRecentActivities(state, action: PayloadAction<RecentActivity[]>) {
+      state.data.recents.activities = action.payload;
+    },
+    setRecentMotel(state, action: PayloadAction<Motel[]>) {
+      state.data.recents.motels = action.payload;
     },
   },
 });

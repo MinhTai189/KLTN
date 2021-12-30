@@ -5,9 +5,12 @@ import {
     ArcElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, LineElement, PointElement, Title,
     Tooltip
 } from 'chart.js';
+import { SOCKET_EVENT } from 'constant/constant';
 import { DoughnutChart, LineChart, ListSider, RecentActivities, Statistics } from 'features/dashboard/components';
 import { dashboardActions, selectDataDashboard } from 'features/dashboard/dashboardSlice';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { Socket } from 'socket.io-client';
+import { socketClient } from 'utils';
 
 interface Props {
 
@@ -39,11 +42,37 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const DashboardPage = (props: Props) => {
     const classes = useStyles()
+    const socket = useRef<Socket>()
+
     const dispatch = useAppDispatch()
     const dashboardData = useAppSelector(selectDataDashboard)
 
     useEffect(() => {
+        socket.current = socketClient
+
+        const listenerMotel = (data: any) => {
+            dispatch(dashboardActions.setRecentMotel(data))
+        }
+
+        const listenerActivities = (data: any) => {
+            dispatch(dashboardActions.setRecentActivities(data))
+        }
+
+        const listenerStatistics = (data: any) => {
+            dispatch(dashboardActions.setStatistic(data))
+        }
+
+        socket.current.on(SOCKET_EVENT.motelActivities, listenerMotel)
+        socket.current.on(SOCKET_EVENT.activities, listenerActivities)
+        socket.current.on(SOCKET_EVENT.motelActivities, listenerStatistics)
+
         dispatch(dashboardActions.getData())
+
+        return () => {
+            socket.current?.off(SOCKET_EVENT.motelActivities, listenerMotel)
+            socket.current?.off(SOCKET_EVENT.activities, listenerActivities)
+            socket.current?.off(SOCKET_EVENT.motelActivities, listenerStatistics)
+        }
     }, [])
 
     return (

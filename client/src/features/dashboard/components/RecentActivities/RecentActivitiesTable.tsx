@@ -42,7 +42,7 @@ const RecentActivitiesTablee = ({ data }: Props) => {
                 <TableBody>
                     {data.slice(currentPage * ROW_PER_PAGE, currentPage * ROW_PER_PAGE + ROW_PER_PAGE)
                         .map(activity => (
-                            <TableRow hover>
+                            <TableRow key={activity._id} hover>
                                 <TableCell
                                     style={{
                                         paddingRight: 4

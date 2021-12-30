@@ -1,12 +1,7 @@
 import { Box, Button, ButtonGroup, makeStyles, Paper, Theme } from '@material-ui/core'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import ListOnline from './ListOnline'
 import ListPermission from './ListPermission'
-import ListRow from './ListRow'
-
-interface Props {
-
-}
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -35,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const ListSider = (props: Props) => {
+export const ListSider = memo(() => {
     const classes = useStyles()
     const [listMode, setListMode] = useState('online')
 
@@ -65,4 +60,4 @@ export const ListSider = (props: Props) => {
             </Paper>
         </Box>
     )
-}
+})
