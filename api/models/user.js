@@ -86,7 +86,7 @@ const UserSchema = new Schema(
       default: false,
     },
     likes: {
-      type: [{ type: mongoose.Schema.Types.ObjectId }],
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
     },
     done: {
       type: [
@@ -102,6 +102,17 @@ const UserSchema = new Schema(
     },
   },
   { timestamps: true }
+);
+UserSchema.virtual(
+  "usersLike",
+  {
+    ref: "user",
+    localField: "_id",
+    foreignField: "likes",
+
+    justOne: false,
+  },
+  { toJSON: { virtuals: true } }
 );
 
 module.exports = mongoose.model("user", UserSchema);

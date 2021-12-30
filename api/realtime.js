@@ -48,9 +48,11 @@ module.exports.listen = function socket(server) {
       const findUserDisconnect = io.users.find((item) => {
         return item.socketId === socket.id;
       });
-      console.log(findUserDisconnect);
-      if (typeof findUserDisconnect !== "undefined")
+
+      if (typeof findUserDisconnect !== "undefined") {
         listOnline.pullUserOffline(findUserDisconnect.id);
+        io.to("important").emit("ononlines", listOnline.getUsers(1, -1).list);
+      }
       io.users = io.users.filter((user) => user.socketId !== socket.id);
       console.log(socket.id + " disconnected");
     });
@@ -85,7 +87,8 @@ module.exports.listen = function socket(server) {
       avatarUrl: getUser.avatarUrl.url,
     };
     listOnline.addUserOnline(addUser);
-    io.to("important").emit("ononlines", listOnline.getUsers(1, -1));
+
+    io.to("important").emit("ononlines", listOnline.getUsers(1, -1).list);
   };
 
   io.notifyToUser = async (userId, data) => {
