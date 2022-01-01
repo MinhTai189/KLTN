@@ -5,7 +5,7 @@ import districtApi from 'api/district'
 import schoolApi from 'api/school'
 import { ButtonCustom } from 'components/Common/Button'
 import { FileInputField } from 'components/FormFields/FileInputField'
-import { PATTERN_USERNAME } from 'constant/constant'
+import { PATTERN_USERNAME, VALIDATOR_IMAGE } from 'constant/constant'
 import { useProvince } from 'hooks'
 import { District, FieldOption, ListResponse, Province, School } from 'models'
 import React, { ReactElement, useState } from 'react'
@@ -180,7 +180,7 @@ function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactE
 
                             <SelectField label='Trường*' name='school' control={control} disabled={optionsSchool.length === 0 ? true : false} options={optionsSchool} />
 
-                            <FileInputField name='avatarUrl' onChange={onChange} label='Ảnh đại diện' accept='.png, .jpg, .jpeg' error={errAvatar} />
+                            <FileInputField name='avatarUrl' onChange={onChange} label='Ảnh đại diện' accept={VALIDATOR_IMAGE.accept} error={errAvatar} />
                         </Grid>
                     </Grid>
 

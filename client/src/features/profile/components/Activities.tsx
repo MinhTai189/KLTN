@@ -2,7 +2,7 @@ import { Box, Step, StepContent, StepLabel, Stepper, Theme } from "@material-ui/
 import { makeStyles } from "@material-ui/styles"
 import { Activity } from "models"
 import { useEffect, useState } from "react"
-import { ActivitiesInYears } from "./models/Activity"
+import { ActivitiesInYears } from "../models/Activity"
 import StepActivity from "./StepActivity"
 
 interface Props {

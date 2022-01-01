@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { DropDownInfor } from '../Home';
 import { ButtonCustom } from './Button';
 import { Link, NavLink } from 'react-router-dom'
-import { Notifications } from '@material-ui/icons';
+import { Forum, Notifications } from '@material-ui/icons';
 import { NotifDropDown } from 'features/notification/components';
 import { DetectClickOutsize } from './DetectClickOutsize';
 
@@ -210,6 +210,18 @@ export const Header = ({ isChangeNav }: Props) => {
 
                 {currentUser ?
                     <Box className={classes.ctaWrapper}>
+                        <Box className='badge' component='span'>
+                            <Link to='/chats'>
+                                <Badge
+                                    badgeContent={88}
+                                    color="primary"
+                                    showZero
+                                >
+                                    <Forum />
+                                </Badge>
+                            </Link>
+                        </Box>
+
                         <Box className='badge' component='span'>
                             <Badge
                                 badgeContent={amountNotif()}

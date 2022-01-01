@@ -7,6 +7,7 @@ import AddMotelPage from 'pages/AddMotelPage';
 import { lazy, Suspense, useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-image-gallery/styles/css/image-gallery.css'
 
 const HomePage = lazy(() => import('pages/HomePage'))
 const MotelDetailPage = lazy(() => import('pages/MotelDetailPage'))
@@ -16,6 +17,7 @@ const PostPage = lazy(() => import('pages/PostPage'))
 const CreateReviewPage = lazy(() => import('pages/CreateReviewPage'))
 const NotificationPage = lazy(() => import('pages/NotificationPage'))
 const PersonalPage = lazy(() => import('pages/PersonalPage'))
+const ChatPage = lazy(() => import('pages/ChatPage'))
 const Auth = lazy(() => import('features/auth'))
 const AdminPage = lazy(() => import('pages/AdminPage'))
 const NotFound = lazy(() => import('components/Common'))
@@ -70,6 +72,10 @@ const App = () => {
             <UserRoute path='/notifications'>
               <NotificationPage />
             </UserRoute>
+
+            <Route path='/chats'>
+              <ChatPage />
+            </Route>
 
             <Route path="/auth">
               <Auth />

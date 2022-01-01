@@ -16,3 +16,4 @@ export * from './GlobalSocket';
 export * from './LoadingAdmin';
 export * from './AvatarWithBadge';
 export * from './UserTooltip';
+export * from './ImageGallery';
