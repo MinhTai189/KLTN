@@ -20,8 +20,9 @@ const approveRouter = require("./routes/approve")(socketio);
 const feedBackRouter = require("./routes/feedBack")(socketio);
 const notifyRouter = require("./routes/notify")(socketio);
 const dashboardRouter = require("./routes/dashboard")(socketio);
-
 const subjectRouter = require("./routes/subject");
+const chatRouter = require("./routes/chat")(socketio);
+
 const fileUpload = require("express-fileupload");
 const Mongoose = require("mongoose");
 
@@ -44,9 +45,12 @@ const connectDB = async () => {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         //  useFindAndModify: false,
+      },
+      (err) => {
+        if (err) console.log(err);
+        else console.log("db ok");
       }
     );
-    console.log("db ok");
   } catch (error) {
     console.log(error);
   }
@@ -76,6 +80,7 @@ app.use("/api/motels/rates", rateRouter);
 app.use("/api/motels", motelRouter);
 app.use("/api/notify", notifyRouter);
 app.use("/api/dashboards", dashboardRouter);
+app.use("/api/chats", chatRouter);
 
 // const user = require("./models/user");
 // const y = async () => {
