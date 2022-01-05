@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form"
 import { mapOptions } from 'utils'
 import * as yup from 'yup'
 import { checkSizeImg } from 'utils'
+import { VALIDATOR_IMAGE } from 'constant/constant'
 
 interface Props {
     loading: boolean
@@ -202,7 +203,7 @@ export const ModalBodyEdit = ({ loading, updateUserData, handleSubmitEdit }: Pro
                     <CameraAlt />
                 </Box>
 
-                <input type="file" className='file-input' title='' accept='.png, .jpg, .jpeg' onChange={handleSelectAvatar} />
+                <input type="file" className='file-input' accept={VALIDATOR_IMAGE.accept} onChange={handleSelectAvatar} />
             </Box>
 
             {showAvatarErr && <Alert severity='error'>

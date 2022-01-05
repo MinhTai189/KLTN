@@ -16,3 +16,7 @@ export const SOCKET_EVENT = {
   activities: 'activities',
   statisticals: 'statisticals',
 };
+
+export const VALIDATOR_IMAGE = {
+  accept: '.png, .jpg, .jpeg',
+};
