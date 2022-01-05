@@ -19,7 +19,8 @@
     "homepage": "https://github.com/MinhTai189/KLTN#readme",
     "dependencies": {
         "argon2": "^0.28.2",
-        "axios": "^0.21.1",
+        "axios": "^0.21.4",
+        "cheerio": "^1.0.0-rc.10",
         "cloudinary": "^1.26.3",
         "cors": "^2.8.5",
         "dotenv": "^10.0.0",
@@ -28,7 +29,8 @@
         "googleapis": "^85.0.0",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^6.0.2",
-        "node-fetch": "^3.0.0",
+        "needle": "^3.0.0",
+        "node-fetch": "^3.1.0",
         "nodemailer": "^6.6.3",
         "socket.io": "^4.4.0",
         "uuid": "^8.3.2"

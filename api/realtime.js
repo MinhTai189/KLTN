@@ -10,6 +10,15 @@ const post = require("./models/post");
 const userUpdateMotel = require("./models/user-update-motel");
 const report = require("./models/report");
 const comment = require("./models/comment");
+const groupChat = require("./models/groupChat");
+const axios = require("axios");
+const cheerio = require("cheerio");
+const url = require("url");
+function linkify(text) {
+  var urlRegex =
+    /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
+  return text.match(urlRegex);
+}
 
 module.exports.listen = function socket(server) {
   const io = socketio(server);
@@ -37,6 +46,26 @@ module.exports.listen = function socket(server) {
               status: 200,
               success: true,
             });
+            groupChat
+              .find({ members: data.id })
+              .select("_id")
+              .then((res) => {
+                res.forEach((item) => {
+                  socket.join(JSON.stringify(item._id));
+                  io.to(JSON.stringify(item._id)).emit("ononlines-chat", {
+                    list: listOnline.getUsers(1, -1).list.filter((user) => {
+                      return item.members.some(
+                        (member) =>
+                          JSON.stringify(member) === JSON.stringify(user._id)
+                      );
+                    }),
+                    groupId: JSON.stringify(item._id),
+                  });
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+              });
             if (data.credit > 300 || data.isAdmin == true)
               socket.join("important");
             addUser(data.id);
@@ -44,6 +73,152 @@ module.exports.listen = function socket(server) {
         }
       );
     });
+
+    socket.on("send-message", async (data) => {
+      /*
+      data:{
+        id: group's id,
+        text:"",
+        type ="text" or "image" or "video" or "gif",
+        dataUrl:{ url,public_id } hoặc dataUrl:{ url } đối với gif;
+
+        nếu trong text co link, tự động kiểu sẽ là link và show link đầu tiên
+      }
+      */
+      const getUserAuth = io.users.find((item) => {
+        return item.socketId === socket.id;
+      });
+      if (!getUserAuth) {
+        console.log("Chưa xác thực");
+        return;
+      }
+
+      let type = data.type;
+      let dataUrl = data.dataUrl;
+      const tolinkify = linkify(data.text);
+
+      if (tolinkify) {
+        const getLink = tolinkify[0];
+
+        const html = await axios.get(getLink);
+
+        const $ = cheerio.load(html.data);
+        const metaTagData = {
+          url: getLink,
+          domain: url.parse(getLink).hostname,
+          title: $('meta[name="title"]').attr("content"),
+          img: $('meta[name="image"]').attr("content"),
+          description: $('meta[name="description"]').attr("content"),
+        };
+        if (!metaTagData.title)
+          metaTagData.title = $('meta[property="og:title"]').attr("content");
+        if (!metaTagData.img)
+          metaTagData.img = $('meta[property="og:image"]').attr("content");
+        if (!metaTagData.description)
+          metaTagData.description = $('meta[property="og:description"]').attr(
+            "content"
+          );
+        dataUrl = metaTagData;
+        console.log(metaTagData);
+        type = "link";
+      }
+      groupChat
+        .findByIdAndUpdate(
+          data.id,
+          {
+            $push: {
+              messages: {
+                owner: getUserAuth.id,
+                type: type,
+                content: {
+                  dataUrl: dataUrl,
+                  text: data.text,
+                },
+                seen: [getUserAuth.id],
+              },
+            },
+          },
+          { new: true }
+        )
+        .populate(
+          "messages.owner",
+          "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+        )
+        .then((res) => {
+          if (res) {
+            const newMessage = res.messages[res.messages.length - 1];
+            const content = newMessage.content;
+            if (content.dataUrl) {
+              let dataUrl = content.dataUrl;
+              if (
+                newMessage.type === "image" ||
+                newMessage.type === "gif" ||
+                newMessage.type === "video"
+              )
+                dataUrl = content.dataUrl.url;
+              io.in(JSON.stringify(res._id)).emit("new-message", {
+                groupId: JSON.stringify(res._id),
+                message: {
+                  ...newMessage._doc,
+                  status: false,
+                  content: { ...newMessage.content._doc, dataUrl },
+                  owner: {
+                    ...newMessage.owner._doc,
+                    avatarUrl: newMessage.owner.avatarUrl.url,
+                    totalLikes: newMessage.owner.likes.length,
+                  },
+                },
+              });
+            } else {
+              io.in(JSON.stringify(res._id)).emit("new-message", {
+                groupId: JSON.stringify(res._id),
+                message: {
+                  ...newMessage._doc,
+                  status: false,
+                  owner: {
+                    ...newMessage.owner._doc,
+                    avatarUrl: newMessage.owner.avatarUrl.url,
+                    totalLikes: newMessage.owner.likes.length,
+                  },
+                },
+              });
+            }
+          }
+        });
+    });
+    socket.on("seen-all", (data) => {
+      /*
+      data:{
+        id: groupId,
+      }
+      */
+      const getUserAuth = io.users.find((item) => {
+        return item.socketId === socket.id;
+      });
+      if (!getUserAuth) {
+        console.log("Chua xac thuc");
+        return;
+      }
+      groupChat
+        .findOneAndUpdate(
+          data.id,
+          {
+            messages: {
+              $push: {
+                seen: getUserAuth.id,
+              },
+            },
+          },
+          { new: true }
+        )
+        .then((res) => {
+          io.to(JSON.stringify(res._id)).emit("seen-all", {
+            groupId: JSON.stringify(res._id),
+            userId: getUserAuth.id,
+          });
+        });
+    });
+
     socket.on("disconnect", () => {
       const findUserDisconnect = io.users.find((item) => {
         return item.socketId === socket.id;
@@ -52,6 +227,22 @@ module.exports.listen = function socket(server) {
       if (typeof findUserDisconnect !== "undefined") {
         listOnline.pullUserOffline(findUserDisconnect.id);
         io.to("important").emit("ononlines", listOnline.getUsers(1, -1).list);
+        groupChat
+          .find({ members: findUserDisconnect.id })
+          .select("_id members")
+          .then((res) => {
+            res.forEach((group) => {
+              io.in(JSON.stringify(group._id)).emit("ononlines-chat", {
+                list: listOnline.getUsers(1, -1).list.filter((user) => {
+                  return group.members.some(
+                    (member) =>
+                      JSON.stringify(member) === JSON.stringify(user._id)
+                  );
+                }),
+                groupId: JSON.stringify(group._id),
+              });
+            });
+          });
       }
       io.users = io.users.filter((user) => user.socketId !== socket.id);
       console.log(socket.id + " disconnected");
@@ -75,6 +266,7 @@ module.exports.listen = function socket(server) {
 
     io.sendDashboardStatisticals("access");
   };
+
   const addUser = async (id) => {
     const getUser = await user
       .findById(id)
@@ -89,6 +281,21 @@ module.exports.listen = function socket(server) {
     listOnline.addUserOnline(addUser);
 
     io.to("important").emit("ononlines", listOnline.getUsers(1, -1).list);
+  };
+
+  io.membersOnChange = async (id, msg, group) => {
+    io.in(JSON.stringify(id)).emit("new-message", {
+      groupId: id,
+      message: msg,
+    });
+    io.in(JSON.stringify(id)).emit("ononlines-chat", {
+      list: listOnline.getUsers(1, -1).list.filter((user) => {
+        return group.members.some(
+          (member) => JSON.stringify(member) === JSON.stringify(user._id)
+        );
+      }),
+      groupId: JSON.stringify(group._id),
+    });
   };
 
   io.notifyToUser = async (userId, data) => {
@@ -134,6 +341,18 @@ module.exports.listen = function socket(server) {
       { $pop: { notify: -1 } }
     );
     io.emit("notify", { ...notify });
+  };
+
+  io.joinRoomIfOnonline = async (userId, groupId) => {
+    const getUserAuth = io.users.find((item) => {
+      return JSON.stringify(item.id) === JSON.stringify(userId);
+    });
+    if (!getUserAuth) {
+      console.log("Chua xac thuc");
+      return;
+    } else {
+      io.sockets.connected[getUserAuth.socketId].join(groupId);
+    }
   };
   io.auth = (accessToken) => {
     JWT.verify(accessToken, process.env.accessToken, async (err, data) => {

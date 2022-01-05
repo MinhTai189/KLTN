@@ -160,54 +160,115 @@ const authRouter = (io) => {
       // thiết lập đối tượng, nội dung gửi mail
       from: "Nhà trọ Sinh viên",
       to: User.email,
-      subject: "Forgot Password",
+      subject: "Quên mật khẩu",
       text: "",
-      html: `<div style="background-color:#c0392b;height: 500px;color: white;display:flex;" >
-    <div style="margin:auto">
-      <div style="
-      width:5%;
-      display: table-cell;
-      vertical-align:middle;
-      text-align: center;
-      height: 80px;
-      font-size: 20px;
-      font-weight: bold;
-      background: #27ae60;
-      border-radius: 10px 10px 0 0;">Lấy lại mật khẩu
-    </div>
-      <div style="padding: 30px;
-      color: #666666;
-      height: auto;
-      margin:auto;
-      font-size: 20px;
-      box-sizing: border-box;
-      background: white;
-      border-radius: 0px 0px 10px 10px;">
-        Gửi ${User.name}
-        <br/>
-        <br/>
-        Chúng tôi vừa nhận được yêu cầu hợp lệ của bạn về việc tạo lại mật khẩu mới.
-        <br/>
-        <br/>
-        Để tạo lại mật khẩu, vui lòng click vào liên kết bên dưới
-        <br/>
-        <br/>
-        <b style="color: red">Lưu ý: không chia sẻ liên kết này với bất kỳ ai!</b>
-        <a style="display: inline-block;text-decoration: none;
-        height: 40px;
-        line-height: 40px;
-        border: none;
-        border-radius: 5px;
-        padding: 5px 15px;
-        background: #b5c0fd;
-        margin-right: 10px;
-        border:2px #00189e solid;
-        color: #00189e;
-        font-size: 18px;" href="${process.env.ORIGIN}/auth/reset-password/${forgotPasswordToken}"> Lấy lại mật khẩu
-      </a>
+      html: `<div
+      style="
+        width: 100%;
+        max-width: 650px;
+        margin: 0 auto;
+        outline: 2px solid #ccc;
+        padding-bottom: 4px;
+      "
+    >
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          align-items: center;
+          padding: 16px 8px;
+        "
+      >
+        <img
+          style="width: 50px; height: 50px"
+          src="https://res.cloudinary.com/dpregsdt9/image/upload/v1641390438/logo_1_h8e2hu.png"
+        />
+
+        <h1
+          style="
+            font-size: 22px;
+            color: #2196f3;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          "
+        >
+          Quên mật khẩu
+        </h1>
       </div>
-      </div></div>`,
+
+      <div
+        style="padding: 24px 16px; font-size: 18px; border-top: 1px solid #ccc"
+      >
+        <p>Chào ${User.name},</p>
+
+        <p>
+          Bạn đã thực hiện yêu cầu lấy lại mật khẩu của tài khoản đã liên kết
+          với địa chỉ mail:  ${email}
+        </p>
+
+        <p>
+          Nếu như không phải yêu cầu đến từ phía của bạn. Hãy bỏ qua email này!
+        </p>
+
+        <p>
+          Bấm vào nút "Lấy lại mật khẩu" bên dưới để thực hiện lấy lại mật khẩu:
+        </p>
+
+        <button
+          style="
+            background: none;
+            outline: none;
+            background: #2196f3;
+            border: none;
+            width: 150px;
+            height: 50px;
+            border-radius: 24px;
+            margin-left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.45);
+            margin-block: 16px;
+          "
+        >
+          <a
+            style="
+              color: #fff;
+              text-decoration: none;
+              font-size: 16px;
+              display: block;
+              width: 100%;
+              height: 100%;
+              line-height: 50px;
+            "
+            href="google.com"
+            >Lấy lại mật khẩu</a
+          >
+        </button>
+
+        <p>
+          Di chuyển đến đường dẫn sau nếu không thể điều hướng tự động:
+          <a style="word-break: break-all; font-size: 16px" href="goolge.com"
+            > ${process.env.ORIGIN}/auth/reset-password/${forgotPasswordToken}</a
+          >
+        </p>
+
+        <small
+          style="
+            text-align: center;
+            width: 100%;
+            display: block;
+            font-size: 14px;
+            margin-top: 32px;
+            font-style: italic;
+          "
+          >Email này chỉ có hiệu lực trong vòng 10 phút, không được chia sẻ nội
+          dung mail này với bất kỳ ai khác!</small
+        >
+      </div>
+    </div>`,
     };
+
     transporter.sendMail(mainOptions, function (err, info) {
       //tiến hành gửi mail
       if (err) {

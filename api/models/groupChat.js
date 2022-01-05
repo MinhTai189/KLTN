@@ -17,25 +17,38 @@ const groupChatSchema = new Schema(
       ],
       required: true,
     },
+    type: {
+      type: String,
+      enum: ["private", "group"],
+      required: true,
+      default: "group",
+    },
     messages: {
       type: [
         {
+          type: {
+            type: String,
+            required: true,
+            enum: [
+              // "add-member",
+              // "leave-group",
+              "text",
+              "image",
+              "video",
+              // "created-group",
+              "gif",
+              "link",
+            ],
+          },
           content: {
-            type: {
-              type: {
-                type: String,
-                required: true,
-              },
-              url: {
-                type: String,
-                required: false,
-                default: "",
-              },
-              text: {
-                type: String,
-                required: false,
-                default: "",
-              },
+            dataUrl: {
+              type: Object,
+              required: false,
+            },
+            text: {
+              type: String,
+              required: false,
+              default: "",
             },
           },
           owner: {
@@ -44,7 +57,7 @@ const groupChatSchema = new Schema(
           },
           seen: {
             type: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
-            default: false,
+            default: [],
           },
           createdAt: { required: true, default: new Date(), type: Date },
         },
