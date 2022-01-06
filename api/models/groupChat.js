@@ -29,16 +29,7 @@ const groupChatSchema = new Schema(
           type: {
             type: String,
             required: true,
-            enum: [
-              // "add-member",
-              // "leave-group",
-              "text",
-              "image",
-              "video",
-              // "created-group",
-              "gif",
-              "link",
-            ],
+            enum: ["text", "image", "video", "link"],
           },
           content: {
             dataUrl: {

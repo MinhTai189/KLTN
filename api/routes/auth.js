@@ -15,6 +15,7 @@ const client = new OAuth2(process.env.SERVICE_CLIENT_ID);
 const removeVietnameseTones = require("../utils/removeVietnameseTones");
 const axios = require("axios").default;
 const verifyToken = require("../middleware/verifyToken");
+const groupChat = require("../models/groupChat");
 const authRouter = (io) => {
   // router.get("/", async (req, res) => {
   //   const users = await user
@@ -449,8 +450,10 @@ const authRouter = (io) => {
 
       checkUser.refreshToken = newRefreshToken;
       await checkUser.save();
-
-      const data = { ...checkUser._doc, avatarUrl: url };
+      const groupPrivate = await groupChat
+        .find({ members: checkUser._id, type: "private" })
+        .select("-messages");
+      const data = { ...checkUser._doc, avatarUrl: url, groupPrivate };
       res.status(200).json({
         success: true,
         message: "Đăng nhập thành công",

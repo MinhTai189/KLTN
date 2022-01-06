@@ -52,8 +52,20 @@ const chatRouter = (io) => {
 
     let responseGroupsChat = [
       ...getAllGroup.map((item) => {
+        let name = item.name;
+        if (item.type === "private") {
+          if (
+            item.members.find(
+              (mem) => JSON.stringify(mem._id) !== JSON.stringify(req.user.id)
+            )
+          )
+            name = item.members.find(
+              (mem) => JSON.stringify(mem._id) !== JSON.stringify(req.user.id)
+            ).name;
+        }
         return {
           ...item._doc,
+          name: name,
           members: item.members.map((member) => {
             return {
               ...member._doc,
@@ -61,6 +73,8 @@ const chatRouter = (io) => {
               totalLikes: member.likes.length,
             };
           }),
+          totalMembers: item.members.length,
+          lastMessage: item.messages[item.messages.length - 1].createdAt,
           messages: item.messages.map((message) => {
             const status = message.length > 1;
             if (message.dataUrl) {
@@ -108,7 +122,8 @@ const chatRouter = (io) => {
       .json({ data: responseGroupsChat.slice(0, limit), success: true });
   });
   router.get("/groups/:groupId", verifyToken, async (req, res) => {
-    const groupId = req.query.groupId;
+    const groupId = req.params.groupId;
+    console.log(groupId);
     const getGroup = await groupChat
       .findOne({
         _id: groupId,
@@ -126,10 +141,22 @@ const chatRouter = (io) => {
       return res
         .status(400)
         .json({ message: "Bạn không tham gia nhóm này", success: false });
+    let name = getGroup.name;
+    if (getGroup.type === "private") {
+      if (
+        getGroup.members.find(
+          (mem) => JSON.stringify(mem._id) !== JSON.stringify(req.user.id)
+        )
+      )
+        name = getGroup.members.find(
+          (mem) => JSON.stringify(mem._id) !== JSON.stringify(req.user.id)
+        ).name;
+    }
     const responseGroup = {
       ...getGroup._doc,
+      name: name,
       members: [
-        ...getGroup.members._doc.map((member) => {
+        ...getGroup.members.map((member) => {
           return {
             ...member._doc,
             avatarUrl: member.avatarUrl.url,
@@ -137,8 +164,9 @@ const chatRouter = (io) => {
           };
         }),
       ],
+      totalMembers: getGroup.members.length,
       messages: [
-        ...getGroup.messages._doc.map((message) => {
+        ...getGroup.messages.map((message) => {
           const status = message.seen.length > 1;
           if (message.dataUrl) {
             let dataUrl = message.dataUrl;
@@ -180,7 +208,7 @@ const chatRouter = (io) => {
     res.status(200).json({ data: responseGroup, success: true });
   });
   router.get("/groups/messages/:groupId", verifyToken, async (req, res) => {
-    const groupId = req.query.groupId;
+    const groupId = req.params.groupId;
     const getGroup = await groupChat
       .findOne({
         _id: groupId,
@@ -196,7 +224,7 @@ const chatRouter = (io) => {
         .json({ message: "Bạn không tham gia nhóm này", success: false });
 
     const responseMessages = [
-      ...getGroup.messages._doc.map((message) => {
+      ...getGroup.messages.map((message) => {
         const status = message.seen.length > 1;
         if (message.dataUrl) {
           let dataUrl = message.dataUrl;
