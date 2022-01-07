@@ -42,6 +42,10 @@ export const motelApi = {
     const url = `/motels/room/${data.motelId}/${data._id}`;
     return axiosClient.patch(url, data);
   },
+  removeRoom: (motelId: string, roomId: string): Promise<any> => {
+    const url = `/motels/room/${motelId}/${roomId}`;
+    return axiosClient.delete(url);
+  },
   getListSchoolDropdown: (): Promise<ListResponse<DropdownList>> => {
     const url = '/motels/schools';
     return axiosClient.get(url);

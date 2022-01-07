@@ -1,16 +1,47 @@
 import { CheckCircleFilled, DeleteFilled, EditFilled } from '@ant-design/icons'
 import { Cancel } from '@material-ui/icons'
 import { Button, Popconfirm, Rate, Space, Table, TablePaginationConfig, Tooltip } from 'antd'
+import { motelApi } from 'api/motel'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { MotelDataTable } from 'models'
 import { useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
 import { roundMark } from 'utils'
+import { mapPriceMonth } from 'utils/getPriceMotel'
 import { motelActions, selectDataMotel, selectFilterMotel, selectLoadingMotel, selectPaginationMotel } from '../../motelSlice'
 
 interface Props {
     handleRemove: (record: MotelDataTable) => void;
     onClickEditMotel: (record: MotelDataTable) => void
 }
+
+interface Optional {
+    wifi: string;
+    ml: string;
+    gac: string;
+    nx: string;
+    camera: string;
+    quat: string;
+    tl: string;
+    giuong: string;
+    gt: string;
+    cc: string;
+    dcvs: string;
+}
+
+const additionalString: Optional = {
+    wifi: 'Wifi',
+    ml: 'Máy lạnh',
+    gac: 'Gác',
+    nx: 'Nhà xe',
+    camera: 'Camera',
+    quat: 'Quạt',
+    tl: 'Trên lầu',
+    giuong: 'Giường',
+    gt: 'Giường tầng',
+    cc: 'Chung chủ',
+    dcvs: 'Dụng cụ vệ sinh',
+};
 
 export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
     const motelData = useAppSelector(selectDataMotel)
@@ -28,6 +59,33 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
             const number = index + 1;
             const mark: number[] = roundMark(motel.mark as any) || [0, 0]
 
+            const roomDataTable = motel.room.map((room, index) => {
+                let utilities = ''
+                let idx = 0
+
+                Object.entries(room.optional).forEach(([key, value]: any) => {
+                    if (!!value) {
+                        if (idx !== 0) utilities += ', ';
+                        idx++
+
+                        //@ts-ignore
+                        utilities += additionalString[key];
+                    }
+                });
+
+                return {
+                    id: room._id,
+                    key: index,
+                    room: `Phòng ${index + 1}`,
+                    price: mapPriceMonth(room.price),
+                    empty: room.remain,
+                    total: room.total,
+                    square: `${room.area.length}m x ${room.area.width}m`,
+                    utilities,
+                    motelId: motel._id
+                }
+            })
+
             return {
                 key: motel._id,
                 number,
@@ -39,6 +97,7 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
                 amountRoom: motel.room.length,
                 vote: motel.vote,
                 mark: mark[0] + mark[1],
+                room: roomDataTable
             } as MotelDataTable
         })
 
@@ -122,7 +181,7 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
                         title="Bạn muốn xóa?"
                         placement="leftTop"
                         onConfirm={() => handleRemove(record)}
-                        okText="Có"
+                        okText="Xóa"
                         okButtonProps={{ danger: true }}
                         cancelText="Không"
                     >
@@ -131,6 +190,61 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
                         </Tooltip>
                     </Popconfirm>
                 </Space>
+            ),
+        },
+    ]
+
+    const roomColumns = [
+        {
+            title: '',
+            dataIndex: 'room',
+            key: 'room',
+            width: 110,
+        },
+        {
+            title: 'Giá thuê',
+            dataIndex: 'price',
+            key: 'price',
+        },
+        {
+            title: 'Phòng trống',
+            dataIndex: 'empty',
+            key: 'empty',
+            width: 130,
+        },
+        {
+            title: 'Tổng phòng',
+            dataIndex: 'total',
+            key: 'total',
+            width: 130,
+        },
+        {
+            title: 'Diện tích',
+            dataIndex: 'square',
+            key: 'square',
+        },
+        {
+            title: 'Tiện ích',
+            dataIndex: 'utilities',
+            key: 'utilities',
+        },
+        {
+            title: 'Hành động',
+            key: 'action',
+            align: 'center' as 'center',
+            render: (text: string, record: any) => (
+                <Popconfirm
+                    title="Bạn muốn xóa?"
+                    placement="leftTop"
+                    onConfirm={() => handleRemoveRoom(record)}
+                    okText="Xóa"
+                    okButtonProps={{ danger: true }}
+                    cancelText="Không"
+                >
+                    <Tooltip title='Xóa'>
+                        <Button type="primary" size='small' danger icon={<DeleteFilled />} />
+                    </Tooltip>
+                </Popconfirm>
             ),
         },
     ]
@@ -146,6 +260,17 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
         onClickEditMotel(record)
     }
 
+    const handleRemoveRoom = async (record: any) => {
+        try {
+            await motelApi.removeRoom(record.motelId, record.id)
+
+            toast.success('Đã xóa phòng trọ thành công')
+            dispatch(motelActions.setFilter({ ...filter }))
+        } catch (error: any) {
+            toast.success(error.response.data.message)
+        }
+    }
+
     return (
         <Table
             columns={columns}
@@ -154,6 +279,12 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
             loading={loading}
             onChange={handleChangeTable}
             scroll={{ x: 1300 }}
+            expandable={{
+                expandedRowRender: record => (
+                    <Table columns={roomColumns} dataSource={record.room} pagination={false} size='small' />
+                ),
+                // rowExpandable: record => record.number,
+            }}
         />
     )
 }

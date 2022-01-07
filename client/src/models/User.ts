@@ -1,5 +1,5 @@
 import { School } from 'models';
-import { ChatGroup } from './Chat';
+import { ChatMinimalGroup } from './Chat';
 
 export interface User {
   _id: string;
@@ -12,7 +12,7 @@ export interface User {
   district: string;
   province: string;
   school: string;
-  groupPrivate?: ChatGroup[];
+  groupPrivate?: ChatMinimalGroup[];
   rank?: string;
   favorite?: string[];
   likes?: string[];

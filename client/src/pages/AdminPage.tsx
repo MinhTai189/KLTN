@@ -2,7 +2,9 @@ import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Layout } from 'antd'
 import { AdminSider } from 'features/admin/components'
 import ApprovePage from 'features/admin/pages/ApprovePage'
+import FeedbackPage from 'features/admin/pages/FeedbackPage'
 import MotelPage from 'features/admin/pages/MotelPage'
+import PostPage from 'features/admin/pages/PostPage'
 import UserPage from 'features/admin/pages/UserPage'
 import { Link, Route, Switch } from 'react-router-dom'
 import DashboardPage from '../features/admin/pages/DashboardPage'
@@ -41,8 +43,16 @@ const AdminPage = () => {
                             <MotelPage />
                         </Route>
 
+                        <Route path='/admin/posts'>
+                            <PostPage />
+                        </Route>
+
                         <Route path='/admin/approves'>
                             <ApprovePage />
+                        </Route>
+
+                        <Route path='/admin/feedback'>
+                            <FeedbackPage />
                         </Route>
                     </Switch>
                 </Content>

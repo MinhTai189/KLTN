@@ -76,9 +76,9 @@ const App = () => {
               <NotificationPage />
             </UserRoute>
 
-            <Route path='/chats'>
+            <UserRoute path='/chats'>
               <ChatPage />
-            </Route>
+            </UserRoute>
 
             <Route path="/auth">
               <Auth />

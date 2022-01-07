@@ -1,6 +1,8 @@
 import { Box, Theme } from "@material-ui/core"
 import { Search } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
+import { useAppSelector } from "app/hooks"
+import { selectListGroupChat } from "features/chats/chatSlice"
 import GroupItem from "./GroupItem"
 
 interface Props {
@@ -73,6 +75,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const GroupSection = (props: Props) => {
     const classes = useStyles()
+    const listGroup = useAppSelector(selectListGroupChat)
 
     return (
         <Box className={classes.root} component='section'>
@@ -84,12 +87,9 @@ const GroupSection = (props: Props) => {
 
             <Box className="group-wrapper">
                 <ul className="list-group">
-                    <li className="group">
-                        <GroupItem actived />
-                    </li>
-                    {new Array(2).fill(1).map((_, index) => (
-                        <li key={index} className="group">
-                            <GroupItem />
+                    {listGroup.map(group => (
+                        <li key={group._id} className="group">
+                            <GroupItem group={group} />
                         </li>
                     ))}
                 </ul>

@@ -1,7 +1,9 @@
 import { Avatar, Box, makeStyles, Theme, Typography } from "@material-ui/core"
+import { ChatGroup } from "models"
 
 interface Props {
     actived?: boolean
+    group: ChatGroup
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -56,8 +58,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const GroupItem = ({ actived }: Props) => {
+const GroupItem = ({ actived, group }: Props) => {
     const classes = useStyles()
+
+    const { name } = group
 
     return (
         <Box className={`${classes.root} ${actived ? 'active' : ''}`}>
@@ -67,7 +71,7 @@ const GroupItem = ({ actived }: Props) => {
 
             <Box className='info' component='span'>
                 <Typography className="name" variant="h4">
-                    Giao lưu, trao đổi, hỏi đáp
+                    {name}
                 </Typography>
 
                 <Box className='row'>

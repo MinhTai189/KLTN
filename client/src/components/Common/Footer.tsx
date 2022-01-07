@@ -205,7 +205,7 @@ export const Footer = () => {
 
                                 <ul className="socials">
                                     {socials[0].map((social, index) => (
-                                        <li key='index' className='social'>
+                                        <li key={index} className='social'>
                                             <a href={social.href} target='_blank'>
                                                 {social.icon}
                                             </a>
@@ -229,7 +229,7 @@ export const Footer = () => {
 
                                 <ul className="socials">
                                     {socials[1].map((social, index) => (
-                                        <li key='index' className='social'>
+                                        <li key={index} className='social'>
                                             <a href={social.href} target='_blank'>
                                                 {social.icon}
                                             </a>
@@ -247,8 +247,8 @@ export const Footer = () => {
                             </Typography>
 
                             <ul className="list-item">
-                                {NAVIGATION_ROUTES.map((item, index) => (
-                                    <li key={index} className="item">
+                                {NAVIGATION_ROUTES.map((item) => (
+                                    <li key={item.route} className="item">
                                         <Link to={item.route}>
                                             {item.name}
                                         </Link>
@@ -265,11 +265,6 @@ export const Footer = () => {
                             </Typography>
 
                             <form>
-                                <Box className="row">
-                                    <label htmlFor="name-input">Họ tên</label>
-                                    <input type="text" id='name-input' placeholder="Họ và tên" />
-                                </Box>
-
                                 <Box className="row">
                                     <label htmlFor="caterogy-input">Chủ đề</label>
                                     <input type="text" id='caterogy-input' placeholder="Hãy nhập một chủ đề..." />

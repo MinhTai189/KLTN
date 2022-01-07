@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from 'app/store';
 import { AddGroup, ChatGroup } from 'models';
 
 interface State {
@@ -45,6 +46,8 @@ const chatSlice = createSlice({
 export const chatActions = chatSlice.actions;
 
 //selectors
+export const selectListGroupChat = (state: RootState) => state.chat.listGroup;
+export const selectLoadingChat = (state: RootState) => state.chat.loading;
 
 //reducer
 const chatReducer = chatSlice.reducer;

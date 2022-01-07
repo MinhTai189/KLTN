@@ -6,7 +6,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         inset: 0,
         display: 'grid',
         placeContent: 'center',
-        background: 'rgba(0, 0, 0, 0.9)',
+        background: 'rgba(0, 0, 0, 0.8)',
         zIndex: 200,
 
         '& .loading': {
