@@ -33,7 +33,9 @@ const chatRouter = (io) => {
       ],
     });
     await newGroupChat.save();
-    res.status(200).json({ message: "Thành công", success: true });
+    res
+      .status(200)
+      .json({ message: "Thành công", success: true, data: newGroupChat._id });
   });
 
   router.get("/groups", verifyToken, async (req, res) => {
