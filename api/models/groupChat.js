@@ -29,18 +29,24 @@ const groupChatSchema = new Schema(
           type: {
             type: String,
             required: true,
-            enum: ["text", "image", "video", "link"],
+            enum: ["text", "image", "link", "gif"],
           },
           content: {
-            dataUrl: {
-              type: Object,
-              required: false,
-            },
-            text: {
-              type: String,
-              required: false,
-              default: "",
-            },
+            type: String,
+            required: false,
+            default: "",
+          },
+          urlImages: {
+            type: Array,
+            required: false,
+          },
+          urlGif: {
+            type: String,
+            required: false,
+          },
+          dataLink: {
+            type: Object,
+            required: false,
           },
           owner: {
             type: mongoose.Schema.Types.ObjectId,
