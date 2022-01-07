@@ -309,7 +309,9 @@ const userRouter = (io) => {
       let responseUser = {
         ...getUser._doc,
         avatarUrl: getUser.avatarUrl.url,
-        done: getUser.done.sort((d1, d2) => new Date(d2) - new Date(d1)),
+        done: getUser.done.sort(
+          (d1, d2) => new Date(d2.createdAt) - new Date(d1.createdAt)
+        ),
       };
       res.status(200).json({ data: responseUser, success: true });
     } catch (err) {
