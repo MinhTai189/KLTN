@@ -10,6 +10,7 @@ import notifySaga from 'features/notification/notifySaga';
 import provinceSaga from 'features/province/provinceSaga';
 import approveSaga from 'features/approves/approveSaga';
 import dashboardSaga from 'features/dashboard/dashboardSaga';
+import chatSaga from 'features/chats/chatSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -24,5 +25,6 @@ export default function* rootSaga() {
     call(schoolSaga),
     call(approveSaga),
     call(dashboardSaga),
+    call(chatSaga),
   ]);
 }

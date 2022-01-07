@@ -16,3 +16,4 @@ export * from './handle-string/mapTrimStringArr';
 export * from './check-valid/checkCommaLastString';
 export * from './check-valid/checkLikePostComment';
 export * from './socket';
+export * from './getChatGroupByUserId';

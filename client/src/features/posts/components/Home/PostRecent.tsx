@@ -82,6 +82,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
             '& .tags': {
                 display: 'flex',
+                flexWrap: 'wrap',
                 marginBottom: theme.spacing(1),
 
                 '& .tag': {
@@ -138,12 +139,17 @@ const useStyles = makeStyles((theme: Theme) => ({
 
                 '& .thread': {
                     background: '#d6d6d7',
-                    padding: theme.spacing(0.5, 1),
+                    padding: theme.spacing(0.4, 0.8),
                     borderRadius: 15,
-                    fontSize: '0.85em',
+                    fontSize: '0.8em',
+
+                    [theme.breakpoints.down('md')]: {
+                        fontSize: '0.75em',
+                        marginTop: theme.spacing(1)
+                    },
 
                     [theme.breakpoints.down('xs')]: {
-                        fontSize: '0.7em',
+                        fontSize: '0.65em',
                         marginTop: theme.spacing(1)
                     },
                 }

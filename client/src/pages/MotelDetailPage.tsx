@@ -1,7 +1,6 @@
 import { Box, Grid } from '@material-ui/core'
 import { Modal } from 'antd'
 import { motelApi } from 'api/motel'
-import postApi from 'api/post'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { ModalConfirm } from 'components/Common/ModalConfirm'
 import { MainLayout } from 'components/Layouts/MainLayout'
@@ -196,7 +195,7 @@ const MotelDetailPage = () => {
                     mt={12}
                 >
                     <Grid container spacing={2}>
-                        <Grid item md={5}>
+                        <Grid item xs={12} lg={4}>
                             {dataMotel.album.length > 0 &&
                                 <AlbumMotel
                                     images={dataMotel.album}
@@ -206,7 +205,7 @@ const MotelDetailPage = () => {
                             <FindMotelReviewSection />
                         </Grid>
 
-                        <Grid item md={7}>
+                        <Grid item xs={12} lg={8}>
                             {dataMotel.motel &&
                                 <InforMotelDetail
                                     dataMotel={dataMotel.motel}

@@ -166,33 +166,26 @@ const authRouter = (io) => {
       html: `<div
       style="
         width: 100%;
-        max-width: 650px;
+        max-width: 550px;
         margin: 0 auto;
         outline: 2px solid #ccc;
         padding-bottom: 4px;
       "
     >
-      <div
-        style="
-          display: flex;
-          justify-content: center;
-          flex-direction: column;
-          align-items: center;
-          padding: 16px 8px;
-        "
-      >
+      <div style="padding: 8px 4px; text-align: center">
         <img
-          style="width: 50px; height: 50px"
+          style="width: 45px; height: 45px"
           src="https://res.cloudinary.com/dpregsdt9/image/upload/v1641390438/logo_1_h8e2hu.png"
         />
 
         <h1
           style="
-            font-size: 22px;
+            font-size: 20px;
             color: #2196f3;
             font-weight: 600;
             text-transform: uppercase;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 4px 0;
           "
         >
           Quên mật khẩu
@@ -200,20 +193,24 @@ const authRouter = (io) => {
       </div>
 
       <div
-        style="padding: 24px 16px; font-size: 18px; border-top: 1px solid #ccc"
+        style="
+          padding: 4px 12px 8px;
+          font-size: 16px;
+          border-top: 1px solid #ccc;
+        "
       >
-        <p>Chào ${User.name},</p>
+        <p style="margin: 8px 0">Chào ${User.name},</p>
 
-        <p>
+        <p style="margin: 8px 0">
           Bạn đã thực hiện yêu cầu lấy lại mật khẩu của tài khoản đã liên kết
-          với địa chỉ mail:  ${email}
+          với địa chỉ mail: ${email}
         </p>
 
-        <p>
+        <p style="margin: 8px 0">
           Nếu như không phải yêu cầu đến từ phía của bạn. Hãy bỏ qua email này!
         </p>
 
-        <p>
+        <p style="margin: 8px 0">
           Bấm vào nút "Lấy lại mật khẩu" bên dưới để thực hiện lấy lại mật khẩu:
         </p>
 
@@ -223,34 +220,33 @@ const authRouter = (io) => {
             outline: none;
             background: #2196f3;
             border: none;
-            width: 150px;
-            height: 50px;
+            width: 130px;
+            height: 40px;
             border-radius: 24px;
-            margin-left: 50%;
-            transform: translateX(-50%);
             box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.45);
-            margin-block: 16px;
+            margin: 16px auto;
+            display: block;
           "
         >
           <a
             style="
               color: #fff;
               text-decoration: none;
-              font-size: 16px;
+              font-size: 14px;
               display: block;
               width: 100%;
               height: 100%;
-              line-height: 50px;
+              line-height: 40px;
             "
-            href="google.com"
+            href="${process.env.ORIGIN}/auth/reset-password/${forgotPasswordToken}"
             >Lấy lại mật khẩu</a
           >
         </button>
 
-        <p>
+        <p style="margin: 8px 0">
           Di chuyển đến đường dẫn sau nếu không thể điều hướng tự động:
-          <a style="word-break: break-all; font-size: 16px" href="goolge.com"
-            > ${process.env.ORIGIN}/auth/reset-password/${forgotPasswordToken}</a
+          <a style="word-break: break-all; font-size: 16px" href="${process.env.ORIGIN}/auth/reset-password/${forgotPasswordToken}"
+            >${process.env.ORIGIN}/auth/reset-password/${forgotPasswordToken}</a
           >
         </p>
 
@@ -259,7 +255,7 @@ const authRouter = (io) => {
             text-align: center;
             width: 100%;
             display: block;
-            font-size: 14px;
+            font-size: 12px;
             margin-top: 32px;
             font-style: italic;
           "
@@ -267,7 +263,7 @@ const authRouter = (io) => {
           dung mail này với bất kỳ ai khác!</small
         >
       </div>
-    </div>`,
+    </div>`
     };
 
     transporter.sendMail(mainOptions, function (err, info) {

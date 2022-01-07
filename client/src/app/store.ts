@@ -24,6 +24,8 @@ import postApproveReducer from 'features/approves/postApprove';
 import rateApproveReducer from 'features/approves/rateApprove';
 import reportApproveReducer from 'features/approves/reportApprove';
 import dashboardReducer from 'features/dashboard/dashboardSlice';
+import chatReducer from 'features/chats/chatSlice';
+import loadingReducer from 'features/loading/showLoadingSlice';
 
 const reducer = combineReducers({
   auth: authReducer,
@@ -42,6 +44,8 @@ const reducer = combineReducers({
   rateApprove: rateApproveReducer,
   reportApprove: reportApproveReducer,
   dashboard: dashboardReducer,
+  chat: chatReducer,
+  loading: loadingReducer,
   router: connectRouter(history),
 });
 const sagaMiddleware = createSagaMiddleware();

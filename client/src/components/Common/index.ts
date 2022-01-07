@@ -17,3 +17,4 @@ export * from './LoadingAdmin';
 export * from './AvatarWithBadge';
 export * from './UserTooltip';
 export * from './ImageGallery';
+export * from './Footer';

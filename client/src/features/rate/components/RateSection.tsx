@@ -20,12 +20,18 @@ interface Props {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-    root: {},
+    root: {
+        marginBlock: 120,
+
+        [theme.breakpoints.down('xs')]: {
+            marginBlock: 50,
+        },
+    },
     title: {
         width: '100%',
+        marginBottom: theme.spacing(1),
         textAlign: 'center',
         textTransform: 'uppercase',
-        margin: '120px 0 4px',
         fontSize: 25
     }
 }))

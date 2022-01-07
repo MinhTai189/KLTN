@@ -58,11 +58,14 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const MessageSection = (props: Props) => {
     const classes = useStyles()
-    const [showBtnScrollBottom, setShowBtnScrollBottom] = useState(false)
 
     const scrollBottomRef = useRef<HTMLDivElement>(null)
     const messageContainerRef = useRef<HTMLElement>(null)
     const messagesRef = useRef<HTMLElement>(null)
+
+    const btnScrollToBottomRef = useRef<HTMLElement>()
+    const loadMoreRef = useRef<HTMLElement>()
+    const observer = useRef<IntersectionObserver>()
 
     let lastScrollTop = 0
 
@@ -72,8 +75,11 @@ const MessageSection = (props: Props) => {
         if (messageContainerRef.current)
             messageContainerRef.current.addEventListener('scroll', handleShowBtnScrollBottom)
 
+        loadMore()
+
         return () => {
             window.clearTimeout(timeout)
+            observer.current && observer.current.disconnect()
         }
     }, [])
 
@@ -93,14 +99,32 @@ const MessageSection = (props: Props) => {
         const height = e.target.clientHeight || 0
         const scrollHeight = e.target.scrollHeight || 0
 
+        if (!btnScrollToBottomRef.current) return
+
         if (st > lastScrollTop) {
-            if (scrollHeight - height - st <= 600)
-                setShowBtnScrollBottom(false)
+            if (scrollHeight - height - st <= 900)
+                btnScrollToBottomRef.current.style.display = 'none'
         } else {
-            if (scrollHeight - height - st >= 600)
-                setShowBtnScrollBottom(true)
+            if (scrollHeight - height - st >= 900)
+                btnScrollToBottomRef.current.style.display = 'grid'
         }
         lastScrollTop = st <= 0 ? 0 : st
+    }
+
+    const loadMore = () => {
+        if (!messageContainerRef.current || !loadMoreRef.current) return
+
+        let options = {
+            root: messageContainerRef.current,
+            rootMargin: '0px',
+            threshold: 1.0
+        }
+
+        observer.current = new IntersectionObserver(entries => {
+            console.log(entries)
+        }, options);
+
+        observer.current.observe(loadMoreRef.current)
     }
 
     return (
@@ -109,7 +133,7 @@ const MessageSection = (props: Props) => {
 
             <div ref={messageContainerRef as any} className='message-container'>
                 <ul ref={messagesRef as any} className="messages">
-                    <li>
+                    <li ref={loadMoreRef as any}>
                         <Box className="hidden" />
                     </li>
 
@@ -131,7 +155,7 @@ const MessageSection = (props: Props) => {
 
             <ChatInput />
 
-            {showBtnScrollBottom && <button className='btn-scroll' onClick={handleScrollToBottom}>
+            {<button ref={btnScrollToBottomRef as any} className='btn-scroll' onClick={handleScrollToBottom}>
                 <KeyboardArrowDown />
             </button>}
         </Box>

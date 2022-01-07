@@ -64,6 +64,7 @@ const Album = ({ }: Props) => {
 
                     return (
                         <img
+                            key={index}
                             className={classSpan}
                             src="https://source.unsplash.com/random/?city,night"
                             loading="lazy"

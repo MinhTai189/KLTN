@@ -10,6 +10,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { Forum, Notifications } from '@material-ui/icons';
 import { NotifDropDown } from 'features/notification/components';
 import { DetectClickOutsize } from './DetectClickOutsize';
+import { NAVIGATION_ROUTES } from 'constant/constant';
 
 interface Props {
     isChangeNav: boolean
@@ -132,21 +133,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const routes = [
-    {
-        route: '/',
-        name: 'Trang chủ'
-    },
-    {
-        route: '/motels',
-        name: 'Nhà trọ'
-    },
-    {
-        route: '/posts',
-        name: 'Bài viết'
-    },
-]
-
 const calcSizeBtn = (width: number) => {
     let size = 'medium'
 
@@ -186,7 +172,7 @@ export const Header = ({ isChangeNav }: Props) => {
     }, [])
 
     return (
-        <div className={classes.root} style={isChangeNav ? { background: '#1769aa' } : {}}>
+        <div className={classes.root} style={isChangeNav ? { background: '#1976d2' } : {}}>
             <nav className={classes.nav} style={isChangeNav ? { padding: '8px 16px' } : {}}>
                 <Link to='/'>
                     <img className={classes.logo} src={Logo} alt="logo" />
@@ -195,7 +181,7 @@ export const Header = ({ isChangeNav }: Props) => {
                 <ul
                     className={classes.navLinks}
                 >
-                    {routes.map((route, index) => {
+                    {NAVIGATION_ROUTES.map((route, index) => {
                         return (
                             <NavLink key={index} to={route.route} exact>
                                 <li className='nav-link'>

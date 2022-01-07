@@ -1,5 +1,5 @@
 import { Box } from "@material-ui/core"
-import { Header } from "components/Common"
+import { Footer, Header } from "components/Common"
 
 interface Props {
     children: any
@@ -14,6 +14,8 @@ export const MainLayout = ({ children, isChangeNav = true }: Props) => {
             <Box>
                 {children}
             </Box>
+
+            <Footer />
         </>
     )
 }

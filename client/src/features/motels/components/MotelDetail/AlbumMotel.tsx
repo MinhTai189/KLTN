@@ -28,6 +28,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         overflow: 'hidden',
         cursor: 'pointer',
 
+        [theme.breakpoints.down('md')]: {
+            boxShadow: theme.shadows[2],
+        },
+
         "&:hover": {
             "& .favorite": {
                 opacity: 1
@@ -65,6 +69,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginTop: 8,
         boxShadow: theme.shadows[5],
         padding: '4px 0',
+
+        [theme.breakpoints.down('md')]: {
+            boxShadow: theme.shadows[2],
+        },
 
         '& .rec-carousel': {
             position: 'relative',
@@ -120,6 +128,12 @@ const useStyles = makeStyles((theme: Theme) => ({
         }
     },
 }))
+
+const carouselBreakPoints = [
+    { width: 1, itemsToShow: 3 },
+    { width: 425, itemsToShow: 4 },
+    { width: 900, itemsToShow: 3 },
+]
 
 export const AlbumMotel = ({ images, motelName }: Props) => {
     const classes = useStyles()
@@ -206,7 +220,7 @@ export const AlbumMotel = ({ images, motelName }: Props) => {
 
             <div className={classes.listImg}>
                 <Carousel
-                    itemsToShow={5}
+                    itemsToShow={4}
                     isRTL={false}
                     pagination={false}
                     itemPosition='START'
@@ -214,6 +228,7 @@ export const AlbumMotel = ({ images, motelName }: Props) => {
                     enableMouseSwipe={false}
                     itemPadding={[0, 4, 0, 4]}
                     showEmptySlots={true}
+                    breakPoints={carouselBreakPoints}
                 >
                     {images.map((image, index) => {
                         const active = index === currentImg ? 'active' : ''

@@ -15,10 +15,7 @@ const chatRouter = (io) => {
       )
     )
       members = [...members, req.user.id];
-    if (!name)
-      return res
-        .status(400)
-        .json({ success: false, message: "Vui lòng cung cấp tên nhóm chat" });
+
     const newGroupChat = new groupChat({
       name,
       members,

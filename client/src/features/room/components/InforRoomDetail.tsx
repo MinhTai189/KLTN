@@ -16,13 +16,15 @@ interface Props {
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         marginTop: 16,
+        marginInline: 'auto',
 
         '& .MuiTableCell-root': {
-            padding: 12
+            padding: theme.spacing(1, 0.7),
+            fontSize: '0.75rem'
         },
 
         "& .MuiTableCell-head": {
-            fontSize: '0.7rem'
+            fontSize: '0.65rem'
         },
 
         "& .MuiButton-root": {
@@ -53,7 +55,9 @@ export const InforRoomDetail = ({ room, setOpenRoomModal, handleSelectRoom }: Pr
 
     return (
         <TableContainer className={classes.root} component={Paper}>
-            <Table aria-label="simple table">
+            <Table style={{
+                minWidth: 560
+            }} size="small">
                 <TableHead>
                     <TableRow>
                         <TableCell></TableCell>

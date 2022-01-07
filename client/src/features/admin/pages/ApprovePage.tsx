@@ -7,17 +7,13 @@ import { rateApproveActions, selectFilterRateApprove } from "features/approves/r
 import { reportApproveActions, selectFilterReportApprove } from "features/approves/reportApprove"
 import { useEffect } from "react"
 
-interface Props {
-
-}
-
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         padding: theme.spacing(2)
     }
 }))
 
-const ApprovePage = (props: Props) => {
+const ApprovePage = () => {
     const classes = useStyles()
     const dispatch = useAppDispatch()
 

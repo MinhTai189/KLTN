@@ -2,15 +2,18 @@ import { Avatar, Box, Button, List, ListItem, ListItemText, makeStyles, Theme, T
 import { CardGiftcard, CloudUpload, Favorite, Loyalty, QuestionAnswer, SupervisedUserCircle, VerifiedUser } from '@material-ui/icons'
 import { Modal } from 'antd'
 import axiosClient from 'api/axiosClient'
+import chatApis from 'api/chat'
 import { userApi } from 'api/user'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import Background from 'assets/images/profile-background.jpg'
 import { DetectClickOutsize } from 'components/Common/DetectClickOutsize'
 import { authActions, selectCurrentUser, selectUpdateUserData } from 'features/auth/authSlice'
+import { loadingActions } from 'features/loading/showLoadingSlice'
 import { ProfileUser, Response, UpdateData, User } from 'models'
 import { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
+import { getChatGroupByUserId } from 'utils'
 import { ModalBodyEdit } from './ModalBodyEdit'
 
 interface Props {
@@ -23,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         '& > .background-container': {
             width: '100%',
             height: '50vh',
-            background: `url(${Background}) no-repeat right bottom`,
+            background: `url(${Background}) no-repeat center top`,
             backgroundSize: 'cover',
 
             [theme.breakpoints.down('xs')]: {
@@ -286,6 +289,34 @@ export const ProfieDetail = ({ user, init }: Props) => {
         }
     }
 
+    const handleChat = async () => {
+        if (!user || !currentUser.groupPrivate)
+            return
+
+        const group = getChatGroupByUserId(currentUser.groupPrivate, user._id)
+        let groupId = group?._id
+
+        if (!groupId) {
+            dispatch(loadingActions.openLoading())
+
+            const response: Response<string> = await chatApis.addChatGroup({
+                members: [user._id],
+                name: '',
+                type: 'private'
+            })
+
+            groupId = response.data
+            dispatch(loadingActions.closeLoading())
+        }
+
+        history.push({
+            pathname: '/chats',
+            state: {
+                groupId
+            }
+        })
+    }
+
     return (
         <>
             <Box className={classes.root}>
@@ -360,6 +391,7 @@ export const ProfieDetail = ({ user, init }: Props) => {
                                     style={{
                                         textTransform: 'initial'
                                     }}
+                                    onClick={handleChat}
                                 >
                                     Nhắn tin
                                 </Button>

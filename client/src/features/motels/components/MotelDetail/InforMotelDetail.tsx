@@ -27,7 +27,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: '100%',
         background: '#f7f7f7',
-        padding: theme.spacing(2)
+        padding: theme.spacing(2),
+
+        [theme.breakpoints.down('sm')]: {
+            padding: theme.spacing(1),
+        },
+
+        '& .info-wrapper': {
+            [theme.breakpoints.down('xs')]: {
+                flexDirection: 'column-reverse'
+            }
+        }
     },
     name: {
         width: '100%',
@@ -35,11 +45,21 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: 2,
-        marginTop: theme.spacing(2)
+        marginTop: theme.spacing(2),
+
+        [theme.breakpoints.down('sm')]: {
+            fontSize: '1.55em',
+        },
+
+        [theme.breakpoints.down('xs')]: {
+            fontSize: '1.5em',
+            marginBottom: 0,
+        },
     },
     statistics: {
         display: 'flex',
         alignItems: 'center',
+        flexWrap: 'wrap',
         marginBlock: 8,
         background: '#fff',
         padding: theme.spacing(0.8, 1.5),
@@ -49,26 +69,42 @@ const useStyles = makeStyles((theme: Theme) => ({
         '& .col': {
             display: 'flex',
 
+            [theme.breakpoints.down('sm')]: {
+                alignItems: 'center'
+            },
+
             '& .number': {
                 fontSize: '1.2em',
                 color: theme.palette.primary.main,
-                fontWeight: 400,
                 marginRight: 4,
                 lineHeight: 1,
                 textDecoration: 'underline',
+
+                [theme.breakpoints.down('sm')]: {
+                    fontSize: '1em',
+                }
             },
 
             '& .stars ': {
                 '& .MuiSvgIcon-root': {
                     width: '0.6em',
                     height: '0.6em',
-                    fill: '#666'
+                    fill: '#666',
+
+                    [theme.breakpoints.down('sm')]: {
+                        width: '0.45em',
+                        height: '0.45em',
+                    }
                 }
             },
 
             '& .text': {
                 fontSize: '0.8em',
-                color: '#666'
+                color: '#666',
+
+                [theme.breakpoints.down('sm')]: {
+                    fontSize: '0.65em',
+                }
             }
         },
 
@@ -76,7 +112,11 @@ const useStyles = makeStyles((theme: Theme) => ({
             width: 1,
             height: 20,
             background: '#ccc',
-            marginInline: 12
+            marginInline: 12,
+
+            [theme.breakpoints.down('sm')]: {
+                marginInline: 8,
+            }
         },
     },
     chips: {
@@ -96,29 +136,42 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
         margin: 0,
+        gap: theme.spacing(1),
 
         "& img": {
             width: '1.2em',
             height: '1.2em',
 
-            "&:not(:last-child)": {
-                marginRight: 8
+            [theme.breakpoints.down('sm')]: {
+                width: '.9em',
+                height: '.9em',
             }
         }
     },
     wrapper: {
         width: '100%',
-        maxWidth: 800,
         marginTop: 16,
+
+        [theme.breakpoints.down('sm')]: {
+            marginTop: 8
+        },
 
         "& .title": {
             fontSize: '1.2em',
-            marginBottom: 4
+            marginBottom: 4,
+
+            [theme.breakpoints.down('sm')]: {
+                fontSize: '1.1em',
+            }
         },
 
         "& .content": {
             fontSize: '1em',
             color: '#333',
+
+            [theme.breakpoints.down('sm')]: {
+                fontSize: '0.9em',
+            }
         },
 
         "& .row": {
@@ -129,11 +182,19 @@ const useStyles = makeStyles((theme: Theme) => ({
 
             "& .label": {
                 fontSize: '1em',
-                marginRight: 8
+                marginRight: 8,
+
+                [theme.breakpoints.down('sm')]: {
+                    fontSize: '0.9em',
+                }
             },
 
             "& .text": {
                 fontSize: '0.9em',
+
+                [theme.breakpoints.down('sm')]: {
+                    fontSize: '0.8em',
+                }
             },
 
             "& .contact": {
@@ -159,6 +220,11 @@ const useStyles = makeStyles((theme: Theme) => ({
                         '& .MuiSvgIcon-root, & svg': {
                             width: 18,
                             height: 18,
+
+                            [theme.breakpoints.down('sm')]: {
+                                width: 16,
+                                height: 16,
+                            }
                         },
                     },
 
@@ -166,6 +232,10 @@ const useStyles = makeStyles((theme: Theme) => ({
                         fontSize: '0.9em',
                         color: '#333',
                         transitions: '300ms all ease',
+
+                        [theme.breakpoints.down('sm')]: {
+                            fontSize: '0.8em'
+                        },
 
                         "&:hover": {
                             color: theme.palette.primary.main,
@@ -302,8 +372,8 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
     return (
         <Box className={classes.root}>
             <div>
-                <Grid container spacing={2}>
-                    <Grid item lg={12}>
+                <Grid container>
+                    <Grid item xs={12}>
                         <div className={classes.statistics}>
                             <div className="col">
                                 <span className="number">
@@ -373,8 +443,8 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
                             </div>
                         </div>
 
-                        <Grid container spacing={1}>
-                            <Grid item lg={7}>
+                        <Grid className='info-wrapper' container spacing={1}>
+                            <Grid item xs={12} sm={7} md={8} lg={7} xl={8}>
                                 <ul className={classes.chips}>
                                     <li className="chip">
                                         <ChipCustom
@@ -432,7 +502,7 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
 
                                 <h1 className={classes.name}>{name}</h1>
                             </Grid>
-                            <Grid item lg={5}>
+                            <Grid item xs={12} sm={5} md={4} lg={5} xl={4}>
                                 <Paper className={classes.wrapperInfor}>
                                     {owner && <CreatedUser owner={owner} />}
 
@@ -458,9 +528,7 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
             <Box className={classes.wrapper}>
                 <h3 className="title">Thông tin mô tả</h3>
 
-                <p className="content">
-                    {desc}
-                </p>
+                <p className="content" dangerouslySetInnerHTML={{ __html: desc }} />
             </Box>
 
             <Box className={classes.wrapper}>

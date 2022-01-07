@@ -21,33 +21,63 @@ interface Color {
 const useStyles = makeStyles<Theme, Color>(theme => ({
     root: {
         minHeight: 80,
-        minWidth: 300,
+        minWidth: 150,
         display: 'flex',
-        padding: theme.spacing(2, 0)
     },
     colLeft: {
         '& img': {
             width: '3.5em',
             height: '3.5em',
             borderRadius: '50%',
+
+            [theme.breakpoints.down('sm')]: {
+                width: '2.6em',
+                height: '2.6em',
+            },
+
+            [theme.breakpoints.down('sm')]: {
+                width: '2em',
+                height: '2em',
+            },
         },
     },
     colRight: {
         background: '#eee',
         padding: theme.spacing(1, 1.5),
         marginLeft: theme.spacing(1),
-        borderRadius: 15,
-        minWidth: 180,
+        borderRadius: 8,
+        height: 'fit-content',
+
+        [theme.breakpoints.down('sm')]: {
+            padding: theme.spacing(1),
+        },
+
+        [theme.breakpoints.down('xs')]: {
+            marginLeft: theme.spacing(0.5),
+            padding: theme.spacing(0.5),
+            borderRadius: 4,
+        },
 
         '& .top': {
             display: 'flex',
             alignItems: 'center',
+            marginBottom: theme.spacing(0.3),
 
             '& .name': {
                 fontSize: 13,
                 cursor: 'pointer',
                 transition: '300ms ease',
                 textTransform: 'capitalize',
+                whiteSpace: 'nowrap',
+                lineHeight: 1,
+
+                [theme.breakpoints.down('sm')]: {
+                    fontSize: 12
+                },
+
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: 11
+                },
 
                 '&:hover': {
                     textDecoration: 'underline'
@@ -56,11 +86,38 @@ const useStyles = makeStyles<Theme, Color>(theme => ({
 
             '& .stars': {
                 marginLeft: 8,
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+
+                [theme.breakpoints.down('sm')]: {
+                    marginLeft: 4,
+                },
+
+                '& span': {
+                    lineHeight: 1,
+                    height: 10,
+                    display: 'flex'
+                },
 
                 '& .MuiSvgIcon-root': {
                     width: 15,
                     height: 15,
-                    fill: theme.palette.primary.main
+                    fill: theme.palette.primary.main,
+
+                    [theme.breakpoints.down('sm')]: {
+                        width: 10,
+                        height: 10,
+                    },
+
+                    [theme.breakpoints.down('xs')]: {
+                        width: 8,
+                        height: 8,
+                    },
+
+                    '&:nth-child(3)': {
+
+                    }
                 },
 
                 '&.excellent .MuiSvgIcon-root': {
@@ -82,6 +139,17 @@ const useStyles = makeStyles<Theme, Color>(theme => ({
         '& .text': {
             fontSize: 13,
             marginBottom: 4,
+            marginBlock: theme.spacing(0.5),
+
+            [theme.breakpoints.down('sm')]: {
+                fontSize: 12,
+                lineHeight: 1.3
+            },
+
+            [theme.breakpoints.down('xs')]: {
+                fontSize: 11,
+                lineHeight: 1.2
+            },
         },
 
         '& .bottom': {
@@ -92,7 +160,11 @@ const useStyles = makeStyles<Theme, Color>(theme => ({
             '& .date': {
                 fontSize: 10,
                 fontWeight: 500,
-                color: theme.palette.text.secondary
+                color: theme.palette.text.secondary,
+
+                [theme.breakpoints.down('sm')]: {
+                    fontSize: 9
+                },
             },
 
             '& .reportBtn': {
@@ -100,6 +172,11 @@ const useStyles = makeStyles<Theme, Color>(theme => ({
                 height: 14,
                 display: 'grid',
                 placeItems: 'center',
+
+                [theme.breakpoints.down('xs')]: {
+                    width: 11,
+                    height: 11,
+                },
 
                 '& .MuiSvgIcon-root': {
                     width: '100%',
@@ -143,6 +220,24 @@ export const RateItem = ({ data, handleReport }: Props) => {
 
     const colorStar = hanldeColor(data.star)
 
+    const Stars = () => {
+        const stars = new Array(5).fill(1).map((_, index) => {
+            if (markToStar[0] > 0) {
+                markToStar[0] = markToStar[0] - 1
+                return <Star key={index} />
+            } else if (markToStar[1] !== 0) {
+                markToStar[1] = 0
+                return <StarHalf key={index} />
+            }
+            return <StarBorder key={index} />
+        })
+
+        const span1 = <span>{[stars[0], stars[1]]}</span>
+        const span2 = <span>{[stars[2], stars[3], stars[4]]}</span>
+
+        return [span1, span2]
+    }
+
     return (
         <div className={classes.root}>
             <div className={classes.colLeft}>
@@ -159,17 +254,7 @@ export const RateItem = ({ data, handleReport }: Props) => {
                     </Typography>
 
                     <div className={`stars ${colorStar}`}>
-                        {new Array(5).fill(1).map((_, index) => {
-
-                            if (markToStar[0] > 0) {
-                                markToStar[0] = markToStar[0] - 1
-                                return <Star key={index} />
-                            } else if (markToStar[1] !== 0) {
-                                markToStar[1] = 0
-                                return <StarHalf key={index} />
-                            }
-                            return <StarBorder key={index} />
-                        })}
+                        {Stars()}
                     </div>
                 </div>
 

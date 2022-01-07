@@ -11,3 +11,4 @@ export * from './Notify';
 export * from './Approve';
 export * from './Report';
 export * from './Dashboard';
+export * from './Chat';

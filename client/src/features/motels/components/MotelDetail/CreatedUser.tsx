@@ -11,6 +11,7 @@ interface Props {
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         display: 'flex',
+        flexWrap: 'wrap',
 
         '& .avatar': {
             width: '5em',
@@ -19,6 +20,11 @@ const useStyles = makeStyles((theme: Theme) => ({
             marginRight: 6,
             border: '1px solid #ccc',
             borderRadius: 5,
+
+            [theme.breakpoints.only('sm')]: {
+                width: '3.5em',
+                height: '3.5em',
+            },
         },
 
         '& .info': {
@@ -33,6 +39,11 @@ const useStyles = makeStyles((theme: Theme) => ({
                 transition: '300ms',
                 cursor: 'pointer',
                 lineHeight: 1.1,
+                whiteSpace: 'nowrap',
+
+                [theme.breakpoints.only('sm')]: {
+                    fontSize: '0.9em'
+                },
 
                 "&:hover": {
                     textDecoration: 'underline'
@@ -45,10 +56,20 @@ const useStyles = makeStyles((theme: Theme) => ({
                 display: 'flex',
                 alignItems: 'flex-end',
 
+                [theme.breakpoints.only('sm')]: {
+                    fontSize: '0.65em'
+                },
+
                 '& .MuiSvgIcon-root': {
                     width: '0.6em',
                     height: '0.6em',
-                    marginRight: 4
+                    marginRight: 4,
+
+                    [theme.breakpoints.only('sm')]: {
+                        width: '0.5em',
+                        height: '0.5em',
+                        marginRight: 2,
+                    },
                 },
 
                 '&:not(:last-child)': {
@@ -62,6 +83,14 @@ const useStyles = makeStyles((theme: Theme) => ({
             flexDirection: 'column',
             justifyContent: 'space-between',
 
+            [theme.breakpoints.only('sm')]: {
+                flexDirection: 'row',
+                justifyContent: 'center',
+                gap: theme.spacing(3),
+                width: '100%',
+                marginTop: theme.spacing(1)
+            },
+
             '& .control': {
                 display: 'grid',
                 placeItems: 'center',
@@ -69,6 +98,11 @@ const useStyles = makeStyles((theme: Theme) => ({
                 '& .MuiSvgIcon-root': {
                     width: '0.65em',
                     height: '0.65em',
+
+                    [theme.breakpoints.only('sm')]: {
+                        width: '0.55em',
+                        height: '0.55em',
+                    },
                 },
 
                 '&.email .MuiSvgIcon-root': {

@@ -15,6 +15,11 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginTop: theme.spacing(3),
         padding: theme.spacing(2),
 
+        [theme.breakpoints.down('xs')]: {
+            padding: theme.spacing(1),
+            marginTop: theme.spacing(2),
+        },
+
         '& .wrapper': {
             '& .top': {
                 marginBottom: theme.spacing(1.5),
@@ -24,10 +29,18 @@ const useStyles = makeStyles((theme: Theme) => ({
 
                 '& .title': {
                     fontSize: '1.45em',
+
+                    [theme.breakpoints.down('xs')]: {
+                        fontSize: '1.25em'
+                    },
                 },
 
                 '& .see-more': {
-                    fontSize: '0.8em'
+                    fontSize: '0.8em',
+
+                    [theme.breakpoints.down('xs')]: {
+                        fontSize: '0.7em'
+                    },
                 }
             },
 
@@ -36,6 +49,10 @@ const useStyles = makeStyles((theme: Theme) => ({
                 listStylePosition: 'inside',
 
                 '& .post-title a': {
+                    [theme.breakpoints.down('xs')]: {
+                        fontSize: '0.8rem'
+                    },
+
                     "&:hover": {
                         color: theme.palette.primary.main,
                         transition: '300ms'

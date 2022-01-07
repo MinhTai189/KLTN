@@ -21,21 +21,34 @@ const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: '100%',
         display: 'flex',
-        marginTop: theme.spacing(10)
+        marginTop: theme.spacing(10),
+
+        [theme.breakpoints.down('xs')]: {
+            marginTop: theme.spacing(4),
+        },
     },
     colLeft: {
         flex: 1,
-        marginRight: 16,
         boxShadow: `1px 1px 5px #ccc`,
         padding: theme.spacing(3),
         borderRadius: 20,
 
+        [theme.breakpoints.down('sm')]: {
+            padding: theme.spacing(2.5, 1.2),
+            borderRadius: 10,
+        },
+
         '& .controls': {
             width: '100%',
             display: 'flex',
-            alignItems: 'center',
             justifyContent: 'flex-end',
             marginBottom: theme.spacing(2),
+
+            '& .filter-controls': {
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: theme.spacing(1.5)
+            },
 
             '& .btn': {
                 background: '#fff',
@@ -50,9 +63,19 @@ const useStyles = makeStyles((theme: Theme) => ({
                 boxShadow: '2px 2px 5px #aaa',
                 transition: '300ms',
 
+                [theme.breakpoints.down('sm')]: {
+                    height: '2.2em',
+                    padding: theme.spacing(0, 1.8),
+                },
+
                 '& .text': {
                     display: 'flex',
                     alignItems: 'center',
+                    whiteSpace: 'nowrap',
+
+                    [theme.breakpoints.down('sm')]: {
+                        fontSize: '0.85rem',
+                    },
 
                     "& > .MuiSvgIcon-root": {
                         width: 17,
@@ -64,10 +87,6 @@ const useStyles = makeStyles((theme: Theme) => ({
                 '&:hover, &.active': {
                     background: '#000',
                     color: '#fff'
-                },
-
-                '&:not(:last-child)': {
-                    marginRight: 16
                 },
 
                 '&.rattingBtn': {
@@ -140,9 +159,11 @@ const useStyles = makeStyles((theme: Theme) => ({
             flexWrap: 'wrap',
             overflowX: 'auto',
             overflowY: 'auto',
+            gap: theme.spacing(1),
+            paddingTop: theme.spacing(2),
 
             '& .items': {
-                maxWidth: '48%',
+                maxWidth: '50%',
             },
 
             '&::-webkit-scrollbar': {
@@ -164,6 +185,11 @@ const useStyles = makeStyles((theme: Theme) => ({
         width: 350,
         display: 'grid',
         placeItems: 'center',
+        marginLeft: 16,
+
+        [theme.breakpoints.down('lg')]: {
+            display: 'none'
+        },
 
         '& img': {
             width: '100%',
@@ -257,52 +283,54 @@ export const RateBox = ({ handleOpenRateForm, rateList, handleReport }: Props) =
         <Box className={classes.root}>
             <div className={classes.colLeft}>
                 <div className="controls">
-                    <button
-                        className={`btn ${filter.dateOrder === 'newest' ? 'active' : ''}`}
-                        onClick={() => handleClickSortDate('newest')}
-                    >
-                        <Typography>Mới nhất</Typography>
-                    </button>
-
-                    <button
-                        className={`btn ${filter.dateOrder === 'oldest' ? 'active' : ''}`}
-                        onClick={() => handleClickSortDate('oldest')}
-                    >
-                        <Typography>Cũ nhất</Typography>
-                    </button>
-
-                    <div className='dropdown-container'>
+                    <span className='filter-controls'>
                         <button
-                            className={`btn ${filter.star !== 0 ? 'active' : ''}`}
-                            onClick={() => setOpenDropdown(!openDropdown)}
+                            className={`btn ${filter.dateOrder === 'newest' ? 'active' : ''}`}
+                            onClick={() => handleClickSortDate('newest')}
                         >
-                            <Typography className='text'>
-                                Số sao
-
-                                {openDropdown ? <ArrowDropUp /> : <ArrowDropDown />}
-                            </Typography>
+                            <Typography className='text'>Mới nhất</Typography>
                         </button>
 
-                        <div
-                            className="dropdown"
-                            style={{ display: openDropdown ? 'block' : 'none' }}
+                        <button
+                            className={`btn ${filter.dateOrder === 'oldest' ? 'active' : ''}`}
+                            onClick={() => handleClickSortDate('oldest')}
                         >
-                            {options.map((item, index) => (
-                                <div
-                                    key={index}
-                                    className={`items ${filter.star === item.value ? 'active' : ''}`}
-                                    onClick={() => handleSelectStar(item.value)}
-                                >
-                                    {item.label}
-                                </div>
-                            ))}
+                            <Typography className='text'>Cũ nhất</Typography>
+                        </button>
+
+                        <div className='dropdown-container'>
+                            <button
+                                className={`btn ${filter.star !== 0 ? 'active' : ''}`}
+                                onClick={() => setOpenDropdown(!openDropdown)}
+                            >
+                                <Typography className='text'>
+                                    Số sao
+
+                                    {openDropdown ? <ArrowDropUp /> : <ArrowDropDown />}
+                                </Typography>
+                            </button>
+
+                            <div
+                                className="dropdown"
+                                style={{ display: openDropdown ? 'block' : 'none' }}
+                            >
+                                {options.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className={`items ${filter.star === item.value ? 'active' : ''}`}
+                                        onClick={() => handleSelectStar(item.value)}
+                                    >
+                                        {item.label}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    </span>
 
                     <div style={{ flex: 1 }}></div>
 
                     <button className="rattingBtn btn" onClick={handleOpenRateForm}>
-                        <Typography>Đánh giá</Typography>
+                        <Typography className='text'>Đánh giá</Typography>
                     </button>
                 </div>
 

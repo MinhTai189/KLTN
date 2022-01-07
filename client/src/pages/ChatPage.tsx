@@ -1,10 +1,15 @@
+import { useAppDispatch } from "app/hooks"
+import { chatActions } from "features/chats/chatSlice"
 import { ChatSection } from "features/chats/components"
+import { useEffect } from "react"
 
-interface Props {
+const ChatPage = () => {
+    const dispatch = useAppDispatch()
 
-}
+    useEffect(() => {
+        dispatch(chatActions.getChatGroup())
+    }, [])
 
-const ChatPage = (props: Props) => {
     return (
         <ChatSection />
     )

@@ -8,6 +8,8 @@ import { lazy, Suspense, useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-image-gallery/styles/css/image-gallery.css'
+import { selectStatusLoading } from 'features/loading/showLoadingSlice';
+import GlobalLoading from 'features/loading/components/GlobalLoading';
 
 const HomePage = lazy(() => import('pages/HomePage'))
 const MotelDetailPage = lazy(() => import('pages/MotelDetailPage'))
@@ -25,6 +27,7 @@ const NotFound = lazy(() => import('components/Common'))
 const App = () => {
   const isLogged = useAppSelector(selectIsLogged)
   const dispatch = useAppDispatch()
+  const statusLoading = useAppSelector(selectStatusLoading)
 
   useEffect(() => {
     if (!isLogged && Boolean(localStorage.getItem('accessToken'))) {
@@ -35,7 +38,7 @@ const App = () => {
   return (
     <>
       <ScrollToTop>
-        <Suspense fallback='Loading...'>
+        <Suspense fallback={<GlobalLoading />}>
           <Switch>
             <Route path="/" exact>
               <HomePage />
@@ -93,6 +96,8 @@ const App = () => {
       </ScrollToTop>
 
       <CreatePost />
+
+      {statusLoading && <GlobalLoading />}
     </>
   );
 }
