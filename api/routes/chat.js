@@ -4,8 +4,10 @@ const verifyToken = require("../middleware/verifyToken");
 const user = require("../models/user");
 const groupChat = require("../models/groupChat");
 const upload = require("../middleware/upload");
+const { default: axios } = require("axios");
 const router = express.Router();
-
+const cheerio = require("cheerio");
+const url = require("url");
 const chatRouter = (io) => {
   router.post("/groups", verifyToken, async (req, res) => {
     let { members, name, type } = req.body;
@@ -23,16 +25,34 @@ const chatRouter = (io) => {
       messages: [
         {
           type: "text",
-          content: { text: "Đã tạo nhóm chat mới" },
+          content: "Đã tạo nhóm chat mới",
           owner: req.user.id,
           seen: [req.user.id],
         },
       ],
     });
     await newGroupChat.save();
+
     res
       .status(200)
       .json({ message: "Thành công", success: true, data: newGroupChat._id });
+    const newGroup = await groupChat
+      .findById(newGroupChat._id)
+      .populate(
+        "members",
+        "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+      )
+      .populate(
+        "messages.owner",
+        "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+      );
+    for (let i = 0; i < newGroup.members.length; i++) {
+      io.membersOnChangeAddToGroup(
+        newGroup._id,
+        newGroup,
+        newGroup.members[i]._id
+      );
+    }
   });
 
   router.get("/groups", verifyToken, async (req, res) => {
@@ -80,6 +100,7 @@ const chatRouter = (io) => {
               (m) => JSON.stringify(m) === JSON.stringify(req.user.id)
             );
           }).length,
+          ononlines: io.getListOnlineByGroupId(item._id),
         };
       }),
     ].sort((g1, g2) => new Date(g2.updatedAt) - new Date(g1.updatedAt));
@@ -90,93 +111,25 @@ const chatRouter = (io) => {
       .status(200)
       .json({ data: responseGroupsChat.slice(0, limit), success: true });
   });
-  router.get("/groups/:groupId", verifyToken, async (req, res) => {
-    const groupId = req.params.groupId;
 
-    const getGroup = await groupChat
-      .findOne({
-        _id: groupId,
-        members: req.user.id,
-      })
-      .populate(
-        "members",
-        "avatarUrl name isAdmin _id credit email posts motels rank school likes"
-      )
-      .populate(
-        "messages.owner",
-        "avatarUrl name isAdmin _id credit email posts motels rank school likes"
-      );
-    if (!getGroup)
-      return res
-        .status(400)
-        .json({ message: "Bạn không tham gia nhóm này", success: false });
-    let name = getGroup.name;
-    if (getGroup.type === "private") {
-      if (
-        getGroup.members.find(
-          (mem) => JSON.stringify(mem._id) !== JSON.stringify(req.user.id)
-        )
-      )
-        name = getGroup.members.find(
-          (mem) => JSON.stringify(mem._id) !== JSON.stringify(req.user.id)
-        ).name;
-    }
-    const responseGroup = {
-      ...getGroup._doc,
-      name: name,
-      members: [
-        ...getGroup.members.map((member) => {
-          return {
-            ...member._doc,
-            avatarUrl: member.avatarUrl.url,
-            totalLikes: member.likes.length,
-          };
-        }),
-      ],
-      totalMembers: getGroup.members.length,
-      messages: [
-        ...getGroup.messages.map((message) => {
-          const status = message.seen.length > 1;
-          if (message.dataUrl) {
-            let dataUrl = message.dataUrl;
-            if (
-              message.type === "image" ||
-              message.type === "gif" ||
-              message.type === "video"
-            )
-              dataUrl = message.dataUrl.url;
-            return {
-              ...message._doc,
-              content: { ...message.content._doc, dataUrl: dataUrl },
-              owner: {
-                ...message.owner._doc,
-                avatarUrl: message.owner.avatarUrl.url,
-                totalLikes: message.owner.length,
-              },
-              status: status,
-            };
-          } else {
-            return {
-              ...message._doc,
-              owner: {
-                ...message.owner._doc,
-                avatarUrl: message.owner.avatarUrl.url,
-                totalLikes: message.owner.length,
-              },
-              status: status,
-            };
-          }
-        }),
-      ],
-      unseen: getGroup.messages.filter((message) => {
-        return !message.seen.some(
-          (m) => JSON.stringify(m) === JSON.stringify(req.user.id)
-        );
-      }).length,
-    };
-    res.status(200).json({ data: responseGroup, success: true });
-  });
   router.get("/groups/messages/:groupId", verifyToken, async (req, res) => {
+    /*
+    type: "image", "gif", "text"
+    
+    //Nếu là image thì có thuộc tính một mảng urlImages:[String,String,...];
+
+    //nêú là gif thì có thuộc tính urlGif:String là url của ảnh gif
+
+    //nếu là text thì sẽ có thuộc tính content:String 
+
+    //nếu là link sẽ có thuộc tính dataLink:{  url: "",
+          					                          domain: "",
+          					                          title: "",
+          					                          img: "link image",
+          					                          description: ""}
+      sẽ có trường hợp đ có title, img, description
+
+    */
     const groupId = req.params.groupId;
     const getGroup = await groupChat
       .findOne({
@@ -195,17 +148,11 @@ const chatRouter = (io) => {
     const responseMessages = [
       ...getGroup.messages.map((message) => {
         const status = message.seen.length > 1;
-        if (message.dataUrl) {
-          let dataUrl = message.dataUrl;
-          if (
-            message.type === "gif" ||
-            message.type === "image" ||
-            message.type === "video"
-          )
-            dataUrl = message.dataUrl.url;
+
+        if (message.type === "image") {
           return {
             ...message._doc,
-            content: { ...message.content._doc, dataUrl: dataUrl },
+            urlImages: message.urlImages.map((image) => image.url),
             owner: {
               ...message.owner._doc,
               avatarUrl: message.owner.avatarUrl.url,
@@ -213,7 +160,17 @@ const chatRouter = (io) => {
             },
             status: status,
           };
-        } else
+        } else if (message.type === "gif") {
+          return {
+            ...message._doc,
+            owner: {
+              ...message.owner._doc,
+              avatarUrl: message.owner.avatarUrl.url,
+              totalLikes: message.owner.length,
+            },
+            status: status,
+          };
+        } else if (message.type === "link")
           return {
             ...message._doc,
             owner: {
@@ -238,6 +195,90 @@ const chatRouter = (io) => {
       success: true,
     });
   });
+  function linkify(text) {
+    var urlRegex =
+      /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
+    return text.match(urlRegex);
+  }
+  router.post("/groups/messages/:groupId", verifyToken, async (req, res) => {
+    const groupId = req.params.groupId;
+    // body gửi lên là một object
+
+    /*
+    type: "image", "gif", "text"
+    
+    //Nếu là image thì thêm thuộc tính một mảng urlImages:[{url,public_id },{url,public_id},...];
+
+    //nêú là gif thì thêm thuộc tính urlGif:String là url của ảnh gif
+
+    //nếu là text thì sẽ có thuộc tính content:String nếu text có link sẽ tự chuyển kiểu là "link"
+
+    */
+    let type = req.body.type;
+    let dataLink = undefined;
+    if (req.body.content) {
+      const tolinkify = linkify(req.body.content);
+
+      if (tolinkify) {
+        const getLink = tolinkify[0];
+
+        const html = await axios.get(getLink);
+
+        const $ = cheerio.load(html.data);
+        const metaTagData = {
+          url: getLink,
+          domain: url.parse(getLink).hostname,
+          title: $('meta[name="title"]').attr("content"),
+          img: $('meta[name="image"]').attr("content"),
+          description: $('meta[name="description"]').attr("content"),
+        };
+        if (!metaTagData.title)
+          metaTagData.title = $('meta[property="og:title"]').attr("content");
+        if (!metaTagData.img)
+          metaTagData.img = $('meta[property="og:image"]').attr("content");
+        if (!metaTagData.description)
+          metaTagData.description = $('meta[property="og:description"]').attr(
+            "content"
+          );
+        dataLink = metaTagData;
+        type = "link";
+      }
+    }
+    const response = await groupChat
+      .findOneAndUpdate(
+        { _id: groupId, members: req.user.id },
+        {
+          $push: {
+            messages: {
+              ...req.body,
+              type,
+              dataLink,
+              owner: req.user.id,
+              seen: [req.user.id],
+            },
+          },
+        },
+        { new: true }
+      )
+      .populate(
+        "messages.owner",
+        "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+      );
+    if (response) {
+      const newMessage = response.messages[response.messages.length - 1];
+      io.sendMessage(response._id, newMessage);
+    } else {
+      return res.status(500).json({
+        message: "Bạn không tham gia nhóm này",
+        success: false,
+      });
+    }
+
+    res.status(200).json({
+      message: "Thành công",
+      success: true,
+    });
+  });
   router.delete("/groups/:groupId", verifyToken, async (req, res) => {
     // rời nhóm
     try {
@@ -252,11 +293,9 @@ const chatRouter = (io) => {
             $push: {
               messages: {
                 type: "text",
-                content: {
-                  text: "Đã rời nhóm",
-                },
+                content: "Đã rời nhóm",
                 owner: req.user.id,
-                seen: [],
+                seen: [req.user.id],
               },
             },
           },
@@ -280,22 +319,10 @@ const chatRouter = (io) => {
               upload.unlink(message.dataUrl.public_id);
         });
       }
-      io.membersOnChange(
-        JSON.stringify(leaveGroup._id),
-        {
-          ...leaveGroup.messages[leaveGroup.messages.length - 1]._doc,
-          status: false,
-          owner: {
-            ...leaveGroup.messages[leaveGroup.messages.length - 1].owner._doc,
-            avatarUrl:
-              leaveGroup.messages[leaveGroup.messages.length - 1].owner
-                .avatarUrl.url,
-            totalLikes:
-              leaveGroup.messages[leaveGroup.messages.length - 1].owner.likes
-                .length,
-          },
-        },
-        leaveGroup
+      io.membersOnChangeLeave(leaveGroup._id, leaveGroup, req.user.id);
+      io.sendMessage(
+        leaveGroup._id,
+        leaveGroup.messages[leaveGroup.messages.length - 1]
       );
     } catch (err) {
       console.log(err);
@@ -313,31 +340,45 @@ const chatRouter = (io) => {
           }),
         })
         .select("name");
-      const addMemberGroup = await groupChat.findByIdAndUpdate(
-        groupId,
-        {
-          $push: {
-            members: { $each: members },
-            messages: {
-              content: {
+      const addMemberGroup = await groupChat
+        .findByIdAndUpdate(
+          groupId,
+          {
+            $push: {
+              members: { $each: members },
+              messages: {
                 type: "text",
-                text:
+                content:
                   "Đã thêm " +
                   arrayUser.map((item) => item.name).join(", ") +
                   " vào nhóm",
+                owner: req.user.id,
+                seen: [req.user.id],
               },
-              owner: req.user.id,
-              seen: [req.user.id],
             },
           },
-        },
-        { upsert: true }
-      );
+          { upsert: true }
+        )
+        .populate(
+          "members",
+          "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+        )
+        .populate(
+          "messages.owner",
+          "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+        );
       if (!addMemberGroup)
         return res
           .status(400)
           .json({ message: "Không tìm thấy nhóm chat", success: false });
       res.status(200).json({ message: "Thành công", success: true });
+      for (let i = 0; i < members.length; i++) {
+        io.membersOnChangeAddToGroup(
+          addMemberGroup._id,
+          addMemberGroup,
+          members
+        );
+      }
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Lỗi không xác định", success: false });

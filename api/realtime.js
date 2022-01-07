@@ -74,7 +74,7 @@ module.exports.listen = function socket(server) {
       );
     });
 
-    socket.on("send-message", async (data) => {
+    /* socket.on("send-message", async (data) => {
       /*
       data:{
         id: group's id,
@@ -84,7 +84,7 @@ module.exports.listen = function socket(server) {
 
         nếu trong text co link, tự động kiểu sẽ là link và show link đầu tiên
       }
-      */
+     
       const getUserAuth = io.users.find((item) => {
         return item.socketId === socket.id;
       });
@@ -185,13 +185,13 @@ module.exports.listen = function socket(server) {
             }
           }
         });
-    });
-    socket.on("seen-all", (data) => {
+    }); */
+    /* socket.on("seen-all", (data) => {
       /*
       data:{
         id: groupId,
       }
-      */
+      
       const getUserAuth = io.users.find((item) => {
         return item.socketId === socket.id;
       });
@@ -217,7 +217,7 @@ module.exports.listen = function socket(server) {
             userId: getUserAuth.id,
           });
         });
-    });
+    }); */
 
     socket.on("disconnect", () => {
       const findUserDisconnect = io.users.find((item) => {
@@ -282,13 +282,63 @@ module.exports.listen = function socket(server) {
 
     io.to("important").emit("ononlines", listOnline.getUsers(1, -1).list);
   };
-
-  io.membersOnChange = async (id, msg, group) => {
-    io.in(JSON.stringify(id)).emit("new-message", {
-      groupId: id,
-      message: msg,
+  io.sendMessage = (groupId, newMessage) => {
+    if (newMessage.type === "gif")
+      io.in(JSON.stringify(groupId)).emit("new-message", {
+        groupId: JSON.stringify(groupId),
+        message: {
+          ...newMessage._doc,
+          status: false,
+          owner: {
+            ...newMessage.owner._doc,
+            avatarUrl: newMessage.owner.avatarUrl.url,
+            totalLikes: newMessage.owner.likes.length,
+          },
+        },
+      });
+    else if (newMessage.type === "image")
+      io.in(JSON.stringify(groupId)).emit("new-message", {
+        groupId: JSON.stringify(groupId),
+        message: {
+          ...newMessage._doc,
+          urlImages: newMessage.urlImages.map((image) => image.url),
+          status: false,
+          owner: {
+            ...newMessage.owner._doc,
+            avatarUrl: newMessage.owner.avatarUrl.url,
+            totalLikes: newMessage.owner.likes.length,
+          },
+        },
+      });
+    else {
+      io.in(JSON.stringify(groupId)).emit("new-message", {
+        groupId: JSON.stringify(groupId),
+        message: {
+          ...newMessage._doc,
+          status: false,
+          owner: {
+            ...newMessage.owner._doc,
+            avatarUrl: newMessage.owner.avatarUrl.url,
+            totalLikes: newMessage.owner.likes.length,
+          },
+        },
+      });
+    }
+  };
+  io.getListOnlineByGroupId = (groupId) => {
+    const clients = io.sockets.adapter.rooms.get(JSON.stringify(groupId));
+    const listIdClient = io.users.filter((user) => {
+      return clients.some((c) => c.id === user.socketId);
     });
-    io.in(JSON.stringify(id)).emit("ononlines-chat", {
+
+    return listOnline.getUsers(1, -1).list.filter((user) => {
+      return listIdClient.some(
+        (member) => JSON.stringify(member.id) === JSON.stringify(user._id)
+      );
+    });
+  };
+  io.membersOnChangeLeave = async (groupId, group, userId) => {
+    io.in(JSON.stringify(groupId)).emit("ononlines-chat", {
       list: listOnline.getUsers(1, -1).list.filter((user) => {
         return group.members.some(
           (member) => JSON.stringify(member) === JSON.stringify(user._id)
@@ -296,6 +346,58 @@ module.exports.listen = function socket(server) {
       }),
       groupId: JSON.stringify(group._id),
     });
+    const findSocket = io.users.find(
+      (user) => JSON.stringify(user.id) === JSON.stringify(userId)
+    );
+    if (findSocket)
+      io.sockets.connected[findSocket.socketId].leave(JSON.stringify(groupId));
+  };
+  io.membersOnChangeAddToGroup = async (groupId, group, userId) => {
+    io.in(JSON.stringify(groupId)).emit("ononlines-chat", {
+      list: listOnline.getUsers(1, -1).list.filter((user) => {
+        return group.members.some(
+          (member) => JSON.stringify(member) === JSON.stringify(user._id)
+        );
+      }),
+      groupId: JSON.stringify(group._id),
+    });
+    const findSocket = io.users.find(
+      (user) => JSON.stringify(user.id) === JSON.stringify(userId)
+    );
+    if (findSocket) {
+      io.sockets.connected[findSocket.socketId].join(JSON.stringify(groupId));
+      let name = group.name;
+      if (group.type === "private") {
+        if (
+          group.members.find(
+            (mem) => JSON.stringify(mem._id) !== JSON.stringify(userId)
+          )
+        )
+          name = group.members.find(
+            (mem) => JSON.stringify(mem._id) !== JSON.stringify(userId)
+          ).name;
+      }
+      io.to(findSocket.socketId).emit("new-group", {
+        ...group._doc,
+        name: name,
+        members: group.members.map((member) => {
+          return {
+            ...member._doc,
+            avatarUrl: member.avatarUrl.url,
+            totalLikes: member.likes.length,
+          };
+        }),
+        totalMembers: group.members.length,
+        lastMessage: group.messages[group.messages.length - 1],
+        messages: undefined,
+        unseen: group.messages.filter((message) => {
+          return !message.seen.some(
+            (m) => JSON.stringify(m) === JSON.stringify(req.user.id)
+          );
+        }).length,
+        ononlines: getListOnlineByGroupId(group._id),
+      });
+    }
   };
 
   io.notifyToUser = async (userId, data) => {
