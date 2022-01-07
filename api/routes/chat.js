@@ -76,38 +76,8 @@ const chatRouter = (io) => {
             };
           }),
           totalMembers: item.members.length,
-          lastMessage: item.messages[item.messages.length - 1].createdAt,
-          messages: item.messages.map((message) => {
-            const status = message.length > 1;
-            if (message.dataUrl) {
-              let dataUrl = message.dataUrl;
-              if (
-                message.type === "image" ||
-                message.type === "gif" ||
-                message.type === "video"
-              )
-                dataUrl = message.dataUrl.url;
-              return {
-                ...message._doc,
-                content: { ...message.content._doc, dataUrl: dataUrl },
-                owner: {
-                  ...message.owner._doc,
-                  avatarUrl: message.owner.avatarUrl.url,
-                  totalLikes: message.owner.length,
-                },
-                status: status,
-              };
-            } else
-              return {
-                ...message._doc,
-                owner: {
-                  ...message.owner._doc,
-                  avatarUrl: message.owner.avatarUrl.url,
-                  totalLikes: message.owner.length,
-                },
-                status: status,
-              };
-          }),
+          lastMessage: item.messages[item.messages.length - 1],
+          messages: undefined,
           unseen: item.messages.filter((message) => {
             return !message.seen.some(
               (m) => JSON.stringify(m) === JSON.stringify(req.user.id)
@@ -125,7 +95,7 @@ const chatRouter = (io) => {
   });
   router.get("/groups/:groupId", verifyToken, async (req, res) => {
     const groupId = req.params.groupId;
-    console.log(groupId);
+
     const getGroup = await groupChat
       .findOne({
         _id: groupId,
@@ -258,7 +228,18 @@ const chatRouter = (io) => {
           };
       }),
     ];
-    res.status(200).json({ data: responseMessages, success: true });
+    let limit = responseMessages.length;
+
+    let page = 1;
+    const { _limit, _page } = req.query;
+    const totalRows = responseMessages.length;
+    if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
+    if (!isNaN(parseInt(_page))) page = parseInt(_page);
+    res.status(200).json({
+      data: responseMessages.slice(limit * (page - 1), page * limit),
+      pagination: { _page: page, _limit: limit, _totalRows: totalRows },
+      success: true,
+    });
   });
   router.delete("/groups/:groupId", verifyToken, async (req, res) => {
     // rời nhóm
