@@ -30,11 +30,13 @@ const groupChatSchema = new Schema(
             type: String,
             required: true,
             enum: ["text", "image", "link", "gif"],
+            default: "text",
           },
           content: {
             type: String,
             required: false,
-            default: "",
+            default:
+              "Cái này là trường hợp không gửi lên type, hoặc type text mà không gửi content",
           },
           urlImages: {
             type: Array,
@@ -56,7 +58,13 @@ const groupChatSchema = new Schema(
             ref: "user",
           },
           seen: {
-            type: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
+            type: [
+              {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "user",
+                unique: true,
+              },
+            ],
             default: [],
           },
           createdAt: { required: true, default: new Date(), type: Date },

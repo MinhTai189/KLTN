@@ -114,7 +114,7 @@ const chatRouter = (io) => {
 
   router.get("/groups/messages/:groupId", verifyToken, async (req, res) => {
     /*
-    type: "image", "gif", "text"
+    type: "image", "gif", "text", "link"
     
     //Nếu là image thì có thuộc tính một mảng urlImages:[String,String,...];
 
@@ -149,7 +149,7 @@ const chatRouter = (io) => {
       return res
         .status(400)
         .json({ message: "Bạn không tham gia nhóm này", success: false });
-    console.log(getGroup);
+
     const responseMessages = [
       ...getGroup.messages.map((message) => {
         const status = message.seen.length > 1;
@@ -209,7 +209,7 @@ const chatRouter = (io) => {
           };
       }),
     ];
-    console.log(responseMessages);
+
     let limit = responseMessages.length;
 
     let page = 1;
@@ -243,6 +243,11 @@ const chatRouter = (io) => {
 
     */
     let type = req.body.type;
+    if (!type)
+      return res.status(400).json({
+        message: "Thiếu type",
+        success: false,
+      });
     let dataLink = undefined;
     if (req.body.content) {
       const tolinkify = linkify(req.body.content);
@@ -268,8 +273,15 @@ const chatRouter = (io) => {
           metaTagData.description = $('meta[property="og:description"]').attr(
             "content"
           );
-        dataLink = metaTagData;
-        type = "link";
+        if (
+          !metaTagData.img ||
+          !metaTagData.title ||
+          !metaTagData.description
+        ) {
+        } else {
+          dataLink = metaTagData;
+          type = "link";
+        }
       }
     }
     const response = await groupChat
