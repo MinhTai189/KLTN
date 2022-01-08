@@ -142,12 +142,16 @@ const chatRouter = (io) => {
       .populate(
         "messages.owner",
         "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+      )
+      .populate(
+        "messages.seen",
+        "avatarUrl name isAdmin _id credit email posts motels rank school likes"
       );
     if (!getGroup)
       return res
         .status(400)
         .json({ message: "Bạn không tham gia nhóm này", success: false });
-
+    console.log(getGroup);
     const responseMessages = [
       ...getGroup.messages.map((message) => {
         const status = message.seen.length > 1;
@@ -161,6 +165,14 @@ const chatRouter = (io) => {
               avatarUrl: message.owner.avatarUrl.url,
               totalLikes: message.owner.length,
             },
+            seen: message.seen.map((userseen) => {
+              return {
+                ...userseen._doc,
+                avatarUrl: userseen.avatarUrl.url,
+                totalLikes: userseen.likes.length,
+              };
+            }),
+
             status: status,
           };
         } else if (message.type === "gif") {
@@ -171,9 +183,16 @@ const chatRouter = (io) => {
               avatarUrl: message.owner.avatarUrl.url,
               totalLikes: message.owner.length,
             },
+            seen: message.seen.map((userseen) => {
+              return {
+                ...userseen._doc,
+                avatarUrl: userseen.avatarUrl.url,
+                totalLikes: userseen.likes.length,
+              };
+            }),
             status: status,
           };
-        } else if (message.type === "link")
+        } else
           return {
             ...message._doc,
             owner: {
@@ -181,10 +200,18 @@ const chatRouter = (io) => {
               avatarUrl: message.owner.avatarUrl.url,
               totalLikes: message.owner.length,
             },
+            seen: message.seen.map((userseen) => {
+              return {
+                ...userseen._doc,
+                avatarUrl: userseen.avatarUrl.url,
+                totalLikes: userseen.likes.length,
+              };
+            }),
             status: status,
           };
       }),
     ];
+    console.log(responseMessages);
     let limit = responseMessages.length;
 
     let page = 1;
