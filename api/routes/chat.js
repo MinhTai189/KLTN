@@ -117,7 +117,7 @@ const chatRouter = (io) => {
 
   router.get("/groups/messages/:groupId", verifyToken, async (req, res) => {
     /*
-    type: "image", "gif", "text"
+    type: "image", "gif", "text", "link"
     
     //Nếu là image thì có thuộc tính một mảng urlImages:[String,String,...];
 
@@ -151,7 +151,7 @@ const chatRouter = (io) => {
       return res
         .status(400)
         .json({ message: "Bạn không tham gia nhóm này", success: false });
-    console.log(getGroup);
+
     const responseMessages = [
       ...getGroup.messages.map((message) => {
         const status = message.seen.length > 1;

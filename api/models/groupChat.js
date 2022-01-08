@@ -30,11 +30,12 @@ const groupChatSchema = new Schema(
             type: String,
             required: true,
             enum: ["text", "image", "link", "gif"],
+            default: "text",
           },
           content: {
             type: String,
             required: false,
-            default: "",
+            default: "This is lỗi",
           },
           urlImages: {
             type: Array,
