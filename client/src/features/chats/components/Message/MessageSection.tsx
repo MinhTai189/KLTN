@@ -1,6 +1,10 @@
 import { Box, makeStyles, Theme } from "@material-ui/core"
 import { KeyboardArrowDown } from "@material-ui/icons"
-import { useLayoutEffect, useRef, useState } from "react"
+import { useAppSelector } from "app/hooks"
+import { selectCurrentUser } from "features/auth/authSlice"
+import { selectListMessageChat } from "features/chats/chatSlice"
+import { User } from "models"
+import { useLayoutEffect, useRef } from "react"
 import ChatInfomation from "../Chat/ChatInfomation"
 import ChatInput from "../Input/ChatInput"
 import Message from "./Message"
@@ -33,14 +37,6 @@ const useStyles = makeStyles((theme: Theme) => ({
                     height: 30,
                     width: '100%',
                 },
-
-                '& > .message': {
-                    display: 'flex',
-
-                    '&.me': {
-                        justifyContent: 'flex-end'
-                    }
-                }
             },
         },
 
@@ -58,6 +54,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const MessageSection = (props: Props) => {
     const classes = useStyles()
+    const listMessage = useAppSelector(selectListMessageChat)
 
     const scrollBottomRef = useRef<HTMLDivElement>(null)
     const messageContainerRef = useRef<HTMLElement>(null)
@@ -137,13 +134,10 @@ const MessageSection = (props: Props) => {
                         <Box className="hidden" />
                     </li>
 
-                    {new Array(21).fill(1).map((_, index) => {
-                        const isOwner = index % 2 === 0
+                    {listMessage.map(message => {
 
                         return (
-                            <li key={index} className={`message ${isOwner ? 'me' : ''}`}>
-                                <Message isOwner={isOwner} gif={index === 0} />
-                            </li>
+                            <Message key={message._id} message={message} />
                         )
                     })}
 

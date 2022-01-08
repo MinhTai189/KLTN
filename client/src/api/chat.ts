@@ -12,7 +12,7 @@ const chatApis = {
   },
   getChatMessage(params: Filter): Promise<ListResponse<ChatMessage>> {
     const url = `/chats/groups/messages/${params._groupId}`;
-    return axiosClient.post(url, params);
+    return axiosClient.get(url, { params });
   },
 };
 

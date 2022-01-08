@@ -39,3 +39,10 @@ export const SOCKET_EVENT = {
 export const VALIDATOR_IMAGE = {
   accept: '.png, .jpg, .jpeg',
 };
+
+export const TYPE_MESSAGE = {
+  text: 'text',
+  image: 'image',
+  gif: 'gif',
+  link: 'link',
+};

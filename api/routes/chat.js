@@ -123,13 +123,14 @@ const chatRouter = (io) => {
     //nếu là text thì sẽ có thuộc tính content:String 
 
     //nếu là link sẽ có thuộc tính dataLink:{  url: "",
-          					                          domain: "",
-          					                          title: "",
-          					                          img: "link image",
-          					                          description: ""}
+                                              domain: "",
+                                              title: "",
+                                              img: "link image",
+                                              description: ""}
       sẽ có trường hợp đ có title, img, description
 
     */
+    console.log("get messages");
     const groupId = req.params.groupId;
     const getGroup = await groupChat
       .findOne({

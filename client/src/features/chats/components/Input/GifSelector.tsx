@@ -14,7 +14,13 @@ const GifSelector = (props: Props) => {
 
     return (
         <Box className={classes.root}>
-
+            <ul className="list-gif">
+                {new Array(10).fill(1).map((_, index) => (
+                    <li className="gif">
+                        <img src="https://res.cloudinary.com/dpregsdt9/image/upload/v1641037503/gif/giphy_4_dbwroe.webp" alt="gif image" />
+                    </li>
+                ))}
+            </ul>
         </Box>
     )
 }
