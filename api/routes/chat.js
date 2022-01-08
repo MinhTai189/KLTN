@@ -245,6 +245,11 @@ const chatRouter = (io) => {
 
     */
     let type = req.body.type;
+    if (!type)
+      return res.status(400).json({
+        message: "Thiếu type",
+        success: false,
+      });
     let dataLink = undefined;
     if (req.body.content) {
       const tolinkify = linkify(req.body.content);

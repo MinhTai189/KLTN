@@ -35,7 +35,8 @@ const groupChatSchema = new Schema(
           content: {
             type: String,
             required: false,
-            default: "This is lỗi",
+            default:
+              "Cái này là trường hợp không gửi lên type, hoặc type text mà không gửi content",
           },
           urlImages: {
             type: Array,
