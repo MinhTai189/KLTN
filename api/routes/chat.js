@@ -281,7 +281,7 @@ const chatRouter = (io) => {
           $push: {
             messages: {
               ...req.body,
-              type,
+              type: type,
               dataLink,
               owner: req.user.id,
               seen: [req.user.id],
@@ -292,6 +292,10 @@ const chatRouter = (io) => {
       )
       .populate(
         "messages.owner",
+        "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+      )
+      .populate(
+        "messages.seen",
         "avatarUrl name isAdmin _id credit email posts motels rank school likes"
       );
     if (response) {
@@ -333,6 +337,10 @@ const chatRouter = (io) => {
         )
         .populate(
           "messages.owner",
+          "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+        )
+        .populate(
+          "messages.seen",
           "avatarUrl name isAdmin _id credit email posts motels rank school likes"
         );
       if (!leaveGroup)
@@ -395,6 +403,10 @@ const chatRouter = (io) => {
         )
         .populate(
           "messages.owner",
+          "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+        )
+        .populate(
+          "messages.seen",
           "avatarUrl name isAdmin _id credit email posts motels rank school likes"
         );
       if (!addMemberGroup)
