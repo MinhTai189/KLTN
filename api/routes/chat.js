@@ -211,7 +211,7 @@ const chatRouter = (io) => {
           };
       }),
     ];
-    console.log(responseMessages);
+
     let limit = responseMessages.length;
 
     let page = 1;
@@ -275,8 +275,15 @@ const chatRouter = (io) => {
           metaTagData.description = $('meta[property="og:description"]').attr(
             "content"
           );
-        dataLink = metaTagData;
-        type = "link";
+        if (
+          !metaTagData.img ||
+          !metaTagData.title ||
+          !metaTagData.description
+        ) {
+        } else {
+          dataLink = metaTagData;
+          type = "link";
+        }
       }
     }
     const response = await groupChat

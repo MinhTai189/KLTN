@@ -58,7 +58,13 @@ const groupChatSchema = new Schema(
             ref: "user",
           },
           seen: {
-            type: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
+            type: [
+              {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "user",
+                unique: true,
+              },
+            ],
             default: [],
           },
           createdAt: { required: true, default: new Date(), type: Date },
