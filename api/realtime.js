@@ -294,6 +294,13 @@ module.exports.listen = function socket(server) {
             avatarUrl: newMessage.owner.avatarUrl.url,
             totalLikes: newMessage.owner.likes.length,
           },
+          seen: newMessage.seen.map((userseen) => {
+            return {
+              ...userseen._doc,
+              avatarUrl: userseen.avatarUrl.url,
+              totalLikes: userseen.likes.length,
+            };
+          }),
         },
       });
     else if (newMessage.type === "image")
@@ -308,6 +315,13 @@ module.exports.listen = function socket(server) {
             avatarUrl: newMessage.owner.avatarUrl.url,
             totalLikes: newMessage.owner.likes.length,
           },
+          seen: newMessage.seen.map((userseen) => {
+            return {
+              ...userseen._doc,
+              avatarUrl: userseen.avatarUrl.url,
+              totalLikes: userseen.likes.length,
+            };
+          }),
         },
       });
     else {
@@ -321,14 +335,22 @@ module.exports.listen = function socket(server) {
             avatarUrl: newMessage.owner.avatarUrl.url,
             totalLikes: newMessage.owner.likes.length,
           },
+          seen: newMessage.seen.map((userseen) => {
+            return {
+              ...userseen._doc,
+              avatarUrl: userseen.avatarUrl.url,
+              totalLikes: userseen.likes.length,
+            };
+          }),
         },
       });
     }
   };
   io.getListOnlineByGroupId = (groupId) => {
     const clients = io.sockets.adapter.rooms.get(JSON.stringify(groupId));
+    console.log(clients);
     const listIdClient = io.users.filter((user) => {
-      return clients.some((c) => c.id === user.socketId);
+      return Object.keys(clients).some((c) => c.id === user.socketId);
     });
 
     return listOnline.getUsers(1, -1).list.filter((user) => {

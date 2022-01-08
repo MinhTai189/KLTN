@@ -39,10 +39,13 @@ const groupChatSchema = new Schema(
           urlImages: {
             type: Array,
             required: false,
+            default: [],
           },
           urlGif: {
             type: String,
             required: false,
+            default:
+              "https://media2.giphy.com/media/JNsDdfwziM7o2yRXqY/giphy.gif?cid=ecf05e47amogfm58zvhevhfde0j8lkujd4qt8yk39209qb4v&rid=giphy.gif&ct=g",
           },
           dataLink: {
             type: Object,
