@@ -30,6 +30,7 @@ export interface Filter {
   _subject?: string;
   _read?: boolean[];
   _count?: number;
+  _groupId?: string;
 
   [key: string]: any;
 }

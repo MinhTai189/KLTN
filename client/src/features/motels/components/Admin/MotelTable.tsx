@@ -283,7 +283,6 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
                 expandedRowRender: record => (
                     <Table columns={roomColumns} dataSource={record.room} pagination={false} size='small' />
                 ),
-                // rowExpandable: record => record.number,
             }}
         />
     )

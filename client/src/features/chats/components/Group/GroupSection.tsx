@@ -1,8 +1,10 @@
 import { Box, Theme } from "@material-ui/core"
 import { Search } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
-import { useAppSelector } from "app/hooks"
-import { selectListGroupChat } from "features/chats/chatSlice"
+import { useAppDispatch, useAppSelector } from "app/hooks"
+import { chatActions, selectFilterMessageChat, selectListGroupChat } from "features/chats/chatSlice"
+import { useEffect, useState } from "react"
+import { useLocation } from "react-router-dom"
 import GroupItem from "./GroupItem"
 
 interface Props {
@@ -75,7 +77,30 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const GroupSection = (props: Props) => {
     const classes = useStyles()
+    const dispatch = useAppDispatch()
+
+    const filterMessage = useAppSelector(selectFilterMessageChat)
     const listGroup = useAppSelector(selectListGroupChat)
+    const location = useLocation<{ groupId: string }>()
+
+    const [activedGroup, setActivedGroup] = useState('')
+
+    useEffect(() => {
+        if (location.state) {
+            setActivedGroup(location.state.groupId)
+        } else {
+            listGroup.length > 0 && setActivedGroup(listGroup[0]._id)
+        }
+    }, [location, listGroup])
+
+    useEffect(() => {
+        if (activedGroup !== '') {
+            dispatch(chatActions.getChatMessage({
+                ...filterMessage,
+                _groupId: activedGroup
+            }))
+        }
+    }, [activedGroup])
 
     return (
         <Box className={classes.root} component='section'>
@@ -87,11 +112,17 @@ const GroupSection = (props: Props) => {
 
             <Box className="group-wrapper">
                 <ul className="list-group">
-                    {listGroup.map(group => (
-                        <li key={group._id} className="group">
-                            <GroupItem group={group} />
+                    {listGroup.map((group, index) => {
+                        const actived = activedGroup === group._id
+
+                        return (<li key={group._id} className="group">
+                            <GroupItem
+                                group={group}
+                                actived={actived}
+                            />
                         </li>
-                    ))}
+                        )
+                    })}
                 </ul>
             </Box>
         </Box>

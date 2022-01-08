@@ -2,19 +2,27 @@ import { Owner } from './Motel';
 
 export interface ChatGroup {
   _id: string;
-  // lastMessage:
+  lastMessage: ChatMessage;
   members: Owner[];
   name: string;
   totalMembers: number;
   type: TypeGroup;
   unseen: number;
+  ononlines: Owner[];
   createdAt: string;
   updatedAt: string;
 }
 
-// export interface ChatMessage {
-//   content:
-// }
+export interface ChatMessage {
+  _id: string;
+  content: string;
+  owner: Owner;
+  seen: string;
+  type: TypeMessage;
+  urlImages: string[];
+  urlGif: string;
+  createdAt: string;
+}
 
 export interface ChatMinimalGroup extends AddGroup {
   _id: string;
@@ -29,3 +37,4 @@ export interface AddGroup {
 }
 
 type TypeGroup = 'private' | 'public';
+type TypeMessage = 'text' | 'gif' | 'image' | 'link';
