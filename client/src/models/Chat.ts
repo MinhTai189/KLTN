@@ -21,6 +21,7 @@ export interface ChatMessage {
   type: TypeMessage;
   urlImages: string[];
   urlGif: string;
+  dataLink: PreviewLink;
   createdAt: string;
 }
 
@@ -34,6 +35,14 @@ export interface AddGroup {
   members: string[];
   name: string;
   type: TypeGroup;
+}
+
+export interface PreviewLink {
+  url: string;
+  domain: string;
+  title: string;
+  img: string;
+  description: string;
 }
 
 type TypeGroup = 'private' | 'public';

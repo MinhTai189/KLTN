@@ -1,8 +1,9 @@
 import { Box, Theme, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
+import { PreviewLink } from "models"
 
 interface Props {
-
+    dataLink: PreviewLink
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -38,25 +39,27 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const LinkPreview = (props: Props) => {
+const LinkPreview = ({ dataLink }: Props) => {
     const classes = useStyles()
+
+    const { url, img, title, description, domain } = dataLink
 
     return (
         <Box className={classes.root}>
-            <a href="https://youtube.com">
-                <img src="https://external.xx.fbcdn.net/safe_image.php?d=AQExrCwqb1B7HE9t&w=300&h=157&url=https%3A%2F%2Fi.ytimg.com%2Fvi%2FUgsB6fONvLc%2Fmaxresdefault.jpg&cfs=1&ext=emg0&_nc_oe=6f5b5&_nc_sid=06c271&ccb=3-5&gt=1&_nc_hash=AQFjp9L8UeMdFsjN" className="thumbnail" />
+            <a href={url || '#'} target='_blank'>
+                <img src={img} className="thumbnail" />
 
                 <Box className='detail'>
                     <Typography className='title' variant='h5'>
-                        Quá Ghê Và Đây Là Florentino
+                        {title}
                     </Typography>
 
                     <Typography className="desc">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis, dolore doloremque soluta provident, fuga unde eaque laborum impedit vero corrupti quam! Nobis aliquid laudantium accusantium deserunt quis hic consequatur animi?
+                        {description}
                     </Typography>
 
                     <Typography className='domain'>
-                        youtube.com
+                        {domain}
                     </Typography>
                 </Box>
             </a>

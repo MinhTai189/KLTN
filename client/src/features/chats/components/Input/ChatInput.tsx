@@ -1,12 +1,12 @@
-import { Box, Button, IconButton, makeStyles, Theme, Tooltip } from "@material-ui/core"
+import { Box, Button, IconButton, makeStyles, Theme, Tooltip } from "@material-ui/core";
+import { Image, Send } from "@material-ui/icons";
 import { ReactComponent as Emoij } from 'assets/images/emoij.svg';
 import { ReactComponent as Gif } from 'assets/images/gif-icon.svg';
-import { useRef, useState } from "react";
-import Picker from 'emoji-picker-react';
 import { DetectClickOutsize } from "components/Common/DetectClickOutsize";
-import { Image, Movie, Send } from "@material-ui/icons";
 import { VALIDATOR_IMAGE } from "constant/constant";
-
+import Picker from 'emoji-picker-react';
+import { useRef, useState } from "react";
+import GifSelector from './GifSelector'
 
 interface Props {
 
@@ -29,6 +29,10 @@ const useStyles = makeStyles((theme: Theme) => ({
                 '& svg': {
                     height: 22,
                 }
+            },
+
+            '& .gif-wrapper': {
+                position: 'relative'
             }
         },
 
@@ -81,6 +85,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ChatInput = (props: Props) => {
     const classes = useStyles()
     const [showEmoji, setShowEmoji] = useState(false)
+    const [showGifSelector, setShowGifSelector] = useState(false)
 
     const addImgInputRef = useRef<HTMLInputElement>(null)
     const areaRef = useRef<HTMLAreaElement>(null)
@@ -106,11 +111,20 @@ const ChatInput = (props: Props) => {
                     </Button>
                 </Tooltip>
 
-                <Tooltip title='Chèn ảnh GIF'>
-                    <Button className='control'>
-                        <Gif />
-                    </Button>
-                </Tooltip>
+                <Box className="gif-wrapper" component='span'>
+                    <Tooltip title='Chèn ảnh GIF'>
+                        <Button
+                            className='control'
+                            onClick={() => setShowGifSelector(true)}
+                        >
+                            <Gif />
+                        </Button>
+                    </Tooltip>
+
+                    {showGifSelector && <DetectClickOutsize cb={() => setTimeout(() => setShowGifSelector(false), 100)}>
+                        <GifSelector />
+                    </DetectClickOutsize>}
+                </Box>
             </Box>
 
             <Box className="input" component='span'>

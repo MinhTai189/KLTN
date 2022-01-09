@@ -114,7 +114,7 @@ const Message = ({ message }: Props) => {
 
     const [isOwner, setIsOwner] = useState(false)
 
-    const { type } = message
+    const { type, content, urlImages, urlGif, dataLink } = message
 
     useEffect(() => {
         if (currentUser) {
@@ -129,26 +129,26 @@ const Message = ({ message }: Props) => {
                     <Avatar>U</Avatar>
                 </Box>
 
-                <Box className='wrapper preview'>
+                <Box className={`wrapper ${type === TYPE_MESSAGE.link ? 'preview' : ''}`}>
                     <Box className='body'>
                         {type === TYPE_MESSAGE.text && <Typography className='content'>
-                            Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                            {content}
                         </Typography>}
 
                         {type === TYPE_MESSAGE.link && <Typography className='content'>
-                            Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                            {content}
                         </Typography>}
 
-                        {type === TYPE_MESSAGE.image && <Album />}
+                        {type === TYPE_MESSAGE.image && <Album images={urlImages} />}
 
-                        {type === TYPE_MESSAGE.gif && <GifPlayer />}
+                        {type === TYPE_MESSAGE.gif && <GifPlayer gif={urlGif} />}
 
                         <Typography className='date' component='small'>
                             12:30, 12/12/1021&#xa0;&#xa0;&#x22C5;&#xa0;&#xa0;Đã xem
                         </Typography>
                     </Box>
 
-                    {type === TYPE_MESSAGE.link && <LinkPreview />}
+                    {type === TYPE_MESSAGE.link && <LinkPreview dataLink={dataLink} />}
                 </Box>
 
                 {isOwner && <Box className='btn-control' component='span'>

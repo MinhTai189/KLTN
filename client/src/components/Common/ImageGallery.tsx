@@ -3,24 +3,10 @@ import { Modal } from 'antd';
 import Gallery from 'react-image-gallery';
 
 interface Props {
+    images: string[]
     open: boolean
     onCancel: () => void
 }
-
-const images = [
-    {
-        original: 'https://picsum.photos/id/1018/1000/600/',
-        thumbnail: 'https://picsum.photos/id/1018/250/150/',
-    },
-    {
-        original: 'https://picsum.photos/id/1015/1000/600/',
-        thumbnail: 'https://picsum.photos/id/1015/250/150/',
-    },
-    {
-        original: 'https://picsum.photos/id/1019/1000/600/',
-        thumbnail: 'https://picsum.photos/id/1019/250/150/',
-    },
-];
 
 const useStyles = makeStyles({
     root: {
@@ -39,8 +25,12 @@ const useStyles = makeStyles({
     }
 })
 
-const ImageGallery = ({ open, onCancel }: Props) => {
+const ImageGallery = ({ images, open, onCancel }: Props) => {
     const classes = useStyles()
+    const listImage = images.map(image => ({
+        original: image,
+        thumbnail: image
+    }))
 
     return (
         <Modal
@@ -51,7 +41,7 @@ const ImageGallery = ({ open, onCancel }: Props) => {
             width={1000}
             destroyOnClose
         >
-            <Gallery items={images} lazyLoad />
+            <Gallery items={listImage} lazyLoad />
         </Modal>
     )
 }

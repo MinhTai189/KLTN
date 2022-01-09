@@ -293,28 +293,33 @@ export const ProfieDetail = ({ user, init }: Props) => {
         if (!user || !currentUser.groupPrivate)
             return
 
-        const group = getChatGroupByUserId(currentUser.groupPrivate, user._id)
-        let groupId = group?._id
+        try {
+            const group = getChatGroupByUserId(currentUser.groupPrivate, user._id)
+            let groupId = group ? group._id : ''
 
-        if (!groupId) {
-            dispatch(loadingActions.openLoading())
+            if (!groupId) {
+                dispatch(loadingActions.openLoading())
 
-            const response: Response<string> = await chatApis.addChatGroup({
-                members: [user._id],
-                name: '',
-                type: 'private'
-            })
+                const response: Response<string> = await chatApis.addChatGroup({
+                    members: [user._id],
+                    name: '',
+                    type: 'private'
+                })
 
-            groupId = response.data
-            dispatch(loadingActions.closeLoading())
-        }
-
-        history.push({
-            pathname: '/chats',
-            state: {
-                groupId
+                groupId = response?.data
+                dispatch(loadingActions.closeLoading())
             }
-        })
+
+            history.push({
+                pathname: '/chats',
+                state: {
+                    groupId
+                }
+            })
+        } catch (error: any) {
+            dispatch(loadingActions.closeLoading())
+            toast.error(error.response.data.message)
+        }
     }
 
     return (

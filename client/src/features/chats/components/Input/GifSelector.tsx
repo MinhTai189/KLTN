@@ -1,12 +1,65 @@
 import { Box, Theme } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
+import { LIST_GIF } from "constant/constant"
 
 interface Props {
 
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-    root: {}
+    root: {
+        width: '100vw',
+        maxWidth: 450,
+        height: 500,
+        background: '#fff',
+        boxShadow: theme.shadows[5],
+        position: 'absolute',
+        bottom: '150%',
+        left: 0,
+        padding: theme.spacing(1),
+        borderRadius: 5,
+
+        '& .wrapper': {
+            overflowY: 'scroll',
+            overflowX: 'hidden',
+            width: '100%',
+            height: '100%',
+
+            '& .list-gif': {
+                width: '100%',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: theme.spacing(1),
+
+                '& .gif': {
+                    width: '100%',
+                    aspectRatio: '1 / 1',
+                    cursor: 'pointer',
+                    overflow: 'hidden',
+                    position: 'relative',
+
+                    '&::after': {
+                        content: '""',
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'rgba(0, 0, 0, 0.8)',
+                        display: 'none',
+                        zIndex: 3
+                    },
+
+                    '&:hover::after': {
+                        display: 'block'
+                    },
+
+                    '& img': {
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                    }
+                }
+            }
+        }
+    }
 }))
 
 const GifSelector = (props: Props) => {
@@ -14,13 +67,15 @@ const GifSelector = (props: Props) => {
 
     return (
         <Box className={classes.root}>
-            <ul className="list-gif">
-                {new Array(10).fill(1).map((_, index) => (
-                    <li className="gif">
-                        <img src="https://res.cloudinary.com/dpregsdt9/image/upload/v1641037503/gif/giphy_4_dbwroe.webp" alt="gif image" />
-                    </li>
-                ))}
-            </ul>
+            <Box className="wrapper">
+                <ul className="list-gif">
+                    {LIST_GIF.map((gif, index) => (
+                        <li key={index} className="gif">
+                            <img src={gif} alt="gif image" />
+                        </li>
+                    ))}
+                </ul>
+            </Box>
         </Box>
     )
 }

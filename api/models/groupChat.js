@@ -62,7 +62,6 @@ const groupChatSchema = new Schema(
               {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "user",
-                unique: true,
               },
             ],
             default: [],

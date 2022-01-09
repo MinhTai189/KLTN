@@ -1,22 +1,23 @@
 import { Box, makeStyles, Theme } from '@material-ui/core'
 
 interface Props {
-
+    gif: string
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: 'fit-content',
         height: 'fit-content',
+        marginBottom: theme.spacing(1)
     }
 }))
 
-const GifPlayer = (props: Props) => {
+const GifPlayer = ({ gif }: Props) => {
     const classes = useStyles()
 
     return (
         <Box className={classes.root}>
-            <img className='gif' src="https://media3.giphy.com/media/peQSglDPSoUfhFcqeR/200.webp" alt="gif image" />
+            <img className='gif' src={gif} alt="gif image" loading='lazy' />
         </Box>
     )
 }

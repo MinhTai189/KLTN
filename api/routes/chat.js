@@ -10,48 +10,52 @@ const cheerio = require("cheerio");
 const url = require("url");
 const chatRouter = (io) => {
   router.post("/groups", verifyToken, async (req, res) => {
-    let { members, name, type } = req.body;
-    if (
-      !members.some(
-        (item) => JSON.stringify(item) === JSON.stringify(req.user.id)
+    try {
+      let { members, name, type } = req.body;
+      if (
+        !members.some(
+          (item) => JSON.stringify(item) === JSON.stringify(req.user.id)
+        )
       )
-    )
-      members = [...members, req.user.id];
+        members = [...members, req.user.id];
 
-    const newGroupChat = new groupChat({
-      name,
-      members,
-      type,
-      messages: [
-        {
-          type: "text",
-          content: "Đã tạo nhóm chat mới",
-          owner: req.user.id,
-          seen: [req.user.id],
-        },
-      ],
-    });
-    await newGroupChat.save();
+      const newGroupChat = new groupChat({
+        name,
+        members,
+        type,
+        messages: [
+          {
+            type: "text",
+            content: "Đã tạo nhóm chat mới",
+            owner: req.user.id,
+            seen: [req.user.id],
+          },
+        ],
+      });
+      await newGroupChat.save();
 
-    res
-      .status(200)
-      .json({ message: "Thành công", success: true, data: newGroupChat._id });
-    const newGroup = await groupChat
-      .findById(newGroupChat._id)
-      .populate(
-        "members",
-        "avatarUrl name isAdmin _id credit email posts motels rank school likes"
-      )
-      .populate(
-        "messages.owner",
-        "avatarUrl name isAdmin _id credit email posts motels rank school likes"
-      );
-    for (let i = 0; i < newGroup.members.length; i++) {
-      io.membersOnChangeAddToGroup(
-        newGroup._id,
-        newGroup,
-        newGroup.members[i]._id
-      );
+      res
+        .status(200)
+        .json({ message: "Thành công", success: true, data: newGroupChat._id });
+      const newGroup = await groupChat
+        .findById(newGroupChat._id)
+        .populate(
+          "members",
+          "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+        )
+        .populate(
+          "messages.owner",
+          "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+        );
+      for (let i = 0; i < newGroup.members.length; i++) {
+        io.membersOnChangeAddToGroup(
+          newGroup._id,
+          newGroup,
+          newGroup.members[i]._id
+        );
+      }
+    } catch (err) {
+      console.log(err);
     }
   });
 

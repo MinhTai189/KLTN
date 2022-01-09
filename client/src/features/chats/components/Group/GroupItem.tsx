@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) => ({
             width: 50,
             height: 50,
             marginRight: theme.spacing(1),
+            flexShrink: 0,
             position: 'relative',
 
             '&.one .MuiAvatar-root': {
@@ -86,7 +87,6 @@ const useStyles = makeStyles((theme: Theme) => ({
                 },
 
                 '& .date': {
-                    // : 110,
                     fontSize: '0.7rem',
                     color: theme.palette.text.secondary
                 }

@@ -4,6 +4,7 @@ import ImageGallery from "components/Common/ImageGallery"
 import { useState } from "react"
 
 interface Props {
+    images: string[]
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -12,15 +13,22 @@ const useStyles = makeStyles((theme: Theme) => ({
         gridTemplateColumns: '1fr 1fr 1fr',
         maxWidth: 350,
         gap: theme.spacing(0.5),
+        marginBottom: theme.spacing(1),
 
-        '& img': {
+        '& .img': {
+            background: '#fff',
             width: '100%',
             aspectRatio: '1 / 1',
-            objectFit: 'cover',
             cursor: 'pointer',
-            transition: '300ms',
 
-            '&:hover': {
+            '& img': {
+                objectFit: 'cover',
+                width: '100%',
+                height: '100%',
+                transition: '300ms',
+            },
+
+            '&:hover img': {
                 filter: 'brightness(60%)'
             },
 
@@ -43,14 +51,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const Album = ({ }: Props) => {
+const Album = ({ images }: Props) => {
     const classes = useStyles()
     const [showGallery, setShowGallery] = useState(false)
 
     return (
         <>
             <Box className={classes.root}>
-                {new Array(3).fill(1).map((_, index, arr) => {
+                {images.map((image, index, arr) => {
                     let classSpan = ''
 
                     if (arr.length % 3 === 2) {
@@ -63,18 +71,21 @@ const Album = ({ }: Props) => {
                         classSpan = 'span-3'
 
                     return (
-                        <img
+                        <span
                             key={index}
-                            className={classSpan}
-                            src="https://source.unsplash.com/random/?city,night"
-                            loading="lazy"
+                            className={`img ${classSpan}`}
                             onClick={() => setShowGallery(true)}
-                        />
+                        >
+                            <img
+                                src={image}
+                                loading="lazy"
+                            />
+                        </span>
                     )
                 })}
             </Box>
 
-            <ImageGallery open={showGallery} onCancel={() => setShowGallery(false)} />
+            <ImageGallery images={images} open={showGallery} onCancel={() => setShowGallery(false)} />
         </>
     )
 }
