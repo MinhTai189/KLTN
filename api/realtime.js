@@ -50,18 +50,19 @@ module.exports.listen = function socket(server) {
               .find({ members: data.id })
               .select("_id")
               .then((res) => {
-                res.forEach((item) => {
-                  socket.join(JSON.stringify(item._id));
-                  io.to(JSON.stringify(item._id)).emit("ononlines-chat", {
-                    list: listOnline.getUsers(1, -1).list.filter((user) => {
-                      return item.members.some(
-                        (member) =>
-                          JSON.stringify(member) === JSON.stringify(user._id)
-                      );
-                    }),
-                    groupId: JSON.stringify(item._id),
+                if (res)
+                  res.forEach((item) => {
+                    socket.join(JSON.stringify(item._id));
+                    io.to(JSON.stringify(item._id)).emit("ononlines-chat", {
+                      list: listOnline.getUsers(1, -1).list.filter((user) => {
+                        return item.members.some(
+                          (member) =>
+                            JSON.stringify(member) === JSON.stringify(user._id)
+                        );
+                      }),
+                      groupId: JSON.stringify(item._id),
+                    });
                   });
-                });
               })
               .catch((err) => {
                 console.log(err);

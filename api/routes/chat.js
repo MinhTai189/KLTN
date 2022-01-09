@@ -56,6 +56,7 @@ const chatRouter = (io) => {
       }
     } catch (err) {
       console.log(err);
+      res.status(500).json({ success: false, message: "Lỗi không xác định" });
     }
   });
 
@@ -134,7 +135,6 @@ const chatRouter = (io) => {
       sẽ có trường hợp đ có title, img, description
 
     */
-    console.log("get messages");
     const groupId = req.params.groupId;
     const getGroup = await groupChat
       .findOne({
