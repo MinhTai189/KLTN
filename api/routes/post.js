@@ -148,10 +148,12 @@ const postRouter = (io) => {
         _keysearch,
         _role,
         _subject,
+        _type,
         _order,
         _sort,
         _limit,
         _page,
+        _block,
         _hashtag,
       } = req.query;
       let posts = await post
@@ -216,6 +218,13 @@ const postRouter = (io) => {
         responsePosts = responsePosts.filter((item) => {
           return JSON.stringify(item.owner._id) === JSON.stringify(_user);
         });
+      if (typeof _block === "string") {
+        let block = false;
+        if (_block.toLowerCase() === "true") block = true;
+        responsePosts = responsePosts.filter((item) => {
+          return item.block === block;
+        });
+      }
       if (typeof _role === "string")
         responsePosts = responsePosts.filter((item) => {
           let role = true;
@@ -226,6 +235,11 @@ const postRouter = (io) => {
         responsePosts = responsePosts.filter((item) => {
           return JSON.stringify(item.subject._id) === JSON.stringify(_subject);
         });
+      if (typeof _type === "string")
+        if (!isNaN(parseInt(_type)))
+          responsePosts = responsePosts.filter((item) => {
+            return item.type === parseInt(_type);
+          });
       if (_order && _sort)
         if (_sort === "createdat") {
           if (_order === "asc")
