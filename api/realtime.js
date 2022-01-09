@@ -48,19 +48,19 @@ module.exports.listen = function socket(server) {
             });
             groupChat
               .find({ members: data.id })
-              .select("_id")
+              .select("_id members")
               .then((res) => {
                 if (res)
                   res.forEach((item) => {
-                    socket.join(JSON.stringify(item._id));
-                    io.to(JSON.stringify(item._id)).emit("ononlines-chat", {
+                    socket.join(item._id.toString());
+                    io.to(item._id.toString()).emit("ononlines-chat", {
                       list: listOnline.getUsers(1, -1).list.filter((user) => {
                         return item.members.some(
                           (member) =>
                             JSON.stringify(member) === JSON.stringify(user._id)
                         );
                       }),
-                      groupId: JSON.stringify(item._id),
+                      groupId: item._id.toString(),
                     });
                   });
               })
@@ -233,14 +233,14 @@ module.exports.listen = function socket(server) {
           .select("_id members")
           .then((res) => {
             res.forEach((group) => {
-              io.in(JSON.stringify(group._id)).emit("ononlines-chat", {
+              io.in(group._id.toString()).emit("ononlines-chat", {
                 list: listOnline.getUsers(1, -1).list.filter((user) => {
                   return group.members.some(
                     (member) =>
                       JSON.stringify(member) === JSON.stringify(user._id)
                   );
                 }),
-                groupId: JSON.stringify(group._id),
+                groupId: group._id.toString(),
               });
             });
           });
@@ -285,8 +285,8 @@ module.exports.listen = function socket(server) {
   };
   io.sendMessage = (groupId, newMessage) => {
     if (newMessage.type === "gif")
-      io.in(JSON.stringify(groupId)).emit("new-message", {
-        groupId: JSON.stringify(groupId),
+      io.in(groupId.toString()).emit("new-message", {
+        groupId: groupId.toString(),
         message: {
           ...newMessage._doc,
           status: false,
@@ -305,8 +305,8 @@ module.exports.listen = function socket(server) {
         },
       });
     else if (newMessage.type === "image")
-      io.in(JSON.stringify(groupId)).emit("new-message", {
-        groupId: JSON.stringify(groupId),
+      io.in(groupId.toString()).emit("new-message", {
+        groupId: groupId.toString(),
         message: {
           ...newMessage._doc,
           urlImages: newMessage.urlImages.map((image) => image.url),
@@ -326,8 +326,8 @@ module.exports.listen = function socket(server) {
         },
       });
     else {
-      io.in(JSON.stringify(groupId)).emit("new-message", {
-        groupId: JSON.stringify(groupId),
+      io.in(groupId.toString()).emit("new-message", {
+        groupId: groupId.toString(),
         message: {
           ...newMessage._doc,
           status: false,
@@ -348,12 +348,18 @@ module.exports.listen = function socket(server) {
     }
   };
   io.getListOnlineByGroupId = (groupId) => {
-    const clients = io.sockets.adapter.rooms.get(JSON.stringify(groupId));
-    console.log(clients);
-    const listIdClient = io.users.filter((user) => {
-      return Object.keys(clients).some((c) => c.id === user.socketId);
-    });
+    return getListOnlineByGroupId(groupId);
+  };
+  getListOnlineByGroupId = (groupId) => {
+    const clients = io.sockets.adapter.rooms.get(groupId.toString());
 
+    if (!clients) return [];
+
+    const listIdClient = io.users.filter((user) => {
+      return Array.from(clients).some((c) => {
+        return c === user.socketId;
+      });
+    });
     return listOnline.getUsers(1, -1).list.filter((user) => {
       return listIdClient.some(
         (member) => JSON.stringify(member.id) === JSON.stringify(user._id)
@@ -361,34 +367,37 @@ module.exports.listen = function socket(server) {
     });
   };
   io.membersOnChangeLeave = async (groupId, group, userId) => {
-    io.in(JSON.stringify(groupId)).emit("ononlines-chat", {
+    io.in(groupId.toString()).emit("ononlines-chat", {
       list: listOnline.getUsers(1, -1).list.filter((user) => {
         return group.members.some(
           (member) => JSON.stringify(member) === JSON.stringify(user._id)
         );
       }),
-      groupId: JSON.stringify(group._id),
+      groupId: group._id.toString(),
     });
     const findSocket = io.users.find(
       (user) => JSON.stringify(user.id) === JSON.stringify(userId)
     );
     if (findSocket)
-      io.sockets.connected[findSocket.socketId].leave(JSON.stringify(groupId));
+      io.sockets.sockets.get(findSocket.socketId).leave(groupId.toString());
   };
   io.membersOnChangeAddToGroup = async (groupId, group, userId) => {
-    io.in(JSON.stringify(groupId)).emit("ononlines-chat", {
+    io.in(groupId.toString()).emit("ononlines-chat", {
       list: listOnline.getUsers(1, -1).list.filter((user) => {
         return group.members.some(
           (member) => JSON.stringify(member) === JSON.stringify(user._id)
         );
       }),
-      groupId: JSON.stringify(group._id),
+      groupId: group._id.toString(),
     });
     const findSocket = io.users.find(
       (user) => JSON.stringify(user.id) === JSON.stringify(userId)
     );
+
+    if (!findSocket) return;
+
     if (findSocket) {
-      io.sockets.connected[findSocket.socketId].join(JSON.stringify(groupId));
+      io.sockets.sockets.get(findSocket.socketId).join(groupId.toString());
       let name = group.name;
       if (group.type === "private") {
         if (
@@ -415,10 +424,10 @@ module.exports.listen = function socket(server) {
         messages: undefined,
         unseen: group.messages.filter((message) => {
           return !message.seen.some(
-            (m) => JSON.stringify(m) === JSON.stringify(req.user.id)
+            (m) => JSON.stringify(m) === JSON.stringify(userId)
           );
         }).length,
-        ononlines: getListOnlineByGroupId(group._id),
+        ononlines: io.getListOnlineByGroupId(group._id),
       });
     }
   };
@@ -468,17 +477,17 @@ module.exports.listen = function socket(server) {
     io.emit("notify", { ...notify });
   };
 
-  io.joinRoomIfOnonline = async (userId, groupId) => {
-    const getUserAuth = io.users.find((item) => {
-      return JSON.stringify(item.id) === JSON.stringify(userId);
-    });
-    if (!getUserAuth) {
-      console.log("Chua xac thuc");
-      return;
-    } else {
-      io.sockets.connected[getUserAuth.socketId].join(groupId);
-    }
-  };
+  // io.joinRoomIfOnonline = async (userId, groupId) => {
+  //   const getUserAuth = io.users.find((item) => {
+  //     return JSON.stringify(item.id) === JSON.stringify(userId);
+  //   });
+  //   if (!getUserAuth) {
+  //     console.log("Chua xac thuc");
+  //     return;
+  //   } else {
+  //     io.sockets.connected[getUserAuth.socketId].join(groupId);
+  //   }
+  // };
   io.auth = (accessToken) => {
     JWT.verify(accessToken, process.env.accessToken, async (err, data) => {
       if (err) {
