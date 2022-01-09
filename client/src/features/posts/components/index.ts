@@ -6,3 +6,4 @@ export * from './PostView/Common/ListTool';
 export * from './PostView/Common/BtnAction';
 export * from './PostView/Post/ModalStaticAction';
 export * from './Admin/PostTable';
+export * from './Admin/Operation';

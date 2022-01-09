@@ -25,6 +25,14 @@ export interface ChatMessage {
   createdAt: string;
 }
 
+export interface AddChatMessage {
+  groupId: string;
+  content?: string;
+  type: TypeMessage;
+  urlImages?: string[];
+  urlGif?: string;
+}
+
 export interface ChatMinimalGroup extends AddGroup {
   _id: string;
   createdAt: string;
@@ -46,4 +54,4 @@ export interface PreviewLink {
 }
 
 type TypeGroup = 'private' | 'public';
-type TypeMessage = 'text' | 'gif' | 'image' | 'link';
+export type TypeMessage = 'text' | 'gif' | 'image' | 'link';

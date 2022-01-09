@@ -1,7 +1,7 @@
+import { FileDoneOutlined, HomeOutlined, PieChartOutlined, ReadOutlined, SolutionOutlined, UserOutlined } from '@ant-design/icons'
 import { Layout, Menu } from 'antd'
-import { PieChartOutlined, UserOutlined, HomeOutlined, FileDoneOutlined, SolutionOutlined, ReadOutlined } from '@ant-design/icons'
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 
 interface Props {
 
@@ -10,14 +10,16 @@ interface Props {
 const { Sider } = Layout
 
 export const AdminSider = (props: Props) => {
+    const location = useLocation()
     const [collapsed, setCollapsed] = useState(false)
 
     return (
         <Sider
             collapsible
             collapsed={collapsed}
-            onCollapse={(collapsed) => setCollapsed(collapsed)}>
-            <Menu defaultSelectedKeys={['dashboard']} mode="inline" theme='dark'>
+            onCollapse={(collapsed) => setCollapsed(collapsed)}
+        >
+            <Menu defaultSelectedKeys={[location.pathname.split('/')[2]]} mode="inline" theme='dark'>
                 <Menu.Item key='dashboard' icon={<PieChartOutlined />} style={{ marginTop: 0 }}>
                     <Link to='/admin/dashboard'>Thống kê</Link>
                 </Menu.Item>

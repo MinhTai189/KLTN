@@ -7,13 +7,12 @@ import { toast } from 'react-toastify';
 import { DataPostFinal } from './components/CreatePost/models/create-post';
 import { createPostModalActions } from './openCreatePostModalSlice';
 import { postAction } from './postSlice';
-import { showCreateModalAction } from './showCreateModalSlice';
 
 function* handleGetPost(action: PayloadAction<Filter>) {
   try {
     const response: ListResponse<Post> = yield postApi.get(action.payload);
 
-    yield put(postAction.getSucceeded(response.data));
+    yield put(postAction.getSucceeded(response));
   } catch (error: any) {
     yield put(postAction.getFailed(error.response?.data.message));
   }

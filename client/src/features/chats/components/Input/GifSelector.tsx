@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/styles"
 import { LIST_GIF } from "constant/constant"
 
 interface Props {
-
+    onChange: (gif: string) => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const GifSelector = (props: Props) => {
+const GifSelector = ({ onChange }: Props) => {
     const classes = useStyles()
 
     return (
@@ -70,7 +70,11 @@ const GifSelector = (props: Props) => {
             <Box className="wrapper">
                 <ul className="list-gif">
                     {LIST_GIF.map((gif, index) => (
-                        <li key={index} className="gif">
+                        <li
+                            key={index}
+                            className="gif"
+                            onChange={() => onChange(gif)}
+                        >
                             <img src={gif} alt="gif image" />
                         </li>
                     ))}

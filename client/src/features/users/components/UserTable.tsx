@@ -1,5 +1,5 @@
-import { DeleteFilled, EditFilled } from '@ant-design/icons'
-import { Button, Popconfirm, Space, Table, TablePaginationConfig, Tooltip } from 'antd'
+import { DeleteFilled, EditFilled, EyeOutlined } from '@ant-design/icons'
+import { Avatar, Button, Popconfirm, Space, Table, TablePaginationConfig, Tooltip } from 'antd'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { Pagination, User, UserDataTable, UserUpdate } from 'models'
 import { getUserById } from 'utils'
@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { selectData, selectFilter, selectLoading, selectPagination, userActions } from '../usersSlice'
 import { Chip } from '@material-ui/core'
 import { Face } from '@material-ui/icons'
+import { useHistory } from 'react-router-dom'
 
 interface Props {
     setShowUpdateForm: (value: boolean) => void;
@@ -24,6 +25,7 @@ export const UserTable = ({ setShowUpdateForm, setUserUpdating, handleRemove }: 
     const dispatch = useAppDispatch()
 
     const userData: User[] = useAppSelector(selectData)
+    const history = useHistory()
 
     const columns = [
         {
@@ -31,6 +33,15 @@ export const UserTable = ({ setShowUpdateForm, setUserUpdating, handleRemove }: 
             dataIndex: 'number',
             key: 'number',
             width: 60
+        },
+        {
+            title: 'Ảnh đại diện',
+            dataIndex: 'avatar',
+            key: 'avatar',
+            align: 'center' as 'center',
+            render: (avatar: any) => (
+                <Avatar src={avatar.url} size='large' />
+            )
         },
         {
             title: 'Tên tài khoản',
@@ -66,6 +77,7 @@ export const UserTable = ({ setShowUpdateForm, setUserUpdating, handleRemove }: 
             dataIndex: 'isAdmin',
             key: 'isAdmin',
             width: 110,
+            align: 'center' as 'center',
             render: (isAdmin: boolean) => {
                 if (isAdmin)
                     return <Chip
@@ -102,9 +114,20 @@ export const UserTable = ({ setShowUpdateForm, setUserUpdating, handleRemove }: 
         {
             title: 'Hành động',
             key: 'action',
-            width: 120,
+            width: 140,
+            fixed: 'right' as 'right',
+            align: 'center' as 'center',
             render: (text: string, record: any) => (
                 <Space size="small">
+                    <Tooltip title='Xem chi tiết'>
+                        <Button
+                            style={{ background: '#bb86fc', borderColor: '#bb86fc' }}
+                            type='primary'
+                            icon={<EyeOutlined />}
+                            onClick={() => history.push(`/profile/${record.key}`)}
+                        />
+                    </Tooltip>
+
                     <Tooltip title='Sửa'>
                         <Button type='primary' icon={<EditFilled />} onClick={() => onClickEditBtn(record)} />
                     </Tooltip>
@@ -140,7 +163,8 @@ export const UserTable = ({ setShowUpdateForm, setUserUpdating, handleRemove }: 
                 credit: user.credit,
                 province: user.province,
                 district: user.district,
-                school: user.school
+                school: user.school,
+                avatar: user.avatarUrl
             } as UserDataTable
         })
 
@@ -155,6 +179,7 @@ export const UserTable = ({ setShowUpdateForm, setUserUpdating, handleRemove }: 
 
     const handleChangeTable = (pagi: TablePaginationConfig) => {
         dispatch(userActions.setFilter({
+            ...filter,
             _limit: pagi.pageSize,
             _page: pagi.current
         }))

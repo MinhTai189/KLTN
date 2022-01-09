@@ -12,3 +12,4 @@ export * from './Approve';
 export * from './Report';
 export * from './Dashboard';
 export * from './Chat';
+export * from './Feedback';

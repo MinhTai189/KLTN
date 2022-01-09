@@ -62,7 +62,7 @@ export interface MotelDataTable {
   key: string;
   number: number;
   name: string;
-  owner: string;
+  owner: Owner;
   status: boolean;
   vote: number;
   mark: number;

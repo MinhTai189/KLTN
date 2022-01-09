@@ -1,11 +1,15 @@
 import { DeleteOutlined } from '@ant-design/icons'
 import { Box, Theme } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import { Avatar, Button, Popconfirm, Table, Tooltip, Typography } from 'antd'
+import { Avatar, Button, Popconfirm, Table, Tooltip } from 'antd'
 import Column from 'antd/lib/table/Column'
+import { UserTooltip } from 'components/Common'
+import { Owner } from 'models'
 
 interface Props {
-
+    dataTable: any[]
+    loading: boolean
+    handleRemoveFeedback: (feedbackId: string) => void
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -19,35 +23,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const FeedbackTable = (props: Props) => {
+const FeedbackTable = ({ dataTable, loading, handleRemoveFeedback }: Props) => {
     const classes = useStyles()
-
-    const dataTable = [
-        {
-            key: '1', index: 1, owner: { avatarUrl: 'https://res.cloudinary.com/dvl0ntexs/image/upload/v1639048070/user-avatar/xsn4o7cizrnetqbha3yc.jpg', name: 'Trần Minh Tài' },
-            category: 'Hiệu năng', content: 'e non asperiores explicabo aliquid, temporibus nisi libero. Magni quaerat maxime ad perspiciatis facere eaque deserunt suscipit id corporis!',
-            date: '14:20, 16/12/2022'
-        },
-        {
-            key: '2', index: 2, owner: { avatarUrl: 'https://res.cloudinary.com/dvl0ntexs/image/upload/v1639048070/user-avatar/xsn4o7cizrnetqbha3yc.jpg', name: 'Trần Minh Tài' },
-            category: 'Hiệu năng', content: 'e non asperiores explicabo aliquid, temporibus nisi libero. Magni quaerat maxime ad perspiciatis facere eaque deserunt suscipit id corporis!',
-            date: '14:20, 16/12/2022'
-        },
-        {
-            key: '3', index: 3, owner: { avatarUrl: 'https://res.cloudinary.com/dvl0ntexs/image/upload/v1639048070/user-avatar/xsn4o7cizrnetqbha3yc.jpg', name: 'Trần Minh Tài' },
-            category: 'Hiệu năng', content: 'e non asperiores explicabo aliquid, temporibus nisi libero. Magni quaerat maxime ad perspiciatis facere eaque deserunt suscipit id corporis!',
-            date: '14:20, 16/12/2022'
-        },
-        {
-            key: '4', index: 4, owner: { avatarUrl: 'https://res.cloudinary.com/dvl0ntexs/image/upload/v1639048070/user-avatar/xsn4o7cizrnetqbha3yc.jpg', name: 'Trần Minh Tài' },
-            category: 'Hiệu năng', content: 'e non asperiores explicabo aliquid, temporibus nisi libero. Magni quaerat maxime ad perspiciatis facere eaque deserunt suscipit id corporis!',
-            date: '14:20, 16/12/2022'
-        },
-    ]
 
     return (
         <Box className={classes.root}>
-            <Table dataSource={dataTable}>
+            <Table dataSource={dataTable} loading={loading}>
                 <Column width={30} title="STT" dataIndex="index" key="index" />
 
                 <Column
@@ -55,21 +36,18 @@ const FeedbackTable = (props: Props) => {
                     dataIndex="owner"
                     key="owner"
                     width={130}
-                    render={data => (
-                        <span className='owner-info'>
+                    align='center'
+                    render={(data: Owner) => (
+                        <UserTooltip data={data}>
                             <Avatar
                                 src={data.avatarUrl}
-                                size='small'
+                                size='large'
                             />
-
-                            <Typography>
-                                {data.name}
-                            </Typography>
-                        </span>
+                        </UserTooltip>
                     )}
                 />
 
-                <Column title="Chủ đề" width={110} dataIndex="category" key="category" />
+                <Column title="Chủ đề" width={180} dataIndex="category" key="category" />
 
                 <Column title="Nội dung" dataIndex="content" key="content" />
 
@@ -78,12 +56,14 @@ const FeedbackTable = (props: Props) => {
                 <Column
                     title="Hành động"
                     key="action"
-                    render={(text, record) => (
+                    align='center'
+                    render={(text, record: any) => (
                         <Popconfirm
                             title='Bạn có muốn xóa?'
                             okText='Xóa'
                             cancelText='Hủy'
                             okButtonProps={{ danger: true }}
+                            onConfirm={() => handleRemoveFeedback(record.key)}
                         >
 
                             <Tooltip title='Xóa'>

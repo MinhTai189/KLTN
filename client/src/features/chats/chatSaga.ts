@@ -1,6 +1,13 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import chatApis from 'api/chat';
-import { AddGroup, ChatGroup, ChatMessage, Filter, ListResponse } from 'models';
+import {
+  AddChatMessage,
+  AddGroup,
+  ChatGroup,
+  ChatMessage,
+  Filter,
+  ListResponse,
+} from 'models';
 import { toast } from 'react-toastify';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { chatActions } from './chatSlice';
@@ -27,6 +34,18 @@ function* handleAddChatGroup(action: PayloadAction<AddGroup>) {
   }
 }
 
+function* handleAddChatMessage(action: PayloadAction<AddChatMessage>) {
+  try {
+    yield chatApis.addChatMessage(action.payload);
+
+    yield put(chatActions.addChatMessageSucceeded());
+    yield put(chatActions.setFilterMessage(null));
+  } catch (error: any) {
+    yield put(chatActions.addChatMessageFailed(error.response.data.message));
+    yield call(toast.error, error.response.data.message);
+  }
+}
+
 function* handleGetChatMessage(action: PayloadAction<Filter>) {
   try {
     const response: ListResponse<ChatMessage> = yield chatApis.getChatMessage(
@@ -43,5 +62,6 @@ function* handleGetChatMessage(action: PayloadAction<Filter>) {
 export default function* chatSaga() {
   yield takeLatest(chatActions.addChatGroup, handleAddChatGroup);
   yield takeLatest(chatActions.getChatGroup, handleGetChatGroup);
+  yield takeLatest(chatActions.addChatMessage, handleAddChatMessage);
   yield takeLatest(chatActions.getChatMessage, handleGetChatMessage);
 }

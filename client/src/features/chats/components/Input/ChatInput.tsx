@@ -1,11 +1,17 @@
 import { Box, Button, IconButton, makeStyles, Theme, Tooltip } from "@material-ui/core";
 import { Image, Send } from "@material-ui/icons";
+import { useAppDispatch } from "app/hooks";
 import { ReactComponent as Emoij } from 'assets/images/emoij.svg';
 import { ReactComponent as Gif } from 'assets/images/gif-icon.svg';
 import { DetectClickOutsize } from "components/Common/DetectClickOutsize";
-import { VALIDATOR_IMAGE } from "constant/constant";
+import { TYPE_MESSAGE, VALIDATOR_IMAGE } from "constant/constant";
 import Picker from 'emoji-picker-react';
-import { useRef, useState } from "react";
+import { chatActions } from "features/chats/chatSlice";
+import { AddChatMessage, TypeMessage } from "models";
+import { ChangeEvent, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { checkSizeImg, checkSizeOneImg } from "utils";
 import GifSelector from './GifSelector'
 
 interface Props {
@@ -84,11 +90,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const ChatInput = (props: Props) => {
     const classes = useStyles()
-    const [showEmoji, setShowEmoji] = useState(false)
-    const [showGifSelector, setShowGifSelector] = useState(false)
+    const { groupId } = useParams<{ groupId: string }>()
+    const dispatch = useAppDispatch()
 
     const addImgInputRef = useRef<HTMLInputElement>(null)
     const areaRef = useRef<HTMLAreaElement>(null)
+
+    const [showEmoji, setShowEmoji] = useState(false)
+    const [showGifSelector, setShowGifSelector] = useState(false)
+    const [inputContent, setInputContent] = useState('')
 
     const handleGrowArea = () => {
         if (areaRef.current) {
@@ -102,10 +112,63 @@ const ChatInput = (props: Props) => {
             addImgInputRef.current.click()
     }
 
+    const handleSelectedEmoji = (e: any, emojiObject: any) => {
+        setInputContent(prev => `${prev} ${emojiObject.emoji}`)
+    }
+
+    const handleAddMessage = (body: object) => {
+        dispatch(chatActions.addChatMessage({
+            ...body,
+            groupId
+        } as AddChatMessage))
+    }
+
+    const handleTextLinkChatMessage = () => {
+        handleAddMessage({
+            type: TYPE_MESSAGE.text,
+            content: inputContent
+        })
+
+        setInputContent('')
+    }
+
+    const handleSelectImages = (e: ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return
+        let haveLargeImg = 0
+        const files: File[] = []
+
+        Array.from(e.target.files).forEach(file => {
+            if (!checkSizeOneImg(file, 1000)) {
+                haveLargeImg++
+                return
+            }
+
+            files.push(file)
+        })
+
+        if (haveLargeImg) toast.info(`
+            Ảnh bạn đã lựa chọn tồn tại ${haveLargeImg} ảnh có thước lớn hơn 1MB!
+            Ảnh có kích thước lớn hơn 1MB sẽ tự động bị bỏ qua.
+        `)
+
+        console.log({ files, haveLargeImg })
+    }
+
+    const uploadImage = async (files: FileList) => {
+
+    }
+
+    const handleSelectGif = (gif: string) => {
+        handleAddMessage({
+            type: TYPE_MESSAGE.gif,
+            urlGif: gif
+        })
+    }
+
     return (
         <Box className={classes.root}>
             <Box className="controls" component='span'>
-                <Tooltip title='Chèn ảnh'>
+                <Tooltip title='Chèn ảnh(1 ảnh kích thước tối đa 1MB, tối đa 10 ảnh)'>
                     <Button className='control' onClick={handleOpenFileInput}>
                         <Image color='primary' />
                     </Button>
@@ -122,7 +185,7 @@ const ChatInput = (props: Props) => {
                     </Tooltip>
 
                     {showGifSelector && <DetectClickOutsize cb={() => setTimeout(() => setShowGifSelector(false), 100)}>
-                        <GifSelector />
+                        <GifSelector onChange={handleSelectGif} />
                     </DetectClickOutsize>}
                 </Box>
             </Box>
@@ -133,6 +196,8 @@ const ChatInput = (props: Props) => {
                     className="textarea"
                     rows={1}
                     placeholder="Nhập tin nhắn vào đây..."
+                    value={inputContent}
+                    onChange={e => setInputContent(e.target.value)}
                     onInput={handleGrowArea}
                 />
 
@@ -141,7 +206,7 @@ const ChatInput = (props: Props) => {
 
                     {showEmoji && <DetectClickOutsize cb={() => setTimeout(() => setShowEmoji(false), 100)}>
                         <span className='emoji-picker'>
-                            <Picker onEmojiClick={() => { }} native />
+                            <Picker onEmojiClick={handleSelectedEmoji} native />
                         </span>
                     </DetectClickOutsize>}
                 </span>
@@ -158,8 +223,10 @@ const ChatInput = (props: Props) => {
                 }}
                 ref={addImgInputRef as any}
                 type="file"
+                multiple
                 title=""
                 accept={VALIDATOR_IMAGE.accept}
+                onChange={handleSelectImages}
             />
         </Box>
     )

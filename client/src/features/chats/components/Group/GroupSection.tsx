@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/styles"
 import { useAppDispatch, useAppSelector } from "app/hooks"
 import { chatActions, selectFilterMessageChat, selectListGroupChat } from "features/chats/chatSlice"
 import { useEffect, useState } from "react"
-import { useLocation } from "react-router-dom"
+import { useHistory, useParams } from "react-router-dom"
 import GroupItem from "./GroupItem"
 
 interface Props {
@@ -78,29 +78,29 @@ const useStyles = makeStyles((theme: Theme) => ({
 const GroupSection = (props: Props) => {
     const classes = useStyles()
     const dispatch = useAppDispatch()
+    const history = useHistory()
 
     const filterMessage = useAppSelector(selectFilterMessageChat)
     const listGroup = useAppSelector(selectListGroupChat)
-    const location = useLocation<{ groupId: string }>()
+    const { groupId } = useParams<{ groupId: string }>()
 
     const [activedGroup, setActivedGroup] = useState('')
 
     useEffect(() => {
-        if (location.state) {
-            setActivedGroup(location.state.groupId)
-        } else {
-            listGroup.length > 0 && setActivedGroup(listGroup[0]._id)
-        }
-    }, [location, listGroup])
+        console.log(groupId)
 
-    useEffect(() => {
-        if (activedGroup !== '') {
+        if (groupId) {
+            setActivedGroup(groupId)
+
             dispatch(chatActions.getChatMessage({
                 ...filterMessage,
-                _groupId: activedGroup
+                _groupId: groupId
             }))
+        } else if (listGroup.length > 0) {
+            history.push(`/chats/${listGroup[0]._id}`)
         }
-    }, [activedGroup])
+    }, [groupId, listGroup, filterMessage, activedGroup])
+
 
     return (
         <Box className={classes.root} component='section'>
@@ -112,15 +112,20 @@ const GroupSection = (props: Props) => {
 
             <Box className="group-wrapper">
                 <ul className="list-group">
-                    {listGroup.map((group, index) => {
+                    {listGroup.map(group => {
                         const actived = activedGroup === group._id
 
-                        return (<li key={group._id} className="group">
-                            <GroupItem
-                                group={group}
-                                actived={actived}
-                            />
-                        </li>
+                        return (
+                            <li
+                                key={group._id}
+                                className="group"
+                                onClick={() => setActivedGroup(group._id)}
+                            >
+                                <GroupItem
+                                    group={group}
+                                    actived={actived}
+                                />
+                            </li>
                         )
                     })}
                 </ul>

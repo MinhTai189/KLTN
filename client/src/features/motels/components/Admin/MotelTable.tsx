@@ -1,10 +1,12 @@
-import { CheckCircleFilled, DeleteFilled, EditFilled } from '@ant-design/icons'
+import { CheckCircleFilled, DeleteFilled, EditFilled, EyeOutlined } from '@ant-design/icons'
 import { Cancel } from '@material-ui/icons'
-import { Button, Popconfirm, Rate, Space, Table, TablePaginationConfig, Tooltip } from 'antd'
+import { Avatar, Button, Popconfirm, Rate, Space, Table, TablePaginationConfig, Tooltip } from 'antd'
 import { motelApi } from 'api/motel'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
-import { MotelDataTable } from 'models'
+import { UserTooltip } from 'components/Common'
+import { MotelDataTable, Owner } from 'models'
 import { useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { roundMark } from 'utils'
 import { mapPriceMonth } from 'utils/getPriceMotel'
@@ -50,6 +52,7 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
 
     const loading = useAppSelector(selectLoadingMotel)
     const dispatch = useAppDispatch()
+    const history = useHistory()
 
     const [dataTable, setDataTable] = useState<MotelDataTable[]>([])
     const [paginationTB, setPaginationTB] = useState<TablePaginationConfig>()
@@ -90,7 +93,7 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
                 key: motel._id,
                 number,
                 name: motel.name,
-                owner: motel.owner?.name,
+                owner: motel.owner,
                 available: motel.available,
                 address: motel.address,
                 status: motel.status,
@@ -117,14 +120,21 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
             key: 'number',
             width: 60
         }, {
+            title: 'Người đăng',
+            dataIndex: 'owner',
+            key: 'owner',
+            align: 'center' as 'center',
+            width: 120,
+            render: (owner: Owner) => (
+                <UserTooltip data={owner}>
+                    <Avatar src={owner.avatarUrl} size='large' />
+                </UserTooltip>
+            )
+        }, {
             title: 'Tên nhà trọ',
             dataIndex: 'name',
             key: 'name',
             width: 200
-        }, {
-            title: 'Người đăng',
-            dataIndex: 'owner',
-            key: 'owner',
         }, {
             title: 'Địa chỉ',
             dataIndex: 'address',
@@ -142,6 +152,7 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
+            align: 'center' as 'center',
             render: (status: boolean) => {
                 if (status) return <CheckCircleFilled style={{ color: '#52c41a', fontSize: 20 }} />
                 return <Cancel style={{ color: '#ff4d4f', fontSize: 23 }} />
@@ -170,9 +181,20 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
         {
             title: 'Hành động',
             key: 'action',
-            width: 120,
+            width: 140,
+            fixed: 'right' as 'right',
+            align: 'center' as 'center',
             render: (text: string, record: any) => (
                 <Space size="small">
+                    <Tooltip title='Xem chi tiết'>
+                        <Button
+                            style={{ background: '#bb86fc', borderColor: '#bb86fc' }}
+                            type='primary'
+                            icon={<EyeOutlined />}
+                            onClick={() => history.push(`/motels/${record.key}`)}
+                        />
+                    </Tooltip>
+
                     <Tooltip title='Sửa'>
                         <Button type='primary' icon={<EditFilled />} onClick={() => onClickEditBtn(record)} />
                     </Tooltip>
@@ -251,6 +273,7 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
 
     const handleChangeTable = (pagi: TablePaginationConfig) => {
         dispatch(motelActions.setFilter({
+            ...filter,
             _limit: pagi.pageSize,
             _page: pagi.current
         }))

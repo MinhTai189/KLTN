@@ -306,16 +306,11 @@ export const ProfieDetail = ({ user, init }: Props) => {
                     type: 'private'
                 })
 
-                groupId = response?.data
+                groupId = response.data
                 dispatch(loadingActions.closeLoading())
             }
 
-            history.push({
-                pathname: '/chats',
-                state: {
-                    groupId
-                }
-            })
+            history.push(`/chats/${groupId}`)
         } catch (error: any) {
             dispatch(loadingActions.closeLoading())
             toast.error(error.response.data.message)

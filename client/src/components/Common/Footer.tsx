@@ -1,8 +1,14 @@
 import { Box, Button, Grid, makeStyles, Theme, Typography } from "@material-ui/core"
 import { ContactMail, Facebook, GitHub } from "@material-ui/icons"
-import { NAVIGATION_ROUTES } from "constant/constant"
-import { Link } from "react-router-dom"
+import feedbackApis from "api/feedback"
+import { useAppSelector } from "app/hooks"
 import { ReactComponent as Zalo } from 'assets/images/zalo.svg'
+import { NAVIGATION_ROUTES } from "constant/constant"
+import { selectCurrentUser } from "features/auth/authSlice"
+import { User } from "models"
+import { useState } from "react"
+import { Link } from "react-router-dom"
+import { toast } from "react-toastify"
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -179,6 +185,42 @@ const socials = [
 
 export const Footer = () => {
     const classes = useStyles()
+    const currentUser: User = useAppSelector(selectCurrentUser)
+    const [feedback, setFeedback] = useState({
+        title: '',
+        content: ''
+    })
+
+    const handleSubmitFeedback = async (e: any) => {
+        e.preventDefault()
+
+        if (!currentUser) {
+            toast.info("Bạn phải đăng nhập trước khi thực hiện đánh giá!")
+            return
+        }
+
+        if (feedback.title.length > 100) {
+            toast.error('Chủ đề góp ý tối đa 100 ký tự!')
+            return
+        }
+
+        if (feedback.content.length > 300) {
+            toast.error('Nội góp ý tối đa 100 ký tự!')
+            return
+        }
+
+        try {
+            await feedbackApis.postFeedback(feedback)
+
+            toast.success('Đã thực hiện đóng góp thành công!')
+            setFeedback({
+                title: '',
+                content: ''
+            })
+        } catch (error: any) {
+            toast.success(error.response.data.message)
+        }
+    }
 
     return (
         <Box className={classes.root}>
@@ -264,15 +306,31 @@ export const Footer = () => {
                                 Góp ý
                             </Typography>
 
-                            <form>
+                            <form onSubmit={handleSubmitFeedback}>
                                 <Box className="row">
                                     <label htmlFor="caterogy-input">Chủ đề</label>
-                                    <input type="text" id='caterogy-input' placeholder="Hãy nhập một chủ đề..." />
+                                    <input
+                                        id='caterogy-input'
+                                        placeholder="Hãy nhập một chủ đề..."
+                                        required
+                                        name='title'
+                                        value={feedback.title}
+                                        onChange={e => setFeedback(prev => ({ ...prev, title: e.target.value }))}
+                                    />
                                 </Box>
 
                                 <Box className='row'>
                                     <label htmlFor="content-input">Nội dung góp ý</label>
-                                    <textarea id='content-input' rows={4} placeholder="Hãy nhập nội dung vào đây..." />
+                                    <textarea
+                                        id='content-input'
+                                        required
+                                        rows={4}
+                                        placeholder="Hãy nhập nội dung vào đây..."
+                                        name='content'
+                                        value={feedback.content}
+                                        onChange={e => setFeedback(prev => ({ ...prev, content: e.target.value }))}
+                                    />
+
                                 </Box>
 
                                 <Box mt={3}>
@@ -280,6 +338,7 @@ export const Footer = () => {
                                         style={{
                                             borderRadius: 0
                                         }}
+                                        type='submit'
                                         variant="contained"
                                         color="secondary"
                                         fullWidth

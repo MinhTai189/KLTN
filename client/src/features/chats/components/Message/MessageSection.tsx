@@ -1,9 +1,7 @@
 import { Box, makeStyles, Theme } from "@material-ui/core"
 import { KeyboardArrowDown } from "@material-ui/icons"
 import { useAppSelector } from "app/hooks"
-import { selectCurrentUser } from "features/auth/authSlice"
 import { selectListMessageChat } from "features/chats/chatSlice"
-import { User } from "models"
 import { useLayoutEffect, useRef } from "react"
 import ChatInfomation from "../Chat/ChatInfomation"
 import ChatInput from "../Input/ChatInput"
@@ -78,7 +76,7 @@ const MessageSection = (props: Props) => {
             window.clearTimeout(timeout)
             observer.current && observer.current.disconnect()
         }
-    }, [])
+    }, [listMessage])
 
     const handleScrollToBottom = () => {
         if (!scrollBottomRef.current)
@@ -133,6 +131,8 @@ const MessageSection = (props: Props) => {
                     <li ref={loadMoreRef as any}>
                         <Box className="hidden" />
                     </li>
+
+                    <li style={{ flex: 1 }} />
 
                     {listMessage.map(message => {
 

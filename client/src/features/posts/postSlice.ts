@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
 import { FIND_ROOMMATE_ID, REVIEW_ID } from 'constant/constant';
-import { Filter, Pagination, Post } from 'models';
+import { Filter, ListResponse, Pagination, Post } from 'models';
 import { DataPostFinal } from './components/CreatePost/models/create-post';
 
 interface State {
@@ -36,9 +36,10 @@ const postSlice = createSlice({
     get: (state, action: PayloadAction<Filter>) => {
       state.loading = true;
     },
-    getSucceeded: (state, action: PayloadAction<Post[]>) => {
+    getSucceeded: (state, action: PayloadAction<ListResponse<Post>>) => {
       state.loading = false;
-      state.listData = action.payload;
+      state.listData = action.payload.data;
+      state.pagination = action.payload.pagination;
     },
     getFailed: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -67,6 +68,12 @@ const postSlice = createSlice({
     },
     setFilter: (state, action: PayloadAction<Filter>) => {
       state.filter = action.payload;
+    },
+    resetFilter: (state) => {
+      state.filter = {
+        _page: 1,
+        _limit: 10,
+      };
     },
   },
 });

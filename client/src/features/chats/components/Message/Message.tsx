@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react'
 import Album from './Album'
 import GifPlayer from './GifPlayer'
 import LinkPreview from './LinkPreview'
+import { isUrlValid } from 'utils'
+import { calculateCreatedTimeHDMY } from 'utils/convert-date/calculateCreatedTime'
 
 interface Props {
     message: ChatMessage
@@ -58,7 +60,12 @@ const useStyles = makeStyles((theme: Theme) => ({
                     '& .content ': {
                         fontSize: '0.95rem',
                         lineHeight: 1.3,
-                        marginBottom: theme.spacing(0.5)
+                        marginBottom: theme.spacing(0.5),
+
+                        '& a': {
+                            color: theme.palette.primary.main,
+                            textDecoration: 'underline'
+                        }
                     },
 
                     '& .date': {
@@ -108,13 +115,22 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
+const mapContentLink = (content: string) => {
+    return content.split(' ').map(part => {
+        if (!isUrlValid(part))
+            return part
+
+        return `<a href="${part}" target="_blank">${part}</a>`
+    }).join(' ')
+}
+
 const Message = ({ message }: Props) => {
     const classes = useStyles()
     const currentUser: User = useAppSelector(selectCurrentUser)
 
     const [isOwner, setIsOwner] = useState(false)
 
-    const { type, content, urlImages, urlGif, dataLink } = message
+    const { type, content, urlImages, urlGif, dataLink, createdAt, seen } = message
 
     useEffect(() => {
         if (currentUser) {
@@ -135,16 +151,17 @@ const Message = ({ message }: Props) => {
                             {content}
                         </Typography>}
 
-                        {type === TYPE_MESSAGE.link && <Typography className='content'>
-                            {content}
-                        </Typography>}
+                        {type === TYPE_MESSAGE.link &&
+                            <p className='content' dangerouslySetInnerHTML={{ __html: mapContentLink(content) }} />}
 
                         {type === TYPE_MESSAGE.image && <Album images={urlImages} />}
 
                         {type === TYPE_MESSAGE.gif && <GifPlayer gif={urlGif} />}
 
                         <Typography className='date' component='small'>
-                            12:30, 12/12/1021&#xa0;&#xa0;&#x22C5;&#xa0;&#xa0;Đã xem
+                            {calculateCreatedTimeHDMY(createdAt)}
+
+                            {isOwner && seen.length > 0 && <span>&#xa0;&#xa0;&#x22C5;&#xa0;&#xa0;Đã xem</span>}
                         </Typography>
                     </Box>
 

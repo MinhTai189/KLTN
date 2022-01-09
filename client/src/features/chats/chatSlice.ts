@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
 import {
+  AddChatMessage,
   AddGroup,
   ChatGroup,
   ChatMessage,
@@ -61,6 +62,16 @@ const chatSlice = createSlice({
       state.loading = false;
       state.err = action.payload;
     },
+    addChatMessage(state, action: PayloadAction<AddChatMessage>) {
+      state.loading = true;
+    },
+    addChatMessageSucceeded(state) {
+      state.loading = false;
+    },
+    addChatMessageFailed(state, action: PayloadAction<string>) {
+      state.loading = false;
+      state.err = action.payload;
+    },
     getChatMessage(state, action: PayloadAction<Filter>) {
       state.loading = true;
     },
@@ -76,8 +87,8 @@ const chatSlice = createSlice({
       state.loading = false;
       state.err = action.payload;
     },
-    setFilterMessage(state, action: PayloadAction<Filter>) {
-      state.filterMessage = action.payload;
+    setFilterMessage(state, action: PayloadAction<Filter | null>) {
+      state.filterMessage = action.payload || state.filterMessage;
     },
   },
 });
