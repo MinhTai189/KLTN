@@ -263,7 +263,7 @@ const authRouter = (io) => {
           dung mail này với bất kỳ ai khác!</small
         >
       </div>
-    </div>`
+    </div>`,
     };
 
     transporter.sendMail(mainOptions, function (err, info) {
@@ -388,7 +388,11 @@ const authRouter = (io) => {
       if (Boolean(username) && Boolean(password)) {
         checkUser = await user
           .findOne({ username: username, deleted: false })
-          .select("-unsignedName -deleted");
+          .select("-unsignedName -deleted")
+          .populate(
+            "likes",
+            "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+          );
 
         if (checkUser == null)
           return res
@@ -422,7 +426,11 @@ const authRouter = (io) => {
       if (userID)
         checkUser = await user
           .findOne({ _id: userID, deleted: false })
-          .select("-unsignedName");
+          .select("-unsignedName")
+          .populate(
+            "likes",
+            "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+          );
 
       const newAccessToken = JWT.sign(
         {
@@ -455,6 +463,13 @@ const authRouter = (io) => {
         message: "Đăng nhập thành công",
         data: {
           ...data,
+          likes: data.likes.map((item) => {
+            return {
+              ...item._doc,
+              avatarUrl: item.avatarUrl.url,
+              totalLikes: item.likes.length,
+            };
+          }),
           notify: [...data.notify].sort((n1, n2) => {
             return new Date(n2.createdAt) - new Date(n1.createdAt);
           }),
