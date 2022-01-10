@@ -7,12 +7,13 @@ import { DetectClickOutsize } from "components/Common/DetectClickOutsize";
 import { TYPE_MESSAGE, VALIDATOR_IMAGE } from "constant/constant";
 import Picker from 'emoji-picker-react';
 import { chatActions } from "features/chats/chatSlice";
-import { AddChatMessage, TypeMessage } from "models";
-import { ChangeEvent, useRef, useState } from "react";
+import { useUpload } from "hooks";
+import { AddChatMessage } from "models";
+import { ChangeEvent, KeyboardEventHandler, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { checkSizeImg, checkSizeOneImg } from "utils";
-import GifSelector from './GifSelector'
+import { checkSizeOneImg } from "utils";
+import GifSelector from './GifSelector';
 
 interface Props {
 
@@ -88,13 +89,31 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
+const checkSelectedImages = (files: FileList) => {
+    let haveLargeImg = 0
+    const filteredFiles: File[] = []
+
+    Array.from(files).forEach(file => {
+        if (!checkSizeOneImg(file, 1000)) {
+            haveLargeImg++
+            return
+        }
+
+        filteredFiles.push(file)
+    })
+
+    return { filteredFiles, haveLargeImg }
+}
+
 const ChatInput = (props: Props) => {
     const classes = useStyles()
+    const { upload } = useUpload()
+
     const { groupId } = useParams<{ groupId: string }>()
     const dispatch = useAppDispatch()
 
     const addImgInputRef = useRef<HTMLInputElement>(null)
-    const areaRef = useRef<HTMLAreaElement>(null)
+    const areaRef = useRef<any>(null)
 
     const [showEmoji, setShowEmoji] = useState(false)
     const [showGifSelector, setShowGifSelector] = useState(false)
@@ -124,38 +143,52 @@ const ChatInput = (props: Props) => {
     }
 
     const handleTextLinkChatMessage = () => {
+        if (!inputContent) return
+
         handleAddMessage({
             type: TYPE_MESSAGE.text,
             content: inputContent
         })
 
         setInputContent('')
+
+        if (areaRef.current) {
+            setTimeout(() => {
+                areaRef.current.setAttribute('style', '');
+                areaRef.current.value = "";
+            }, 0)
+        }
     }
 
-    const handleSelectImages = (e: ChangeEvent<HTMLInputElement>) => {
+    const triggerEnterInput = (e: any) => {
+        const key = e.key
+
+        if (key === 'Enter') {
+            handleTextLinkChatMessage()
+            e.preventDefault()
+        }
+    }
+
+    const handleSelectImages = async (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return
-        let haveLargeImg = 0
-        const files: File[] = []
 
-        Array.from(e.target.files).forEach(file => {
-            if (!checkSizeOneImg(file, 1000)) {
-                haveLargeImg++
-                return
-            }
-
-            files.push(file)
-        })
+        const { filteredFiles, haveLargeImg } = checkSelectedImages(e.target.files)
 
         if (haveLargeImg) toast.info(`
             Ảnh bạn đã lựa chọn tồn tại ${haveLargeImg} ảnh có thước lớn hơn 1MB!
             Ảnh có kích thước lớn hơn 1MB sẽ tự động bị bỏ qua.
         `)
 
-        console.log({ files, haveLargeImg })
-    }
+        try {
+            const uploadData = await upload(filteredFiles, 'chat')
 
-    const uploadImage = async (files: FileList) => {
-
+            handleAddMessage({
+                type: TYPE_MESSAGE.image,
+                urlImages: uploadData
+            })
+        } catch (error: any) {
+            toast.error(error.response.data.message)
+        }
     }
 
     const handleSelectGif = (gif: string) => {
@@ -163,6 +196,8 @@ const ChatInput = (props: Props) => {
             type: TYPE_MESSAGE.gif,
             urlGif: gif
         })
+
+        setShowGifSelector(false)
     }
 
     return (
@@ -199,6 +234,7 @@ const ChatInput = (props: Props) => {
                     value={inputContent}
                     onChange={e => setInputContent(e.target.value)}
                     onInput={handleGrowArea}
+                    onKeyPress={triggerEnterInput}
                 />
 
                 <span className='emoji-wrapper'>
@@ -212,7 +248,11 @@ const ChatInput = (props: Props) => {
                 </span>
             </Box>
 
-            <IconButton className='btn-submit' color="primary">
+            <IconButton
+                className='btn-submit'
+                color="primary"
+                onClick={handleTextLinkChatMessage}
+            >
                 <Send fontSize="large" />
             </IconButton>
 

@@ -164,7 +164,7 @@ const GroupItem = ({ actived, group }: Props) => {
         <Box className={`${classes.root} ${actived ? 'active' : ''}`}>
             <Box className={`avatar ${amountAvatar?.class}`}>
                 {members.slice(0, amountAvatar?.slice || 1).map(member => (
-                    <Avatar src={member.avatarUrl}>
+                    <Avatar key={member._id} src={member.avatarUrl}>
                         U
                     </Avatar>
                 ))}

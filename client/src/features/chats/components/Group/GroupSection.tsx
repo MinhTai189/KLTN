@@ -87,9 +87,7 @@ const GroupSection = (props: Props) => {
     const [activedGroup, setActivedGroup] = useState('')
 
     useEffect(() => {
-        console.log(groupId)
-
-        if (groupId) {
+        if (groupId !== '000') {
             setActivedGroup(groupId)
 
             dispatch(chatActions.getChatMessage({
@@ -119,7 +117,7 @@ const GroupSection = (props: Props) => {
                             <li
                                 key={group._id}
                                 className="group"
-                                onClick={() => setActivedGroup(group._id)}
+                                onClick={() => history.push(`/chats/${group._id}`)}
                             >
                                 <GroupItem
                                     group={group}

@@ -87,8 +87,12 @@ const chatSlice = createSlice({
       state.loading = false;
       state.err = action.payload;
     },
-    setFilterMessage(state, action: PayloadAction<Filter | null>) {
-      state.filterMessage = action.payload || state.filterMessage;
+    setFilterMessage(state, action: PayloadAction<Filter>) {
+      state.filterMessage = action.payload;
+    },
+    resetFilterMessage(state) {
+      const temp = { ...state.filterMessage };
+      state.filterMessage = temp;
     },
   },
 });

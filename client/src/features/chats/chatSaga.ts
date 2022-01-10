@@ -39,7 +39,7 @@ function* handleAddChatMessage(action: PayloadAction<AddChatMessage>) {
     yield chatApis.addChatMessage(action.payload);
 
     yield put(chatActions.addChatMessageSucceeded());
-    yield put(chatActions.setFilterMessage(null));
+    yield put(chatActions.resetFilterMessage());
   } catch (error: any) {
     yield put(chatActions.addChatMessageFailed(error.response.data.message));
     yield call(toast.error, error.response.data.message);

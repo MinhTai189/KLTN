@@ -73,7 +73,7 @@ const GifSelector = ({ onChange }: Props) => {
                         <li
                             key={index}
                             className="gif"
-                            onChange={() => onChange(gif)}
+                            onClick={() => onChange(gif)}
                         >
                             <img src={gif} alt="gif image" />
                         </li>
