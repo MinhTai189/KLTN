@@ -9,6 +9,8 @@ const schoolModel = require("../models/school");
 const districtModel = require("../models/districts");
 const provinceModel = require("../models/province");
 const ObjectId = require("mongoose").Types.ObjectId;
+const { changeRank } = require("../utils/creditFunction");
+
 const userRouter = (io) => {
   router.get("/users/done-jobs", verifyToken, async (req, res) => {
     try {
@@ -381,19 +383,19 @@ const userRouter = (io) => {
         }
         if (school) {
           const getSchool = await schoolModel.findOne({ codeName: school });
-          newDataUser.school = getSchool;
+          if (getSchool) newDataUser.school = getSchool;
         }
         if (district) {
           const getDistrict = await districtModel.findOne({
             codeName: district,
           });
-          newDataUser.district = getDistrict;
+          if (getDistrict) newDataUser.district = getDistrict;
         }
         if (province) {
           const getProvince = await provinceModel.findOne({
             codeName: province,
           });
-          newDataUser.province = getProvince;
+          if (getProvince) newDataUser.province = getProvince;
         }
         const userUpdate = await user.findByIdAndUpdate(id, {
           $set: newDataUser,
@@ -426,7 +428,7 @@ const userRouter = (io) => {
           credit,
           avatarUrl,
         } = req.body;
-
+        console.log(school, district, province);
         if (
           avatarUrl === undefined &&
           !name &&
@@ -451,30 +453,33 @@ const userRouter = (io) => {
         }
         if (school) {
           const getSchool = await schoolModel.findOne({ codeName: school });
-          newDataUser.school = getSchool;
+          if (getSchool) newDataUser.school = getSchool;
         }
         if (district) {
           const getDistrict = await districtModel.findOne({
             codeName: district,
           });
-          newDataUser.district = getDistrict;
+          if (getDistrict) newDataUser.district = getDistrict;
         }
         if (province) {
           const getProvince = await provinceModel.findOne({
             codeName: province,
           });
-          newDataUser.province = getProvince;
+          if (getProvince) newDataUser.province = getProvince;
         }
 
         if (typeof isAdmin !== "undefined") newDataUser.isAdmin = isAdmin;
         if (email) newDataUser.email = email;
         if (credit >= 0 && typeof credit === "number")
           newDataUser.credit = credit;
-
-        const userUpdated = await user.findByIdAndUpdate(id, {
-          $set: newDataUser,
-        });
-
+        const userUpdated = await user.findByIdAndUpdate(
+          id,
+          {
+            $set: newDataUser,
+          },
+          { new: true }
+        );
+        changeRank(userUpdated);
         if (userUpdated) {
           if (
             typeof newDataUser.avatarUrl !== "undefined" &&

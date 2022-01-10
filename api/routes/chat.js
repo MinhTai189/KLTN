@@ -165,7 +165,7 @@ const chatRouter = (io) => {
             owner: {
               ...message.owner._doc,
               avatarUrl: message.owner.avatarUrl.url,
-              totalLikes: message.owner.length,
+              totalLikes: message.owner.likes.length,
             },
             seen: message.seen.map((userseen) => {
               return {
@@ -183,7 +183,7 @@ const chatRouter = (io) => {
             owner: {
               ...message.owner._doc,
               avatarUrl: message.owner.avatarUrl.url,
-              totalLikes: message.owner.length,
+              totalLikes: message.owner.likes.length,
             },
             seen: message.seen.map((userseen) => {
               return {
@@ -200,7 +200,7 @@ const chatRouter = (io) => {
             owner: {
               ...message.owner._doc,
               avatarUrl: message.owner.avatarUrl.url,
-              totalLikes: message.owner.length,
+              totalLikes: message.owner.likes.length,
             },
             seen: message.seen.map((userseen) => {
               return {
@@ -221,8 +221,11 @@ const chatRouter = (io) => {
     const totalRows = responseMessages.length;
     if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
     if (!isNaN(parseInt(_page))) page = parseInt(_page);
+    let start = responseMessages.length - page * limit;
+    let end = responseMessages.length - limit * (page - 1);
+    if (start < 0) start = 0;
     res.status(200).json({
-      data: responseMessages.slice(limit * (page - 1), page * limit),
+      data: responseMessages.slice(start, end),
       pagination: { _page: page, _limit: limit, _totalRows: totalRows },
       success: true,
     });
