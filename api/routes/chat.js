@@ -224,7 +224,10 @@ const chatRouter = (io) => {
     if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
     if (!isNaN(parseInt(_page))) page = parseInt(_page);
     res.status(200).json({
-      data: responseMessages.slice(limit * (page - 1), page * limit),
+      data: responseMessages.slice(
+        responseMessages.length - page * limit,
+        responseMessages.length - limit * (page - 1)
+      ),
       pagination: { _page: page, _limit: limit, _totalRows: totalRows },
       success: true,
     });
