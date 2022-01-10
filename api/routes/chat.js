@@ -165,7 +165,7 @@ const chatRouter = (io) => {
             owner: {
               ...message.owner._doc,
               avatarUrl: message.owner.avatarUrl.url,
-              totalLikes: message.owner.length,
+              totalLikes: message.owner.likes.length,
             },
             seen: message.seen.map((userseen) => {
               return {
@@ -183,7 +183,7 @@ const chatRouter = (io) => {
             owner: {
               ...message.owner._doc,
               avatarUrl: message.owner.avatarUrl.url,
-              totalLikes: message.owner.length,
+              totalLikes: message.owner.likes.length,
             },
             seen: message.seen.map((userseen) => {
               return {
@@ -200,7 +200,7 @@ const chatRouter = (io) => {
             owner: {
               ...message.owner._doc,
               avatarUrl: message.owner.avatarUrl.url,
-              totalLikes: message.owner.length,
+              totalLikes: message.owner.likes.length,
             },
             seen: message.seen.map((userseen) => {
               return {
@@ -215,8 +215,6 @@ const chatRouter = (io) => {
     ];
 
     let limit = responseMessages.length;
-
-    console.log(responseMessages);
 
     let page = 1;
     const { _limit, _page } = req.query;
