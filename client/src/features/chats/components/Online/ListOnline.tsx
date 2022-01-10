@@ -1,5 +1,7 @@
 import { Box } from "@material-ui/core";
+import ChatContext from "contexts/ChatContext";
 import ListRow from "features/dashboard/components/ListSider/ListRow";
+import { useContext } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window";
 
@@ -8,12 +10,12 @@ interface Props {
 }
 
 const ListOnline = (props: Props) => {
+    const { activedGroup } = useContext(ChatContext)
+
+    if (!activedGroup) return null
+
     const Row = (({ index, style }: { index: number; style: any }) => (
-        <ListRow style={style} user={{
-            name: 'Trần Minh Tài',
-            rank: 'Người qua đường',
-            _id: '123432',
-        } as any} isOnline />
+        <ListRow style={style} user={activedGroup.ononlines[index]} isOnline />
     ))
 
     return (
@@ -24,7 +26,7 @@ const ListOnline = (props: Props) => {
             <AutoSizer>
                 {({ width, height }: { width: any, height: any }) => (
                     <List
-                        itemCount={18}
+                        itemCount={activedGroup.ononlines.length}
                         itemSize={60}
                         height={height}
                         width={width}

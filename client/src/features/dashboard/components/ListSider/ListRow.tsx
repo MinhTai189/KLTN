@@ -1,11 +1,11 @@
 import { Avatar, Box, makeStyles, Theme, Typography } from "@material-ui/core"
 import { UserTooltip } from "components/Common"
 import AvatarWithBadge from "components/Common/AvatarWithBadge"
-import { User } from "models"
+import { Owner } from "models"
 import { Link } from "react-router-dom"
 
 interface Props {
-    user: User
+    user: Owner
     isOnline?: boolean
     style: any
 }
@@ -49,6 +49,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ListRow = ({ user, isOnline, style }: Props) => {
     const classes = useStyles()
 
+    const { avatarUrl, name, rank } = user
+
     return (
         <Box className={classes.root} style={style}>
             <Link to={`/profile/${user._id}`}>
@@ -62,19 +64,19 @@ const ListRow = ({ user, isOnline, style }: Props) => {
                     variant="dot"
                 >
                     <UserTooltip data={user}>
-                        <Avatar src={user.avatarUrl} className='avatar' alt="user image" >
-                            {user.name[0]}
+                        <Avatar src={avatarUrl} className='avatar' alt="user image" >
+                            {name[0]}
                         </Avatar>
                     </UserTooltip>
                 </AvatarWithBadge>
 
                 <Box className="info-wrapper">
                     <Typography className="name" variant='h6'>
-                        {user.name}
+                        {name}
                     </Typography>
 
                     <Typography className='rank' component='span'>
-                        {user.rank}
+                        {rank}
                     </Typography>
                 </Box>
             </Link>

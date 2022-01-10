@@ -1,13 +1,18 @@
 import { Box, makeStyles, Theme, Typography } from "@material-ui/core"
 import { KeyboardArrowDown } from "@material-ui/icons"
-import { useAppSelector } from "app/hooks"
-import { selectListMessageChat } from "features/chats/chatSlice"
-import { useLayoutEffect, useRef } from "react"
+import chatApis from "api/chat"
+import { useAppDispatch, useAppSelector } from "app/hooks"
+import ChooseGroup from 'assets/images/choose-group.jpg'
+import { chatActions, selectFilterMessageChat, selectListMessageChat, selectPaginationMessageChat } from "features/chats/chatSlice"
+import { useEffect, useLayoutEffect, useRef } from "react"
 import { useParams } from "react-router-dom"
+import { toast } from "react-toastify"
 import ChatInfomation from "../Chat/ChatInfomation"
 import ChatInput from "../Input/ChatInput"
 import Message from "./Message"
-import ChooseGroup from 'assets/images/choose-group.jpg'
+import { socketClient } from 'utils'
+import { ChatMessage, User } from "models"
+import { selectCurrentUser } from "features/auth/authSlice"
 
 interface Props {
 
@@ -75,6 +80,11 @@ const MessageSection = (props: Props) => {
     const classes = useStyles()
     const listMessage = useAppSelector(selectListMessageChat)
     const { groupId } = useParams<{ groupId: string }>()
+    const currentUser: User = useAppSelector(selectCurrentUser)
+
+    const dispatch = useAppDispatch()
+    const pagination = useAppSelector(selectPaginationMessageChat)
+    const filter = useAppSelector(selectFilterMessageChat)
 
     const scrollBottomRef = useRef<HTMLDivElement>(null)
     const messageContainerRef = useRef<HTMLElement>(null)
@@ -84,23 +94,42 @@ const MessageSection = (props: Props) => {
     const loadMoreRef = useRef<HTMLElement>()
     const observer = useRef<IntersectionObserver>()
 
+    const countLoading = useRef(1)
     let lastScrollTop = 0
 
     useLayoutEffect(() => {
-        const timeout = window.setTimeout(handleScrollToBottom, 500)
-
-        if (messageContainerRef.current)
+        if (messageContainerRef.current && countLoading.current === 1) {
             messageContainerRef.current.addEventListener('scroll', handleShowBtnScrollBottom)
+            messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight
+        }
 
         loadMore()
 
         return () => {
-            window.clearTimeout(timeout)
             observer.current && observer.current.disconnect()
+
             if (btnScrollToBottomRef.current)
                 btnScrollToBottomRef.current.style.display = 'none'
         }
     }, [listMessage])
+
+    useEffect(() => {
+        socketClient.on('new-message', (newMessage: any) => {
+            const message: ChatMessage = newMessage.message
+
+            if (currentUser && currentUser._id !== message.owner._id) {
+                dispatch(chatActions.appendNewMessage(message))
+
+                handleScrollToBottom()
+            }
+        })
+
+        return () => {
+            countLoading.current = 1
+            messageContainerRef.current &&
+                messageContainerRef.current.removeEventListener('scroll', handleShowBtnScrollBottom)
+        }
+    }, [groupId])
 
     const handleScrollToBottom = () => {
         if (!scrollBottomRef.current)
@@ -140,7 +169,30 @@ const MessageSection = (props: Props) => {
         }
 
         observer.current = new IntersectionObserver(entries => {
-            console.log(entries)
+            if (
+                entries[0].isIntersecting &&
+                pagination._limit < pagination._totalRows
+            ) {
+                chatApis.getChatMessage({
+                    ...filter,
+                    _groupId: groupId,
+                    _limit: pagination._limit * 2
+                }).then(res => {
+                    const curScrollPos = messageContainerRef.current!.scrollTop;
+                    const oldScroll = messageContainerRef.current!.scrollHeight - messageContainerRef.current!.clientHeight;
+
+                    dispatch(chatActions.getChatMessageSucceeded(res))
+
+                    var newScroll = messageContainerRef.current!.scrollHeight - messageContainerRef.current!.clientHeight;
+                    messageContainerRef.current!.scrollTop = curScrollPos + (newScroll - oldScroll);
+                })
+                    .catch(err => {
+                        chatActions.getChatMessageFailed(err.response.data.message)
+                        toast.error(err.response.data.message)
+                    })
+
+                countLoading.current++
+            }
         }, options);
 
         observer.current.observe(loadMoreRef.current)

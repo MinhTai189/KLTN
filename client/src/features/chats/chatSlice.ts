@@ -89,6 +89,9 @@ const chatSlice = createSlice({
       state.loading = false;
       state.err = action.payload;
     },
+    appendNewMessage(state, action: PayloadAction<ChatMessage>) {
+      state.listMessage.push(action.payload);
+    },
     setFilterMessage(state, action: PayloadAction<Filter>) {
       state.filterMessage = action.payload;
     },
