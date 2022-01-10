@@ -16,6 +16,10 @@ const chatApis = {
     const url = '/chats/groups';
     return axiosClient.post(url, params);
   },
+  leaveChatGroup(groupId: string): Promise<any> {
+    const url = `/chats/groups/${groupId}`;
+    return axiosClient.delete(url);
+  },
   addChatMessage(params: AddChatMessage): Promise<any> {
     const url = `/chats/groups/messages/${params.groupId}`;
     return axiosClient.post(url, params);
@@ -23,6 +27,10 @@ const chatApis = {
   getChatMessage(params: Filter): Promise<ListResponse<ChatMessage>> {
     const url = `/chats/groups/messages/${params._groupId}`;
     return axiosClient.get(url, { params });
+  },
+  addChatMember(groupId: string, members: string[]): Promise<any> {
+    const url = `/chats/groups/add-members/${groupId}`;
+    return axiosClient.post(url, { members });
   },
 };
 

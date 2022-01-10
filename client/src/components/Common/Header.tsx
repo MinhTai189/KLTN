@@ -197,7 +197,7 @@ export const Header = ({ isChangeNav }: Props) => {
                 {currentUser ?
                     <Box className={classes.ctaWrapper}>
                         <Box className='badge' component='span'>
-                            <Link to='/chats/000'>
+                            <Link to='/chats'>
                                 <Badge
                                     badgeContent={88}
                                     color="primary"

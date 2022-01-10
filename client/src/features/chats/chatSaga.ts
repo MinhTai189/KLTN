@@ -1,5 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import chatApis from 'api/chat';
+import { loadingActions } from 'features/loading/showLoadingSlice';
 import {
   AddChatMessage,
   AddGroup,
@@ -14,11 +15,17 @@ import { chatActions } from './chatSlice';
 
 function* handleGetChatGroup() {
   try {
+    yield put(loadingActions.openLoading());
+
     const response: ListResponse<ChatGroup> = yield chatApis.getChatGroup();
 
     yield put(chatActions.getChatGroupSucceeded(response.data));
+
+    yield put(loadingActions.closeLoading());
   } catch (error: any) {
     yield put(chatActions.getChatGroupFailed(error.response.data.message));
+
+    yield put(loadingActions.closeLoading());
     yield call(toast.error, error.response.data.message);
   }
 }

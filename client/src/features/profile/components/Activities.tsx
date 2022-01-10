@@ -26,6 +26,8 @@ const Activities = ({ activities }: Props) => {
     const years = Object.keys(activities)
 
     useEffect(() => {
+        let result = {}
+
         years.forEach(year => {
             const month = activities[year].reduce((obj, activities, index) => {
                 if (!activities) return obj
@@ -36,15 +38,19 @@ const Activities = ({ activities }: Props) => {
                 return obj
             }, {})
 
-            setSteps({ ...steps, ...month })
+            result = { ...month, ...result }
         })
+
+        setSteps(result)
     }, [activities])
+
+    console.log(steps)
 
     return (
         <Box className={classes.root}>
             <Stepper orientation="vertical">
                 {Object.keys(steps).map(el => (
-                    <Step key={el}>
+                    <Step key={el} expanded>
                         <StepLabel>{`Tháng ${+el.split('-')[0] + 1} - Năm ${el.split('-')[1]}`}</StepLabel>
 
                         <StepContent>

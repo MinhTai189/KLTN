@@ -96,13 +96,13 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 // amount of avatar
-const optionAvatar = new Map([
+export const optionAvatar = new Map([
     [1, { class: 'one', slice: 1 }],
     [2, { class: 'two', slice: 2 }],
     [4, { class: 'four', slice: 4 }],
 ])
 
-const changeMeToLastMember = (members: Owner[], meId: string) => {
+export const changeMeToLastMember = (members: Owner[], meId: string) => {
     const result = [...members]
 
     const index = result.findIndex(member => member._id === meId)
@@ -136,29 +136,29 @@ const handleLastMessage = (lastMessage: ChatMessage, meId: string) => {
 const GroupItem = ({ actived, group }: Props) => {
     const classes = useStyles()
     const currentUser: User = useAppSelector(selectCurrentUser)
+
     const [members, setMembers] = useState(group.members)
     const [lastMessage, setLastMessage] = useState({
         ownerName: 'Bạn',
         content: ''
     })
+    const [amountAvatar, setAmountAvatar] = useState(optionAvatar.get(1))
 
     const { name, createdAt, lastMessage: message } = group
-
-    let amountAvatar = optionAvatar.get(1)
-
-    if (group.members.length > 2 && group.members.length < 4)
-        amountAvatar = optionAvatar.get(2)
-
-    if (group.members.length >= 4)
-        amountAvatar = optionAvatar.get(4)
 
     useEffect(() => {
         if (currentUser) {
             setMembers(changeMeToLastMember(group.members, currentUser._id))
 
             setLastMessage(handleLastMessage(message, currentUser._id))
+
+            if (group.members.length > 2 && group.members.length < 4)
+                setAmountAvatar(optionAvatar.get(2))
+
+            if (group.members.length >= 4)
+                setAmountAvatar(optionAvatar.get(4))
         }
-    }, [currentUser])
+    }, [currentUser, group])
 
     return (
         <Box className={`${classes.root} ${actived ? 'active' : ''}`}>

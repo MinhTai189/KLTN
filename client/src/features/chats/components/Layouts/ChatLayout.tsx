@@ -1,6 +1,6 @@
 import { Box, makeStyles, Theme } from "@material-ui/core"
+import ChatContext from "contexts/ChatContext"
 import { ReactElement, useContext } from "react"
-import { ChatContext } from ".."
 
 interface Props {
     group: ReactElement

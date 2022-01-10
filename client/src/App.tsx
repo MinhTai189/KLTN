@@ -80,6 +80,10 @@ const App = () => {
               <ChatPage />
             </UserRoute>
 
+            <UserRoute path='/chats'>
+              <ChatPage />
+            </UserRoute>
+
             <Route path="/auth">
               <Auth />
             </Route>

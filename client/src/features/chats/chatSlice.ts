@@ -12,6 +12,7 @@ import {
 
 interface State {
   listGroup: ChatGroup[];
+  refetchGroup: boolean;
   listMessage: ChatMessage[];
   filterMessage: Filter;
   paginationMessage: Pagination;
@@ -26,6 +27,7 @@ export const iniFilterMessage: Filter = {
 
 const initialState: State = {
   listGroup: [],
+  refetchGroup: false,
   listMessage: [],
   filterMessage: iniFilterMessage,
   paginationMessage: {
@@ -94,6 +96,9 @@ const chatSlice = createSlice({
       const temp = { ...state.filterMessage };
       state.filterMessage = temp;
     },
+    refetchChatGroup(state) {
+      state.refetchGroup = !state.refetchGroup;
+    },
   },
 });
 
@@ -102,6 +107,8 @@ export const chatActions = chatSlice.actions;
 
 //selectors
 export const selectListGroupChat = (state: RootState) => state.chat.listGroup;
+export const selectRefetchGroupChat = (state: RootState) =>
+  state.chat.refetchGroup;
 export const selectLoadingChat = (state: RootState) => state.chat.loading;
 export const selectListMessageChat = (state: RootState) =>
   state.chat.listMessage;

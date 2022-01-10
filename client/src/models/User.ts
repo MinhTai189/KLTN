@@ -1,5 +1,6 @@
 import { School } from 'models';
 import { ChatMinimalGroup } from './Chat';
+import { Owner } from './Motel';
 
 export interface User {
   _id: string;
@@ -15,7 +16,7 @@ export interface User {
   groupPrivate?: ChatMinimalGroup[];
   rank?: string;
   favorite?: string[];
-  likes?: string[];
+  likes?: Owner[];
   totalLikes?: number;
   posts?: number;
   notify?: Notify[];

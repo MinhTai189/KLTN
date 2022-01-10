@@ -216,8 +216,6 @@ const chatRouter = (io) => {
 
     let limit = responseMessages.length;
 
-    console.log(responseMessages);
-
     let page = 1;
     const { _limit, _page } = req.query;
     const totalRows = responseMessages.length;

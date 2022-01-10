@@ -2,8 +2,9 @@ import { Box, Theme } from "@material-ui/core"
 import { Search } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
 import { useAppDispatch, useAppSelector } from "app/hooks"
+import ChatContext from "contexts/ChatContext"
 import { chatActions, selectFilterMessageChat, selectListGroupChat } from "features/chats/chatSlice"
-import { useEffect, useState } from "react"
+import { useContext, useEffect } from "react"
 import { useHistory, useParams } from "react-router-dom"
 import GroupItem from "./GroupItem"
 
@@ -77,27 +78,22 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const GroupSection = (props: Props) => {
     const classes = useStyles()
+
+    const { activedGroup } = useContext(ChatContext)
     const dispatch = useAppDispatch()
     const history = useHistory()
 
+    const { groupId } = useParams<{ groupId: string }>()
     const filterMessage = useAppSelector(selectFilterMessageChat)
     const listGroup = useAppSelector(selectListGroupChat)
-    const { groupId } = useParams<{ groupId: string }>()
 
-    const [activedGroup, setActivedGroup] = useState('')
 
     useEffect(() => {
-        if (groupId !== '000') {
-            setActivedGroup(groupId)
-
-            dispatch(chatActions.getChatMessage({
-                ...filterMessage,
-                _groupId: groupId
-            }))
-        } else if (listGroup.length > 0) {
-            history.push(`/chats/${listGroup[0]._id}`)
-        }
-    }, [groupId, listGroup, filterMessage, activedGroup])
+        groupId && dispatch(chatActions.getChatMessage({
+            ...filterMessage,
+            _groupId: groupId
+        }))
+    }, [groupId, filterMessage])
 
 
     return (
@@ -111,7 +107,7 @@ const GroupSection = (props: Props) => {
             <Box className="group-wrapper">
                 <ul className="list-group">
                     {listGroup.map(group => {
-                        const actived = activedGroup === group._id
+                        const actived = activedGroup?._id === group._id
 
                         return (
                             <li
