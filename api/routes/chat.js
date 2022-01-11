@@ -319,6 +319,15 @@ const chatRouter = (io) => {
     if (response) {
       const newMessage = response.messages[response.messages.length - 1];
       io.sendMessage(response._id, newMessage, response.members);
+      response.messages.forEach((message) => {
+        if (
+          !message.seen.some(
+            (see) => JSON.stringify(see._id) === JSON.stringify(req.user.id)
+          )
+        )
+          message.seen.push(req.user.id);
+      });
+      response.save();
     } else {
       return res.status(500).json({
         message: "Bạn không tham gia nhóm này",

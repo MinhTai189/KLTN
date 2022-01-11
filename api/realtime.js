@@ -46,27 +46,27 @@ module.exports.listen = function socket(server) {
               status: 200,
               success: true,
             });
-            // groupChat
-            //   .find({ members: data.id })
-            //   .select("_id members")
-            //   .then((res) => {
-            //     if (res)
-            //       res.forEach((item) => {
-            //         socket.join(item._id.toString());
-            //         io.to(item._id.toString()).emit("ononlines-chat", {
-            //           list: listOnline.getUsers(1, -1).list.filter((user) => {
-            //             return item.members.some(
-            //               (member) =>
-            //                 JSON.stringify(member) === JSON.stringify(user._id)
-            //             );
-            //           }),
-            //           groupId: item._id.toString(),
-            //         });
-            //       });
-            //   })
-            //   .catch((err) => {
-            //     console.log(err);
-            //   });
+            groupChat
+              .find({ members: data.id })
+              .select("_id members")
+              .then((res) => {
+                if (res)
+                  res.forEach((item) => {
+                    socket.join(item._id.toString() + "_global");
+                    io.to(item._id.toString()).emit("ononlines-chat", {
+                      list: listOnline.getUsers(1, -1).list.filter((user) => {
+                        return item.members.some(
+                          (member) =>
+                            JSON.stringify(member) === JSON.stringify(user._id)
+                        );
+                      }),
+                      groupId: item._id.toString(),
+                    });
+                  });
+              })
+              .catch((err) => {
+                console.log(err);
+              });
             if (data.credit > 300 || data.isAdmin == true)
               socket.join("important");
             addUser(data.id);
@@ -138,7 +138,7 @@ module.exports.listen = function socket(server) {
 
     io.to("important").emit("ononlines", listOnline.getUsers(1, -1).list);
   };
-  io.plusNewMessage = (members) => {
+  io.notifyNewMessage = (newMessage, members) => {
     const socketsToSend = [
       ...io.users.filter((user) =>
         members.some(
@@ -146,13 +146,39 @@ module.exports.listen = function socket(server) {
         )
       ),
     ];
-    socketsToSend.forEach((socket) => {
-      io.to(socket.socketId).emit("numMessages");
-    });
+    groupChat
+      .find({
+        $or: members.map((member) => {
+          return { members: member };
+        }),
+      })
+      .then((res) => {
+        if (res)
+          socketsToSend.forEach((socket) => {
+            io.to(socket.socketId).emit("notifyNewMessages", {
+              message: newMessage.message,
+              numMessages: res
+                .filter((group) =>
+                  group.members.some(
+                    (member) =>
+                      JSON.stringify(socket.id) === JSON.stringify(member)
+                  )
+                )
+                .reduce((sum, group) => {
+                  return (sum += group.messages.filter((message) => {
+                    return !message.seen.some(
+                      (see) => JSON.stringify(see) === JSON.stringify(socket.id)
+                    );
+                  }));
+                }),
+            });
+          });
+      });
   };
   io.sendMessage = (groupId, newMessage, members) => {
+    let message;
     if (newMessage.type === "gif")
-      io.in(groupId.toString()).emit("new-message", {
+      message = {
         groupId: groupId.toString(),
         message: {
           ...newMessage._doc,
@@ -170,9 +196,9 @@ module.exports.listen = function socket(server) {
             };
           }),
         },
-      });
+      };
     else if (newMessage.type === "image")
-      io.in(groupId.toString()).emit("new-message", {
+      message = {
         groupId: groupId.toString(),
         message: {
           ...newMessage._doc,
@@ -191,9 +217,9 @@ module.exports.listen = function socket(server) {
             };
           }),
         },
-      });
-    else {
-      io.in(groupId.toString()).emit("new-message", {
+      };
+    else
+      message = {
         groupId: groupId.toString(),
         message: {
           ...newMessage._doc,
@@ -211,9 +237,10 @@ module.exports.listen = function socket(server) {
             };
           }),
         },
-      });
-    }
-    io.plusNewMessage(members);
+      };
+    io.in(groupId.toString()).emit("new-message", message);
+    io.in(groupId.toString() + "_global").emit("new-message-allGroup", message);
+    io.notifyNewMessage(message, members);
   };
   io.joinToGroup = (userId, groupId) => {
     const findSocket = io.users.find((user) => user.id === userId);
