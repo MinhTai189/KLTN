@@ -186,7 +186,9 @@ module.exports.listen = function socket(server) {
               JSON.stringify(group._id) === JSON.stringify(newMessage.groupId)
           );
           let name = findGroup.name;
-          if (findGroup.type === "private") name = newMessage.owner.name;
+
+          if (findGroup.type === "private")
+            name = newMessage.message.owner.name;
           socketsToSend.forEach((socket) => {
             io.to(socket.socketId).emit("notify-new-messages", {
               group: {
