@@ -454,10 +454,25 @@ const authRouter = (io) => {
 
       checkUser.refreshToken = newRefreshToken;
       await checkUser.save();
-      const groupPrivate = await groupChat
-        .find({ members: checkUser._id, type: "private" })
-        .select("-messages");
-      const data = { ...checkUser._doc, avatarUrl: url, groupPrivate };
+      const groupChatUser = await groupChat.find({ members: checkUser._id });
+
+      const data = {
+        ...checkUser._doc,
+        avatarUrl: url,
+        groupPrivate: groupChatUser
+          .filter((group) => (group.type = "private"))
+          .map((group) => {
+            return { ...group._doc, messages: undefined };
+          }),
+        numMessages: groupChatUser.reduce((s, group) => {
+          return (s += group.messages.filter(
+            (message) =>
+              !message.seen.some(
+                (see) => JSON.stringify(checkUser._id) === JSON.stringify(see)
+              )
+          ).length);
+        }, 0),
+      };
       res.status(200).json({
         success: true,
         message: "Đăng nhập thành công",

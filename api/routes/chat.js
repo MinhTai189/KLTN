@@ -47,13 +47,13 @@ const chatRouter = (io) => {
           "messages.owner",
           "avatarUrl name isAdmin _id credit email posts motels rank school likes"
         );
-      for (let i = 0; i < newGroup.members.length; i++) {
-        io.membersOnChangeAddToGroup(
-          newGroup._id,
-          newGroup,
-          newGroup.members[i]._id
-        );
-      }
+      // for (let i = 0; i < newGroup.members.length; i++) {
+      //   io.membersOnChangeAddToGroup(
+      //     newGroup._id,
+      //     newGroup,
+      //     newGroup.members[i]._id
+      //   );
+      // }
     } catch (err) {
       console.log(err);
       res.status(500).json({ success: false, message: "Lỗi không xác định" });
@@ -229,6 +229,7 @@ const chatRouter = (io) => {
       pagination: { _page: page, _limit: limit, _totalRows: totalRows },
       success: true,
     });
+    io.joinToGroup(req.user.id, getGroup._id);
   });
   function linkify(text) {
     var urlRegex =
@@ -317,7 +318,7 @@ const chatRouter = (io) => {
       );
     if (response) {
       const newMessage = response.messages[response.messages.length - 1];
-      io.sendMessage(response._id, newMessage);
+      io.sendMessage(response._id, newMessage, response.members);
     } else {
       return res.status(500).json({
         message: "Bạn không tham gia nhóm này",
@@ -375,10 +376,11 @@ const chatRouter = (io) => {
             }
         });
       }
-      io.membersOnChangeLeave(leaveGroup._id, leaveGroup, req.user.id);
+      // io.membersOnChangeLeave(leaveGroup._id, leaveGroup, req.user.id);
       io.sendMessage(
         leaveGroup._id,
-        leaveGroup.messages[leaveGroup.messages.length - 1]
+        leaveGroup.messages[leaveGroup.messages.length - 1],
+        leaveGroup.members
       );
     } catch (err) {
       console.log(err);
@@ -413,7 +415,7 @@ const chatRouter = (io) => {
               },
             },
           },
-          { upsert: true }
+          { upsert: true, new: true }
         )
         .populate(
           "members",
@@ -431,14 +433,19 @@ const chatRouter = (io) => {
         return res
           .status(400)
           .json({ message: "Không tìm thấy nhóm chat", success: false });
+      io.sendMessage(
+        addMemberGroup._id,
+        addMemberGroup.messages[addMemberGroup.messages.length - 1],
+        addMemberGroup.members.map((member) => member._id)
+      );
       res.status(200).json({ message: "Thành công", success: true });
-      for (let i = 0; i < members.length; i++) {
-        io.membersOnChangeAddToGroup(
-          addMemberGroup._id,
-          addMemberGroup,
-          members
-        );
-      }
+      // for (let i = 0; i < members.length; i++) {
+      //   io.membersOnChangeAddToGroup(
+      //     addMemberGroup._id,
+      //     addMemberGroup,
+      //     members
+      //   );
+      // }
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Lỗi không xác định", success: false });

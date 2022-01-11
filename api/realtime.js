@@ -46,27 +46,27 @@ module.exports.listen = function socket(server) {
               status: 200,
               success: true,
             });
-            groupChat
-              .find({ members: data.id })
-              .select("_id members")
-              .then((res) => {
-                if (res)
-                  res.forEach((item) => {
-                    socket.join(item._id.toString());
-                    io.to(item._id.toString()).emit("ononlines-chat", {
-                      list: listOnline.getUsers(1, -1).list.filter((user) => {
-                        return item.members.some(
-                          (member) =>
-                            JSON.stringify(member) === JSON.stringify(user._id)
-                        );
-                      }),
-                      groupId: item._id.toString(),
-                    });
-                  });
-              })
-              .catch((err) => {
-                console.log(err);
-              });
+            // groupChat
+            //   .find({ members: data.id })
+            //   .select("_id members")
+            //   .then((res) => {
+            //     if (res)
+            //       res.forEach((item) => {
+            //         socket.join(item._id.toString());
+            //         io.to(item._id.toString()).emit("ononlines-chat", {
+            //           list: listOnline.getUsers(1, -1).list.filter((user) => {
+            //             return item.members.some(
+            //               (member) =>
+            //                 JSON.stringify(member) === JSON.stringify(user._id)
+            //             );
+            //           }),
+            //           groupId: item._id.toString(),
+            //         });
+            //       });
+            //   })
+            //   .catch((err) => {
+            //     console.log(err);
+            //   });
             if (data.credit > 300 || data.isAdmin == true)
               socket.join("important");
             addUser(data.id);
@@ -74,151 +74,6 @@ module.exports.listen = function socket(server) {
         }
       );
     });
-
-    /* socket.on("send-message", async (data) => {
-      /*
-      data:{
-        id: group's id,
-        text:"",
-        type ="text" or "image" or "video" or "gif",
-        dataUrl:{ url,public_id } hoặc dataUrl:{ url } đối với gif;
-
-        nếu trong text co link, tự động kiểu sẽ là link và show link đầu tiên
-      }
-     
-      const getUserAuth = io.users.find((item) => {
-        return item.socketId === socket.id;
-      });
-      if (!getUserAuth) {
-        console.log("Chưa xác thực");
-        return;
-      }
-
-      let type = data.type;
-      let dataUrl = data.dataUrl;
-      const tolinkify = linkify(data.text);
-
-      if (tolinkify) {
-        const getLink = tolinkify[0];
-
-        const html = await axios.get(getLink);
-
-        const $ = cheerio.load(html.data);
-        const metaTagData = {
-          url: getLink,
-          domain: url.parse(getLink).hostname,
-          title: $('meta[name="title"]').attr("content"),
-          img: $('meta[name="image"]').attr("content"),
-          description: $('meta[name="description"]').attr("content"),
-        };
-        if (!metaTagData.title)
-          metaTagData.title = $('meta[property="og:title"]').attr("content");
-        if (!metaTagData.img)
-          metaTagData.img = $('meta[property="og:image"]').attr("content");
-        if (!metaTagData.description)
-          metaTagData.description = $('meta[property="og:description"]').attr(
-            "content"
-          );
-        dataUrl = metaTagData;
-        console.log(metaTagData);
-        type = "link";
-      }
-      groupChat
-        .findByIdAndUpdate(
-          data.id,
-          {
-            $push: {
-              messages: {
-                owner: getUserAuth.id,
-                type: type,
-                content: {
-                  dataUrl: dataUrl,
-                  text: data.text,
-                },
-                seen: [getUserAuth.id],
-              },
-            },
-          },
-          { new: true }
-        )
-        .populate(
-          "messages.owner",
-          "avatarUrl name isAdmin _id credit email posts motels rank school likes"
-        )
-        .then((res) => {
-          if (res) {
-            const newMessage = res.messages[res.messages.length - 1];
-            const content = newMessage.content;
-            if (content.dataUrl) {
-              let dataUrl = content.dataUrl;
-              if (
-                newMessage.type === "image" ||
-                newMessage.type === "gif" ||
-                newMessage.type === "video"
-              )
-                dataUrl = content.dataUrl.url;
-              io.in(JSON.stringify(res._id)).emit("new-message", {
-                groupId: JSON.stringify(res._id),
-                message: {
-                  ...newMessage._doc,
-                  status: false,
-                  content: { ...newMessage.content._doc, dataUrl },
-                  owner: {
-                    ...newMessage.owner._doc,
-                    avatarUrl: newMessage.owner.avatarUrl.url,
-                    totalLikes: newMessage.owner.likes.length,
-                  },
-                },
-              });
-            } else {
-              io.in(JSON.stringify(res._id)).emit("new-message", {
-                groupId: JSON.stringify(res._id),
-                message: {
-                  ...newMessage._doc,
-                  status: false,
-                  owner: {
-                    ...newMessage.owner._doc,
-                    avatarUrl: newMessage.owner.avatarUrl.url,
-                    totalLikes: newMessage.owner.likes.length,
-                  },
-                },
-              });
-            }
-          }
-        });
-    }); */
-    /* socket.on("seen-all", (data) => {
-      /*
-      data:{
-        id: groupId,
-      }
-      
-      const getUserAuth = io.users.find((item) => {
-        return item.socketId === socket.id;
-      });
-      if (!getUserAuth) {
-        console.log("Chua xac thuc");
-        return;
-      }
-      groupChat
-        .findOneAndUpdate(
-          data.id,
-          {
-            messages: {
-              $push: {
-                seen: getUserAuth.id,
-              },
-            },
-          },
-          { new: true }
-        )
-        .then((res) => {
-          io.to(JSON.stringify(res._id)).emit("seen-all", {
-            groupId: JSON.stringify(res._id),
-            userId: getUserAuth.id,
-          });
-        });
-    }); */
 
     socket.on("disconnect", () => {
       const findUserDisconnect = io.users.find((item) => {
@@ -283,7 +138,19 @@ module.exports.listen = function socket(server) {
 
     io.to("important").emit("ononlines", listOnline.getUsers(1, -1).list);
   };
-  io.sendMessage = (groupId, newMessage) => {
+  io.plusNewMessage = (members) => {
+    const socketsToSend = [
+      ...io.users.filter((user) =>
+        members.some(
+          (member) => JSON.stringify(member) === JSON.stringify(user.id)
+        )
+      ),
+    ];
+    socketsToSend.forEach((socket) => {
+      io.to(socket.socketId).emit("numMessages");
+    });
+  };
+  io.sendMessage = (groupId, newMessage, members) => {
     if (newMessage.type === "gif")
       io.in(groupId.toString()).emit("new-message", {
         groupId: groupId.toString(),
@@ -346,6 +213,20 @@ module.exports.listen = function socket(server) {
         },
       });
     }
+    io.plusNewMessage(members);
+  };
+  io.joinToGroup = (userId, groupId) => {
+    const findSocket = io.users.find((user) => user.id === userId);
+    if (findSocket) {
+      const socket = io.sockets.sockets.get(findSocket.socketId);
+      const allRoom = io.sockets.adapter.rooms;
+
+      allRoom.forEach((value, key, map) => {
+        if (key === socket.id) {
+        } else socket.leave(key);
+      });
+      io.sockets.sockets.get(findSocket.socketId).join(groupId.toString());
+    }
   };
   io.getListOnlineByGroupId = (groupId) => {
     return getListOnlineByGroupId(groupId);
@@ -390,46 +271,46 @@ module.exports.listen = function socket(server) {
       }),
       groupId: group._id.toString(),
     });
-    const findSocket = io.users.find(
-      (user) => JSON.stringify(user.id) === JSON.stringify(userId)
-    );
+    // const findSocket = io.users.find(
+    //   (user) => JSON.stringify(user.id) === JSON.stringify(userId)
+    // );
 
-    if (!findSocket) return;
+    // if (!findSocket) return;
 
-    if (findSocket) {
-      io.sockets.sockets.get(findSocket.socketId).join(groupId.toString());
-      let name = group.name;
-      if (group.type === "private") {
-        if (
-          group.members.find(
-            (mem) => JSON.stringify(mem._id) !== JSON.stringify(userId)
-          )
-        )
-          name = group.members.find(
-            (mem) => JSON.stringify(mem._id) !== JSON.stringify(userId)
-          ).name;
-      }
-      io.to(findSocket.socketId).emit("new-group", {
-        ...group._doc,
-        name: name,
-        members: group.members.map((member) => {
-          return {
-            ...member._doc,
-            avatarUrl: member.avatarUrl.url,
-            totalLikes: member.likes.length,
-          };
-        }),
-        totalMembers: group.members.length,
-        lastMessage: group.messages[group.messages.length - 1],
-        messages: undefined,
-        unseen: group.messages.filter((message) => {
-          return !message.seen.some(
-            (m) => JSON.stringify(m) === JSON.stringify(userId)
-          );
-        }).length,
-        ononlines: io.getListOnlineByGroupId(group._id),
-      });
-    }
+    // if (findSocket) {
+    //   io.sockets.sockets.get(findSocket.socketId).join(groupId.toString());
+    //   let name = group.name;
+    //   if (group.type === "private") {
+    //     if (
+    //       group.members.find(
+    //         (mem) => JSON.stringify(mem._id) !== JSON.stringify(userId)
+    //       )
+    //     )
+    //       name = group.members.find(
+    //         (mem) => JSON.stringify(mem._id) !== JSON.stringify(userId)
+    //       ).name;
+    //   }
+    //   io.to(findSocket.socketId).emit("new-group", {
+    //     ...group._doc,
+    //     name: name,
+    //     members: group.members.map((member) => {
+    //       return {
+    //         ...member._doc,
+    //         avatarUrl: member.avatarUrl.url,
+    //         totalLikes: member.likes.length,
+    //       };
+    //     }),
+    //     totalMembers: group.members.length,
+    //     lastMessage: group.messages[group.messages.length - 1],
+    //     messages: undefined,
+    //     unseen: group.messages.filter((message) => {
+    //       return !message.seen.some(
+    //         (m) => JSON.stringify(m) === JSON.stringify(userId)
+    //       );
+    //     }).length,
+    //     ononlines: io.getListOnlineByGroupId(group._id),
+    //   });
+    // }
   };
 
   io.notifyToUser = async (userId, data) => {
