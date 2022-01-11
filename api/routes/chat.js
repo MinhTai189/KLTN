@@ -367,11 +367,12 @@ const chatRouter = (io) => {
       res.status(200).json({ message: "Rời nhóm thành công", success: true });
       if (leaveGroup.members.length == 0) {
         groupChat.findByIdAndDelete(groupId);
-
         groupChat.messages.forEach((message) => {
-          if (message.dataUrl)
-            if (message.dataUrl.public_id)
-              upload.unlink(message.dataUrl.public_id);
+          if (message.urlImages)
+            for (let i = 0; i < message.urlImages.length; i++) {
+              if (message.urlImages[i].public_id)
+                upload.unlink(message.urlImages[i].public_id);
+            }
         });
       }
       io.membersOnChangeLeave(leaveGroup._id, leaveGroup, req.user.id);

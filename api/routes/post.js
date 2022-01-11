@@ -167,7 +167,7 @@ const postRouter = (io) => {
         posts = posts.filter((item) => {
           const reg = new RegExp(_keysearch, "i");
           return (
-            reg.test(removeVietnameseTones(item.title)) ||
+            reg.test(removeVietNameseTones(item.title)) ||
             reg.test(item.title) ||
             reg.test(item.owner.unsignedName) ||
             reg.test(item.owner.name) ||
