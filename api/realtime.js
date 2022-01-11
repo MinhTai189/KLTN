@@ -283,12 +283,14 @@ module.exports.listen = function socket(server) {
     );
     if (findSocket) {
       const socket = io.sockets.sockets.get(findSocket.socketId);
-      socket
-        .to(groupId.toString())
-        .emit("new-message-" + groupId.toString(), message.message);
-      socket
-        .to(groupId.toString() + "_global")
-        .emit("new-message-all-group", message);
+      if (socket) {
+        socket
+          .to(groupId.toString())
+          .emit("new-message-" + groupId.toString(), message.message);
+        socket
+          .to(groupId.toString() + "_global")
+          .emit("new-message-all-group", message);
+      }
       io.notifyNewMessage(message, members);
     }
   };
