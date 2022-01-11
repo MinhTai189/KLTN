@@ -109,6 +109,7 @@ const chatRouter = (io) => {
         };
       }),
     ].sort((g1, g2) => new Date(g2.updatedAt) - new Date(g1.updatedAt));
+
     let limit = responseGroupsChat.length;
     const { _limit } = req.query;
     if (!isNaN(parseInt(_limit))) limit = parseInt(_limit);
@@ -229,7 +230,6 @@ const chatRouter = (io) => {
       pagination: { _page: page, _limit: limit, _totalRows: totalRows },
       success: true,
     });
-    io.joinToGroup(req.user.id, getGroup._id);
   });
   function linkify(text) {
     var urlRegex =

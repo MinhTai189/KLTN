@@ -52,7 +52,7 @@ module.exports.listen = function socket(server) {
               .then((res) => {
                 if (res)
                   res.forEach((item) => {
-                    socket.join(item._id.toString() + "_global");
+                    //socket.join(item._id.toString() + "_global");
                     io.to(item._id.toString()).emit("ononlines-chat", {
                       list: listOnline.getUsers(1, -1).list.filter((user) => {
                         return item.members.some(
@@ -74,7 +74,34 @@ module.exports.listen = function socket(server) {
         }
       );
     });
-
+    socket.on("subscribes", () => {
+      const findUser = io.users.find((item) => {
+        return item.socketId === socket.id;
+      });
+      if (!findUser) return;
+      groupChat
+        .find({ members: findUser.id })
+        .select("_id members")
+        .then((res) => {
+          if (res)
+            res.forEach((group) => {
+              socket.join(group._id.toString() + "_global");
+            });
+        });
+    });
+    socket.on("unsubscribes", () => {
+      const allRoom = io.sockets.adapter.rooms;
+      allRoom.forEach((value, key, map) => {
+        if (key === socket.id) {
+        } else if (key.includes("_global")) socket.leave(key);
+      });
+    });
+    socket.on("subscribe-group", (id) => {
+      if (id) socket.join(id.toString());
+    });
+    socket.on("unsubscribe-group", (id) => {
+      if (id) socket.leave(id.toString());
+    });
     socket.on("disconnect", () => {
       const findUserDisconnect = io.users.find((item) => {
         return item.socketId === socket.id;
@@ -153,9 +180,21 @@ module.exports.listen = function socket(server) {
         }),
       })
       .then((res) => {
-        if (res)
+        if (res) {
+          const findGroup = res.find(
+            (group) =>
+              JSON.stringify(group._id) === JSON.stringify(newMessage.groupId)
+          );
+          let name = findGroup.name;
+          if (findGroup.type === "private") name = message.owner.name;
           socketsToSend.forEach((socket) => {
-            io.to(socket.socketId).emit("notifyNewMessages", {
+            io.to(socket.socketId).emit("notify-new-messages", {
+              group: {
+                ...findGroup._doc,
+                name: name,
+                messages: undefined,
+                members: undefined,
+              },
               message: newMessage.message,
               numMessages: res
                 .filter((group) =>
@@ -169,10 +208,11 @@ module.exports.listen = function socket(server) {
                     return !message.seen.some(
                       (see) => JSON.stringify(see) === JSON.stringify(socket.id)
                     );
-                  }));
-                }),
+                  }).length);
+                }, 0),
             });
           });
+        }
       });
   };
   io.sendMessage = (groupId, newMessage, members) => {
@@ -238,23 +278,19 @@ module.exports.listen = function socket(server) {
           }),
         },
       };
-    io.in(groupId.toString()).emit("new-message", message);
-    io.in(groupId.toString() + "_global").emit("new-message-allGroup", message);
-    io.notifyNewMessage(message, members);
-  };
-  io.joinToGroup = (userId, groupId) => {
-    const findSocket = io.users.find((user) => user.id === userId);
+    const findSocket = io.users.find(
+      (user) => JSON.stringify(user.id) === JSON.stringify(newMessage.owner._id)
+    );
     if (findSocket) {
       const socket = io.sockets.sockets.get(findSocket.socketId);
-      const allRoom = io.sockets.adapter.rooms;
-
-      allRoom.forEach((value, key, map) => {
-        if (key === socket.id) {
-        } else socket.leave(key);
-      });
-      io.sockets.sockets.get(findSocket.socketId).join(groupId.toString());
+      socket.to(groupId.toString()).emit("new-message", message.message);
+      socket
+        .to(groupId.toString() + "_global")
+        .emit("new-message-all-group", message);
+      io.notifyNewMessage(message, members);
     }
   };
+
   io.getListOnlineByGroupId = (groupId) => {
     return getListOnlineByGroupId(groupId);
   };
