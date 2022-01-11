@@ -5,11 +5,7 @@ import { useContext } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window";
 
-interface Props {
-
-}
-
-const ListOnline = (props: Props) => {
+const ListOnline = () => {
     const { activedGroup } = useContext(ChatContext)
 
     if (!activedGroup) return null

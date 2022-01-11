@@ -3,6 +3,7 @@ import { RootState } from 'app/store';
 import {
   AddChatMessage,
   AddGroup,
+  AddLastMessage,
   ChatGroup,
   ChatMessage,
   Filter,
@@ -63,6 +64,19 @@ const chatSlice = createSlice({
     addChatGroupFailed(state, action: PayloadAction<string>) {
       state.loading = false;
       state.err = action.payload;
+    },
+    changeLastMessageGroup(state, action: PayloadAction<AddLastMessage>) {
+      const newListGroup = state.listGroup.map((group) => {
+        if (group._id === action.payload.groupId)
+          return {
+            ...group,
+            lastMessage: action.payload.message,
+          };
+
+        return group;
+      });
+
+      state.listGroup = newListGroup;
     },
     addChatMessage(state, action: PayloadAction<AddChatMessage>) {
       state.loading = true;

@@ -12,10 +12,6 @@ import AddMemberModal from './AddMemberModal'
 import ChangeNameGroupModal from './ChangeNameGroupModal'
 import ListSetting from './ListSetting'
 
-interface Props {
-
-}
-
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         display: 'flex',
@@ -96,7 +92,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const ChatInfomation = (props: Props) => {
+const ChatInfomation = () => {
     const classes = useStyles()
     const { showListOnline, setShowShowListOnline, activedGroup } = useContext(ChatContext)
     const currentUser: User = useAppSelector(selectCurrentUser)

@@ -17,7 +17,7 @@ export interface ChatMessage {
   _id: string;
   content: string;
   owner: Owner;
-  seen: string;
+  seen: string[];
   type: TypeMessage;
   urlImages: string[];
   urlGif: string;
@@ -31,6 +31,11 @@ export interface AddChatMessage {
   type: TypeMessage;
   urlImages?: string[];
   urlGif?: string;
+}
+
+export interface AddLastMessage {
+  groupId: string;
+  message: ChatMessage;
 }
 
 export interface ChatMinimalGroup extends AddGroup {

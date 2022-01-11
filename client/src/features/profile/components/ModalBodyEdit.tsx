@@ -108,8 +108,8 @@ export const ModalBodyEdit = ({ loading, updateUserData, handleSubmitEdit }: Pro
     const [optionsDistrict, setOptionsDistrict] = useState<any[]>([])
     const [optionsSchool, setOptionsSchool] = useState<any[]>([])
 
-    const [selectedProvince, setSelectedProvince] = useState<any>('')
-    const [selectedDistrict, setSelectedDistrict] = useState<any>('')
+    const [selectedProvince, setSelectedProvince] = useState<any>(null)
+    const [selectedDistrict, setSelectedDistrict] = useState<any>(null)
     const [selectedAvatar, setSelectedAvatar] = useState<File | undefined>()
 
     const { handleSubmit, control, getValues, setValue, formState: { isDirty } } = useForm({
@@ -119,8 +119,10 @@ export const ModalBodyEdit = ({ loading, updateUserData, handleSubmitEdit }: Pro
 
     useEffect(() => {
         // get default value for province field
-        setSelectedProvince(optionsProvince.find((e: any) => e.value === updateUserData.province) ?? '')
-        console.log(optionsProvince)
+        if (optionsProvince.length > 0) {
+            const option = optionsProvince.find((e: any) => e.value === updateUserData.province)
+            setSelectedProvince(option || null)
+        }
     }, [updateUserData, optionsProvince])
 
     useEffect(() => {
@@ -128,14 +130,14 @@ export const ModalBodyEdit = ({ loading, updateUserData, handleSubmitEdit }: Pro
             .then(res => {
                 const options = mapOptions.autoComp(res.data)
                 setOptionsDistrict(options)
-                setSelectedDistrict(options.find((x: any) => x.value === updateUserData.district) ?? '')
+                setSelectedDistrict(options.find((x: any) => x.value === updateUserData.district) || null)
             })
 
         schoolApi.getByProDis(updateUserData.province, updateUserData.district)
             .then(res => {
                 const options = mapOptions.school(res.data)
                 setOptionsSchool(options)
-                setValue('school', options.find((x: any) => x.value === updateUserData.school)?.value ?? '')
+                setValue('school', options.find((x: any) => x.value === updateUserData.school)?.value || '')
             })
     }, [updateUserData])
 
@@ -216,15 +218,16 @@ export const ModalBodyEdit = ({ loading, updateUserData, handleSubmitEdit }: Pro
 
             <Grid container spacing={2}>
                 <Grid item sm={6}>
-                    <AutoCompleteField label="Tỉnh*" title='label' value={selectedProvince} onChange={handleProvinceSelected} size='small' options={optionsProvince} disabled={false} />
+                    {optionsProvince.length > 0 &&
+                        <AutoCompleteField label="Tỉnh*" title='label' value={selectedProvince} onChange={handleProvinceSelected} size='small' options={optionsProvince} />}
                 </Grid>
 
                 <Grid item sm={6}>
-                    <AutoCompleteField label="Quận/Huyện/TP*" title='label' value={selectedDistrict} onChange={handleDistrictSelected} size='small' options={optionsDistrict} disabled={false} />
+                    {optionsDistrict.length > 0 && <AutoCompleteField label="Quận/Huyện/TP*" title='label' value={selectedDistrict} onChange={handleDistrictSelected} size='small' options={optionsDistrict} disabled={false} />}
                 </Grid>
             </Grid>
 
-            <SelectField label='Trường*' name='school' control={control} disabled={false} options={optionsSchool} mt={19} mb={8} size='small' />
+            {optionsSchool && <SelectField label='Trường*' name='school' control={control} options={optionsSchool} mt={19} mb={8} size='small' />}
 
             <Box style={{ width: '100%' }} mt={2}>
                 <ButtonSubmit
@@ -232,7 +235,7 @@ export const ModalBodyEdit = ({ loading, updateUserData, handleSubmitEdit }: Pro
                     color='primary'
                     fullWidth
                     variant='contained'
-                    disable={loading}
+                    disabled={loading}
                 >
                     {loading && <><CircularProgress color='secondary' size={15} /> &nbsp;</>}
                     Cập nhật

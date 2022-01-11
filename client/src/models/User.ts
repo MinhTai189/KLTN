@@ -53,6 +53,7 @@ export interface UserDataTable {
   province: string;
   district: string;
   school: string;
+  createdAt: string;
 }
 
 export type UserUpdate = Omit<UserDataTable, 'number' | 'username'>;

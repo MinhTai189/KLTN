@@ -1,18 +1,16 @@
-import { Box, makeStyles, Theme, Typography } from "@material-ui/core"
+import { Box, makeStyles, Theme } from "@material-ui/core"
 import { KeyboardArrowDown } from "@material-ui/icons"
 import chatApis from "api/chat"
 import { useAppDispatch, useAppSelector } from "app/hooks"
-import ChooseGroup from 'assets/images/choose-group.jpg'
+import { SOCKET_EVENT } from "constant/constant"
 import { chatActions, selectFilterMessageChat, selectListMessageChat, selectPaginationMessageChat } from "features/chats/chatSlice"
 import { useEffect, useLayoutEffect, useRef } from "react"
 import { useParams } from "react-router-dom"
 import { toast } from "react-toastify"
+import { socketClient } from 'utils'
 import ChatInfomation from "../Chat/ChatInfomation"
 import ChatInput from "../Input/ChatInput"
 import Message from "./Message"
-import { socketClient } from 'utils'
-import { ChatMessage, User } from "models"
-import { selectCurrentUser } from "features/auth/authSlice"
 
 interface Props {
 
@@ -55,32 +53,12 @@ const useStyles = makeStyles((theme: Theme) => ({
             boxShadow: theme.shadows[2]
         }
     },
-    chooseGroup: {
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        paddingTop: 100,
-
-        '& img': {
-            height: 250,
-            width: 250,
-            borderRadius: '50%'
-        },
-
-        '& .text': {
-            fontSize: '1.5rem',
-            marginTop: theme.spacing(1)
-        }
-    }
 }))
 
 const MessageSection = (props: Props) => {
     const classes = useStyles()
     const listMessage = useAppSelector(selectListMessageChat)
     const { groupId } = useParams<{ groupId: string }>()
-    const currentUser: User = useAppSelector(selectCurrentUser)
 
     const dispatch = useAppDispatch()
     const pagination = useAppSelector(selectPaginationMessageChat)
@@ -97,39 +75,48 @@ const MessageSection = (props: Props) => {
     const countLoading = useRef(1)
     let lastScrollTop = 0
 
-    useLayoutEffect(() => {
-        if (messageContainerRef.current && countLoading.current === 1) {
+    useEffect(() => {
+        if (messageContainerRef.current) {
             messageContainerRef.current.addEventListener('scroll', handleShowBtnScrollBottom)
-            messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight
         }
 
+        const appendNewMessage = (newMessage: any) => {
+            dispatch(chatActions.appendNewMessage(newMessage))
+
+            handleScrollToBottom()
+        }
+
+        console.log(groupId)
+
+        socketClient.emit(SOCKET_EVENT.subscribeGroup, groupId)
+
+
+
+        socketClient.on(`${SOCKET_EVENT.newMessage}${groupId}`, appendNewMessage)
         loadMore()
 
         return () => {
-            observer.current && observer.current.disconnect()
+            countLoading.current = 1
+
+            if (messageContainerRef.current) {
+                messageContainerRef.current.removeEventListener('scroll', handleShowBtnScrollBottom)
+            }
 
             if (btnScrollToBottomRef.current)
                 btnScrollToBottomRef.current.style.display = 'none'
+
+            observer.current && observer.current.disconnect()
+            socketClient.emit(SOCKET_EVENT.unsubscribeGroup, {
+                groupId
+            })
+            socketClient.off(`${SOCKET_EVENT.newMessage}${groupId}`, appendNewMessage)
         }
+    }, [])
+
+    useLayoutEffect(() => {
+        if (messageContainerRef.current)
+            messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight
     }, [listMessage])
-
-    useEffect(() => {
-        socketClient.on('new-message', (newMessage: any) => {
-            const message: ChatMessage = newMessage.message
-
-            if (currentUser && currentUser._id !== message.owner._id) {
-                dispatch(chatActions.appendNewMessage(message))
-
-                handleScrollToBottom()
-            }
-        })
-
-        return () => {
-            countLoading.current = 1
-            messageContainerRef.current &&
-                messageContainerRef.current.removeEventListener('scroll', handleShowBtnScrollBottom)
-        }
-    }, [groupId])
 
     const handleScrollToBottom = () => {
         if (!scrollBottomRef.current)
@@ -176,7 +163,7 @@ const MessageSection = (props: Props) => {
                 chatApis.getChatMessage({
                     ...filter,
                     _groupId: groupId,
-                    _limit: pagination._limit * 2
+                    _limit: pagination._limit + listMessage.length
                 }).then(res => {
                     const curScrollPos = messageContainerRef.current!.scrollTop;
                     const oldScroll = messageContainerRef.current!.scrollHeight - messageContainerRef.current!.clientHeight;
@@ -197,15 +184,6 @@ const MessageSection = (props: Props) => {
 
         observer.current.observe(loadMoreRef.current)
     }
-
-    if (!groupId)
-        return <Box className={classes.chooseGroup}>
-            <img src={ChooseGroup} alt="choose image" />
-
-            <Typography className='text' variant='h3'>
-                Hãy chọn một nhóm để bắt đầu cuộc trò chuyện...
-            </Typography>
-        </Box>
 
     return (
         <Box className={classes.root}>

@@ -1,4 +1,4 @@
-import { call, put, takeLatest } from '@redux-saga/core/effects';
+import { call, put, takeLatest, debounce } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import postApi from 'api/post';
 import { Filter, ListResponse, Response } from 'models';
@@ -48,8 +48,17 @@ function* handleAddPost(action: PayloadAction<DataPostFinal>) {
   }
 }
 
+function* handleSearchWidthDebounce(action: PayloadAction<Filter>) {
+  yield put(postAction.setFilter(action.payload));
+}
+
 export default function* postSaga() {
   yield takeLatest(postAction.get, handleGetPost);
   yield takeLatest(postAction.getById, handleGetById);
   yield takeLatest(postAction.addPost, handleAddPost);
+  yield debounce(
+    500,
+    postAction.searchWidthDebounce,
+    handleSearchWidthDebounce
+  );
 }

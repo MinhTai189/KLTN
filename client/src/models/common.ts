@@ -31,6 +31,7 @@ export interface Filter {
   _read?: boolean[];
   _count?: number;
   _groupId?: string;
+  _block?: boolean;
 
   [key: string]: any;
 }

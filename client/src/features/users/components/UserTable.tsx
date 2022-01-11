@@ -8,6 +8,7 @@ import { selectData, selectFilter, selectLoading, selectPagination, userActions 
 import { Chip } from '@material-ui/core'
 import { Face } from '@material-ui/icons'
 import { useHistory } from 'react-router-dom'
+import { calculateCreatedTimeHDMY } from 'utils'
 
 interface Props {
     setShowUpdateForm: (value: boolean) => void;
@@ -39,6 +40,7 @@ export const UserTable = ({ setShowUpdateForm, setUserUpdating, handleRemove }: 
             dataIndex: 'avatar',
             key: 'avatar',
             align: 'center' as 'center',
+            width: 120,
             render: (avatar: any) => (
                 <Avatar src={avatar.url} size='large' />
             )
@@ -112,6 +114,11 @@ export const UserTable = ({ setShowUpdateForm, setUserUpdating, handleRemove }: 
             ),
         },
         {
+            title: 'Ngày tạo',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+        },
+        {
             title: 'Hành động',
             key: 'action',
             width: 140,
@@ -164,7 +171,8 @@ export const UserTable = ({ setShowUpdateForm, setUserUpdating, handleRemove }: 
                 province: user.province,
                 district: user.district,
                 school: user.school,
-                avatar: user.avatarUrl
+                avatar: user.avatarUrl,
+                createdAt: calculateCreatedTimeHDMY(user.createdAt!)
             } as UserDataTable
         })
 
@@ -209,7 +217,7 @@ export const UserTable = ({ setShowUpdateForm, setUserUpdating, handleRemove }: 
             onChange={handleChangeTable}
             pagination={paginationTB}
             loading={loading}
-            scroll={{ x: 1300 }}
+            scroll={{ x: 1500 }}
         />
     )
 }

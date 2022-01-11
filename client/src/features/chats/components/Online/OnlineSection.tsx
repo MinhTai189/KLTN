@@ -2,10 +2,6 @@ import { Box, Divider, Theme, Typography } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
 import ListOnline from "./ListOnline"
 
-interface Props {
-
-}
-
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         padding: theme.spacing(1.5),
@@ -32,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const OnlineSection = (props: Props) => {
+const OnlineSection = () => {
     const classes = useStyles()
 
     return (

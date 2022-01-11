@@ -34,6 +34,12 @@ export const SOCKET_EVENT = {
   motelActivities: 'motels',
   activities: 'activities',
   statisticals: 'statisticals',
+  subscribeGroups: 'subscribes',
+  unsubscribeGroups: 'unsubscribes',
+  newMessageGroups: 'new-message-all-group',
+  subscribeGroup: 'subscribe-group',
+  unsubscribeGroup: 'unsubscribe-group',
+  newMessage: 'new-message-',
 };
 
 export const VALIDATOR_IMAGE = {

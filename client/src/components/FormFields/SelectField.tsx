@@ -11,14 +11,14 @@ interface Props {
     name: string;
     control: Control<any>;
     options: Array<FieldOption>;
-    disabled: boolean;
+    disabled?: boolean;
     defaultValue?: any;
     size?: 'medium' | 'small'
     margin?: 'dense' | 'none' | 'normal'
     [key: string]: any
 }
 
-export const SelectField = ({ label, name, control, options, disabled, defaultValue, size = 'medium', margin = 'normal', ...props }: Props) => {
+export const SelectField = ({ label, name, control, options, disabled = false, defaultValue, size = 'medium', margin = 'normal', ...props }: Props) => {
     const { field: { value, onChange, onBlur, ref }, fieldState: { invalid, error } } = useController({
         name,
         control
