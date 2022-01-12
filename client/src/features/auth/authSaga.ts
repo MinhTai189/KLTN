@@ -1,7 +1,9 @@
+import { yellow } from '@material-ui/core/colors';
 import { PayloadAction } from '@reduxjs/toolkit';
 import axiosClient from 'api/axiosClient';
 import { userApi } from 'api/user';
 import { push } from 'connected-react-router';
+import { chatActions } from 'features/chats/chatSlice';
 import { Response, User } from 'models';
 import { toast } from 'react-toastify';
 import { call, put, takeLatest } from 'redux-saga/effects';
@@ -40,6 +42,7 @@ function* handleLogin(action: PayloadAction<LoginData>) {
     }
 
     yield put(authActions.loginSuccess(responseData.data));
+    yield put(chatActions.setTotalUnseen(responseData.data.numMessages || 0));
 
     //Redirect to Home page
     if (!action.payload.isAutoLogin) yield put(push('/'));

@@ -460,7 +460,9 @@ const authRouter = (io) => {
         ...checkUser._doc,
         avatarUrl: url,
         groupPrivate: groupChatUser
-          .filter((group) => (group.type = "private"))
+          .filter(
+            (group) => (group.type = "private" && group.members.length < 3)
+          )
           .map((group) => {
             return { ...group._doc, messages: undefined };
           }),

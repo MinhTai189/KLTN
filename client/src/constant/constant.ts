@@ -40,6 +40,8 @@ export const SOCKET_EVENT = {
   subscribeGroup: 'subscribe-group',
   unsubscribeGroup: 'unsubscribe-group',
   newMessage: 'new-message-',
+  listOnlineInGroup: 'ononlines-chat',
+  notifyNewMessage: 'notify-new-messages',
 };
 
 export const VALIDATOR_IMAGE = {

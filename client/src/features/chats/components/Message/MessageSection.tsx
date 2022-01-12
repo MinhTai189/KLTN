@@ -4,6 +4,7 @@ import chatApis from "api/chat"
 import { useAppDispatch, useAppSelector } from "app/hooks"
 import { SOCKET_EVENT } from "constant/constant"
 import { chatActions, selectFilterMessageChat, selectListMessageChat, selectPaginationMessageChat } from "features/chats/chatSlice"
+import { AddListOnline } from "models"
 import { useEffect, useLayoutEffect, useRef } from "react"
 import { useParams } from "react-router-dom"
 import { toast } from "react-toastify"
@@ -86,13 +87,16 @@ const MessageSection = (props: Props) => {
             handleScrollToBottom()
         }
 
-        console.log(groupId)
+        const appendListOnline = (online: AddListOnline) => {
+            dispatch(chatActions.updateListOnlineGroup(online))
+        }
 
         socketClient.emit(SOCKET_EVENT.subscribeGroup, groupId)
 
-
-
         socketClient.on(`${SOCKET_EVENT.newMessage}${groupId}`, appendNewMessage)
+
+        socketClient.on(SOCKET_EVENT.listOnlineInGroup, appendListOnline)
+
         loadMore()
 
         return () => {
@@ -110,6 +114,7 @@ const MessageSection = (props: Props) => {
                 groupId
             })
             socketClient.off(`${SOCKET_EVENT.newMessage}${groupId}`, appendNewMessage)
+            socketClient.off(SOCKET_EVENT.listOnlineInGroup, appendListOnline)
         }
     }, [])
 

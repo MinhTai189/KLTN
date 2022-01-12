@@ -38,6 +38,17 @@ export interface AddLastMessage {
   message: ChatMessage;
 }
 
+export interface AddListOnline {
+  groupId: string;
+  list: Owner[];
+}
+
+export interface NotifyNewMessage {
+  group: ChatGroup;
+  message: ChatMessage;
+  numMessages: number;
+}
+
 export interface ChatMinimalGroup extends AddGroup {
   _id: string;
   createdAt: string;

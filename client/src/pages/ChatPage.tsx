@@ -16,7 +16,7 @@ const ChatPage = () => {
         const getNewMessage = (newMessage: AddLastMessage) => {
             if (newMessage.groupId === groupId)
                 return
-            console.log('zoooooooo')
+
             dispatch(chatActions.changeLastMessageGroup(newMessage))
         }
 

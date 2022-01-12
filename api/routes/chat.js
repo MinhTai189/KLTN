@@ -328,8 +328,6 @@ const chatRouter = (io) => {
     if (response) {
       const newMessage = response.messages[response.messages.length - 1];
       io.sendMessage(response._id, newMessage, response.members);
-
-      response.save();
     } else {
       return res.status(500).json({
         message: "Bạn không tham gia nhóm này",
@@ -424,6 +422,9 @@ const chatRouter = (io) => {
                 owner: req.user.id,
                 seen: [req.user.id],
               },
+            },
+            $set: {
+              type: "group",
             },
           },
           { upsert: true, new: true }
