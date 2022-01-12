@@ -366,7 +366,7 @@ module.exports.listen = function socket(server) {
       (user) => JSON.stringify(user.id) === JSON.stringify(userId)
     );
     findSockets.forEach((findSocket) =>
-      io.to(findSocket.socketId).emit("quit-room", groupId)
+      io.to(findSocket.socketId).emit("quit-group", groupId)
     );
   };
   io.membersOnChangeAddToGroup = async (groupId, group, userId) => {
