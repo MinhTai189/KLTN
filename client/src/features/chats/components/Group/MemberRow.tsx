@@ -1,8 +1,13 @@
 import { Avatar, Box, Button, makeStyles, Theme, Typography } from '@material-ui/core'
-import { useAppSelector } from 'app/hooks'
+import chatApis from 'api/chat'
+import { useAppDispatch, useAppSelector } from 'app/hooks'
+import ChatContext from 'contexts/ChatContext'
 import { selectCurrentUser } from 'features/auth/authSlice'
+import { chatActions } from 'features/chats/chatSlice'
 import { Owner, User } from 'models'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 interface Props {
     style: any
@@ -28,9 +33,13 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const MemberRow = ({ style, member }: Props) => {
     const classes = useStyles()
+    const { setShowListMember } = useContext(ChatContext)
+    const dispatch = useAppDispatch()
+
     const currentUser: User = useAppSelector(selectCurrentUser)
     const [disableKickBtn, setDisableKickBtn] = useState(false)
 
+    const { groupId } = useParams<{ groupId: string }>()
     const { _id, name, avatarUrl } = member
 
     useEffect(() => {
@@ -38,6 +47,20 @@ const MemberRow = ({ style, member }: Props) => {
             setDisableKickBtn(_id === currentUser._id)
         }
     }, [currentUser])
+
+    const handleKickMember = async () => {
+        try {
+            await chatApis.kickMemberOutGroup(groupId, _id)
+
+            toast.success(`Đã mời ${name} ra khỏi nhóm thành công`)
+
+            setShowListMember(false)
+            dispatch(chatActions.refetchChatGroup())
+            dispatch(chatActions.resetFilterMessage())
+        } catch (error: any) {
+            toast.error(error.response.data.message)
+        }
+    }
 
     return (
         <Box className={classes.root} style={style}>
@@ -60,6 +83,7 @@ const MemberRow = ({ style, member }: Props) => {
                 size='small'
                 variant='outlined'
                 disabled={disableKickBtn}
+                onClick={handleKickMember}
             >
                 Mời khỏi nhóm
             </Button>}

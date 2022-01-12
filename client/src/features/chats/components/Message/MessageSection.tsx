@@ -7,7 +7,7 @@ import { SOCKET_EVENT } from "constant/constant"
 import { chatActions, selectFilterMessageChat, selectListMessageChat, selectPaginationMessageChat } from "features/chats/chatSlice"
 import { AddListOnline } from "models"
 import { useEffect, useLayoutEffect, useRef } from "react"
-import { useParams } from "react-router-dom"
+import { useHistory, useParams } from "react-router-dom"
 import { toast } from "react-toastify"
 import { socketClient } from 'utils'
 import ChatInfomation from "../Chat/ChatInfomation"
@@ -61,6 +61,7 @@ const MessageSection = (props: Props) => {
     const classes = useStyles()
     const listMessage = useAppSelector(selectListMessageChat)
     const { groupId } = useParams<{ groupId: string }>()
+    const history = useHistory()
 
     const dispatch = useAppDispatch()
     const pagination = useAppSelector(selectPaginationMessageChat)
@@ -95,12 +96,22 @@ const MessageSection = (props: Props) => {
             dispatch(chatActions.changeRemovedMessage(messageId))
         }
 
+        const handleKicked = (id: string) => {
+            if (groupId === id) {
+                toast.info('Bạn đã bị mời ra khỏi nhóm!')
+                history.push('/chats')
+            }
+
+            dispatch(chatActions.refetchChatGroup())
+        }
+
         socketClient.emit(SOCKET_EVENT.subscribeGroup, groupId)
 
         // subscribe sockets
         socketClient.on(`${SOCKET_EVENT.newMessage}${groupId}`, appendNewMessage)
         socketClient.on(`${SOCKET_EVENT.removeMessage}${groupId}`, changeRemovedMessage)
         socketClient.on(SOCKET_EVENT.listOnlineInGroup, appendListOnline)
+        socketClient.on(SOCKET_EVENT.kickMemberOutGroup, handleKicked)
 
         return () => {
             if (messageContainerRef.current) {

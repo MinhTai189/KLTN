@@ -24,6 +24,10 @@ const chatApis = {
     const url = `/chats/groups/${groupId}`;
     return axiosClient.patch(url, { nameGroup });
   },
+  kickMemberOutGroup(groupId: string, memberId: string): Promise<any> {
+    const url = `/chats/groups/delete-members/${groupId}/${memberId}`;
+    return axiosClient.delete(url);
+  },
   addChatMessage(params: AddChatMessage): Promise<any> {
     const url = `/chats/groups/messages/${params.groupId}`;
     return axiosClient.post(url, params);

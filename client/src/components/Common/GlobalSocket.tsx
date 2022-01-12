@@ -19,7 +19,6 @@ export const GlobalSocket = ({ children }: Props) => {
     const dispatch = useAppDispatch()
     const location = useLocation()
 
-    const socket = useRef<Socket>()
     const currentUser = useAppSelector(selectCurrentUser)
 
     const notifyNewMessage = useCallback((notify: NotifyNewMessage) => {
@@ -33,29 +32,31 @@ export const GlobalSocket = ({ children }: Props) => {
 
     useEffect(() => {
         if (currentUser) {
-            socket.current = socketClient
+            socketClient.on(SOCKET_EVENT.connection, () => { })
 
-            socket.current.on(SOCKET_EVENT.connection, () => { })
-
-            socket.current.emit(SOCKET_EVENT.authentication, {
+            socketClient.emit(SOCKET_EVENT.authentication, {
                 accessToken: getToken().accessToken
             })
 
-            socket.current.on(SOCKET_EVENT.notification, appendNotify)
-        }
-
-        return () => {
-            socket.current?.off(SOCKET_EVENT.connection, () => { })
-            socket.current?.off(SOCKET_EVENT.notification, appendNotify)
+            socketClient.on(SOCKET_EVENT.notification, appendNotify)
         }
     }, [currentUser, dispatch])
 
     useEffect(() => {
         if (['admin', 'chats'].includes(location.pathname.split('/')[1]))
-            socket.current?.off(SOCKET_EVENT.notifyNewMessage, notifyNewMessage)
+            socketClient?.off(SOCKET_EVENT.notifyNewMessage, notifyNewMessage)
         else
-            socket.current?.on(SOCKET_EVENT.notifyNewMessage, notifyNewMessage)
+            socketClient?.on(SOCKET_EVENT.notifyNewMessage, notifyNewMessage)
     }, [location])
+
+    useEffect(() => {
+        return () => {
+            socketClient?.off(SOCKET_EVENT.connection, () => { })
+            socketClient?.off(SOCKET_EVENT.notification, appendNotify)
+
+            socketClient?.emit(SOCKET_EVENT.disconnection, () => { })
+        }
+    }, [])
 
     return (
         <div>

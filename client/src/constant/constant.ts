@@ -28,6 +28,7 @@ export const PATTERN_USERNAME = /^[a-zA-Z_0123456789._ ]+$/i;
 
 export const SOCKET_EVENT = {
   connection: 'connection',
+  disconnection: 'disconnect',
   authentication: 'auth',
   notification: 'notify',
   online: 'ononlines',
@@ -43,6 +44,7 @@ export const SOCKET_EVENT = {
   removeMessage: 'drop-message-',
   listOnlineInGroup: 'ononlines-chat',
   notifyNewMessage: 'notify-new-messages',
+  kickMemberOutGroup: 'quit-group',
 };
 
 export const VALIDATOR_IMAGE = {
