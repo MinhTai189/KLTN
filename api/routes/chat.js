@@ -326,6 +326,7 @@ const chatRouter = (io) => {
           $push: {
             messages: {
               ...req.body,
+              createdAt: undefined,
               type: type,
               dataLink,
               owner: req.user.id,
