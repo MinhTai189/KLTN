@@ -23,14 +23,7 @@ const chatRouter = (io) => {
         name,
         members,
         type,
-        messages: [
-          {
-            type: "text",
-            content: "Đã tạo nhóm chat mới",
-            owner: req.user.id,
-            seen: [req.user.id],
-          },
-        ],
+        messages: [],
       });
       await newGroupChat.save();
 
@@ -87,6 +80,28 @@ const chatRouter = (io) => {
               (mem) => JSON.stringify(mem._id) !== JSON.stringify(req.user.id)
             ).name;
         }
+        let lastMessage = item.messages[item.messages.length - 1];
+
+        if (!lastMessage) {
+          lastMessage = {
+            type: "text",
+            content: "đã tạo nhóm nhắn tin",
+            urlImages: [],
+            urlGif: "",
+            owner: {
+              ...item.members.find(
+                (mem) => JSON.stringify(mem._id) !== JSON.stringify(req.user.id)
+              )._doc,
+              avatarUrl: item.members.find(
+                (mem) => JSON.stringify(mem._id) !== JSON.stringify(req.user.id)
+              ).avatarUrl.url,
+              name: "",
+            },
+            seen: [],
+            createdAt: item.createdAt,
+            _id: "",
+          };
+        }
         return {
           ...item._doc,
           name: name,
@@ -98,7 +113,7 @@ const chatRouter = (io) => {
             };
           }),
           totalMembers: item.members.length,
-          lastMessage: item.messages[item.messages.length - 1],
+          lastMessage: lastMessage,
           messages: undefined,
           unseen: item.messages.filter((message) => {
             return !message.seen.some(
@@ -432,7 +447,7 @@ const chatRouter = (io) => {
       res.status(200).json({ message: "Rời nhóm thành công", success: true });
       if (leaveGroup.members.length == 0) {
         groupChat.findByIdAndDelete(groupId);
-        groupChat.messages.forEach((message) => {
+        leaveGroup.messages.forEach((message) => {
           if (message.urlImages)
             for (let i = 0; i < message.urlImages.length; i++) {
               if (message.urlImages[i].public_id)
@@ -518,6 +533,78 @@ const chatRouter = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
+  router.post(
+    "/groups/delete-members/:groupId/:userId",
+    verifyToken,
+    async (req, res) => {
+      try {
+        if (req.user.isAdmin === false)
+          return res
+            .status(400)
+            .json({ message: "Bạn không đủ quyền", success: false });
+        const groupId = req.params.groupId;
+        const userId = req.params.userId;
+        const nameUser = await user
+          .findOne({
+            _id: userId,
+          })
+          .select("name");
+        const deleteMemberGroup = await groupChat
+          .findByIdAndUpdate(
+            groupId,
+            {
+              $pull: {
+                members: userId,
+              },
+              $push: {
+                messages: {
+                  type: "text",
+                  content: "Đã mời " + nameUser.name + " ra khỏi nhóm",
+                  owner: req.user.id,
+                  seen: [req.user.id],
+                },
+              },
+              $set: {
+                type: "group",
+              },
+            },
+            { upsert: true, new: true }
+          )
+          .populate(
+            "members",
+            "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+          )
+          .populate(
+            "messages.owner",
+            "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+          )
+          .populate(
+            "messages.seen",
+            "avatarUrl name isAdmin _id credit email posts motels rank school likes"
+          );
+        if (!addMemberGroup)
+          return res
+            .status(400)
+            .json({ message: "Không tìm thấy nhóm chat", success: false });
+        io.sendMessage(
+          deleteMemberGroup._id,
+          deleteMemberGroup.messages[deleteMemberGroup.messages.length - 1],
+          deleteMemberGroup.members.map((member) => member._id)
+        );
+        res.status(200).json({ message: "Thành công", success: true });
+        // for (let i = 0; i < members.length; i++) {
+        //   io.membersOnChangeAddToGroup(
+        //     addMemberGroup._id,
+        //     addMemberGroup,
+        //     members
+        //   );
+        // }
+      } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Lỗi không xác định", success: false });
+      }
+    }
+  );
   return router;
 };
 
