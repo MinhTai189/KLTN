@@ -121,16 +121,16 @@ export const selectCurrentUser = (state: any) => state.auth.currentUser;
 export const selectErr = (state: any) => state.auth.error;
 export const selectUpdateUserData = createSelector(
   selectCurrentUser,
-  (currentUser: User) => {
+  (currentUser: any) => {
     if (!currentUser) return;
 
     return {
       avatarUrl: currentUser.avatarUrl,
       name: currentUser.name,
       email: currentUser.email,
-      province: currentUser.province,
-      district: currentUser.district,
-      school: currentUser.school,
+      province: currentUser.province.codeName,
+      district: currentUser.district.codeName,
+      school: currentUser.school.codeName,
     };
   }
 );

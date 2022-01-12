@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { roundMark } from 'utils'
+import { calculateCreatedTimeHDMY } from 'utils/convert-date/calculateCreatedTime'
 import { mapPriceMonth } from 'utils/getPriceMotel'
 import { motelActions, selectDataMotel, selectFilterMotel, selectLoadingMotel, selectPaginationMotel } from '../../motelSlice'
 
@@ -100,7 +101,8 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
                 amountRoom: motel.room.length,
                 vote: motel.vote,
                 mark: mark[0] + mark[1],
-                room: roomDataTable
+                room: roomDataTable,
+                createdAt: calculateCreatedTimeHDMY(motel.createdAt!)
             } as MotelDataTable
         })
 
@@ -177,8 +179,12 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
             render: (mark: number) => (
                 <Rate disabled defaultValue={mark} />
             )
-        },
-        {
+        }, {
+            title: 'Ngày tạo',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            width: 165,
+        }, {
             title: 'Hành động',
             key: 'action',
             width: 140,
@@ -301,7 +307,7 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
             pagination={paginationTB}
             loading={loading}
             onChange={handleChangeTable}
-            scroll={{ x: 1300 }}
+            scroll={{ x: 1700 }}
             expandable={{
                 expandedRowRender: record => (
                     <Table columns={roomColumns} dataSource={record.room} pagination={false} size='small' />

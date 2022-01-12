@@ -3,6 +3,8 @@ import { RootState } from 'app/store';
 import {
   AddChatMessage,
   AddGroup,
+  AddLastMessage,
+  AddListOnline,
   ChatGroup,
   ChatMessage,
   Filter,
@@ -16,6 +18,7 @@ interface State {
   listMessage: ChatMessage[];
   filterMessage: Filter;
   paginationMessage: Pagination;
+  totalUnseen: number;
   loading: boolean;
   err: string;
 }
@@ -35,6 +38,7 @@ const initialState: State = {
     _limit: 20,
     _totalRows: 20,
   },
+  totalUnseen: 0,
   loading: false,
   err: '',
 };
@@ -63,6 +67,32 @@ const chatSlice = createSlice({
     addChatGroupFailed(state, action: PayloadAction<string>) {
       state.loading = false;
       state.err = action.payload;
+    },
+    changeLastMessageGroup(state, action: PayloadAction<AddLastMessage>) {
+      const newListGroup = state.listGroup.map((group) => {
+        if (group._id === action.payload.groupId)
+          return {
+            ...group,
+            lastMessage: action.payload.message,
+          };
+
+        return group;
+      });
+
+      state.listGroup = newListGroup;
+    },
+    updateListOnlineGroup(state, action: PayloadAction<AddListOnline>) {
+      const newListGroup = state.listGroup.map((group) => {
+        if (group._id === action.payload.groupId)
+          return {
+            ...group,
+            ononlines: action.payload.list,
+          };
+
+        return group;
+      });
+
+      state.listGroup = newListGroup;
     },
     addChatMessage(state, action: PayloadAction<AddChatMessage>) {
       state.loading = true;
@@ -102,6 +132,9 @@ const chatSlice = createSlice({
     refetchChatGroup(state) {
       state.refetchGroup = !state.refetchGroup;
     },
+    setTotalUnseen(state, action: PayloadAction<number>) {
+      state.totalUnseen = action.payload;
+    },
   },
 });
 
@@ -119,6 +152,8 @@ export const selectFilterMessageChat = (state: RootState) =>
   state.chat.filterMessage;
 export const selectPaginationMessageChat = (state: RootState) =>
   state.chat.paginationMessage;
+export const selectTotalUnseenMessageChat = (state: RootState) =>
+  state.chat.totalUnseen;
 
 //reducer
 const chatReducer = chatSlice.reducer;

@@ -297,8 +297,6 @@ export const ProfieDetail = ({ user, init }: Props) => {
             const group = getChatGroupByUserId(currentUser.groupPrivate, user._id)
             let groupId = group ? group._id : ''
 
-            console.log('ajsdkf, co group', groupId)
-
             if (!groupId) {
                 dispatch(loadingActions.openLoading())
 

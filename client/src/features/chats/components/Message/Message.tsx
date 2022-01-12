@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, IconButton, makeStyles, Theme, Typography } from '@material-ui/core'
+import { Avatar, Box, Button, IconButton, makeStyles, Theme, Tooltip, Typography } from '@material-ui/core'
 import { MoreVert } from '@material-ui/icons'
 import { useAppSelector } from 'app/hooks'
 import { TYPE_MESSAGE } from 'constant/constant'
@@ -130,7 +130,7 @@ const Message = ({ message }: Props) => {
 
     const [isOwner, setIsOwner] = useState(false)
 
-    const { type, content, urlImages, urlGif, dataLink, createdAt, seen } = message
+    const { type, content, urlImages, urlGif, dataLink, createdAt, seen, owner: { avatarUrl, name } } = message
 
     useEffect(() => {
         if (currentUser) {
@@ -142,7 +142,9 @@ const Message = ({ message }: Props) => {
         <Box className={`${classes.root} ${isOwner ? 'me' : ''}`} component='li'>
             <Box className='message-wrapper'>
                 <Box className='avatar'>
-                    <Avatar>U</Avatar>
+                    <Tooltip title={name}>
+                        <Avatar src={avatarUrl}>U</Avatar>
+                    </Tooltip>
                 </Box>
 
                 <Box className={`wrapper ${type === TYPE_MESSAGE.link ? 'preview' : ''}`}>

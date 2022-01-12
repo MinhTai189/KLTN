@@ -32,15 +32,15 @@ module.exports.listen = function socket(server) {
         msg.accessToken,
         process.env.accessToken,
         async (err, data) => {
-          if (err)
+          if (err) {
             socket.emit("error", {
               message: "Xác thực thất bại",
               status: 401,
               success: false,
             });
+          }
           else {
             io.users.push({ ...data, socketId: socket.id });
-
             socket.emit("success", {
               message: "Xác thực thành công",
               status: 200,
@@ -201,9 +201,7 @@ module.exports.listen = function socket(server) {
               JSON.stringify(group._id) === JSON.stringify(newMessage.groupId)
           );
           let name = findGroup.name;
-
-          if (findGroup.type === "private")
-            name = newMessage.message.owner.name;
+          if (findGroup.type === "private") name = newMessage.owner.name;
           socketsToSend.forEach((socket) => {
             io.to(socket.socketId).emit("notify-new-messages", {
               group: {
@@ -302,11 +300,12 @@ module.exports.listen = function socket(server) {
       const socket = io.sockets.sockets.get(findSocket.socketId);
       if (socket) {
         socket
-          .to(groupId.toString())
-          .emit("new-message-" + groupId.toString(), message.message);
-        socket
           .to(groupId.toString() + "_global")
           .emit("new-message-all-group", message);
+
+        socket
+          .to(groupId.toString())
+          .emit(`new-message-${groupId}`, message.message);
       }
       io.notifyNewMessage(message, members);
     }

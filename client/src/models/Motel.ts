@@ -70,6 +70,7 @@ export interface MotelDataTable {
   amountRoom: number;
   address: string;
   room: any;
+  createdAt: string;
 }
 
 export interface Editor {

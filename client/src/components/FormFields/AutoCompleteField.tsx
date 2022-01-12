@@ -5,7 +5,7 @@ interface Props {
     options: Array<any>;
     onChange: (e: any, value: any) => void;
     label: string;
-    disabled: boolean;
+    disabled?: boolean;
     title: string;
     value?: any;
     error?: string

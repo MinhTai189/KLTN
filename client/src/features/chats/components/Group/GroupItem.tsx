@@ -1,4 +1,5 @@
 import { Avatar, Box, makeStyles, Theme, Typography } from "@material-ui/core"
+import { FiberManualRecord } from "@material-ui/icons"
 import { useAppSelector } from "app/hooks"
 import { selectCurrentUser } from "features/auth/authSlice"
 import { ChatGroup, ChatMessage, Owner, User } from "models"
@@ -64,10 +65,35 @@ const useStyles = makeStyles((theme: Theme) => ({
                     width: '50%',
                     height: '50%',
                 }
+            },
+
+            '& .not-seen-dot': {
+                position: 'absolute',
+                top: -4,
+                right: -4,
+                width: 11,
+                height: 11,
+                background: '#ff4d4f',
+                borderRadius: '50%',
+
+                '&::after': {
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '50%',
+                    animation: '$ripple 1.2s infinite ease-in-out',
+                    border: '2px solid #ff4d4f',
+                    content: '""',
+                },
             }
         },
 
         '& .info': {
+            display: 'block',
+            width: 'calc(100% - 58px)',
+
             '& .name': {
                 fontSize: '1rem',
                 fontWeight: 500
@@ -83,7 +109,11 @@ const useStyles = makeStyles((theme: Theme) => ({
                     textOverflow: 'ellipsis',
                     flex: 1,
                     color: theme.palette.text.secondary,
-                    fontSize: '0.85rem'
+                    fontSize: '0.7rem',
+
+                    '&.not-seen': {
+                        color: '#ff4d4f'
+                    }
                 },
 
                 '& .date': {
@@ -92,7 +122,17 @@ const useStyles = makeStyles((theme: Theme) => ({
                 }
             }
         }
-    }
+    },
+    '@keyframes ripple': {
+        '0%': {
+            transform: 'scale(.8)',
+            opacity: 1,
+        },
+        '100%': {
+            transform: 'scale(1.8)',
+            opacity: 0,
+        },
+    },
 }))
 
 // amount of avatar
@@ -133,6 +173,10 @@ const handleLastMessage = (lastMessage: ChatMessage, meId: string) => {
     }
 }
 
+const checkSeenMessage = (listSeen: string[], meId: string) => {
+    return listSeen.includes(meId)
+}
+
 const GroupItem = ({ actived, group }: Props) => {
     const classes = useStyles()
     const currentUser: User = useAppSelector(selectCurrentUser)
@@ -144,13 +188,17 @@ const GroupItem = ({ actived, group }: Props) => {
     })
     const [amountAvatar, setAmountAvatar] = useState(optionAvatar.get(1))
 
-    const { name, createdAt, lastMessage: message } = group
+    const [isSee, setIsSee] = useState(false)
+
+    const { name, createdAt, lastMessage: { seen } } = group
 
     useEffect(() => {
         if (currentUser) {
             setMembers(changeMeToLastMember(group.members, currentUser._id))
 
-            setLastMessage(handleLastMessage(message, currentUser._id))
+            setLastMessage(handleLastMessage(group.lastMessage, currentUser._id))
+
+            setIsSee(checkSeenMessage(seen, currentUser._id))
 
             if (group.members.length > 2 && group.members.length < 4)
                 setAmountAvatar(optionAvatar.get(2))
@@ -168,6 +216,8 @@ const GroupItem = ({ actived, group }: Props) => {
                         U
                     </Avatar>
                 ))}
+
+                {!isSee && <span className="not-seen-dot" />}
             </Box>
 
             <Box className='info' component='span'>
@@ -176,7 +226,7 @@ const GroupItem = ({ actived, group }: Props) => {
                 </Typography>
 
                 <Box className='row'>
-                    <Typography className="text">
+                    <Typography className={`text ${isSee ? '' : 'not-seen'}`}>
                         {`${lastMessage.ownerName} ${lastMessage.content}`}
                     </Typography>
 

@@ -18,6 +18,7 @@ export interface User {
   favorite?: string[];
   likes?: Owner[];
   totalLikes?: number;
+  numMessages?: number;
   posts?: number;
   notify?: Notify[];
   createdAt?: string;
@@ -53,6 +54,7 @@ export interface UserDataTable {
   province: string;
   district: string;
   school: string;
+  createdAt: string;
 }
 
 export type UserUpdate = Omit<UserDataTable, 'number' | 'username'>;

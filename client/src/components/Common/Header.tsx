@@ -11,6 +11,7 @@ import { Forum, Notifications } from '@material-ui/icons';
 import { NotifDropDown } from 'features/notification/components';
 import { DetectClickOutsize } from './DetectClickOutsize';
 import { NAVIGATION_ROUTES } from 'constant/constant';
+import { selectTotalUnseenMessageChat } from 'features/chats/chatSlice';
 
 interface Props {
     isChangeNav: boolean
@@ -144,8 +145,10 @@ const calcSizeBtn = (width: number) => {
 
 export const Header = ({ isChangeNav }: Props) => {
     const classes = useStyles();
-    const currentUser: User = useAppSelector(selectCurrentUser)
     const dispatch = useAppDispatch()
+
+    const totalNewMessage = useAppSelector(selectTotalUnseenMessageChat)
+    const currentUser: User = useAppSelector(selectCurrentUser)
 
     const [showNotif, setShowNotif] = useState(false)
     const [showDropdown, setShowDropdown] = useState(false)
@@ -199,7 +202,7 @@ export const Header = ({ isChangeNav }: Props) => {
                         <Box className='badge' component='span'>
                             <Link to='/chats'>
                                 <Badge
-                                    badgeContent={88}
+                                    badgeContent={totalNewMessage}
                                     color="primary"
                                     showZero
                                 >

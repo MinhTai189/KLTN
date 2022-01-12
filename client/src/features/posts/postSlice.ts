@@ -66,6 +66,9 @@ const postSlice = createSlice({
       state.loading = false;
       state.err = action.payload;
     },
+    searchWidthDebounce: (state, action: PayloadAction<Filter>) => {
+      state.loading = true;
+    },
     setFilter: (state, action: PayloadAction<Filter>) => {
       state.filter = action.payload;
     },
