@@ -245,6 +245,24 @@ const chatRouter = (io) => {
       /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
     return text.match(urlRegex);
   }
+  //ĐỔI TÊN BẰNG ID CỦA NHÓM
+  router.patch("/groups/:groupId", verifyToken, async (req, res) => {
+    // Đổi tên nhóm
+    const groupId = req.params.groupId;
+    const { name } = req.body;
+    if (!name)
+      return res.status(400).json({
+        message: "Vui lòng cung cấp tên nhóm hợp lệ",
+        success: false,
+      });
+    const renameGroup = await groupChat.findByIdAndUpdate(groupId, {
+      name: name,
+    });
+    return res.status(200).json({
+      message: "Thành công",
+      success: true,
+    });
+  });
   router.post("/groups/messages/:groupId", verifyToken, async (req, res) => {
     const groupId = req.params.groupId;
     // body gửi lên là một object
@@ -340,6 +358,42 @@ const chatRouter = (io) => {
       success: true,
     });
   });
+  ///XÓA TIN NHẮN BẰNG ID TIN NHẮN
+  router.delete(
+    "/groups/messages/:messageId",
+    verifyToken,
+    async (req, res) => {
+      const messageId = req.params.messageId;
+
+      const deleteMessageGroup = await groupChat.findOneAndUpdate(
+        {
+          "messages._id": messageId,
+          members: req.user.id,
+        },
+        { $pull: { messages: { _id: messageId, owner: req.user.id } } },
+        { new: true }
+      );
+      if (!deleteMessageGroup)
+        return res.status(400).json({
+          success: false,
+          message: "Bạn không tham gia nhóm này!",
+        });
+      if (
+        deleteMessageGroup.messages.find(
+          (message) => JSON.stringify(message._id) === JSON.stringify(messageId)
+        )
+      )
+        return res.status(400).json({
+          success: false,
+          message: "Bạn không phải người gửi tin nhắn này!",
+        });
+      io.sendTodropMessage(messageId, deleteMessageGroup._id, req.user.id);
+      return res.status(200).json({
+        message: "Thành công",
+        success: true,
+      });
+    }
+  );
   router.delete("/groups/:groupId", verifyToken, async (req, res) => {
     // rời nhóm
     try {

@@ -165,6 +165,21 @@ module.exports.listen = function socket(server) {
 
     io.to("important").emit("ononlines", listOnline.getUsers(1, -1).list);
   };
+  io.sendTodropMessage = (messageId, groupId, userId) => {
+    const findSocket = io.users.find(
+      (user) => JSON.stringify(user.id) === JSON.stringify(userId)
+    );
+    if (findSocket) {
+      const socket = io.sockets.sockets.get(findSocket.socketId);
+      if (socket) {
+        socket
+          .to(groupId.toString())
+          .emit("drop-message-" + groupId.toString(), {
+            messageId: messageId,
+          });
+      }
+    }
+  };
   io.notifyNewMessage = (newMessage, members) => {
     const socketsToSend = [
       ...io.users.filter((user) =>

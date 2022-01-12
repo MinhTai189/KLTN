@@ -66,7 +66,8 @@ const groupChatSchema = new Schema(
             ],
             default: [],
           },
-          createdAt: { required: true, default: new Date(), type: Date },
+
+          createdAt: { required: true, default: Date.now(), type: Date },
         },
       ],
       required: true,
