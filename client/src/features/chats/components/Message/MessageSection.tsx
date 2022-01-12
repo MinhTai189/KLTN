@@ -1,5 +1,6 @@
-import { Box, makeStyles, Theme } from "@material-ui/core"
+import { Box, makeStyles, Theme, Typography } from "@material-ui/core"
 import { KeyboardArrowDown } from "@material-ui/icons"
+import { Alert } from "@material-ui/lab"
 import chatApis from "api/chat"
 import { useAppDispatch, useAppSelector } from "app/hooks"
 import { SOCKET_EVENT } from "constant/constant"
@@ -45,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         },
 
         '& .btn-scroll': {
-            display: 'grid',
+            display: 'none',
             placeItems: 'center',
             position: 'absolute',
             right: 30,
@@ -73,7 +74,6 @@ const MessageSection = (props: Props) => {
     const loadMoreRef = useRef<HTMLElement>()
     const observer = useRef<IntersectionObserver>()
 
-    const countLoading = useRef(1)
     let lastScrollTop = 0
 
     useEffect(() => {
@@ -91,36 +91,42 @@ const MessageSection = (props: Props) => {
             dispatch(chatActions.updateListOnlineGroup(online))
         }
 
+        const changeRemovedMessage = ({ messageId }: any) => {
+            dispatch(chatActions.changeRemovedMessage(messageId))
+        }
+
         socketClient.emit(SOCKET_EVENT.subscribeGroup, groupId)
 
+        // subscribe sockets
         socketClient.on(`${SOCKET_EVENT.newMessage}${groupId}`, appendNewMessage)
-
+        socketClient.on(`${SOCKET_EVENT.removeMessage}${groupId}`, changeRemovedMessage)
         socketClient.on(SOCKET_EVENT.listOnlineInGroup, appendListOnline)
 
-        loadMore()
-
         return () => {
-            countLoading.current = 1
-
             if (messageContainerRef.current) {
                 messageContainerRef.current.removeEventListener('scroll', handleShowBtnScrollBottom)
             }
 
-            if (btnScrollToBottomRef.current)
-                btnScrollToBottomRef.current.style.display = 'none'
-
-            observer.current && observer.current.disconnect()
             socketClient.emit(SOCKET_EVENT.unsubscribeGroup, {
                 groupId
             })
+
+            // unsubscribe sockets
             socketClient.off(`${SOCKET_EVENT.newMessage}${groupId}`, appendNewMessage)
             socketClient.off(SOCKET_EVENT.listOnlineInGroup, appendListOnline)
+            socketClient.off(`${SOCKET_EVENT.removeMessage}${groupId}`, changeRemovedMessage)
         }
     }, [])
 
     useLayoutEffect(() => {
         if (messageContainerRef.current)
             messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight
+
+        loadMore()
+
+        return () => {
+            observer.current && observer.current.disconnect()
+        }
     }, [listMessage])
 
     const handleScrollToBottom = () => {
@@ -182,8 +188,6 @@ const MessageSection = (props: Props) => {
                         chatActions.getChatMessageFailed(err.response.data.message)
                         toast.error(err.response.data.message)
                     })
-
-                countLoading.current++
             }
         }, options);
 
@@ -193,6 +197,10 @@ const MessageSection = (props: Props) => {
     return (
         <Box className={classes.root}>
             <ChatInfomation />
+
+            {listMessage.length === 0 && <Alert severity="info">
+                Nhóm vẫn chưa có tin nhắn nào! Hãy soạn một vài tin nhắn để bắt đầu cuộc trò chuyện...
+            </Alert>}
 
             <div ref={messageContainerRef as any} className='message-container'>
                 <ul ref={messagesRef as any} className="messages">
@@ -210,14 +218,16 @@ const MessageSection = (props: Props) => {
                         <Box className="hidden" />
                     </li>
                 </ul>
-            </div>
+            </div >
 
             <ChatInput />
 
-            {<button ref={btnScrollToBottomRef as any} className='btn-scroll' onClick={handleScrollToBottom}>
-                <KeyboardArrowDown />
-            </button>}
-        </Box>
+            {
+                <button ref={btnScrollToBottomRef as any} className='btn-scroll' onClick={handleScrollToBottom}>
+                    <KeyboardArrowDown />
+                </button>
+            }
+        </Box >
     )
 }
 

@@ -75,7 +75,8 @@ const useStyles = makeStyles((theme: Theme) => ({
             '& .member': {
                 paddingLeft: theme.spacing(0.5),
                 color: theme.palette.text.secondary,
-                fontSize: '0.9rem'
+                fontSize: '0.9rem',
+                cursor: 'pointer'
             }
         },
 
@@ -94,7 +95,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const ChatInfomation = () => {
     const classes = useStyles()
-    const { showListOnline, setShowShowListOnline, activedGroup } = useContext(ChatContext)
+    const { showListOnline, activedGroup, setShowListOnline, setShowListMember } = useContext(ChatContext)
     const currentUser: User = useAppSelector(selectCurrentUser)
 
     const [members, setMembers] = useState<any[]>([])
@@ -140,7 +141,7 @@ const ChatInfomation = () => {
                             {activedGroup.name}
                         </Typography>
 
-                        <Typography className='member'>
+                        <Typography className='member' onClick={() => setShowListMember(true)}>
                             {activedGroup.members.length} thành viên
                         </Typography>
                     </span>
@@ -174,7 +175,7 @@ const ChatInfomation = () => {
                                 </DetectClickOutsize>}
                         </Box>
                     </li>
-                    <li className="control" onClick={() => setShowShowListOnline(!showListOnline)}>
+                    <li className="control" onClick={() => setShowListOnline(!showListOnline)}>
                         <Tooltip title={showListOnline ? 'Thu gọn' : 'Danh sách thành viên'}>
                             <IconButton color="primary">
                                 {showListOnline ? <Menu fontSize='small' />

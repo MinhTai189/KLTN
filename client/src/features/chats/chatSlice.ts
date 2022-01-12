@@ -122,6 +122,19 @@ const chatSlice = createSlice({
     appendNewMessage(state, action: PayloadAction<ChatMessage>) {
       state.listMessage.push(action.payload);
     },
+    changeRemovedMessage(state, action: PayloadAction<string>) {
+      const newMessage = state.listMessage.map((message) => {
+        if (message._id === action.payload)
+          return {
+            ...message,
+            removed: true,
+          };
+
+        return message;
+      });
+
+      state.listMessage = newMessage;
+    },
     setFilterMessage(state, action: PayloadAction<Filter>) {
       state.filterMessage = action.payload;
     },

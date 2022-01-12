@@ -1,6 +1,6 @@
 import { Avatar, Box, Button, IconButton, makeStyles, Theme, Tooltip, Typography } from '@material-ui/core'
 import { MoreVert } from '@material-ui/icons'
-import { useAppSelector } from 'app/hooks'
+import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { TYPE_MESSAGE } from 'constant/constant'
 import { selectCurrentUser } from 'features/auth/authSlice'
 import { ChatMessage, User } from 'models'
@@ -10,6 +10,9 @@ import GifPlayer from './GifPlayer'
 import LinkPreview from './LinkPreview'
 import { isUrlValid } from 'utils'
 import { calculateCreatedTimeHDMY } from 'utils/convert-date/calculateCreatedTime'
+import chatApis from 'api/chat'
+import { toast } from 'react-toastify'
+import { chatActions } from 'features/chats/chatSlice'
 
 interface Props {
     message: ChatMessage
@@ -56,6 +59,11 @@ const useStyles = makeStyles((theme: Theme) => ({
                     boxShadow: theme.shadows[2],
                     border: '1px solid #ccc',
                     background: '#d7d7d7',
+
+                    '&.removed': {
+                        background: '#fff',
+                        opacity: 0.6
+                    },
 
                     '& .content ': {
                         fontSize: '0.95rem',
@@ -126,17 +134,28 @@ const mapContentLink = (content: string) => {
 
 const Message = ({ message }: Props) => {
     const classes = useStyles()
-    const currentUser: User = useAppSelector(selectCurrentUser)
 
+    const dispatch = useAppDispatch()
+    const currentUser: User = useAppSelector(selectCurrentUser)
     const [isOwner, setIsOwner] = useState(false)
 
-    const { type, content, urlImages, urlGif, dataLink, createdAt, seen, owner: { avatarUrl, name } } = message
+    const { _id, type, content, urlImages, urlGif, dataLink, createdAt, seen, owner: { avatarUrl, name }, removed } = message
 
     useEffect(() => {
         if (currentUser) {
             setIsOwner(message.owner._id === currentUser._id)
         }
     }, [currentUser, message])
+
+    const handleRemoveMessage = async () => {
+        try {
+            await chatApis.removeChatMessage(_id)
+
+            dispatch(chatActions.resetFilterMessage())
+        } catch (error: any) {
+            toast.error(error.response.data.message)
+        }
+    }
 
     return (
         <Box className={`${classes.root} ${isOwner ? 'me' : ''}`} component='li'>
@@ -148,23 +167,29 @@ const Message = ({ message }: Props) => {
                 </Box>
 
                 <Box className={`wrapper ${type === TYPE_MESSAGE.link ? 'preview' : ''}`}>
-                    <Box className='body'>
-                        {type === TYPE_MESSAGE.text && <Typography className='content'>
-                            {content}
-                        </Typography>}
-
-                        {type === TYPE_MESSAGE.link &&
-                            <p className='content' dangerouslySetInnerHTML={{ __html: mapContentLink(content) }} />}
-
-                        {type === TYPE_MESSAGE.image && <Album images={urlImages} />}
-
-                        {type === TYPE_MESSAGE.gif && <GifPlayer gif={urlGif} />}
-
-                        <Typography className='date' component='small'>
-                            {calculateCreatedTimeHDMY(createdAt)}
-
-                            {isOwner && seen.length > 0 && <span>&#xa0;&#xa0;&#x22C5;&#xa0;&#xa0;Đã xem</span>}
+                    <Box className={`body ${removed ? 'removed' : ''}`}>
+                        {removed ? <Typography>
+                            Tin nhắn đã được thu hồi
                         </Typography>
+                            : <>
+                                {type === TYPE_MESSAGE.text && <Typography className='content'>
+                                    {content}
+                                </Typography>}
+
+                                {type === TYPE_MESSAGE.link &&
+                                    <p className='content' dangerouslySetInnerHTML={{ __html: mapContentLink(content) }} />}
+
+                                {type === TYPE_MESSAGE.image && <Album images={urlImages} />}
+
+                                {type === TYPE_MESSAGE.gif && <GifPlayer gif={urlGif} />}
+
+                                <Typography className='date' component='small'>
+                                    {calculateCreatedTimeHDMY(createdAt)}
+
+                                    {isOwner && seen.length > 1 && <span>&#xa0;&#xa0;&#x22C5;&#xa0;&#xa0;Đã xem</span>}
+                                </Typography>
+                            </>
+                        }
                     </Box>
 
                     {type === TYPE_MESSAGE.link && <LinkPreview dataLink={dataLink} />}
@@ -176,7 +201,7 @@ const Message = ({ message }: Props) => {
                     </IconButton>
 
                     <ul className='actions'>
-                        <li className='action'>
+                        <li className='action' onClick={handleRemoveMessage}>
                             Xóa, gỡ bỏ
                         </li>
                     </ul>

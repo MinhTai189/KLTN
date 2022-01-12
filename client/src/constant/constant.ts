@@ -40,6 +40,7 @@ export const SOCKET_EVENT = {
   subscribeGroup: 'subscribe-group',
   unsubscribeGroup: 'unsubscribe-group',
   newMessage: 'new-message-',
+  removeMessage: 'drop-message-',
   listOnlineInGroup: 'ononlines-chat',
   notifyNewMessage: 'notify-new-messages',
 };

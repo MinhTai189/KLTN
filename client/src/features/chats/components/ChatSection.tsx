@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import { Route, Switch, useParams } from "react-router-dom"
 import { selectListGroupChat } from "../chatSlice"
 import GroupSection from "./Group/GroupSection"
+import ListMemberModal from "./Group/ListMemberModal"
 import MessageSection from "./Message/MessageSection"
 import Navigation from "./Navigation/Navigation"
 import OnlineSection from "./Online/OnlineSection"
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
             display: 'flex',
 
             '& .left-sider': {
-                width: '20%',
+                width: 310,
                 height: '100%',
                 borderRight: '1px solid #ccc',
             },
@@ -41,7 +42,8 @@ const useStyles = makeStyles((theme: Theme) => ({
             },
 
             '& .right-sider': {
-                width: '15%',
+                width: '100%',
+                maxWidth: 220,
                 height: '100%',
                 borderLeft: '1px solid #ccc',
                 transition: '300ms',
@@ -79,7 +81,8 @@ export const ChatSection = () => {
     const listGroup = useAppSelector(selectListGroupChat)
     const { groupId } = useParams<{ groupId: string }>()
 
-    const [showListOnline, setShowShowListOnline] = useState(false)
+    const [showListOnline, setShowListOnline] = useState(false)
+    const [showListMember, setShowListMember] = useState(false)
     const [activedGroup, setActivedGroup] = useState<ChatGroup | undefined>()
 
     useEffect(() => {
@@ -97,7 +100,8 @@ export const ChatSection = () => {
             activedGroup,
             setActivedGroup,
             showListOnline,
-            setShowShowListOnline
+            setShowListOnline,
+            setShowListMember
         }}>
             <Box className={classes.root}>
                 <Box className="top">
@@ -132,6 +136,8 @@ export const ChatSection = () => {
                     </Box>
                 </Box>
             </Box>
+
+            <ListMemberModal open={showListMember} />
         </ChatContext.Provider>
     )
 }

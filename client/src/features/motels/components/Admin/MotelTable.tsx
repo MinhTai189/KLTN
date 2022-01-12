@@ -1,4 +1,5 @@
 import { CheckCircleFilled, DeleteFilled, EditFilled, EyeOutlined } from '@ant-design/icons'
+import { Box } from '@material-ui/core'
 import { Cancel } from '@material-ui/icons'
 import { Avatar, Button, Popconfirm, Rate, Space, Table, TablePaginationConfig, Tooltip } from 'antd'
 import { motelApi } from 'api/motel'
@@ -93,6 +94,7 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
             return {
                 key: motel._id,
                 number,
+                thumbnail: motel.thumbnail,
                 name: motel.name,
                 owner: motel.owner,
                 available: motel.available,
@@ -122,6 +124,22 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
             key: 'number',
             width: 60
         }, {
+            title: 'Ảnh bìa',
+            dataIndex: 'thumbnail',
+            width: 110,
+            align: 'center' as 'center',
+            render: (thumbnail: string) => (
+                <img style={{
+                    width: '100%',
+                    objectFit: 'cover'
+                }} src={thumbnail} />
+            )
+        }, {
+            title: 'Tên nhà trọ',
+            dataIndex: 'name',
+            key: 'name',
+            width: 200
+        }, {
             title: 'Người đăng',
             dataIndex: 'owner',
             key: 'owner',
@@ -132,11 +150,6 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
                     <Avatar src={owner.avatarUrl} size='large' />
                 </UserTooltip>
             )
-        }, {
-            title: 'Tên nhà trọ',
-            dataIndex: 'name',
-            key: 'name',
-            width: 200
         }, {
             title: 'Địa chỉ',
             dataIndex: 'address',

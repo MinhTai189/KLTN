@@ -264,7 +264,8 @@ const chatRouter = (io) => {
   router.patch("/groups/:groupId", verifyToken, async (req, res) => {
     // Đổi tên nhóm
     const groupId = req.params.groupId;
-    const { name } = req.body;
+    const { nameGroup: name } = req.body;
+
     if (!name)
       return res.status(400).json({
         message: "Vui lòng cung cấp tên nhóm hợp lệ",

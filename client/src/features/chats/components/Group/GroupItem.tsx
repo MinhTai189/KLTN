@@ -107,7 +107,6 @@ const useStyles = makeStyles((theme: Theme) => ({
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
-                    flex: 1,
                     color: theme.palette.text.secondary,
                     fontSize: '0.7rem',
 
@@ -118,7 +117,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
                 '& .date': {
                     fontSize: '0.7rem',
-                    color: theme.palette.text.secondary
+                    color: theme.palette.text.secondary,
+                    flexShrink: 0
                 }
             }
         }

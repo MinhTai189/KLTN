@@ -22,6 +22,7 @@ export interface ChatMessage {
   urlImages: string[];
   urlGif: string;
   dataLink: PreviewLink;
+  removed?: boolean;
   createdAt: string;
 }
 

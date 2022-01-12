@@ -4,7 +4,7 @@ import { authActions, selectCurrentUser } from "features/auth/authSlice"
 import { chatActions } from "features/chats/chatSlice"
 import { ToastifyContent } from "features/chats/components"
 import { Notify, NotifyNewMessage } from "models"
-import { useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import { DispatchProp } from "react-redux"
 import { useLocation } from "react-router-dom"
 import { toast } from "react-toastify"
@@ -22,16 +22,16 @@ export const GlobalSocket = ({ children }: Props) => {
     const socket = useRef<Socket>()
     const currentUser = useAppSelector(selectCurrentUser)
 
-    const notifyNewMessage = (notify: NotifyNewMessage) => {
+    const notifyNewMessage = useCallback((notify: NotifyNewMessage) => {
         toast.info(<ToastifyContent notify={notify} />)
         dispatch(chatActions.setTotalUnseen(notify.numMessages))
+    }, [])
+
+    const appendNotify = (notify: Notify) => {
+        dispatch(authActions.setNotify(notify))
     }
 
     useEffect(() => {
-        const appendNotify = (notify: Notify) => {
-            dispatch(authActions.setNotify(notify))
-        }
-
         if (currentUser) {
             socket.current = socketClient
 
@@ -51,15 +51,10 @@ export const GlobalSocket = ({ children }: Props) => {
     }, [currentUser, dispatch])
 
     useEffect(() => {
-        if (!['admin', 'chats'].includes(location.pathname.split('/')[1])) {
-            socket.current?.on(SOCKET_EVENT.notifyNewMessage, notifyNewMessage)
-            console.log('subbbbbbbbbbbbbbbbb')
-        }
-
-        return () => {
+        if (['admin', 'chats'].includes(location.pathname.split('/')[1]))
             socket.current?.off(SOCKET_EVENT.notifyNewMessage, notifyNewMessage)
-            console.log('unnnnnnnnnnnnnnnn')
-        }
+        else
+            socket.current?.on(SOCKET_EVENT.notifyNewMessage, notifyNewMessage)
     }, [location])
 
     return (

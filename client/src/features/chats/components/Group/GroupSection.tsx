@@ -4,8 +4,10 @@ import { makeStyles } from "@material-ui/styles"
 import { useAppDispatch, useAppSelector } from "app/hooks"
 import ChatContext from "contexts/ChatContext"
 import { chatActions, selectFilterMessageChat, selectListGroupChat } from "features/chats/chatSlice"
-import { useContext, useEffect } from "react"
+import { useDebounce } from "hooks"
+import { ChangeEvent, useCallback, useContext, useEffect, useState } from "react"
 import { useHistory, useParams } from "react-router-dom"
+import { removeAccents } from "utils"
 import GroupItem from "./GroupItem"
 
 interface Props {
@@ -78,6 +80,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const GroupSection = (props: Props) => {
     const classes = useStyles()
+    const debounce = useDebounce()
 
     const { activedGroup } = useContext(ChatContext)
     const dispatch = useAppDispatch()
@@ -85,8 +88,20 @@ const GroupSection = (props: Props) => {
 
     const { groupId } = useParams<{ groupId: string }>()
     const filterMessage = useAppSelector(selectFilterMessageChat)
-    const listGroup = useAppSelector(selectListGroupChat)
+    const listGroupOriginal = useAppSelector(selectListGroupChat)
 
+    const [listGroup, setListGroup] = useState(listGroupOriginal)
+
+    const filterListGroup = useCallback((groupName: string) => {
+        const filterdListGroup = listGroupOriginal.filter(
+            group => removeAccents(group.name.toLowerCase()).includes(removeAccents(groupName.toLowerCase())))
+
+        setListGroup(filterdListGroup)
+    }, [listGroupOriginal])
+
+    useEffect(() => {
+        setListGroup(listGroupOriginal)
+    }, [listGroupOriginal])
 
     useEffect(() => {
         groupId && dispatch(chatActions.getChatMessage({
@@ -95,13 +110,20 @@ const GroupSection = (props: Props) => {
         }))
     }, [groupId, filterMessage])
 
+    const handleChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
+        debounce(() => filterListGroup(e.target.value), 500)
+    }
 
     return (
         <Box className={classes.root} component='section'>
             <Box className='search'>
                 <Search className='icon' />
 
-                <input type="text" placeholder="Tìm kiếm..." />
+                <input
+                    type="text"
+                    placeholder="Tìm kiếm..."
+                    onChange={handleChangeSearch}
+                />
             </Box>
 
             <Box className="group-wrapper">

@@ -60,6 +60,7 @@ export interface MotelDetail extends MotelOnly {
 
 export interface MotelDataTable {
   key: string;
+  thumbnail: string;
   number: number;
   name: string;
   owner: Owner;
