@@ -473,7 +473,7 @@ const chatRouter = (io) => {
       const arrayUser = await user
         .find({
           $or: members.map((member) => {
-            return { members: member };
+            return { _id: member };
           }),
         })
         .select("name");
