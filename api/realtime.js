@@ -179,6 +179,28 @@ module.exports.listen = function socket(server) {
       }
     }
   };
+  io.logout = (userId) => {
+    io.users = io.users.filter(
+      (user) => JSON.stringify(userId) === JSON.stringify(user.id)
+    );
+    listOnline.pullUserOffline(userId);
+    io.to("important").emit("ononlines", listOnline.getUsers(1, -1).list);
+    groupChat
+      .find({ members: userId })
+      .select("_id members")
+      .then((res) => {
+        res.forEach((group) => {
+          io.in(group._id.toString()).emit("ononlines-chat", {
+            list: listOnline.getUsers(1, -1).list.filter((user) => {
+              return group.members.some(
+                (member) => JSON.stringify(member) === JSON.stringify(user._id)
+              );
+            }),
+            groupId: group._id.toString(),
+          });
+        });
+      });
+  };
   io.notifyNewMessage = (newMessage, members) => {
     const socketsToSend = [
       ...io.users.filter((user) =>
@@ -232,6 +254,7 @@ module.exports.listen = function socket(server) {
   };
   io.sendMessage = (groupId, newMessage, members) => {
     let message;
+
     if (newMessage.type === "gif")
       message = {
         groupId: groupId.toString(),
@@ -330,20 +353,21 @@ module.exports.listen = function socket(server) {
       );
     });
   };
-  io.membersOnChangeLeave = async (groupId, group, userId) => {
+  io.membersOnChangeLeaveGroup = async (groupId, group, userId) => {
     io.in(groupId.toString()).emit("ononlines-chat", {
       list: listOnline.getUsers(1, -1).list.filter((user) => {
         return group.members.some(
-          (member) => JSON.stringify(member) === JSON.stringify(user._id)
+          (member) => JSON.stringify(member._id) === JSON.stringify(user._id)
         );
       }),
       groupId: group._id.toString(),
     });
-    const findSocket = io.users.find(
+    const findSockets = io.users.filter(
       (user) => JSON.stringify(user.id) === JSON.stringify(userId)
     );
-    if (findSocket)
-      io.sockets.sockets.get(findSocket.socketId).leave(groupId.toString());
+    findSockets.forEach((findSocket) =>
+      io.to(findSocket.socketId).emit("quit-room", groupId)
+    );
   };
   io.membersOnChangeAddToGroup = async (groupId, group, userId) => {
     io.in(groupId.toString()).emit("ononlines-chat", {

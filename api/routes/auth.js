@@ -519,6 +519,7 @@ const authRouter = (io) => {
     check.refreshToken = "";
     await check.save();
     res.status(200).json({ success: true, message: "Đã đăng xuất" });
+    io.logout(check._id);
   });
 
   router.post("/register-facebook", async (req, res) => {

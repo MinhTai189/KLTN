@@ -265,7 +265,6 @@ const chatRouter = (io) => {
     // Đổi tên nhóm
     const groupId = req.params.groupId;
     const { nameGroup: name } = req.body;
-
     if (!name)
       return res.status(400).json({
         message: "Vui lòng cung cấp tên nhóm hợp lệ",
@@ -447,7 +446,6 @@ const chatRouter = (io) => {
           .json({ message: "Không tìm thấy nhóm chat", success: false });
       res.status(200).json({ message: "Rời nhóm thành công", success: true });
       if (leaveGroup.members.length == 0) {
-        groupChat.findByIdAndDelete(groupId);
         leaveGroup.messages.forEach((message) => {
           if (message.urlImages)
             for (let i = 0; i < message.urlImages.length; i++) {
@@ -455,6 +453,7 @@ const chatRouter = (io) => {
                 upload.unlink(message.urlImages[i].public_id);
             }
         });
+        groupChat.findByIdAndDelete(groupId);
       }
       // io.membersOnChangeLeave(leaveGroup._id, leaveGroup, req.user.id);
       io.sendMessage(
@@ -534,7 +533,9 @@ const chatRouter = (io) => {
       res.status(500).json({ message: "Lỗi không xác định", success: false });
     }
   });
-  router.post(
+
+  //HÃY RA KHỎI NHÓM
+  router.delete(
     "/groups/delete-members/:groupId/:userId",
     verifyToken,
     async (req, res) => {
@@ -583,7 +584,8 @@ const chatRouter = (io) => {
             "messages.seen",
             "avatarUrl name isAdmin _id credit email posts motels rank school likes"
           );
-        if (!addMemberGroup)
+
+        if (!deleteMemberGroup)
           return res
             .status(400)
             .json({ message: "Không tìm thấy nhóm chat", success: false });
@@ -591,6 +593,11 @@ const chatRouter = (io) => {
           deleteMemberGroup._id,
           deleteMemberGroup.messages[deleteMemberGroup.messages.length - 1],
           deleteMemberGroup.members.map((member) => member._id)
+        );
+        io.membersOnChangeLeaveGroup(
+          deleteMemberGroup._id,
+          deleteMemberGroup,
+          userId
         );
         res.status(200).json({ message: "Thành công", success: true });
         // for (let i = 0; i < members.length; i++) {
