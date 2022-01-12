@@ -85,7 +85,7 @@ const chatRouter = (io) => {
         if (!lastMessage) {
           lastMessage = {
             type: "text",
-            content: "đã tạo nhóm nhắn tin",
+            content: "Đã tạo nhóm nhắn tin",
             urlImages: [],
             urlGif: "",
             owner: {
