@@ -17,7 +17,7 @@ export const ListPostSection = () => {
             ...postFilter,
             _subject: currentSelectedThread
         }))
-    }, [currentSelectedThread, postFilter])
+    }, [currentSelectedThread, postFilter, dispatch])
 
     return (
         <ListPostContext.Provider value={{

@@ -4,11 +4,9 @@ import { authActions, selectCurrentUser } from "features/auth/authSlice"
 import { chatActions } from "features/chats/chatSlice"
 import { ToastifyContent } from "features/chats/components"
 import { Notify, NotifyNewMessage } from "models"
-import { useCallback, useEffect, useRef } from "react"
-import { DispatchProp } from "react-redux"
+import { useCallback, useEffect } from "react"
 import { useLocation } from "react-router-dom"
 import { toast } from "react-toastify"
-import { Socket } from 'socket.io-client'
 import { getToken, socketClient } from "utils"
 
 interface Props {
@@ -24,11 +22,11 @@ export const GlobalSocket = ({ children }: Props) => {
     const notifyNewMessage = useCallback((notify: NotifyNewMessage) => {
         toast.info(<ToastifyContent notify={notify} />)
         dispatch(chatActions.setTotalUnseen(notify.numMessages))
-    }, [])
+    }, [dispatch])
 
-    const appendNotify = (notify: Notify) => {
+    const appendNotify = useCallback((notify: Notify) => {
         dispatch(authActions.setNotify(notify))
-    }
+    }, [dispatch])
 
     useEffect(() => {
         if (currentUser) {
@@ -40,23 +38,27 @@ export const GlobalSocket = ({ children }: Props) => {
 
             socketClient.on(SOCKET_EVENT.notification, appendNotify)
         }
-    }, [currentUser, dispatch])
+
+        return () => {
+            if (currentUser) {
+                socketClient?.off(SOCKET_EVENT.connection, () => { })
+                socketClient?.off(SOCKET_EVENT.notification, appendNotify)
+
+                socketClient?.emit(SOCKET_EVENT.disconnection)
+            }
+        }
+    }, [currentUser, appendNotify])
 
     useEffect(() => {
         if (['admin', 'chats'].includes(location.pathname.split('/')[1]))
             socketClient?.off(SOCKET_EVENT.notifyNewMessage, notifyNewMessage)
         else
             socketClient?.on(SOCKET_EVENT.notifyNewMessage, notifyNewMessage)
-    }, [location])
 
-    useEffect(() => {
         return () => {
-            socketClient?.off(SOCKET_EVENT.connection, () => { })
-            socketClient?.off(SOCKET_EVENT.notification, appendNotify)
-
-            socketClient?.emit(SOCKET_EVENT.disconnection, () => { })
+            socketClient?.off(SOCKET_EVENT.notifyNewMessage, notifyNewMessage)
         }
-    }, [])
+    }, [location, notifyNewMessage])
 
     return (
         <div>

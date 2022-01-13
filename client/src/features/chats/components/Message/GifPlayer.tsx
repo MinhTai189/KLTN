@@ -17,7 +17,7 @@ const GifPlayer = ({ gif }: Props) => {
 
     return (
         <Box className={classes.root}>
-            <img className='gif' src={gif} alt="gif image" loading='lazy' />
+            <img className='gif' src={gif} alt="" loading='lazy' />
         </Box>
     )
 }

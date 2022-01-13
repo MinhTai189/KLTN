@@ -7,9 +7,6 @@ import { User } from "models"
 import { Link, useHistory } from "react-router-dom"
 import { calculateCreatedTime } from "utils/convert-date/calculateCreatedTime"
 
-interface Props {
-}
-
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         background: '#fff',
@@ -99,7 +96,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const NotifDropDown = ({ }: Props) => {
+export const NotifDropDown = () => {
     const classes = useStyles()
 
     const currentUser: User = useAppSelector(selectCurrentUser)

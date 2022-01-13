@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import { Filter, School } from 'models';
+import { School } from 'models';
 
 interface SchoolState {
   data: School[];

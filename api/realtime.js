@@ -101,7 +101,7 @@ module.exports.listen = function socket(server) {
     socket.on("unsubscribe-group", (id) => {
       if (id) socket.leave(id.toString());
     });
-    socket.on("disconnect", () => {
+    socket.on("disconnection", () => {
       const findUserDisconnect = io.users.find((item) => {
         return item.socketId === socket.id;
       });
@@ -127,7 +127,7 @@ module.exports.listen = function socket(server) {
           });
       }
       io.users = io.users.filter((user) => user.socketId !== socket.id);
-      console.log(socket.id + " disconnected");
+      console.log(socket.id + "disconnectedd");
     });
   });
   const plusQuantityAccess = async () => {

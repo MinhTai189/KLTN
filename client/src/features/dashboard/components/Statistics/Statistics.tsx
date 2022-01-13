@@ -1,7 +1,6 @@
 import { Box, Theme } from "@material-ui/core"
 import { Folder, Hearing, Home, People, Queue } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
-import { useAppDispatch } from "app/hooks"
 import { Statistic } from "models"
 import StatisticCard from "./StatisticCard"
 

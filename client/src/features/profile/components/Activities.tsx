@@ -1,5 +1,4 @@
 import { Box, Step, StepContent, StepLabel, Stepper, Theme } from "@material-ui/core"
-import { Spa } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
 import { Activity } from "models"
 import { useEffect, useState } from "react"
@@ -49,7 +48,7 @@ const Activities = ({ activities }: Props) => {
 
         setSteps(result)
         setExpended(Object.keys(result)[0])
-    }, [activities])
+    }, [activities, years])
 
     const handleClickExpand = (id: string) => {
         setExpended(prev => {

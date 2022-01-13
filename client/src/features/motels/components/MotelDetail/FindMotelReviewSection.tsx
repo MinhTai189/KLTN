@@ -6,10 +6,6 @@ import { Post } from 'models'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
-interface Props {
-
-}
-
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         marginTop: theme.spacing(3),
@@ -63,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const FindMotelReviewSection = (props: Props) => {
+export const FindMotelReviewSection = () => {
     const classes = useStyles()
     const { id } = useParams<{ id: string }>()
 
@@ -77,7 +73,7 @@ export const FindMotelReviewSection = (props: Props) => {
         setListFindRoomate(listFindRoommatePost.filter(post => post.motel._id === id))
 
         setListReview(listReviewPost.filter(post => post.motel.id === id))
-    }, [listFindRoommatePost, listReviewPost])
+    }, [listFindRoommatePost, listReviewPost, id])
 
     return (
         <>

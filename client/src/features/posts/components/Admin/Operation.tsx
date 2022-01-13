@@ -40,8 +40,6 @@ export const Operation = ({ handleSearch, handleFilter, handleClearFilter }: Pro
     }
 
     const handleChangeSort = (e: any, key: string) => {
-        const [_sort] = e.split('.')
-
         setCreateAtSelectValue(e)
 
         handleFilter(e, key)

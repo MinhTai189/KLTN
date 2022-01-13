@@ -1,4 +1,3 @@
-import { yellow } from '@material-ui/core/colors';
 import { PayloadAction } from '@reduxjs/toolkit';
 import axiosClient from 'api/axiosClient';
 import { userApi } from 'api/user';

@@ -5,3 +5,4 @@ export * from './useAction';
 export * from './useDetectClickOutside';
 export * from './useUpload';
 export * from './useDebounce';
+export * from './useTyping';

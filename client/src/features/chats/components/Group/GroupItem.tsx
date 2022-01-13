@@ -1,5 +1,4 @@
 import { Avatar, Box, makeStyles, Theme, Typography } from "@material-ui/core"
-import { FiberManualRecord } from "@material-ui/icons"
 import { useAppSelector } from "app/hooks"
 import { selectCurrentUser } from "features/auth/authSlice"
 import { ChatGroup, ChatMessage, Owner, User } from "models"
@@ -206,7 +205,7 @@ const GroupItem = ({ actived, group }: Props) => {
             if (group.members.length >= 4)
                 setAmountAvatar(optionAvatar.get(4))
         }
-    }, [currentUser, group])
+    }, [currentUser, group, seen])
 
     return (
         <Box className={`${classes.root} ${actived ? 'active' : ''}`}>

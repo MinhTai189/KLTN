@@ -28,7 +28,7 @@ export const PATTERN_USERNAME = /^[a-zA-Z_0123456789._ ]+$/i;
 
 export const SOCKET_EVENT = {
   connection: 'connection',
-  disconnection: 'disconnect',
+  disconnection: 'disconnection',
   authentication: 'auth',
   notification: 'notify',
   online: 'ononlines',

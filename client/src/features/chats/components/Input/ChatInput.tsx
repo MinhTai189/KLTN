@@ -9,7 +9,7 @@ import Picker from 'emoji-picker-react';
 import { chatActions } from "features/chats/chatSlice";
 import { useUpload } from "hooks";
 import { AddChatMessage } from "models";
-import { ChangeEvent, KeyboardEventHandler, useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { checkSizeOneImg } from "utils";
@@ -108,6 +108,7 @@ const checkSelectedImages = (files: FileList) => {
 const ChatInput = (props: Props) => {
     const classes = useStyles()
     const { upload } = useUpload()
+    // const { startTyping, stopTyping } = useTyping()
 
     const { groupId } = useParams<{ groupId: string }>()
     const dispatch = useAppDispatch()
@@ -200,6 +201,14 @@ const ChatInput = (props: Props) => {
         setShowGifSelector(false)
     }
 
+    // const handleKeyDownInput = () => {
+    //     startTyping(() => console.log('Someone is typing text...'))
+    // }
+
+    // const handleKeyUpInput = () => {
+    //     stopTyping(() => console.log('Stop typing...'))
+    // }
+
     return (
         <Box className={classes.root}>
             <Box className="controls" component='span'>
@@ -235,6 +244,8 @@ const ChatInput = (props: Props) => {
                     onChange={e => setInputContent(e.target.value)}
                     onInput={handleGrowArea}
                     onKeyPress={triggerEnterInput}
+                // onKeyDown={handleKeyDownInput}
+                // onKeyUp={handleKeyUpInput}
                 />
 
                 <span className='emoji-wrapper'>

@@ -47,7 +47,7 @@ export const Comment = memo(({ comment }: Props) => {
                 setListRepling(res.data)
             })
             .catch(() => toast.error('Không thể tải danh sách trả lời!'))
-    }, [comment, filter])
+    }, [comment, filter, _id])
 
     const handleLoadMoreReply = () => {
         if (filter._limit! >= totalReply.current)

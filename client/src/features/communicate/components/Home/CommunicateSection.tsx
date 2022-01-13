@@ -9,9 +9,6 @@ import { selectDataThread } from "features/communicate/threadSlice"
 import { ListPostRecent } from "../../../posts/components/Home/ListPostRecent"
 import { TopicCard } from "./TopicCard"
 
-interface Props {
-}
-
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         padding: theme.spacing(1, 0, 3)
@@ -60,7 +57,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const listImgThread = [Motel, RoomMate, Review]
 
-export const CommunicateSection = ({ }: Props) => {
+export const CommunicateSection = () => {
     const classes = useStyles()
     const listThread = useAppSelector(selectDataThread)
 

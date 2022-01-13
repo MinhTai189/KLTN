@@ -1,15 +1,14 @@
+import { motelApi } from 'api/motel';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { Hero } from 'components/Home';
 import { MainLayout } from 'components/Layouts/MainLayout';
-import { selectIsLogged } from 'features/auth/authSlice';
 import { CommunicateSection } from 'features/communicate/components';
 import { selectDataThread, threadActions } from 'features/communicate/threadSlice';
 import { ListMotel } from 'features/motels/components';
 import { motelActions } from 'features/motels/motelSlice';
-import { useEffect, useState } from 'react';
-import { DropdownList } from 'models'
-import { motelApi } from 'api/motel';
 import { postAction } from 'features/posts/postSlice';
+import { DropdownList } from 'models';
+import { useEffect, useState } from 'react';
 
 const HomePage = () => {
     const dispatch = useAppDispatch();
@@ -65,7 +64,7 @@ const HomePage = () => {
         return () => {
             window.onscroll = () => { }
         }
-    }, [dispatch])
+    }, [dispatch, listThread])
 
     return (
         <MainLayout isChangeNav={isChangeNav}>

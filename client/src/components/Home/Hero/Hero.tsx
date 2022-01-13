@@ -164,7 +164,7 @@ export const Hero = ({ hiddenScrollDown, listSchool, loading }: Props) => {
     const classes = useStyles()
     const history = useHistory()
 
-    const [findValue, setFindValue] = useState<DropdownList | null>(null)
+    const [, setFindValue] = useState<DropdownList | null>(null)
 
     const handleScrollDown = () => {
         window.scrollTo({

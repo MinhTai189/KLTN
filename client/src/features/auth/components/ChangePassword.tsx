@@ -6,7 +6,7 @@ import { ButtonCustom } from 'components/Common/Button'
 import { InputPasswordField } from 'components/FormFields'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import * as yup from 'yup'
 import { ChangePassword as ChangePasswordModel } from '../models'
@@ -43,13 +43,8 @@ const schema = yup.object().shape({
         }),
 })
 
-interface Token {
-    token: string
-}
-
 const ChangePassword = () => {
     const classes = useStyles()
-    const { token } = useParams<Token>()
     const [loading, setLoading] = useState(false)
 
     const history = useHistory()

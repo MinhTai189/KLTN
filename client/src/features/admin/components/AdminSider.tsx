@@ -1,15 +1,11 @@
 import { FileDoneOutlined, HomeOutlined, PieChartOutlined, ReadOutlined, SolutionOutlined, UserOutlined } from '@ant-design/icons'
 import { Layout, Menu } from 'antd'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-
-interface Props {
-
-}
 
 const { Sider } = Layout
 
-export const AdminSider = (props: Props) => {
+export const AdminSider = () => {
     const location = useLocation()
     const [collapsed, setCollapsed] = useState(false)
 

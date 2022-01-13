@@ -188,7 +188,7 @@ export const CreateReview = () => {
     if (isHidden)
         return (
             <Box className={classes.msgInfor}>
-                <img src={SmallScreen} />
+                <img src={SmallScreen} alt='' />
 
                 <Typography className='text'>
                     {'Bạn đang sử dụng màn hình có kích thước nhỏ(< 600px) nên sẽ không thể thực hiện chứ năng soạn thảo. Hãy chuyển sang màn hình có kích thước lớn hơn!'}

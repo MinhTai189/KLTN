@@ -9,11 +9,7 @@ import { Socket } from "socket.io-client";
 import { socketClient } from "utils";
 import { SOCKET_EVENT } from "constant/constant";
 
-interface Props {
-
-}
-
-const ListOnline = (props: Props) => {
+const ListOnline = () => {
     const socket = useRef<Socket>()
     const dispatch = useAppDispatch()
     const dashboardData: any = useAppSelector(selectDataDashboard)
@@ -34,7 +30,7 @@ const ListOnline = (props: Props) => {
         return () => {
             socket.current?.off(SOCKET_EVENT.online, listener)
         }
-    }, [])
+    }, [dispatch])
 
     return (
         <Box style={{

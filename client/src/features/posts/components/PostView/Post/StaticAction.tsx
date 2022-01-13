@@ -56,7 +56,7 @@ export const StaticAction = ({ postData, isOwner }: Props) => {
     const classes = useStyles()
     const [showModalStatic, setShowModalStatic] = useState(false)
 
-    const { _id, totalLikes, likes, numLikes, numComments } = postData
+    const { totalLikes, likes, numLikes, numComments } = postData
 
     return (
         <Box className={classes.root}>

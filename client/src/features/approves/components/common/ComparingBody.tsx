@@ -1,19 +1,18 @@
 import { Box, makeStyles, Table, TableBody, TableCell, TableHead, TableRow, Theme, Typography } from '@material-ui/core'
+import { Email, Facebook, Phone } from '@material-ui/icons'
 import approveApis from 'api/approve'
+import { ReactComponent as Zalo } from 'assets/images/zalo.svg'
+import { LoadingAdmin } from 'components/Common'
 import { ComparisonMotel, Response, School } from 'models'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import { Phone, Email, Facebook } from '@material-ui/icons'
-import { ReactComponent as Zalo } from 'assets/images/zalo.svg'
 import TableRoom from '../Motels/TableRoom'
-import { Spin } from 'antd'
-import { LoadingAdmin } from 'components/Common'
 
 interface Props {
     motelId: string
 }
 
-interface TableRow {
+interface TableRowModel {
     label: string
     old: any
     new: any
@@ -93,7 +92,7 @@ const listContactIcon = {
 const ComparingBody = ({ motelId }: Props) => {
     const classes = useStyles()
 
-    const [dataTable, setDataTable] = useState<TableRow[]>([])
+    const [dataTable, setDataTable] = useState<TableRowModel[]>([])
     const [loading, setLoading] = useState(false)
 
 
@@ -198,7 +197,7 @@ function mapComparisonMotel(data: ComparisonMotel) {
         status: (status: boolean) => status ? 'Còn phòng' : 'Hết phòng'
     }
 
-    const result: TableRow[] = []
+    const result: TableRowModel[] = []
 
 
     Object.keys(data.old).forEach(key => {
@@ -229,14 +228,14 @@ function mapRowTable(key: string, data: any) {
     switch (key) {
         case 'thumbnail':
             return (
-                <img className='thumbnail' src={data} alt="motel thumbnail" />
+                <img className='thumbnail' src={data} alt='' />
             )
         case 'images':
             return (
                 <ul className='list-img'>
-                    {data.map((imgUrl: string, idx: string) => (
+                    {data.map((imgUrl: string, idx: number) => (
                         <li key={idx} className="img">
-                            <img className='img' src={imgUrl} alt="motel image" />
+                            <img src={imgUrl} alt='' />
                         </li>
                     ))}
                 </ul>

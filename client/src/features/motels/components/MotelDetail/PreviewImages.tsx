@@ -165,7 +165,7 @@ export const PreviewImages = ({ images, motelName, currentIndex, setCurrentIndex
             <Grid container>
                 <Grid item xs={12} sm={12} md={8}>
                     <Box className={classes.imgPreview}>
-                        <img src={images[currentIndex]} alt='motel image' />
+                        <img src={images[currentIndex]} alt='' />
 
                         <span
                             className="btn btn-left"
@@ -199,7 +199,7 @@ export const PreviewImages = ({ images, motelName, currentIndex, setCurrentIndex
                                         className={`img ${active}`}
                                         onClick={() => setCurrentIndex(index)}
                                     >
-                                        <img src={img} alt='motel image' />
+                                        <img src={img} alt='' />
                                     </div>
                                 )
                             })}

@@ -1,5 +1,5 @@
-import { Avatar, Box, Theme, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
+import { Box, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import Logo from 'assets/images/logo.png';
 import { Link } from 'react-router-dom';
 
@@ -45,15 +45,10 @@ const Navigation = (props: Props) => {
     return (
         <Box className={classes.root}>
             <Link to='/'>
-                <img className='logo' src={Logo} />
+                <img className='logo' src={Logo} alt='' />
             </Link>
 
             <Box className='user-info'>
-                {/* <Avatar className='avatar'>T</Avatar>
-
-                <Typography className='name' variant='h4'>
-                    Trần Minh Tài
-                </Typography> */}
             </Box>
         </Box>
     )

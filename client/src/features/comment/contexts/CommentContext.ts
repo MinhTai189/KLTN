@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-interface CommentContext {
+interface CommentContextModel {
   typing: {
     id: string;
     username: string;
@@ -14,7 +14,7 @@ interface CommentContext {
   ) => void;
 }
 
-export const CommentContext = createContext<CommentContext>({
+export const CommentContext = createContext<CommentContextModel>({
   typing: { id: '', username: '' },
   setTyping: () => {},
   handleRely: () => {},

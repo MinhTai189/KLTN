@@ -64,7 +64,7 @@ const Controls = () => {
             _page: 1,
             _read: [status.read, status.unread]
         }))
-    }, [status])
+    }, [status, dispatch])
 
     const handleChecked = (e: ChangeEvent<HTMLInputElement>) => {
         setStatus(prev => ({ ...prev, [e.target.name]: e.target.checked }))

@@ -73,7 +73,7 @@ const DashboardPage = (props: Props) => {
             socket.current?.off(SOCKET_EVENT.activities, listenerActivities)
             socket.current?.off(SOCKET_EVENT.motelActivities, listenerStatistics)
         }
-    }, [])
+    }, [dispatch])
 
     return (
         <Box className={classes.root}>

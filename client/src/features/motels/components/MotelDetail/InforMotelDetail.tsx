@@ -358,7 +358,7 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
 
     useEffect(() => {
         setListPrice(getListPrice())
-    }, [])
+    }, [getListPrice])
 
     const handleClickUpdateMotel = () => {
         if (!currentUser) {

@@ -46,7 +46,7 @@ const MemberRow = ({ style, member }: Props) => {
         if (currentUser) {
             setDisableKickBtn(_id === currentUser._id)
         }
-    }, [currentUser])
+    }, [currentUser, _id])
 
     const handleKickMember = async () => {
         try {

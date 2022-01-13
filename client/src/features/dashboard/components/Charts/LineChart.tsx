@@ -26,10 +26,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const labels = (() => {
-    return new Array(12).fill(1).map((_, idx) => `Tháng ${idx + 1}`)
-})()
-
 const calcMaxYearMonth = (data: Charts) => {
     let maxYear = 0
     let maxMonth = 1

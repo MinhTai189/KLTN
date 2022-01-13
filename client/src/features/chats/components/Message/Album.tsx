@@ -79,6 +79,7 @@ const Album = ({ images }: Props) => {
                             <img
                                 src={image}
                                 loading="lazy"
+                                alt='tim nha tro'
                             />
                         </span>
                     )
