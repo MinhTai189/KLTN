@@ -139,7 +139,7 @@ export const ModalBodyEdit = ({ loading, updateUserData, handleSubmitEdit }: Pro
                 setOptionsSchool(options)
                 setValue('school', options.find((x: any) => x.value === updateUserData.school)?.value || '')
             })
-    }, [updateUserData])
+    }, [updateUserData, setValue])
 
     const handleProvinceSelected = async (e: any, value: any) => {
         if (value) {

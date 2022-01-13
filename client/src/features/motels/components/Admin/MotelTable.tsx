@@ -1,5 +1,4 @@
 import { CheckCircleFilled, DeleteFilled, EditFilled, EyeOutlined } from '@ant-design/icons'
-import { Box } from '@material-ui/core'
 import { Cancel } from '@material-ui/icons'
 import { Avatar, Button, Popconfirm, Rate, Space, Table, TablePaginationConfig, Tooltip } from 'antd'
 import { motelApi } from 'api/motel'
@@ -132,7 +131,7 @@ export const MotelTable = ({ handleRemove, onClickEditMotel }: Props) => {
                 <img style={{
                     width: '100%',
                     objectFit: 'cover'
-                }} src={thumbnail} />
+                }} src={thumbnail} alt='' />
             )
         }, {
             title: 'Tên nhà trọ',

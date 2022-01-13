@@ -7,7 +7,7 @@ import Activities from 'features/profile/components/Activities'
 import { ActivitiesInYears } from 'features/profile/models/Activity'
 import { provinceActions, selectDataProvince } from 'features/province/provinceSlice'
 import { ProfileUser } from 'models'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
 
 const PersonalPage = () => {
@@ -39,20 +39,20 @@ const PersonalPage = () => {
         return result
     }, [dataUser])
 
-    useEffect(() => {
-        if (listProvince.length === 0)
-            dispatch(provinceActions.getAll())
-
-        init()
-    }, [id])
-
-    function init() {
+    const init = useCallback(() => {
         userApi.getUserById(id)
             .then(res => setDataUser(res.data))
             .catch(err => {
                 console.log(err)
             })
-    }
+    }, [id])
+
+    useEffect(() => {
+        if (listProvince.length === 0)
+            dispatch(provinceActions.getAll())
+
+        init()
+    }, [id, dispatch, init, listProvince.length])
 
     return (
         <MainLayout>

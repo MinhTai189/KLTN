@@ -9,6 +9,7 @@ import {
   ChatMessage,
   Filter,
   ListResponse,
+  Owner,
   Pagination,
 } from 'models';
 
@@ -17,6 +18,7 @@ interface State {
   refetchGroup: boolean;
   listMessage: ChatMessage[];
   filterMessage: Filter;
+  listTyping: Owner[];
   paginationMessage: Pagination;
   totalUnseen: number;
   loading: boolean;
@@ -33,6 +35,7 @@ const initialState: State = {
   refetchGroup: false,
   listMessage: [],
   filterMessage: iniFilterMessage,
+  listTyping: [],
   paginationMessage: {
     _page: 1,
     _limit: 20,
@@ -80,6 +83,14 @@ const chatSlice = createSlice({
       });
 
       state.listGroup = newListGroup;
+    },
+    appendListTyping(state, action: PayloadAction<Owner>) {
+      state.listTyping.push(action.payload);
+    },
+    filterListTyping(state, action: PayloadAction<string>) {
+      state.listTyping = state.listTyping.filter(
+        (x) => x._id !== action.payload
+      );
     },
     updateListOnlineGroup(state, action: PayloadAction<AddListOnline>) {
       const newListGroup = state.listGroup.map((group) => {
@@ -161,6 +172,7 @@ export const selectRefetchGroupChat = (state: RootState) =>
 export const selectLoadingChat = (state: RootState) => state.chat.loading;
 export const selectListMessageChat = (state: RootState) =>
   state.chat.listMessage;
+export const selectListTypingChat = (state: RootState) => state.chat.listTyping;
 export const selectFilterMessageChat = (state: RootState) =>
   state.chat.filterMessage;
 export const selectPaginationMessageChat = (state: RootState) =>

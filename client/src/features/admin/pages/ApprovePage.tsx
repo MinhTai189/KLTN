@@ -24,19 +24,19 @@ const ApprovePage = () => {
 
     useEffect(() => {
         dispatch(motelApproveActions.get(filterMotelApprove))
-    }, [filterMotelApprove])
+    }, [filterMotelApprove, dispatch])
 
     useEffect(() => {
         dispatch(postApproveActions.get(filterPostApprove))
-    }, [filterPostApprove])
+    }, [filterPostApprove, dispatch])
 
     useEffect(() => {
         dispatch(rateApproveActions.get(filterRateApprove))
-    }, [filterRateApprove])
+    }, [filterRateApprove, dispatch])
 
     useEffect(() => {
         dispatch(reportApproveActions.get(filterReportApprove))
-    }, [filterReportApprove])
+    }, [filterReportApprove, dispatch])
 
     return (
         <Box className={classes.root}>

@@ -1,10 +1,9 @@
 import { Box, Typography } from '@material-ui/core'
-import { NotInterested } from '@material-ui/icons'
 import commentApi from 'api/comment'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { commentAction, selectFilterComment } from 'features/comment/commentSlice'
 import { postAction, selectDataPost, selectFilterPost } from 'features/posts/postSlice'
-import { Profiler, useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { TypingComment } from '..'
@@ -60,7 +59,7 @@ export const CommentSection = () => {
             .catch(err => {
                 toast.error(err.response.data.message)
             })
-    }, [])
+    }, [commentFilter, dispatch, id, postFilter])
 
     return (
         <CommentContext.Provider value={

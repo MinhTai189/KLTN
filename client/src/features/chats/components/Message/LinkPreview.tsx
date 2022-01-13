@@ -46,8 +46,8 @@ const LinkPreview = ({ dataLink }: Props) => {
 
     return (
         <Box className={classes.root}>
-            <a href={url || '#'} target='_blank'>
-                <img src={img} className="thumbnail" />
+            <a href={url || '#'} target='_blank' rel="noreferrer">
+                <img src={img} className="thumbnail" alt='' />
 
                 <Box className='detail'>
                     <Typography className='title' variant='h5'>

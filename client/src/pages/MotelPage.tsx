@@ -23,7 +23,7 @@ const MotelPage = () => {
             ...filter,
             _limit: 10,
         }))
-    }, [filter])
+    }, [filter, dispatch])
 
     useEffect(() => {
         if (listSchool.length === 0)
@@ -40,7 +40,7 @@ const MotelPage = () => {
                 _limit: 15,
             }))
         }
-    }, [])
+    }, [dispatch, filter, listSchool.length, location.state])
 
     const handleSelectPagination = (e: ChangeEvent<unknown>, page: number) => {
         dispatch(motelActions.setFilter({ ...filter, _page: page }))

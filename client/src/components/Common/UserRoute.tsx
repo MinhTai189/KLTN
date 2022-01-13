@@ -4,8 +4,9 @@ import { selectCurrentUser } from '../../features/auth/authSlice'
 
 export const UserRoute = (props: RouteProps) => {
     const currentUser = useAppSelector(selectCurrentUser)
+    const accessToken = localStorage.getItem('accessToken')
 
-    if (!currentUser) return <Redirect to="/" />;
+    if (!currentUser && !accessToken) return <Redirect to="/" />;
 
     return <Route {...props} />
 }

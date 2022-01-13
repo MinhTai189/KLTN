@@ -10,10 +10,6 @@ import { useHistory, useParams } from "react-router-dom"
 import { removeAccents } from "utils"
 import GroupItem from "./GroupItem"
 
-interface Props {
-
-}
-
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         height: '100%',
@@ -78,7 +74,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const GroupSection = (props: Props) => {
+const GroupSection = () => {
     const classes = useStyles()
     const debounce = useDebounce()
 
@@ -108,7 +104,7 @@ const GroupSection = (props: Props) => {
             ...filterMessage,
             _groupId: groupId
         }))
-    }, [groupId, filterMessage])
+    }, [groupId, filterMessage, dispatch])
 
     const handleChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
         debounce(() => filterListGroup(e.target.value), 500)

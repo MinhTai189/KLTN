@@ -9,7 +9,7 @@ const CreateReviewPage = () => {
 
     useEffect(() => {
         dispatch(motelActions.getMotel({}))
-    }, [])
+    }, [dispatch])
 
     return (
         <MainLayout>

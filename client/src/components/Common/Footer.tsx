@@ -248,7 +248,7 @@ export const Footer = () => {
                                 <ul className="socials">
                                     {socials[0].map((social, index) => (
                                         <li key={index} className='social'>
-                                            <a href={social.href} target='_blank'>
+                                            <a href={social.href} target='_blank' rel="noreferrer">
                                                 {social.icon}
                                             </a>
                                         </li>
@@ -272,7 +272,7 @@ export const Footer = () => {
                                 <ul className="socials">
                                     {socials[1].map((social, index) => (
                                         <li key={index} className='social'>
-                                            <a href={social.href} target='_blank'>
+                                            <a href={social.href} target='_blank' rel="noreferrer">
                                                 {social.icon}
                                             </a>
                                         </li>

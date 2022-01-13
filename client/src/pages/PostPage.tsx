@@ -12,7 +12,7 @@ const PostPage = () => {
         return () => {
             dispatch(postAction.resetFilter())
         }
-    }, [])
+    }, [dispatch])
 
     return (
         <MainLayout>

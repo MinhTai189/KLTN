@@ -91,7 +91,7 @@ const MotelDetailPage = () => {
 
     useEffect(() => {
         dispatch(postAction.get({}))
-    }, [])
+    }, [dispatch])
 
     const handleCloseModal = () => {
         setOpenMotelModal(false)

@@ -5,9 +5,6 @@ import { authActions, selectCurrentUser } from 'features/auth/authSlice'
 import { showCreateModalAction } from 'features/posts/showCreateModalSlice'
 import { Link } from 'react-router-dom'
 
-interface Props {
-}
-
 const useStyles = makeStyles(theme => ({
     root: {
         background: theme.palette.background.default,
@@ -29,7 +26,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-export const DropDownInfor = ({ }: Props) => {
+export const DropDownInfor = () => {
     const classes = useStyles()
     const currentUser = useAppSelector(selectCurrentUser)
     const dispatch = useAppDispatch()

@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { uploadApi } from 'api/upload';
-import { toast } from 'react-toastify';
+import { useState } from 'react';
 
 export const useUpload = () => {
   const [loading, setLoading] = useState(false);

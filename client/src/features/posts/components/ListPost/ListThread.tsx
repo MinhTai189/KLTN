@@ -4,9 +4,6 @@ import { FIND_MOTEL_ID, FIND_ROOMMATE_ID, REVIEW_ID } from "constant/constant"
 import ListPostContext from "features/posts/contexts/ListPostContext"
 import { useContext } from "react"
 
-interface Props {
-}
-
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         height: '100%',
@@ -65,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const ListThread = ({ }: Props) => {
+export const ListThread = () => {
     const classes = useStyles()
     const { currentSelectedThread, setCurrentSelectedThread } = useContext(ListPostContext)
 

@@ -15,13 +15,13 @@ const PostListPage = () => {
             ...filter,
             _limit: 15
         }))
-    }, [filter])
+    }, [filter, dispatch])
 
     useEffect(() => {
         return () => {
             dispatch(postAction.resetFilter())
         }
-    }, [])
+    }, [dispatch])
 
     const handleSearch = (value: Filter) => {
         dispatch(postAction.searchWidthDebounce(value))

@@ -1,10 +1,10 @@
-import { Box, FormControl, FormHelperText, Paper, TextField, Theme, Typography } from '@material-ui/core'
+import { Box, FormControl, FormHelperText, TextField, Theme, Typography } from '@material-ui/core'
 import { AddCircle } from '@material-ui/icons'
 import { Autocomplete } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/styles'
 import { Motel } from 'models'
 import { ChangeEvent, ComponentType, HTMLAttributes } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ListboxComponent from '../ListboxComponent'
 import { MotelRowOption } from './MotelRowOption'
 
@@ -46,7 +46,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const AutocompleteMotel = ({ listMotel, errMotel, value, onChange, loading }: Props) => {
     const classes = useStyles()
-    const history = useHistory()
 
     const NoOption = (
         <Box className={classes.noOption}>

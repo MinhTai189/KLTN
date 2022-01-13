@@ -1,11 +1,11 @@
 import { createContext } from 'react';
 
-interface ListPostContext {
+interface ListPostContextModel {
   currentSelectedThread: string;
   setCurrentSelectedThread: (threadId: string) => void;
 }
 
-const ListPostContext = createContext<ListPostContext>({
+const ListPostContext = createContext<ListPostContextModel>({
   currentSelectedThread: '',
   setCurrentSelectedThread: () => {},
 });

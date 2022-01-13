@@ -49,14 +49,14 @@ const PostViewPage = () => {
     useEffect(() => {
         dispatch(postAction.getById(id))
 
-    }, [dispatch, filterPost])
+    }, [dispatch, filterPost, id])
 
     useEffect(() => {
         dispatch(commentAction.get({
             ...filterComment,
             _post: id
         }))
-    }, [dispatch, filterComment])
+    }, [dispatch, filterComment, id])
 
     const handlePaginationComment = (e: object, page: number) => {
         dispatch(commentAction.setFilter({

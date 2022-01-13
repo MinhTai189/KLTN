@@ -1,5 +1,5 @@
 import { Avatar, Box, Divider, Theme, Tooltip, Typography, withStyles, Zoom } from "@material-ui/core";
-import { CardGiftcard, CloudUpload, Loyalty, Phone, VerifiedUser } from "@material-ui/icons";
+import { CardGiftcard, CloudUpload, Loyalty, VerifiedUser } from "@material-ui/icons";
 import { Owner, User } from "models";
 import { Link } from "react-router-dom";
 

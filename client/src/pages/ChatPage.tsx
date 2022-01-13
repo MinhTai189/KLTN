@@ -28,11 +28,11 @@ const ChatPage = () => {
             socketClient.emit(SOCKET_EVENT.unsubscribeGroups)
             socketClient.off(SOCKET_EVENT.newMessageGroups, getNewMessage)
         }
-    }, [])
+    }, [dispatch, groupId])
 
     useEffect(() => {
         dispatch(chatActions.getChatGroup())
-    }, [refetchChatGroup])
+    }, [refetchChatGroup, dispatch])
 
     return (
         <ChatSection />

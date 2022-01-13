@@ -117,7 +117,7 @@ export const ChatSection = () => {
                         <Switch>
                             <Route exact path='/chats'>
                                 <Box className={classes.chooseGroup}>
-                                    <img src={ChooseGroup} alt="choose image" />
+                                    <img src={ChooseGroup} alt='Tìm nhà trọ' />
 
                                     <Typography className='text' variant='h3'>
                                         Hãy chọn một nhóm để bắt đầu cuộc trò chuyện...

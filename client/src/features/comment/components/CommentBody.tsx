@@ -22,7 +22,6 @@ interface Props {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-    root: {},
     body: {
         background: '#edeef2',
         padding: theme.spacing(2),
@@ -176,7 +175,7 @@ export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', co
                     type: checkLikePost.type
                 })
         }
-    }, [currentUser])
+    }, [currentUser, likes])
 
     const handleLikeComment = async (type: number, isClickBtn?: boolean) => {
         try {
@@ -204,7 +203,7 @@ export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', co
     return (
         <CommentContext.Consumer>
             {value => (
-                <Box className={classes.root}>
+                <Box>
                     <Box className={classes.body}>
                         <Box className={classes.infoCmtContainer}>
                             <Box className="left">

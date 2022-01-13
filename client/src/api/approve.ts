@@ -4,7 +4,6 @@ import {
   ListResponse,
   MotelApprove,
   Post,
-  Rate,
   RateApprove,
   RefuseMotel,
   RefuseRate,

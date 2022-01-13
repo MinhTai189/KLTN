@@ -17,7 +17,7 @@ export const CreatePost = () => {
 
     useEffect(() => {
         dispatch(schoolActions.getSchool())
-    }, [])
+    }, [dispatch])
 
     const handleSubmitCreatedPost = (data: DataPostFinal) => {
         dispatch(postAction.addPost(data))

@@ -1,4 +1,4 @@
-import { Box, makeStyles, Theme, Typography } from "@material-ui/core"
+import { Box, makeStyles, Theme } from "@material-ui/core"
 import { KeyboardArrowDown } from "@material-ui/icons"
 import { Alert } from "@material-ui/lab"
 import chatApis from "api/chat"
@@ -6,13 +6,14 @@ import { useAppDispatch, useAppSelector } from "app/hooks"
 import { SOCKET_EVENT } from "constant/constant"
 import { chatActions, selectFilterMessageChat, selectListMessageChat, selectPaginationMessageChat } from "features/chats/chatSlice"
 import { AddListOnline } from "models"
-import { useEffect, useLayoutEffect, useRef } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react"
 import { useHistory, useParams } from "react-router-dom"
 import { toast } from "react-toastify"
 import { socketClient } from 'utils'
 import ChatInfomation from "../Chat/ChatInfomation"
 import ChatInput from "../Input/ChatInput"
 import Message from "./Message"
+import TypingMessage from "./TypingMessage"
 
 interface Props {
 
@@ -75,7 +76,72 @@ const MessageSection = (props: Props) => {
     const loadMoreRef = useRef<HTMLElement>()
     const observer = useRef<IntersectionObserver>()
 
-    let lastScrollTop = 0
+    const lastScrollTop = useRef(0)
+
+    const handleScrollToBottom = () => {
+        if (!scrollBottomRef.current)
+            return
+
+        scrollBottomRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end',
+            inline: 'end'
+        })
+    }
+
+    const handleShowBtnScrollBottom = useCallback((e: any) => {
+        const st = e.target.scrollTop || 0;
+        const height = e.target.clientHeight || 0
+        const scrollHeight = e.target.scrollHeight || 0
+
+        if (!btnScrollToBottomRef.current) return
+
+        if (st > lastScrollTop.current) {
+            if (scrollHeight - height - st <= 900)
+                btnScrollToBottomRef.current.style.display = 'none'
+        } else {
+            if (scrollHeight - height - st >= 900)
+                btnScrollToBottomRef.current.style.display = 'grid'
+        }
+        lastScrollTop.current = st <= 0 ? 0 : st
+    }, [])
+
+    const loadMore = useCallback(() => {
+        if (!messageContainerRef.current || !loadMoreRef.current) return
+
+        let options = {
+            root: messageContainerRef.current,
+            rootMargin: '0px',
+            threshold: 1.0
+        }
+
+        observer.current = new IntersectionObserver(entries => {
+            if (
+                entries[0].isIntersecting &&
+                pagination._limit < pagination._totalRows
+            ) {
+                chatApis.getChatMessage({
+                    ...filter,
+                    _groupId: groupId,
+                    _limit: pagination._limit + listMessage.length
+                }).then(res => {
+                    const curScrollPos = messageContainerRef.current!.scrollTop;
+                    const oldScroll = messageContainerRef.current!.scrollHeight - messageContainerRef.current!.clientHeight;
+
+                    dispatch(chatActions.getChatMessageSucceeded(res))
+
+                    var newScroll = messageContainerRef.current!.scrollHeight - messageContainerRef.current!.clientHeight;
+                    messageContainerRef.current!.scrollTop = curScrollPos + (newScroll - oldScroll);
+                })
+                    .catch(err => {
+                        chatActions.getChatMessageFailed(err.response.data.message)
+                        toast.error(err.response.data.message)
+                    })
+            }
+        }, options);
+
+        observer.current.observe(loadMoreRef.current)
+    }, [dispatch, filter, groupId, listMessage.length, pagination._limit, pagination._totalRows])
 
     useEffect(() => {
         if (messageContainerRef.current) {
@@ -127,7 +193,7 @@ const MessageSection = (props: Props) => {
             socketClient.off(SOCKET_EVENT.listOnlineInGroup, appendListOnline)
             socketClient.off(`${SOCKET_EVENT.removeMessage}${groupId}`, changeRemovedMessage)
         }
-    }, [])
+    }, [dispatch, groupId, handleShowBtnScrollBottom, history])
 
     useLayoutEffect(() => {
         if (messageContainerRef.current)
@@ -138,72 +204,7 @@ const MessageSection = (props: Props) => {
         return () => {
             observer.current && observer.current.disconnect()
         }
-    }, [listMessage])
-
-    const handleScrollToBottom = () => {
-        if (!scrollBottomRef.current)
-            return
-
-        scrollBottomRef.current.scrollIntoView({
-            behavior: 'smooth',
-            block: 'end',
-            inline: 'end'
-        })
-    }
-
-    const handleShowBtnScrollBottom = (e: any) => {
-        const st = e.target.scrollTop || 0;
-        const height = e.target.clientHeight || 0
-        const scrollHeight = e.target.scrollHeight || 0
-
-        if (!btnScrollToBottomRef.current) return
-
-        if (st > lastScrollTop) {
-            if (scrollHeight - height - st <= 900)
-                btnScrollToBottomRef.current.style.display = 'none'
-        } else {
-            if (scrollHeight - height - st >= 900)
-                btnScrollToBottomRef.current.style.display = 'grid'
-        }
-        lastScrollTop = st <= 0 ? 0 : st
-    }
-
-    const loadMore = () => {
-        if (!messageContainerRef.current || !loadMoreRef.current) return
-
-        let options = {
-            root: messageContainerRef.current,
-            rootMargin: '0px',
-            threshold: 1.0
-        }
-
-        observer.current = new IntersectionObserver(entries => {
-            if (
-                entries[0].isIntersecting &&
-                pagination._limit < pagination._totalRows
-            ) {
-                chatApis.getChatMessage({
-                    ...filter,
-                    _groupId: groupId,
-                    _limit: pagination._limit + listMessage.length
-                }).then(res => {
-                    const curScrollPos = messageContainerRef.current!.scrollTop;
-                    const oldScroll = messageContainerRef.current!.scrollHeight - messageContainerRef.current!.clientHeight;
-
-                    dispatch(chatActions.getChatMessageSucceeded(res))
-
-                    var newScroll = messageContainerRef.current!.scrollHeight - messageContainerRef.current!.clientHeight;
-                    messageContainerRef.current!.scrollTop = curScrollPos + (newScroll - oldScroll);
-                })
-                    .catch(err => {
-                        chatActions.getChatMessageFailed(err.response.data.message)
-                        toast.error(err.response.data.message)
-                    })
-            }
-        }, options);
-
-        observer.current.observe(loadMoreRef.current)
-    }
+    }, [listMessage, loadMore])
 
     return (
         <Box className={classes.root}>
@@ -225,11 +226,15 @@ const MessageSection = (props: Props) => {
                         <Message key={message._id} message={message} />
                     ))}
 
+                    {/* <TypingMessage />
+                    <TypingMessage />
+                    <TypingMessage /> */}
+
                     <li ref={scrollBottomRef as any}>
                         <Box className="hidden" />
                     </li>
                 </ul>
-            </div >
+            </div>
 
             <ChatInput />
 

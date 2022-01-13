@@ -1,7 +1,5 @@
 import { Box, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
-import ApproveContext from 'contexts/ApproveContext'
-import { useContext } from 'react'
 
 interface Props {
     data: {

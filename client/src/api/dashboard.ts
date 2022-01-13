@@ -1,4 +1,4 @@
-import { Chart, RecentData, Response, Statistic } from 'models';
+import { RecentData, Response, Statistic } from 'models';
 import axiosClient from './axiosClient';
 
 const dashboardApis = {

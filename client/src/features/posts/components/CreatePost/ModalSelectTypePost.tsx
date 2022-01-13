@@ -136,7 +136,7 @@ export const ModalSelectTypePost = ({ open, setTypeModalOpen }: Props) => {
                                     index === 2 && history.push('/create-post/review')
                                 }}
                             >
-                                <img src={option.img} className="icon" />
+                                <img src={option.img} className="icon" alt='' />
 
                                 <Typography className='label'>
                                     {option.label}
