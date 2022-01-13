@@ -13,14 +13,14 @@ const add = async (userId, title, params, io) => {
     content += `Bài viết "${params.title}" trong chuyên mục ${
       getSubject.name
     }. Nội dung: "${params.content.slice(0, 60)} . . ."`;
-    url += `/posts/${params.postId}`;
+    url += `/posts/${params.postId.toString()}`;
   } else if (params.type === "createdComment") {
     //params: type, postId, content
     const getPost = await post.findById(params.postId).populate("owner");
     content += `Đã bình luận bài viết của "${getPost.owner.name}" trong bài ${
       getPost.title
     }. Nội dung: "${params.content.slice(0, 34)} . . ."`;
-    url += `/posts/${params.postId}`;
+    url += `/posts/${params.postId.toString()}`;
   } else if (params.type === "rating") {
     //params: motelId content star
     const getMotel = await motel.findById(params.motelId);
@@ -29,20 +29,20 @@ const add = async (userId, title, params, io) => {
     }". Nội dung: "${params.content.slice(0, 34)} . . .". Số sao: ${
       params.star
     }`;
-    url += `/motels/${params.motelId}`;
+    url += `/motels/${params.motelId.toString()}`;
   } else if (params.type === "createdMotel") {
     //params: name desc motelId
     content += `Đã đăng "${params.name}". Mô tả: "${params.desc.slice(
       0,
       60
     )} . . .".`;
-    url += `/motels/${params.motelId}`;
+    url += `/motels/${params.motelId.toString()}`;
   } else if (params.type === "updatedMotel") {
     //params: name desc motelId
     content += `Đã chỉnh sửa "${
       params.name
     }". Các thông tin: ${params.edited.substring(19)}`;
-    url += `/motels/${params.motelId}`;
+    url += `/motels/${params.motelId.toString()}`;
   } else if (params.type === "repComment") {
     //params: name desc
     const getComment = await comment
@@ -51,7 +51,7 @@ const add = async (userId, title, params, io) => {
     content += `Trả lời bình luận của "${
       getComment.owner.name
     }". Nội dung: "${params.content.slice(0, 34)} . . ."`;
-    url += `/posts/${getComment.post}`;
+    url += `/posts/${getComment.post.toString()}`;
   }
   const userDone = await user.findOneAndUpdate(
     {

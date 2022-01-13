@@ -30,7 +30,7 @@ class Online {
     let arr = [];
     this.users.forEach((user) => {
       if (
-        !this.users.some((userSome) => {
+        !arr.some((userSome) => {
           JSON.stringify(userSome._id) === JSON.stringify(user._id);
         })
       )

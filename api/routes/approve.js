@@ -850,7 +850,7 @@ const approveRouter = (io) => {
           subjectId: approvePost.subject,
           title: approvePost.title,
           content: approvePost.content,
-          postId: JSON.stringify(approvePost._id),
+          postId: approvePost._id,
         },
         io
       );

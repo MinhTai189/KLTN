@@ -619,7 +619,7 @@ const postRouter = (io) => {
               subjectId: subjectId,
               title: title,
               content: content,
-              postId: JSON.stringify(newPost._id),
+              postId: newPost._id,
             },
             io
           );
@@ -677,7 +677,7 @@ const postRouter = (io) => {
               subjectId: subjectId,
               title: title,
               content: content,
-              postId: JSON.stringify(newPost._id),
+              postId: newPost._id,
             },
             io
           );
@@ -731,7 +731,7 @@ const postRouter = (io) => {
               subjectId: subjectId,
               title: title,
               content: content,
-              postId: JSON.stringify(newPost._id),
+              postId: newPost._id,
             },
             io
           );
