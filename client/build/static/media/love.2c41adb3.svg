@@ -1,0 +1,17 @@
+<svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="150" cy="150" r="128" fill="url(#paint0_linear_love)"/>
+<g style="mix-blend-mode:screen">
+<path d="M149.391 31.4492C83.7585 31.4492 30.5333 84.6574 30.5333 150.29C30.5014 176.502 39.1737 201.982 55.1889 222.732C44.8125 204.721 39.3655 184.292 39.3966 163.505C39.3966 97.8727 92.6048 44.6645 158.237 44.6645C195.146 44.6351 229.966 61.7854 252.44 91.0631C231.244 54.1722 191.938 31.4334 149.391 31.4492Z" fill="url(#paint1_radial_love)"/>
+</g>
+<path d="M213.482 99.7329C206.321 92.5707 196.608 88.5469 186.48 88.5469C176.352 88.5469 166.639 92.5707 159.478 99.7329L150 109.216L140.522 99.7386C130.875 90.0916 116.814 86.324 103.636 89.8551C90.4584 93.3861 80.1651 103.679 76.6341 116.857C73.103 130.035 76.8706 144.096 86.5176 153.743L148.586 215.806C149.367 216.587 150.633 216.587 151.414 215.806L213.482 153.738C220.645 146.577 224.668 136.863 224.668 126.735C224.668 116.607 220.645 106.894 213.482 99.7329Z" fill="white"/>
+<defs>
+<linearGradient id="paint0_linear_love" x1="377.528" y1="160.074" x2="141.676" y2="-79.2783" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2AF598"/>
+<stop offset="1" stop-color="#0049FD"/>
+</linearGradient>
+<radialGradient id="paint1_radial_love" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(35.1384 -31.797) scale(222.199 191.536)">
+<stop stop-color="white"/>
+<stop offset="1"/>
+</radialGradient>
+</defs>
+</svg>
