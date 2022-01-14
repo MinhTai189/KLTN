@@ -17,15 +17,15 @@ const axios = require("axios").default;
 const verifyToken = require("../middleware/verifyToken");
 const groupChat = require("../models/groupChat");
 const authRouter = (io) => {
-  router.get("/", async (req, res) => {
-    const users = await user.find({ deleted: false });
-    const newGroup = new groupChat({
-      name: "Giao lưu, trao đổi, hỏi đáp",
-      members: users.map((user) => user._id.toString()),
-    });
-    await newGroup.save();
-    res.send("ok");
-  });
+  // router.get("/", async (req, res) => {
+  //   const users = await user.find({ deleted: false });
+  //   const newGroup = new groupChat({
+  //     name: "Giao lưu, trao đổi, hỏi đáp",
+  //     members: users.map((user) => user._id.toString()),
+  //   });
+  //   await newGroup.save();
+  //   res.send("ok");
+  // });
 
   router.patch("/change-password", verifyToken, async (req, res) => {
     const { oldPassword, password } = req.body;
@@ -287,7 +287,7 @@ const authRouter = (io) => {
       if (avatarUrl.public_id) await upload.unlink(avatarUrl.public_id);
   };
   router.post("/confirm-email", async (req, res) => {
-    const { token } = req.body;
+    const { params: token } = req.body;
     if (!token)
       return res
         .status(500)
@@ -312,12 +312,12 @@ const authRouter = (io) => {
       });
   });
   router.post("/confirm-sendmail", async (req, res) => {
-    const { email } = req.body.params; //lấy email
+    const { params: email } = req.body; //lấy email
     const User = await user.findOne({ email: email, deleted: false });
 
     if (!User) {
       return res
-        .status(401)
+        .status(400)
         .json({ success: false, message: "Email chưa được đăng ký" });
     }
     if (User.confirmEmail)

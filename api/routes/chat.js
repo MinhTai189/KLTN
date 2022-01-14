@@ -453,7 +453,6 @@ const chatRouter = (io) => {
                 upload.unlink(message.urlImages[i].public_id);
             }
         });
-        groupChat.findByIdAndDelete(groupId);
       }
       // io.membersOnChangeLeave(leaveGroup._id, leaveGroup, req.user.id);
       io.sendMessage(
@@ -461,6 +460,12 @@ const chatRouter = (io) => {
         leaveGroup.messages[leaveGroup.messages.length - 1],
         leaveGroup.members
       );
+      if (leaveGroup.members.length == 0)
+        try {
+          groupChat.findOneAndDelete({ _id: leaveGroup._id }).exec();
+        } catch (err) {
+          throw err;
+        }
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Lỗi không xác định", success: false });
