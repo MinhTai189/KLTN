@@ -1,5 +1,6 @@
 import { Box, CircularProgress, makeStyles, Typography } from '@material-ui/core'
 import { AlternateEmail } from '@material-ui/icons'
+import { Alert } from '@material-ui/lab'
 import { ButtonCustom } from 'components/Common/Button'
 import { InputField } from 'components/FormFields'
 import { useEffect, useState } from 'react'
@@ -82,6 +83,12 @@ const ForgotPasswork = ({ onSubmit, loading, sendMailSuccess }: Props) => {
     return (
         <Box className={classes.root}>
             <Header textBtn='QUÊN MẬT KHẨU' icon={<AlternateEmail />} />
+
+            {sendMailSuccess && <Box my={2}>
+                <Alert severity="info">
+                    {'Nếu bạn không tìm thấy mail xác thực. Hãy kiểm tra hòm thư rác của bạn, vì có thể mail của chúng tôi nằm ở đó :(('}
+                </Alert>
+            </Box>}
 
             <Box>
                 <form onSubmit={handleSubmit(onSubmit)}>

@@ -91,6 +91,12 @@ const VerificationEmail = ({ sendMailSuccess, handleVerificationEmail }: Props) 
                 Chúng tôi đã gửi mail xác thực đến địa chỉ email của bạn!!!
             </Alert>
 
+            <Box my={2}>
+                <Alert severity="info">
+                    {'Nếu bạn không tìm thấy mail xác thực. Hãy kiểm tra hòm thư rác của bạn, vì có thể mail của chúng tôi nằm ở đó :(('}
+                </Alert>
+            </Box>
+
             <Box mt={5}>
                 <Alert severity="info">
                     Nếu bạn không nhận được mail xác thực hoặc quá trình gửi mail bị lỗi. Hãy thực hiện gửi!
