@@ -17,15 +17,15 @@ const axios = require("axios").default;
 const verifyToken = require("../middleware/verifyToken");
 const groupChat = require("../models/groupChat");
 const authRouter = (io) => {
-  router.get("/", async (req, res) => {
-    const users = await user.find({ deleted: false });
-    const newGroup = new groupChat({
-      name: "Giao lưu, trao đổi, hỏi đáp",
-      members: users.map((user) => user._id.toString()),
-    });
-    await newGroup.save();
-    res.send("ok");
-  });
+  // router.get("/", async (req, res) => {
+  //   const users = await user.find({ deleted: false });
+  //   const newGroup = new groupChat({
+  //     name: "Giao lưu, trao đổi, hỏi đáp",
+  //     members: users.map((user) => user._id.toString()),
+  //   });
+  //   await newGroup.save();
+  //   res.send("ok");
+  // });
 
   router.patch("/change-password", verifyToken, async (req, res) => {
     const { oldPassword, password } = req.body;
