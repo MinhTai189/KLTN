@@ -13,10 +13,7 @@ export interface Post {
   block: boolean;
   type: number;
   motel: Motel;
-  posts: {
-    _id: string;
-    title: string;
-  }[];
+  posts: PostMinimal[];
   motels: Motel[];
   valid: boolean;
   require: Require;
@@ -26,6 +23,11 @@ export interface Post {
   numComments: number;
   createdAt: string;
   updatedAt: string;
+}
+
+interface PostMinimal {
+  _id: string;
+  title: string;
 }
 
 export interface LikePost {

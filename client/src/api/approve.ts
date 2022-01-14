@@ -3,13 +3,13 @@ import {
   Filter,
   ListResponse,
   MotelApprove,
+  Post,
   RateApprove,
   RefuseMotel,
   RefuseRate,
   Report,
   Response,
 } from 'models';
-import { Post } from '../models/Post';
 import axiosClient from './axiosClient';
 
 const approveApis = {

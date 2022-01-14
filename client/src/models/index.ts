@@ -1,3 +1,4 @@
+export * from './Post';
 export * from './User';
 export * from './common';
 export * from './Province';
@@ -12,4 +13,3 @@ export * from './Report';
 export * from './Dashboard';
 export * from './Chat';
 export * from './Feedback';
-export * from './Post';
