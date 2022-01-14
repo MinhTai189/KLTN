@@ -28,7 +28,7 @@ const authApis = {
   },
   confirmEmail(params: string): Promise<any> {
     const url = '/confirm-email';
-    return axiosClient.post(url, params);
+    return axiosClient.post(url, { params });
   },
   verificationEmail(params: string): Promise<any> {
     const url = '/confirm-sendmail';
