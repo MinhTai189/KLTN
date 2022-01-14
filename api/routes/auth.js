@@ -17,14 +17,15 @@ const axios = require("axios").default;
 const verifyToken = require("../middleware/verifyToken");
 const groupChat = require("../models/groupChat");
 const authRouter = (io) => {
-  // router.get("/", async (req, res) => {
-  //   const users = await user
-  //     .find()
-  //     .select("likes")
-  //     .populate("likes", "name", "user");
-
-  //   res.send({ users: users, like: users[0].likes });
-  // });
+  router.get("/", async (req, res) => {
+    const users = await user.find({ deleted: false });
+    const newGroup = new groupChat({
+      name: "Giao lưu, trao đổi, hỏi đáp",
+      members: users.map((user) => user._id.toString()),
+    });
+    await newGroup.save();
+    res.send("ok");
+  });
 
   router.patch("/change-password", verifyToken, async (req, res) => {
     const { oldPassword, password } = req.body;
@@ -285,6 +286,182 @@ const authRouter = (io) => {
     if (avatarUrl)
       if (avatarUrl.public_id) await upload.unlink(avatarUrl.public_id);
   };
+  router.post("/confirm-email", async (req, res) => {
+    const { token } = req.body;
+    if (!token)
+      return res
+        .status(500)
+        .json({ success: false, message: "Không tìm thấy token" });
+
+    if (token)
+      JWT.verify(token, process.env.confirmEmailToken, async (err, data) => {
+        //Xác thực key
+        if (err) {
+          console.log(err);
+          return res
+            .status(500)
+            .json({ success: false, message: "Đường dẫn không chính xác" });
+        }
+        await user.findByIdAndUpdate(data.id, { confirmEmail: true });
+        res
+          .status(200)
+          .json({ success: true, message: "Đã xác thực thành công" });
+        groupChat.findByIdAndUpdate("61e0c632b24f444c7591c752", {
+          $push: { members: data.id },
+        });
+      });
+  });
+  router.post("/confirm-sendmail", async (req, res) => {
+    const { email } = req.body; //lấy email
+    const User = await user.findOne({ email: email, deleted: false });
+
+    if (!User) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Email chưa được đăng ký" });
+    }
+    if (User.confirmEmail)
+      return res
+        .status(401)
+        .json({ success: false, message: "Email đã xác thực rồi" });
+    //Cung cấp key (10 phút)
+    const confirmEmailToken = JWT.sign(
+      { id: User._id, email: User.email },
+      process.env.confirmEmailToken,
+      { expiresIn: "10m" }
+    );
+
+    const transporter = nodemailer.createTransport({
+      // config mail
+      service: "Gmail",
+      auth: {
+        user: process.env.configmailuser,
+        pass: process.env.configmailpass,
+      },
+    });
+    const mainOptions = {
+      // thiết lập đối tượng, nội dung gửi mail
+      from: "Nhà trọ Sinh viên",
+      to: User.email,
+      subject: "Xác thực email đăng ký",
+      text: "",
+      html: `<div
+      style="
+        width: 100%;
+        max-width: 550px;
+        margin: 0 auto;
+        outline: 2px solid #ccc;
+        padding-bottom: 4px;
+      "
+    >
+      <div style="padding: 8px 4px; text-align: center">
+        <img
+          style="width: 45px; height: 45px"
+          src="https://res.cloudinary.com/dpregsdt9/image/upload/v1641390438/logo_1_h8e2hu.png"
+        />
+
+        <h1
+          style="
+            font-size: 20px;
+            color: #2196f3;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 4px 0;
+          "
+        >
+          Xác thực email đăng ký
+        </h1>
+      </div>
+
+      <div
+        style="
+          padding: 4px 12px 8px;
+          font-size: 16px;
+          border-top: 1px solid #ccc;
+        "
+      >
+        <p style="margin: 8px 0">Chào ${User.name},</p>
+
+        <p style="margin: 8px 0">
+          Tài khoản của bạn đã đăng ký
+          với địa chỉ mail: ${email}
+        </p>
+
+        <p style="margin: 8px 0">
+          Nếu như không phải yêu cầu đến từ phía của bạn. Hãy bỏ qua email này!
+        </p>
+
+        <p style="margin: 8px 0">
+          Bấm vào nút "Xác thực" bên dưới để thực hiện xác nhận email và trở thành thành viên của chúng tôi:
+        </p>
+
+        <button
+          style="
+            background: none;
+            outline: none;
+            background: #2196f3;
+            border: none;
+            width: 130px;
+            height: 40px;
+            border-radius: 24px;
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.45);
+            margin: 16px auto;
+            display: block;
+          "
+        >
+          <a
+            style="
+              color: #fff;
+              text-decoration: none;
+              font-size: 14px;
+              display: block;
+              width: 100%;
+              height: 100%;
+              line-height: 40px;
+            "
+            href="${process.env.ORIGIN}/auth/confirm-email/${confirmEmailToken}"
+            >Xác thực</a
+          >
+        </button>
+
+        <p style="margin: 8px 0">
+          Di chuyển đến đường dẫn sau nếu không thể điều hướng tự động:
+          <a style="word-break: break-all; font-size: 16px" href="${process.env.ORIGIN}/auth/confirm-email/${confirmEmailToken}"
+            >${process.env.ORIGIN}/auth/confirm-email/${confirmEmailToken}</a
+          >
+        </p>
+
+        <small
+          style="
+            text-align: center;
+            width: 100%;
+            display: block;
+            font-size: 12px;
+            margin-top: 32px;
+            font-style: italic;
+          "
+          >Email này chỉ có hiệu lực trong vòng 10 phút, không được chia sẻ nội
+          dung mail này với bất kỳ ai khác!</small
+        >
+      </div>
+    </div>`,
+    };
+
+    transporter.sendMail(mainOptions, function (err, info) {
+      //tiến hành gửi mail
+      if (err) {
+        console.log(err);
+        return res
+          .status(400)
+          .json({ success: false, message: "Có lỗi xảy ra" });
+      } else {
+        return res
+          .status(200)
+          .json({ success: true, message: "Đã gửi mail thành công" });
+      }
+    });
+  });
   router.post("/register", async (req, res) => {
     let {
       username,
@@ -366,6 +543,7 @@ const authRouter = (io) => {
       });
       await newUser.save();
       res.status(200).json({ success: true, message: "Đăng ký thành công" });
+
       io.sendDashboardStatisticals("accounts");
     } catch (err) {
       await unlinkAvatar(avatarUrl);
@@ -561,6 +739,7 @@ const authRouter = (io) => {
       district: getDistrict,
       province: getProvince,
       school: getSchool,
+      confirmEmail: true,
     });
     await newUser.save();
 
@@ -576,6 +755,9 @@ const authRouter = (io) => {
       data: {
         accessToken: newAccessToken,
       },
+    });
+    groupChat.findByIdAndUpdate("61e0c632b24f444c7591c752", {
+      $push: { members: newUser._id },
     });
     io.sendDashboardStatisticals("accounts");
   });
@@ -661,6 +843,7 @@ const authRouter = (io) => {
       district: getDistrict,
       province: getProvince,
       school: getSchool,
+      confirmEmail: true,
     });
     await newUser.save();
     const newAccessToken = JWT.sign(
@@ -675,6 +858,9 @@ const authRouter = (io) => {
       data: {
         accessToken: newAccessToken,
       },
+    });
+    groupChat.findByIdAndUpdate("61e0c632b24f444c7591c752", {
+      $push: { members: newUser._id },
     });
     io.sendDashboardStatisticals("accounts");
   });

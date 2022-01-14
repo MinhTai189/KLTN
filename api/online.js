@@ -8,7 +8,7 @@ class Online {
     );
   };
   addUserOnline = (user) => {
-    this.users = [...this.users, { ...user }];
+    this.users.push({ ...user });
   };
   pullUserOffline = (id) => {
     this.users = this.users.filter(
@@ -31,7 +31,7 @@ class Online {
     this.users.forEach((user) => {
       if (
         !arr.some((userSome) => {
-          JSON.stringify(userSome._id) === JSON.stringify(user._id);
+          return JSON.stringify(userSome._id) === JSON.stringify(user._id);
         })
       )
         arr = [...arr, { ...user }];

@@ -46,7 +46,7 @@ const UserSchema = new Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
+      unique: false,
     },
     district: {
       type: Object,
@@ -99,6 +99,11 @@ const UserSchema = new Schema(
       ],
       required: false,
       default: [],
+    },
+    confirmEmail: {
+      default: false,
+      type: Boolean,
+      required: true,
     },
   },
   { timestamps: true }

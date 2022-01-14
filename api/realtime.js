@@ -46,13 +46,13 @@ module.exports.listen = function socket(server) {
                   user.socketId === socket.id
               )
             )
-              io.users.push({ ...data, socketId: socket.id });
-            socket.emit("success", {
-              message: "Xác thực thành công",
-              status: 200,
-              success: true,
-            });
+              socket.emit("success", {
+                message: "Xác thực thành công",
+                status: 200,
+                success: true,
+              });
             await addUser(data.id);
+            io.users.push({ ...data, socketId: socket.id });
             if (data.credit > 300 || data.isAdmin == true)
               socket.join("important");
             groupChat
@@ -112,7 +112,31 @@ module.exports.listen = function socket(server) {
     socket.on("unsubscribe-group", (id) => {
       if (id) socket.leave(id.toString());
     });
-    socket.on("disconnection", () => {
+    socket.on("typing", (groupId) => {
+      const findSocket = io.users.find((user) => user.socketId === socket.id);
+      if (findSocket)
+        socket.to(groupId).emit("typing", {
+          ...listOnline
+            .getUsers(1, -1)
+            .list.find(
+              (user) =>
+                JSON.stringify(user._id) === JSON.stringify(findSocket.id)
+            ),
+        });
+    });
+    socket.on("stop-typing", (groupId) => {
+      const findSocket = io.users.find((user) => user.socketId === socket.id);
+      if (findSocket)
+        socket.to(groupId).emit("stop-typing", {
+          ...listOnline
+            .getUsers(1, -1)
+            .list.find(
+              (user) =>
+                JSON.stringify(user._id) === JSON.stringify(findSocket.id)
+            ),
+        });
+    });
+    socket.on("disconnect", () => {
       const findUserDisconnect = io.users.find((item) => {
         return item.socketId === socket.id;
       });
