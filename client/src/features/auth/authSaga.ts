@@ -19,7 +19,21 @@ function* handleLogin(action: PayloadAction<LoginData>) {
 
     const responseData: Response<User> = yield axiosClient.post('/login', data);
 
-    clearToken();
+    if (!responseData.data.confirmEmail) {
+      yield put(
+        push({
+          pathname: '/auth/verify-email',
+          state: {
+            email: responseData.data.email,
+          },
+        })
+      );
+
+      yield put(authActions.loginFailed(''));
+
+      return;
+    }
+
     if (action.payload.rememberMe) {
       localStorage.setItem(
         'accessToken',

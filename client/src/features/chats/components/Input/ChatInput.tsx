@@ -212,7 +212,6 @@ const ChatInput = () => {
         if (!groupId) return
 
         socketClient.emit(SOCKET_EVENT.stopTyping, groupId)
-        console.log('Stopp........')
     }
 
     useEffect(() => {

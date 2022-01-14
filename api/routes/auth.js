@@ -312,7 +312,7 @@ const authRouter = (io) => {
       });
   });
   router.post("/confirm-sendmail", async (req, res) => {
-    const { email } = req.body; //lấy email
+    const { email } = req.body.params; //lấy email
     const User = await user.findOne({ email: email, deleted: false });
 
     if (!User) {

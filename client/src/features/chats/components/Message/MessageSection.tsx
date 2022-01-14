@@ -179,7 +179,6 @@ const MessageSection = (props: Props) => {
 
         const removeUserTyping = (user: Owner) => {
             dispatch(chatActions.removeUserListTyping(user))
-            console.log(user)
         }
 
         socketClient.emit(SOCKET_EVENT.subscribeGroup, groupId)

@@ -9,6 +9,7 @@ export interface User {
   avatarUrl?: string;
   credit: number;
   isAdmin: boolean;
+  confirmEmail?: boolean;
   email: string;
   district: string;
   province: string;

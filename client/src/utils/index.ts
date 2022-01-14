@@ -19,3 +19,4 @@ export * from './socket';
 export * from './getChatGroupByUserId';
 export * from './handle-string/checkUrl';
 export * from './convert-date/calculateCreatedTime';
+export * from './convert-data/convertSecondIntoMS';

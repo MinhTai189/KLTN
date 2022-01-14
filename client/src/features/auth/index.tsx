@@ -14,6 +14,10 @@ import ResetPassword from './components/ResetPassword';
 import { AddiRegisterData, ForgotPasswordData, LoginData, RegisterData } from './models';
 import Background from '../../assets/images/background-auth.jpg'
 import ChangePassword from './components/ChangePassword';
+import VerificationEmail from './components/VerificationEmail';
+import ConfirmEmail from './components/ConfirmEmail';
+import authApis from 'api/auth';
+import { useUpload } from 'hooks';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -38,10 +42,12 @@ const useStyles = makeStyles(theme => ({
 
 export default function Auth() {
     const classes = useStyles();
+
     const history = useHistory();
     const dispatch = useAppDispatch();
+    const { upload } = useUpload()
 
-    const [formAvatar, setFormAvatar] = useState<FormData>();
+    const [fileAvatar, setFileAvatar] = useState<File | undefined>();
     const [rememberMe, setRememberMe] = useState<boolean>(false)
     const [isLoginGG, setIsLoginGG] = useState(false)
 
@@ -50,16 +56,17 @@ export default function Auth() {
     const [loading, setLoading] = useState(false)
 
     const [errAvatar, setErrAvatar] = useState('')
+    const [sendMailSuccess, setSendMailSuccess] = useState(false)
 
     //hanlde login with Google
-    const onSuccesGG = (res: any) => {
+    const onSuccesGG = async (res: any) => {
         if (res) {
             const tokenId = res.tokenId;
             setTokenGG(tokenId)
 
-            axiosClient.post('/login-google', {
-                tokenId
-            }).then((response: Response<any>) => {
+            try {
+                const response: Response<any> = await authApis.ggLogin(tokenId)
+
                 if (response.success === false) {
                     setIsLoginGG(true)
                     history.push('/auth/additional')
@@ -67,14 +74,14 @@ export default function Auth() {
                 else {
                     dispatch(authActions.login({ username: '', password: '', rememberMe: true, accessToken: response.data.accessToken }));
                 }
-            }).catch((err: any) => {
-                dispatch(authActions.loginFailed(err.response.data.message))
-            })
+            } catch (error: any) {
+                dispatch(authActions.loginFailed(error.response.data.message))
+            }
         }
     }
 
     //hanlde login with Facebook
-    const onSuccesFB = (res: any) => {
+    const onSuccesFB = async (res: any) => {
         if (res && res.authResponse) {
             const { accessToken, userID } = res.authResponse;
             setTokenFB({
@@ -82,10 +89,9 @@ export default function Auth() {
                 userID
             })
 
-            axiosClient.post('/login-facebook', {
-                accessToken,
-                userID
-            }).then((response: Response<any>) => {
+            try {
+                const response: Response<any> = await authApis.fbLogin(accessToken, userID)
+
                 if (response.success === false) {
                     setIsLoginGG(false)
                     history.push('/auth/additional')
@@ -93,9 +99,9 @@ export default function Auth() {
                 else {
                     dispatch(authActions.login({ username: '', password: '', rememberMe: true, accessToken: response.data.accessToken }));
                 }
-            }).catch((err: any) => {
-                dispatch(authActions.loginFailed(err.response.data.message))
-            })
+            } catch (error: any) {
+                dispatch(authActions.loginFailed(error.response.data.message))
+            }
         }
     }
 
@@ -108,16 +114,23 @@ export default function Auth() {
             setLoading(true)
             const { confirmPassword, ...dataRegister } = data
 
-            if (formAvatar) {
-                const response: Response<any> = await axiosClient.post('/uploads', formAvatar, { headers: { "Content-type": "multipart/form-data" } })
-                dataRegister.avatarUrl = response.data
+            if (fileAvatar) {
+                const response = await upload([fileAvatar], 'user-avatar')
+                dataRegister.avatarUrl = response
             }
 
-            await axiosClient.post('/register', dataRegister)
+            await authApis.register(dataRegister)
 
-            toast.success("Đã đăng ký thành công. Hãy dùng tài khoản mới để đăng nhập!")
-            history.push('/auth/login');
             setLoading(false)
+
+            toast.success("Đăng ký thành công. Hãy thực hiện xác thực email!")
+
+            history.push({
+                pathname: '/auth/verify-email',
+                state: {
+                    email: data.email
+                },
+            });
         }
         catch (err: any) {
             if (err.response?.data.message)
@@ -129,13 +142,57 @@ export default function Auth() {
     const handleSubmitForgotPassword = async (data: ForgotPasswordData) => {
         try {
             setLoading(true)
-            await axiosClient.post('/forgot-password', data)
-            toast.success("Mã xác nhận đã được gửi đến email của bạn!!!")
+            setSendMailSuccess(false)
+
+            await authApis.forgotPassword(data)
+
+            toast.success("Mail xác thực đã được gửi đến email của bạn!!!")
+
             setLoading(false)
+            setSendMailSuccess(true)
         }
         catch (err: any) {
             if (err.response?.data.message)
                 toast.error(err.response.data.message)
+
+            setLoading(false)
+            setSendMailSuccess(false)
+        }
+    }
+
+    const handleVerificationEmail = async (email: string) => {
+        try {
+            setLoading(true)
+            setSendMailSuccess(false)
+
+            await authApis.verificationEmail(email)
+
+            toast.success("Mail xác thực đã được gửi đến email của bạn!!!")
+
+            setLoading(false)
+            setSendMailSuccess(true)
+        } catch (error: any) {
+            if (error.response?.data.message)
+                toast.error(error.response.data.message)
+
+            setLoading(false)
+            setSendMailSuccess(false)
+        }
+    }
+
+    const handleConfirmEmail = async (token: string) => {
+        try {
+            setLoading(true)
+
+            await authApis.confirmEmail(token)
+
+            setLoading(false)
+
+            toast.success('Chúc mừng bạn đã xác thực email thành công! Hãy dùng tài khoản mới của bạn để đăng nhập.')
+            history.push('/auth/login');
+        } catch (error: any) {
+            if (error.response?.data.message)
+                toast.error(error.response.data.message)
             setLoading(false)
         }
     }
@@ -146,10 +203,7 @@ export default function Auth() {
         if (files[0].size > 500 * 1024) {
             setErrAvatar('Kích thước ảnh không được vượt quá 500KB')
         } else {
-            const form = new FormData();
-            form.append('file', files[0])
-            form.append('folder', 'user-avatar')
-            setFormAvatar(form)
+            setFileAvatar(files[0])
             setErrAvatar('')
         }
     }
@@ -157,11 +211,11 @@ export default function Auth() {
     //additional data for login by FB, GG
     const handleAddiRegister = async (data: AddiRegisterData) => {
         const response: Response<any> = isLoginGG ?
-            await axiosClient.post('/register-google', {
+            await authApis.registerGG({
                 tokenId: tokenGG,
                 ...data
             })
-            : await axiosClient.post('/register-facebook', {
+            : await authApis.registerFB({
                 ...tokenFB,
                 ...data
             })
@@ -186,7 +240,7 @@ export default function Auth() {
                 </Route>
 
                 <Route path="/auth/forgot-password">
-                    <ForgotPasswork onSubmit={handleSubmitForgotPassword} loading={loading} />
+                    <ForgotPasswork onSubmit={handleSubmitForgotPassword} loading={loading} sendMailSuccess={sendMailSuccess} />
                 </Route>
 
                 <Route path="/auth/reset-password/:token">
@@ -195,6 +249,14 @@ export default function Auth() {
 
                 <Route path="/auth/change-password">
                     <ChangePassword />
+                </Route>
+
+                <Route path="/auth/verify-email">
+                    <VerificationEmail handleVerificationEmail={handleVerificationEmail} sendMailSuccess={sendMailSuccess} />
+                </Route>
+
+                <Route exact path="/auth/confirm-email/:token">
+                    <ConfirmEmail handleConfirmEmail={handleConfirmEmail} loading={loading} />
                 </Route>
             </Switch>
         </Container>
