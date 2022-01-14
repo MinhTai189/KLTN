@@ -1,6 +1,14 @@
 import { CKEditor } from '@ckeditor/ckeditor5-react';
-import Editor from 'ckeditor5-custom-build/build/ckeditor';
+import Editor from 'ckeditor5-kltn/build/ckeditor'
 import { getToken } from 'utils';
+
+let url = '';
+
+if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    url = 'http://localhost:5000/api/uploads/posts';
+} else {
+    url = 'http://kltnapi.herokuapp.com/api/uploads/posts';
+}
 
 const editorConfig = {
     placeholder: 'Gõ nội dung vào đây. Kéo & thả hình để chèn vào bài. Chọn các đoạn chữ để hiện công cụ định dạng...',
@@ -9,7 +17,7 @@ const editorConfig = {
     },
     simpleUpload: {
         // The URL that the images are uploaded to.
-        uploadUrl: 'http://localhost:5000/api/uploads/posts',
+        uploadUrl: url,
 
         // Headers sent along with the XMLHttpRequest to the upload server.
         headers: {
