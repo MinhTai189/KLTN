@@ -1,8 +1,8 @@
 import { Avatar, Box, makeStyles, Theme } from '@material-ui/core'
-import React from 'react'
+import { Owner } from 'models'
 
 interface Props {
-
+    user: Owner
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -67,13 +67,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-const TypingMessage = (props: Props) => {
+const TypingMessage = ({ user }: Props) => {
     const classes = useStyles()
+
+    const { avatarUrl } = user
 
     return (
         <Box className={classes.root} component='li'>
             <Box className='wrapper'>
-                <Avatar className='avatar'>U</Avatar>
+                <Avatar src={avatarUrl} className='avatar'>U</Avatar>
 
                 <Box className='body' component='span'>
                     <span className='dots'>

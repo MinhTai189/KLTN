@@ -115,7 +115,7 @@ module.exports.listen = function socket(server) {
     socket.on("typing", (groupId) => {
       const findSocket = io.users.find((user) => user.socketId === socket.id);
       if (findSocket)
-        socket.to(groupId).emit("typing", {
+        socket.to(groupId).emit("someone-typing", {
           ...listOnline
             .getUsers(1, -1)
             .list.find(
@@ -127,7 +127,7 @@ module.exports.listen = function socket(server) {
     socket.on("stop-typing", (groupId) => {
       const findSocket = io.users.find((user) => user.socketId === socket.id);
       if (findSocket)
-        socket.to(groupId).emit("stop-typing", {
+        socket.to(groupId).emit("someone-stop-typing", {
           ...listOnline
             .getUsers(1, -1)
             .list.find(

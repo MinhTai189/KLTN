@@ -1,23 +1,20 @@
 import { Box, Button, IconButton, makeStyles, Theme, Tooltip } from "@material-ui/core";
 import { Image, Send } from "@material-ui/icons";
+import { isFulfilled } from "@reduxjs/toolkit";
 import { useAppDispatch } from "app/hooks";
 import { ReactComponent as Emoij } from 'assets/images/emoij.svg';
 import { ReactComponent as Gif } from 'assets/images/gif-icon.svg';
 import { DetectClickOutsize } from "components/Common/DetectClickOutsize";
-import { TYPE_MESSAGE, VALIDATOR_IMAGE } from "constant/constant";
+import { SOCKET_EVENT, TYPE_MESSAGE, VALIDATOR_IMAGE } from "constant/constant";
 import Picker from 'emoji-picker-react';
 import { chatActions } from "features/chats/chatSlice";
-import { useUpload } from "hooks";
+import { useTyping, useUpload } from "hooks";
 import { AddChatMessage } from "models";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { checkSizeOneImg } from "utils";
+import { checkSizeOneImg, socketClient } from "utils";
 import GifSelector from './GifSelector';
-
-interface Props {
-
-}
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -105,10 +102,10 @@ const checkSelectedImages = (files: FileList) => {
     return { filteredFiles, haveLargeImg }
 }
 
-const ChatInput = (props: Props) => {
+const ChatInput = () => {
     const classes = useStyles()
     const { upload } = useUpload()
-    // const { startTyping, stopTyping } = useTyping()
+    const { isTyping, startTyping, stopTyping, cancelTyping } = useTyping()
 
     const { groupId } = useParams<{ groupId: string }>()
     const dispatch = useAppDispatch()
@@ -119,6 +116,8 @@ const ChatInput = (props: Props) => {
     const [showEmoji, setShowEmoji] = useState(false)
     const [showGifSelector, setShowGifSelector] = useState(false)
     const [inputContent, setInputContent] = useState('')
+
+    const count = useRef(0)
 
     const handleGrowArea = () => {
         if (areaRef.current) {
@@ -141,6 +140,8 @@ const ChatInput = (props: Props) => {
             ...body,
             groupId
         } as AddChatMessage))
+
+        cancelTyping()
     }
 
     const handleTextLinkChatMessage = () => {
@@ -201,13 +202,27 @@ const ChatInput = (props: Props) => {
         setShowGifSelector(false)
     }
 
-    // const handleKeyDownInput = () => {
-    //     startTyping(() => console.log('Someone is typing text...'))
-    // }
+    const handleTyping = () => {
+        if (!groupId) return
 
-    // const handleKeyUpInput = () => {
-    //     stopTyping(() => console.log('Stop typing...'))
-    // }
+        socketClient.emit(SOCKET_EVENT.startTyping, groupId)
+    }
+
+    const handleStopTyping = () => {
+        if (!groupId) return
+
+        socketClient.emit(SOCKET_EVENT.stopTyping, groupId)
+        console.log('Stopp........')
+    }
+
+    useEffect(() => {
+        if (count.current > 0) {
+            if (isTyping) handleTyping()
+            else handleStopTyping()
+        }
+
+        count.current++
+    }, [isTyping])
 
     return (
         <Box className={classes.root}>
@@ -244,8 +259,8 @@ const ChatInput = (props: Props) => {
                     onChange={e => setInputContent(e.target.value)}
                     onInput={handleGrowArea}
                     onKeyPress={triggerEnterInput}
-                // onKeyDown={handleKeyDownInput}
-                // onKeyUp={handleKeyUpInput}
+                    onKeyDown={startTyping}
+                    onKeyUp={stopTyping}
                 />
 
                 <span className='emoji-wrapper'>

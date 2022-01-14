@@ -45,6 +45,10 @@ export const SOCKET_EVENT = {
   listOnlineInGroup: 'ononlines-chat',
   notifyNewMessage: 'notify-new-messages',
   kickMemberOutGroup: 'quit-group',
+  startTyping: 'typing',
+  stopTyping: 'stop-typing',
+  someoneTyping: 'someone-typing',
+  someoneStopTyping: 'someone-stop-typing',
 };
 
 export const VALIDATOR_IMAGE = {

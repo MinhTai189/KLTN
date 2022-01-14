@@ -7,6 +7,7 @@ import ChatContext from 'contexts/ChatContext'
 import { selectCurrentUser } from 'features/auth/authSlice'
 import { User } from 'models'
 import { useContext, useEffect, useRef, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import { changeMeToLastMember, optionAvatar } from '../Group/GroupItem'
 import AddMemberModal from './AddMemberModal'
 import ChangeNameGroupModal from './ChangeNameGroupModal'
@@ -21,6 +22,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         background: '#edeef2',
         border: '1px solid #ccc',
 
+        [theme.breakpoints.down('xs')]: {
+            padding: theme.spacing(1),
+        },
+
         '& .info': {
             display: 'flex',
             alignItems: 'center',
@@ -31,7 +36,13 @@ const useStyles = makeStyles((theme: Theme) => ({
                 height: 50,
                 marginRight: theme.spacing(1),
                 flexShrink: 0,
+                cursor: 'pointer',
                 position: 'relative',
+
+                [theme.breakpoints.down('xs')]: {
+                    width: 40,
+                    height: 40,
+                },
 
                 '&.one .MuiAvatar-root': {
                     width: '100%',
@@ -69,14 +80,22 @@ const useStyles = makeStyles((theme: Theme) => ({
                 fontSize: '1.3rem',
                 lineHeight: 1,
                 fontWeight: 500,
-                marginBottom: 0
+                marginBottom: 0,
+
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '1rem'
+                }
             },
 
             '& .member': {
                 paddingLeft: theme.spacing(0.5),
                 color: theme.palette.text.secondary,
                 fontSize: '0.9rem',
-                cursor: 'pointer'
+                cursor: 'pointer',
+
+                [theme.breakpoints.down('xs')]: {
+                    fontSize: '0.8rem'
+                }
             }
         },
 
@@ -87,7 +106,20 @@ const useStyles = makeStyles((theme: Theme) => ({
                 '& .setting': {
                     width: 'fit-content',
                     position: 'relative',
-                }
+                },
+
+                '& .MuiIconButton-root': {
+                    [theme.breakpoints.down('xs')]: {
+                        width: 30,
+                        height: 30,
+                    },
+
+                    '& .MuiSvgIcon-root': {
+                        [theme.breakpoints.down('xs')]: {
+                            fontSize: '1rem',
+                        }
+                    }
+                },
             }
         }
     }
@@ -98,6 +130,7 @@ const ChatInfomation = () => {
     const { showListOnline, activedGroup, setShowListOnline, setShowListMember } = useContext(ChatContext)
     const currentUser: User = useAppSelector(selectCurrentUser)
 
+    const history = useHistory()
     const [members, setMembers] = useState<any[]>([])
     const [showListSetting, setShowListSetting] = useState(false)
 
@@ -128,7 +161,10 @@ const ChatInfomation = () => {
         <>
             <Box className={classes.root}>
                 <Box className='info' component='span'>
-                    <Box className={`avatar ${amountAvatar.current?.class}`}>
+                    <Box
+                        className={`avatar ${amountAvatar.current?.class}`}
+                        onClick={() => history.push('/chats')}
+                    >
                         {members.slice(0, amountAvatar.current?.slice || 1).map(member => (
                             <Avatar key={member._id} src={member.avatarUrl}>
                                 U

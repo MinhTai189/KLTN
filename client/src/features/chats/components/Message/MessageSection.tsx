@@ -4,8 +4,8 @@ import { Alert } from "@material-ui/lab"
 import chatApis from "api/chat"
 import { useAppDispatch, useAppSelector } from "app/hooks"
 import { SOCKET_EVENT } from "constant/constant"
-import { chatActions, selectFilterMessageChat, selectListMessageChat, selectPaginationMessageChat } from "features/chats/chatSlice"
-import { AddListOnline } from "models"
+import { chatActions, selectFilterMessageChat, selectListMessageChat, selectListTypingChat, selectPaginationMessageChat } from "features/chats/chatSlice"
+import { AddListOnline, Owner } from "models"
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react"
 import { useHistory, useParams } from "react-router-dom"
 import { toast } from "react-toastify"
@@ -60,9 +60,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const MessageSection = (props: Props) => {
     const classes = useStyles()
-    const listMessage = useAppSelector(selectListMessageChat)
-    const { groupId } = useParams<{ groupId: string }>()
     const history = useHistory()
+    const { groupId } = useParams<{ groupId: string }>()
+
+    const listMessage = useAppSelector(selectListMessageChat)
+    const listTyping = useAppSelector(selectListTypingChat)
 
     const dispatch = useAppDispatch()
     const pagination = useAppSelector(selectPaginationMessageChat)
@@ -171,6 +173,15 @@ const MessageSection = (props: Props) => {
             dispatch(chatActions.refetchChatGroup())
         }
 
+        const addUserTyping = (user: Owner) => {
+            dispatch(chatActions.appendListTyping(user))
+        }
+
+        const removeUserTyping = (user: Owner) => {
+            dispatch(chatActions.removeUserListTyping(user))
+            console.log(user)
+        }
+
         socketClient.emit(SOCKET_EVENT.subscribeGroup, groupId)
 
         // subscribe sockets
@@ -178,6 +189,8 @@ const MessageSection = (props: Props) => {
         socketClient.on(`${SOCKET_EVENT.removeMessage}${groupId}`, changeRemovedMessage)
         socketClient.on(SOCKET_EVENT.listOnlineInGroup, appendListOnline)
         socketClient.on(SOCKET_EVENT.kickMemberOutGroup, handleKicked)
+        socketClient.on(SOCKET_EVENT.someoneTyping, addUserTyping)
+        socketClient.on(SOCKET_EVENT.someoneStopTyping, removeUserTyping)
 
         return () => {
             if (messageContainerRef.current) {
@@ -192,6 +205,8 @@ const MessageSection = (props: Props) => {
             socketClient.off(`${SOCKET_EVENT.newMessage}${groupId}`, appendNewMessage)
             socketClient.off(SOCKET_EVENT.listOnlineInGroup, appendListOnline)
             socketClient.off(`${SOCKET_EVENT.removeMessage}${groupId}`, changeRemovedMessage)
+            socketClient.off(SOCKET_EVENT.someoneTyping, addUserTyping)
+            socketClient.off(SOCKET_EVENT.someoneStopTyping, removeUserTyping)
         }
     }, [dispatch, groupId, handleShowBtnScrollBottom, history])
 
@@ -226,9 +241,9 @@ const MessageSection = (props: Props) => {
                         <Message key={message._id} message={message} />
                     ))}
 
-                    {/* <TypingMessage />
-                    <TypingMessage />
-                    <TypingMessage /> */}
+                    {listTyping.map(user => (
+                        <TypingMessage key={user._id} user={user} />
+                    ))}
 
                     <li ref={scrollBottomRef as any}>
                         <Box className="hidden" />

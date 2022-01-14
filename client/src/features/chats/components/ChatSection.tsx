@@ -1,4 +1,5 @@
-import { Box, makeStyles, Theme, Typography } from "@material-ui/core"
+import { Box, IconButton, makeStyles, Theme, Typography } from "@material-ui/core"
+import { Close } from "@material-ui/icons"
 import { useAppSelector } from "app/hooks"
 import ChooseGroup from 'assets/images/choose-group.jpg'
 import ChatContext from "contexts/ChatContext"
@@ -28,17 +29,43 @@ const useStyles = makeStyles((theme: Theme) => ({
             width: '100%',
             height: 'calc(100vh - 60px)',
             display: 'flex',
+            position: 'relative',
 
             '& .left-sider': {
                 width: 310,
                 height: '100%',
                 borderRight: '1px solid #ccc',
+
+                [theme.breakpoints.down('md')]: {
+                    width: 250
+                },
+
+                [theme.breakpoints.down('sm')]: {
+                    position: 'absolute',
+                    display: 'none',
+                    width: '100%',
+                    height: '100%',
+                    zIndex: 100,
+                    background: '#fff'
+                },
+
+                '&.show': {
+                    [theme.breakpoints.down('sm')]: {
+                        display: 'inline-block'
+                    },
+                }
             },
 
             '& > .message-container': {
                 flex: 1,
                 height: '100%',
-                transition: '300ms'
+                transition: '300ms',
+
+                [theme.breakpoints.down('sm')]: {
+                    position: 'absolute',
+                    inset: 0,
+                    background: '#fff'
+                }
             },
 
             '& .right-sider': {
@@ -48,9 +75,41 @@ const useStyles = makeStyles((theme: Theme) => ({
                 borderLeft: '1px solid #ccc',
                 transition: '300ms',
 
+                [theme.breakpoints.down('lg')]: {
+                    position: 'fixed',
+                    top: 59,
+                    right: 0,
+                    height: 'calc(100% - 59px)',
+                    borderTop: '1px solid #ccc',
+                    background: '#fff',
+                },
+
                 '&.hidden': {
                     width: 0,
                     transform: 'translateX(100%)',
+
+                    '& .btn-close': {
+                        display: 'none'
+                    }
+                },
+
+                '& .btn-close': {
+                    width: 30,
+                    height: 30,
+                    position: 'absolute',
+                    top: 0,
+                    right: '100%',
+                    display: 'inline-block',
+                    border: '1px solid #ccc',
+                    background: '#fff',
+                    overflow: 'hidden',
+
+                    '& .MuiIconButton-root': {
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                    }
                 }
             }
         }
@@ -85,6 +144,8 @@ export const ChatSection = () => {
     const [showListMember, setShowListMember] = useState(false)
     const [activedGroup, setActivedGroup] = useState<ChatGroup | undefined>()
 
+    const [showListGroup, setShowListGroup] = useState(true)
+
     useEffect(() => {
         if (listGroup.length > 0) {
             if (groupId) {
@@ -93,6 +154,8 @@ export const ChatSection = () => {
                 foundGroup && setActivedGroup(foundGroup)
             }
         }
+
+        setShowListGroup(!groupId)
     }, [listGroup, groupId])
 
     return (
@@ -109,7 +172,7 @@ export const ChatSection = () => {
                 </Box>
 
                 <Box className="body">
-                    <Box className="left-sider">
+                    <Box className={`left-sider ${showListGroup ? 'show' : ''}`}>
                         <GroupSection />
                     </Box>
 
@@ -117,7 +180,7 @@ export const ChatSection = () => {
                         <Switch>
                             <Route exact path='/chats'>
                                 <Box className={classes.chooseGroup}>
-                                    <img src={ChooseGroup} alt='Tìm nhà trọ' />
+                                    <img src={ChooseGroup} alt='' />
 
                                     <Typography className='text' variant='h3'>
                                         Hãy chọn một nhóm để bắt đầu cuộc trò chuyện...
@@ -133,6 +196,12 @@ export const ChatSection = () => {
 
                     <Box className={`right-sider ${showListOnline ? '' : 'hidden'}`}>
                         <OnlineSection />
+
+                        <span className="btn-close" onClick={() => setShowListOnline(false)}>
+                            <IconButton>
+                                <Close />
+                            </IconButton>
+                        </span>
                     </Box>
                 </Box>
             </Box>

@@ -8,6 +8,7 @@ import { ReactElement, useEffect } from 'react'
 import useFacebook from "react-easy-facebook"
 import { useForm } from 'react-hook-form'
 import { Link } from "react-router-dom"
+import { clearToken } from 'utils'
 import { ReactComponent as Facebook } from '../../../assets/images/facebook.svg'
 import { ReactComponent as Google } from '../../../assets/images/google.svg'
 import { CheckboxField, InputField, InputPasswordField } from '../../../components/FormFields'
@@ -101,6 +102,9 @@ function FormLogin({ onSubmit, setRememberMe, onSuccessGG, onSuccessFB }: Props)
         }
     }, [response, logout, onSuccessFB, signOut])
 
+    useEffect(() => {
+        clearToken()
+    }, [])
 
     return (
         <Box className={classes.root}>

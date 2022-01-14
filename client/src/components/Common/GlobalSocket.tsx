@@ -43,8 +43,6 @@ export const GlobalSocket = ({ children }: Props) => {
             if (currentUser) {
                 socketClient?.off(SOCKET_EVENT.connection, () => { })
                 socketClient?.off(SOCKET_EVENT.notification, appendNotify)
-
-                socketClient?.emit(SOCKET_EVENT.disconnection)
             }
         }
     }, [currentUser, appendNotify])

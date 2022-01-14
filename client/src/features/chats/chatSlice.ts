@@ -85,7 +85,16 @@ const chatSlice = createSlice({
       state.listGroup = newListGroup;
     },
     appendListTyping(state, action: PayloadAction<Owner>) {
-      state.listTyping.push(action.payload);
+      const newListTyping = [...state.listTyping, action.payload].slice(-3);
+
+      state.listTyping = newListTyping;
+    },
+    removeUserListTyping(state, action: PayloadAction<Owner>) {
+      const newListTyping = state.listTyping.filter(
+        (user) => user._id !== action.payload._id
+      );
+
+      state.listTyping = newListTyping;
     },
     filterListTyping(state, action: PayloadAction<string>) {
       state.listTyping = state.listTyping.filter(

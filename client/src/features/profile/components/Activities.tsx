@@ -48,7 +48,7 @@ const Activities = ({ activities }: Props) => {
 
         setSteps(result)
         setExpended(Object.keys(result)[0])
-    }, [activities, years])
+    }, [activities])
 
     const handleClickExpand = (id: string) => {
         setExpended(prev => {
