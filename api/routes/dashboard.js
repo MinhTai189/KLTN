@@ -295,72 +295,117 @@ const dashboardRoute = (io) => {
       let listQuantityApprovalMotel = [];
       let listQuantityApprovalPost = [];
       let listQuantityAccount = [];
-      for (let i = 0; i < allAccount.length; i++) {
-        const time = allAccount[i].createdAt;
-        const createdAt = {
-          year: time.getFullYear(),
-          month: time.getMonth() + 1,
-        };
-        if (
-          !listQuantityAccount.some(
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth() + 1;
+      for (let i = 0; i < 12; i++) {
+        let finalYear = year;
+        let finalMonth = month - i;
+        if (finalMonth <= 0) {
+          finalYear--;
+          finalMonth = 12 - i + 1;
+        }
+        listQuantityAccount.push({
+          createdAt: {
+            year: finalYear,
+            month: finalMonth,
+          },
+          quantity: allAccount.filter(
             (item) =>
-              item.createdAt.year == createdAt.year &&
-              item.createdAt.month == createdAt.month
-          )
-        )
-          listQuantityAccount.push({
-            createdAt: { ...createdAt },
-            quantity: allAccount.filter(
-              (item) =>
-                item.createdAt.getMonth() + 1 == createdAt.month &&
-                item.createdAt.getFullYear() == createdAt.year
-            ).length,
-          });
-      }
-      for (let i = 0; i < motels.length; i++) {
-        const time = motels[i].createdAt;
-        const createdAt = {
-          year: time.getFullYear(),
-          month: time.getMonth() + 1,
-        };
-        if (
-          !listQuantityApprovalMotel.some(
+              item.createdAt.getMonth() + 1 == finalMonth &&
+              item.createdAt.getFullYear() == finalYear
+          ).length,
+        });
+        listQuantityApprovalMotel.push({
+          createdAt: {
+            year: finalYear,
+            month: finalMonth,
+          },
+          quantity: motels.filter(
             (item) =>
-              item.createdAt.year == createdAt.year &&
-              item.createdAt.month == createdAt.month
-          )
-        )
-          listQuantityApprovalMotel.push({
-            createdAt: { ...createdAt },
-            quantity: motels.filter(
-              (item) =>
-                item.createdAt.getMonth() + 1 == createdAt.month &&
-                item.createdAt.getFullYear() == createdAt.year
-            ).length,
-          });
-      }
-      for (let i = 0; i < posts.length; i++) {
-        const time = posts[i].createdAt;
-        const createdAt = {
-          year: time.getFullYear(),
-          month: time.getMonth() + 1,
-        };
-        if (
-          !listQuantityApprovalPost.some(
+              item.createdAt.getMonth() + 1 == finalMonth &&
+              item.createdAt.getFullYear() == finalYear
+          ).length,
+        });
+        listQuantityApprovalPost.push({
+          createdAt: {
+            year: finalYear,
+            month: finalMonth,
+          },
+          quantity: posts.filter(
             (item) =>
-              item.createdAt.year == createdAt.year &&
-              item.createdAt.month == createdAt.month
-          )
-        )
-          listQuantityApprovalPost.push({
-            createdAt: { ...createdAt },
-            quantity: posts.filter(
-              (item) =>
-                item.createdAt.getMonth() + 1 == createdAt.month &&
-                item.createdAt.getFullYear() == createdAt.year
-            ).length,
-          });
+              item.createdAt.getMonth() + 1 == finalMonth &&
+              item.createdAt.getFullYear() == finalYear
+          ).length,
+        });
       }
+      // for (let i = 0; i < allAccount.length; i++) {
+      //   const time = allAccount[i].createdAt;
+      //   const createdAt = {
+      //     year: time.getFullYear(),
+      //     month: time.getMonth() + 1,
+      //   };
+      //   if (
+      //     !listQuantityAccount.some(
+      //       (item) =>
+      //         item.createdAt.year == createdAt.year &&
+      //         item.createdAt.month == createdAt.month
+      //     )
+      //   )
+      //     listQuantityAccount.push({
+      //       createdAt: { ...createdAt },
+      //       quantity: allAccount.filter(
+      //         (item) =>
+      //           item.createdAt.getMonth() + 1 == createdAt.month &&
+      //           item.createdAt.getFullYear() == createdAt.year
+      //       ).length,
+      //     });
+      // }
+      // for (let i = 0; i < motels.length; i++) {
+      //   const time = motels[i].createdAt;
+      //   const createdAt = {
+      //     year: time.getFullYear(),
+      //     month: time.getMonth() + 1,
+      //   };
+      //   if (
+      //     !listQuantityApprovalMotel.some(
+      //       (item) =>
+      //         item.createdAt.year == createdAt.year &&
+      //         item.createdAt.month == createdAt.month
+      //     )
+      //   )
+      //     listQuantityApprovalMotel.push({
+      //       createdAt: { ...createdAt },
+      //       quantity: motels.filter(
+      //         (item) =>
+      //           item.createdAt.getMonth() + 1 == createdAt.month &&
+      //           item.createdAt.getFullYear() == createdAt.year
+      //       ).length,
+      //     });
+      // }
+      // for (let i = 0; i < posts.length; i++) {
+      //   const time = posts[i].createdAt;
+      //   const createdAt = {
+      //     year: time.getFullYear(),
+      //     month: time.getMonth() + 1,
+      //   };
+      //   if (
+      //     !listQuantityApprovalPost.some(
+      //       (item) =>
+      //         item.createdAt.year == createdAt.year &&
+      //         item.createdAt.month == createdAt.month
+      //     )
+      //   )
+      //     listQuantityApprovalPost.push({
+      //       createdAt: { ...createdAt },
+      //       quantity: posts.filter(
+      //         (item) =>
+      //           item.createdAt.getMonth() + 1 == createdAt.month &&
+      //           item.createdAt.getFullYear() == createdAt.year
+      //       ).length,
+      //     });
+      // }
+
       // for (let i = 0; i < listApproval.length; i++) {
       //   if (listApproval[i].type === "motel") {
       //     const time = listApproval[i].createdAt;
