@@ -2,8 +2,16 @@ import axios from 'axios';
 import { getToken, setToken } from 'utils';
 import { refreshTokenApi } from './refreshToken';
 
+let url = '';
+
+if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+  url = 'http://localhost:5000/api';
+} else {
+  url = 'http://kltnapi.herokuapp.com/api';
+}
+
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: url,
   headers: {
     'Content-Type': 'application/json',
   },

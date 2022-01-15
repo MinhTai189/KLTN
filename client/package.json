@@ -20,7 +20,7 @@
     "antd": "^4.16.13",
     "axios": "^0.21.4",
     "chart.js": "^3.7.0",
-    "ckeditor5-custom-build": "file:ckeditor5",
+    "ckeditor5-kltn": "^0.0.1",
     "connected-react-router": "^6.9.1",
     "emoji-picker-react": "^3.4.8",
     "gsap": "^3.7.1",
@@ -48,7 +48,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "CI= react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

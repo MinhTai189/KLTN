@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Welcome to Firebase Hosting</title><script defer="defer" src="/__/firebase/9.6.3/firebase-app-compat.js"></script><script defer="defer" src="/__/firebase/9.6.3/firebase-auth-compat.js"></script><script defer="defer" src="/__/firebase/9.6.3/firebase-database-compat.js"></script><script defer="defer" src="/__/firebase/9.6.3/firebase-firestore-compat.js"></script><script defer="defer" src="/__/firebase/9.6.3/firebase-functions-compat.js"></script><script defer="defer" src="/__/firebase/9.6.3/firebase-messaging-compat.js"></script><script defer="defer" src="/__/firebase/9.6.3/firebase-storage-compat.js"></script><script defer="defer" src="/__/firebase/9.6.3/firebase-analytics-compat.js"></script><script defer="defer" src="/__/firebase/9.6.3/firebase-remote-config-compat.js"></script><script defer="defer" src="/__/firebase/9.6.3/firebase-performance-compat.js"></script><script defer="defer" src="/__/firebase/init.js?useEmulator=true"></script><style media="screen">body{background:#eceff1;color:rgba(0,0,0,.87);font-family:Roboto,Helvetica,Arial,sans-serif;margin:0;padding:0}#message{background:#fff;max-width:360px;margin:100px auto 16px;padding:32px 24px;border-radius:3px}#message h2{color:#ffa100;font-weight:700;font-size:16px;margin:0 0 8px}#message h1{font-size:22px;font-weight:300;color:rgba(0,0,0,.6);margin:0 0 16px}#message p{line-height:140%;margin:16px 0 24px;font-size:14px}#message a{display:block;text-align:center;background:#039be5;text-transform:uppercase;text-decoration:none;color:#fff;padding:16px;border-radius:4px}#message,#message a{box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24)}#load{color:rgba(0,0,0,.4);text-align:center;font-size:13px}@media (max-width:600px){#message,body{margin-top:0;background:#fff;box-shadow:none}body{border-top:16px solid #ffa100}}</style><link href="/static/css/2.e2f0f1ee.chunk.css" rel="stylesheet"><link href="/static/css/main.4ff4406d.chunk.css" rel="stylesheet"></head><body><div id="message"><h2>Welcome</h2><h1>Firebase Hosting Setup Complete</h1><p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p><a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a></div><p id="load">Firebase SDK Loading&hellip;</p><script>document.addEventListener('DOMContentLoaded', function() {
+        const loadEl = document.querySelector('#load');
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        //
+        // firebase.auth().onAuthStateChanged(user => { });
+        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+        // firebase.firestore().doc('/foo/bar').get().then(() => { });
+        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
+        // firebase.messaging().requestPermission().then(() => { });
+        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+        // firebase.analytics(); // call to activate
+        // firebase.analytics().logEvent('tutorial_completed');
+        // firebase.performance(); // call to activate
+        //
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+
+        try {
+          let app = firebase.app();
+          let features = [
+            'auth', 
+            'database', 
+            'firestore',
+            'functions',
+            'messaging', 
+            'storage', 
+            'analytics', 
+            'remoteConfig',
+            'performance',
+          ].filter(feature => typeof app[feature] === 'function');
+          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (e: any) {
+          console.error(e);
+          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        }
+      });</script><script>!function(e){function t(t){for(var n,a,i=t[0],c=t[1],f=t[2],s=0,p=[];s<i.length;s++)a=i[s],Object.prototype.hasOwnProperty.call(o,a)&&o[a]&&p.push(o[a][0]),o[a]=0;for(n in c)Object.prototype.hasOwnProperty.call(c,n)&&(e[n]=c[n]);for(l&&l(t);p.length;)p.shift()();return u.push.apply(u,f||[]),r()}function r(){for(var e,t=0;t<u.length;t++){for(var r=u[t],n=!0,i=1;i<r.length;i++){var c=r[i];0!==o[c]&&(n=!1)}n&&(u.splice(t--,1),e=a(a.s=r[0]))}return e}var n={},o={1:0},u=[];function a(t){if(n[t])return n[t].exports;var r=n[t]={i:t,l:!1,exports:{}};return e[t].call(r.exports,r,r.exports,a),r.l=!0,r.exports}a.e=function(e){var t=[],r=o[e];if(0!==r)if(r)t.push(r[2]);else{var n=new Promise((function(t,n){r=o[e]=[t,n]}));t.push(r[2]=n);var u,i=document.createElement("script");i.charset="utf-8",i.timeout=120,a.nc&&i.setAttribute("nonce",a.nc),i.src=function(e){return a.p+"static/js/"+({}[e]||e)+"."+{3:"81eb7886",4:"369a7976",5:"60f01df9",6:"be0511d9",7:"2d43fd02",8:"e0a61ae1",9:"c210f292",10:"99a64ace",11:"0af2db68",12:"f50627d9",13:"5ded650f",14:"6f5961fd"}[e]+".chunk.js"}(e);var c=new Error;u=function(t){i.onerror=i.onload=null,clearTimeout(f);var r=o[e];if(0!==r){if(r){var n=t&&("load"===t.type?"missing":t.type),u=t&&t.target&&t.target.src;c.message="Loading chunk "+e+" failed.\n("+n+": "+u+")",c.name="ChunkLoadError",c.type=n,c.request=u,r[1](c)}o[e]=void 0}};var f=setTimeout((function(){u({type:"timeout",target:i})}),12e4);i.onerror=i.onload=u,document.head.appendChild(i)}return Promise.all(t)},a.m=e,a.c=n,a.d=function(e,t,r){a.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},a.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},a.t=function(e,t){if(1&t&&(e=a(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(a.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var n in e)a.d(r,n,function(t){return e[t]}.bind(null,n));return r},a.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return a.d(t,"a",t),t},a.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},a.p="/",a.oe=function(e){throw console.error(e),e};var i=this.webpackJsonpclient=this.webpackJsonpclient||[],c=i.push.bind(i);i.push=t,i=i.slice();for(var f=0;f<i.length;f++)t(i[f]);var l=c;r()}([])</script><script src="/static/js/2.041392bf.chunk.js"></script><script src="/static/js/main.42e33ca0.chunk.js"></script></body></html>
