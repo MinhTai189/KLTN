@@ -673,7 +673,7 @@ const approveRouter = (io) => {
         }
       } else if (delReport.type == "rate") {
         getReportRateMotel = await motel.findById(delReport.id1);
-        dataReport = getReportRateMotel.find(
+        dataReport = getReportRateMotel.rate.find(
           (item) => JSON.stringify(item._id) === JSON.stringify(delReport.id2)
         );
         if (dataReport) {
@@ -1065,7 +1065,7 @@ const approveRouter = (io) => {
         findRate.user
       );
       add(
-        req.user.id,
+        findRate.user,
         "Đánh giá nhà trọ",
         {
           type: "rating",
