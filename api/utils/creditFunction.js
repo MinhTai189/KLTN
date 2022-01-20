@@ -1,11 +1,25 @@
 const user = require("../models/user");
-const change = (userId, credit, io) => {
-  user
+const change = async (userId, credit, io) => {
+  const res = await user
     .findByIdAndUpdate(userId, { $inc: { credit: credit } })
-    .select("credit")
-    .then((res) => {
-      changeRankAfter(res, credit, io);
-    });
+    .select("credit rank _id banned");
+  if (res)
+    if (res.credit >= 0) changeRankAfter(res, credit, io);
+    else {
+      if (res.credit > -5) {
+        res.banned = new Date(Date.now() + 1000 * 60 * 60 * 24 * 3);
+        res.save();
+      } else if (res.credit > -10) {
+        res.banned = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
+        res.save();
+      } else if (res.credit > -20) {
+        res.banned = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
+        res.save();
+      } else {
+        res.banned = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 12);
+        res.save();
+      }
+    }
 };
 const changeRankAfter = (userChange, plusCredit, io) => {
   if (userChange) {

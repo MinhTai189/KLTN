@@ -461,6 +461,7 @@ module.exports.listen = function socket(server) {
     const newId = uuid.v4();
 
     const findUser = await user.findById(userId);
+    if (!findUser) return;
     let findOwner;
     let message = data.message;
 

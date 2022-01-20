@@ -105,6 +105,11 @@ const UserSchema = new Schema(
       type: Boolean,
       required: true,
     },
+    banned: {
+      type: Date,
+      default: Date.now() - 1000 * 60 * 60 * 24,
+      require: false,
+    },
   },
   { timestamps: true }
 );

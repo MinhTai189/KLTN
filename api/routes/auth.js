@@ -140,8 +140,26 @@ const authRouter = (io) => {
 
     if (!User) {
       return res
-        .status(401)
+        .status(400)
         .json({ success: false, message: "Email chưa được đăng ký" });
+    }
+    if (User.username === User.email) {
+      const password = User.email + process.env.PASSWORD_SECRET_GOOGLE;
+      const isMatch = await argon2.verify(checkUser.password, password);
+      if (isMatch)
+        return res.status(400).json({
+          success: false,
+          message: "Email này không sử dụng mật khẩu",
+        });
+    }
+    if (!isNaN(parseInt(User.username))) {
+      const password = User.username + process.env.PASSWORD_SECRET_FACEBOOK;
+      const isMatch = await argon2.verify(checkUser.password, password);
+      if (isMatch)
+        return res.status(400).json({
+          success: false,
+          message: "Email này không sử dụng mật khẩu",
+        });
     }
     //Cung cấp key (10 phút)
     const forgotPasswordToken = JWT.sign(
@@ -322,7 +340,7 @@ const authRouter = (io) => {
     }
     if (User.confirmEmail)
       return res
-        .status(401)
+        .status(400)
         .json({ success: false, message: "Email đã xác thực rồi" });
     //Cung cấp key (10 phút)
     const confirmEmailToken = JWT.sign(
@@ -473,6 +491,11 @@ const authRouter = (io) => {
       school,
       avatarUrl,
     } = req.body;
+    if (!school || !district || !province)
+      return res.status(400).json({
+        success: false,
+        message: "Vui lòng nhập đầy đủ thông tin trường đại học",
+      });
     const getSchool = await schoolModel.findOne({ codeName: school });
     const getDistrict = await districtModel.findOne({ codeName: district });
     const getProvince = await provinceModel.findOne({ codeName: province });
@@ -585,7 +608,6 @@ const authRouter = (io) => {
       } else {
         let userData;
         try {
-          console.log(authorization);
           userData = JWT.verify(authorization, process.env.accessToken);
         } catch (err) {
           console.log(err);
@@ -609,6 +631,21 @@ const authRouter = (io) => {
             "likes",
             "avatarUrl name isAdmin _id credit email posts motels rank school likes"
           );
+      if (checkUser)
+        if (checkUser.banned)
+          if (new Date(checkUser.banned) - new Date(Date.now()) > 0)
+            return res.status(400).json({
+              message: `Tài khoản của bạn đã bị khóa đến ${new Date(
+                checkUser.banned
+              ).getHours()}:${new Date(
+                checkUser.banned
+              ).getMinutes()}:${new Date(
+                checkUser.banned
+              ).getSeconds()} ngày ${new Date(checkUser.banned).getDate()}-${
+                new Date(checkUser.banned).getMonth() + 1
+              }-${new Date(checkUser.banned).getFullYear()}`,
+              success: false,
+            });
 
       const newAccessToken = JWT.sign(
         {
@@ -674,8 +711,9 @@ const authRouter = (io) => {
       });
     } catch (error) {
       console.log(error);
-      res.status(404).json({
-        error: error,
+      res.status(500).json({
+        message: "Lỗi không xác định",
+        success: false,
       });
     }
   });
@@ -702,6 +740,11 @@ const authRouter = (io) => {
 
   router.post("/register-facebook", async (req, res) => {
     const { accessToken, userID, email, district, school, province } = req.body;
+    if (!school || !district || !province)
+      return res.status(400).json({
+        success: false,
+        message: "Vui lòng nhập đầy đủ thông tin trường đại học",
+      });
     const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
     &access_token=${accessToken}`;
     const data = await axios.get(url);
@@ -717,7 +760,7 @@ const authRouter = (io) => {
       deleted: false,
     });
     if (checkUser)
-      return res.status(401).json({
+      return res.status(400).json({
         message: "Tài khoản facebook hoặc email này đã được sử dụng",
         success: false,
       });
@@ -739,7 +782,7 @@ const authRouter = (io) => {
       district: getDistrict,
       province: getProvince,
       school: getSchool,
-      confirmEmail: true,
+      confirmEmail: false,
     });
     await newUser.save();
 
@@ -763,49 +806,57 @@ const authRouter = (io) => {
   });
 
   router.post("/login-facebook", async (req, res) => {
-    const { accessToken, userID } = req.body;
+    try {
+      const { accessToken, userID } = req.body;
 
-    const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
+      const url = `https://graph.facebook.com/v4.0/${userID}/?fields=id,email,name,picture
     &access_token=${accessToken}`;
-    const data = await axios.get(url);
+      const data = await axios.get(url);
 
-    const { id } = data.data;
-    const checkUser = await user.findOne({ username: id, deleted: false });
-    if (!checkUser)
-      return res.status(200).json({
-        message: "Cần bổ sung một số dữ liệu để hoàn tất",
-        success: false,
+      const { id } = data.data;
+      const checkUser = await user.findOne({ username: id, deleted: false });
+      if (!checkUser)
+        return res.status(200).json({
+          message: "Cần bổ sung một số dữ liệu để hoàn tất",
+          success: false,
+        });
+      const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
+      const isMatch = await argon2.verify(checkUser.password, password);
+      if (!isMatch)
+        return res
+          .status(400)
+          .json({ message: "Mật khẩu bị sai", success: false });
+
+      //good
+      const newAccessToken = JWT.sign(
+        {
+          id: checkUser._id,
+          isAdmin: checkUser.isAdmin,
+          credit: checkUser.credit,
+        },
+        process.env.accessToken,
+        { expiresIn: "10m" }
+      );
+
+      res.status(200).json({
+        success: true,
+        message: "Đăng nhập thành công",
+        data: {
+          accessToken: newAccessToken,
+        },
       });
-    const password = id + process.env.PASSWORD_SECRET_FACEBOOK;
-    const isMatch = await argon2.verify(checkUser.password, password);
-    if (!isMatch)
-      return res
-        .status(400)
-        .json({ message: "Mật khẩu bị sai", success: false });
-
-    //good
-    const newAccessToken = JWT.sign(
-      {
-        id: checkUser._id,
-        isAdmin: checkUser.isAdmin,
-        credit: checkUser.credit,
-      },
-      process.env.accessToken,
-      { expiresIn: "10m" }
-    );
-
-    res.status(200).json({
-      success: true,
-      message: "Đăng nhập thành công",
-      data: {
-        accessToken: newAccessToken,
-      },
-    });
+    } catch (err) {
+      console.log(err);
+    }
   });
 
   router.post("/register-google", async (req, res) => {
     const { tokenId, school, district, province } = req.body;
-
+    if (!school || !district || !province)
+      return res.status(400).json({
+        success: false,
+        message: "Vui lòng nhập đầy đủ thông tin trường đại học",
+      });
     const result = await client.verifyIdToken({
       idToken: tokenId,
       audience: process.env.SERVICE_CLIENT_ID,
@@ -817,12 +868,12 @@ const authRouter = (io) => {
         .status(400)
         .json({ success: false, message: "Email chưa xác thực" });
     const checkUser = await user.findOne({
-      $or: [{ username: userGmail.email }, { email: userGmail.email }],
+      email: userGmail.email,
       deleted: false,
     });
     if (checkUser)
       return res
-        .status(401)
+        .status(400)
         .json({ success: false, message: "Email đã được sử dụng" });
     const password = userGmail.email + process.env.PASSWORD_SECRET_GOOGLE;
     const { email, picture, name } = userGmail;

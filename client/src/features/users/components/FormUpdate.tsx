@@ -43,7 +43,7 @@ const schema = yup.object().shape({
     credit: yup
         .number()
         .min(0, 'Tối thiểu 0 điểm')
-        .max(99, 'Tối đa 99 điểm'),
+        .max(1000, 'Tối đa 99 điểm'),
     province: yup
         .string()
         .required(),
