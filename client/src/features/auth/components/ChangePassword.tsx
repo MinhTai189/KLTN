@@ -81,8 +81,8 @@ const ChangePassword = () => {
             <Box>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <InputPasswordField name='oldPassword' control={control} label='Mật khẩu cũ' labelWidth={90} required={true} />
-                    <InputPasswordField name='password' control={control} label='Mật khẩu mới' labelWidth={100} required={true} />
-                    <InputPasswordField name='confirmPassword' control={control} label='Xác nhận mật khẩu' labelWidth={140} required={true} />
+                    <InputPasswordField name='password' control={control} label='Mật khẩu mới' labelWidth={100} required={true} autoComplete="new-password" />
+                    <InputPasswordField name='confirmPassword' control={control} label='Xác nhận mật khẩu' labelWidth={140} required={true} autoComplete="new-password" />
 
                     <Box my={2}>
                         <ButtonCustom type='submit' fullWidth sizeBtn="xlarge" disabled={loading}>

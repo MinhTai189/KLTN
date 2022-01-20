@@ -4,7 +4,7 @@ import { Alert } from '@material-ui/lab'
 import { useGoogleLogin, useGoogleLogout } from '@toxa23/react-google-login'
 import { useAppSelector } from 'app/hooks'
 import { ButtonCustom } from 'components/Common/Button'
-import { ReactElement, useEffect, useRef } from 'react'
+import { ReactElement, useEffect } from 'react'
 import useFacebook from "react-easy-facebook"
 import { useForm } from 'react-hook-form'
 import { Link } from "react-router-dom"
@@ -106,7 +106,7 @@ function FormLogin({ onSubmit, setRememberMe, onSuccessGG, onSuccessFB }: Props)
             signOut()
             logout()
         }
-    }, [response, logout, onSuccessFB, signOut])
+    }, [response])
 
     useEffect(() => {
         clearToken()

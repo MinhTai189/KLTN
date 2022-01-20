@@ -162,8 +162,8 @@ function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactE
 
                             <InputField type="text" control={control} name='username' label='Tài khoản*' required={true} />
 
-                            <InputPasswordField name='password' control={control} label='Mật khẩu*' labelWidth={70} required={true} />
-                            <InputPasswordField name='confirmPassword' control={control} label='Xác nhận mật khẩu*' labelWidth={140} required={true} />
+                            <InputPasswordField name='password' control={control} label='Mật khẩu*' labelWidth={70} required={true} autoComplete="new-password" />
+                            <InputPasswordField name='confirmPassword' control={control} label='Xác nhận mật khẩu*' labelWidth={140} required={true} autoComplete="new-password" />
 
                             <InputField type="email" control={control} name='email' label='Email' required={true} />
                         </Grid>

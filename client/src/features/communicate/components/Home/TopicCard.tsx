@@ -1,9 +1,12 @@
 import { Box, Card, CardActionArea, CardContent, CardMedia, IconButton, Theme, Tooltip, Typography } from "@material-ui/core"
 import { PostAdd } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
-import { useAppDispatch } from "app/hooks"
+import { useAppDispatch, useAppSelector } from "app/hooks"
+import { selectCurrentUser } from "features/auth/authSlice"
 import { createPostModalActions } from "features/posts/openCreatePostModalSlice"
+import { User } from "models"
 import { useHistory } from "react-router"
+import { toast } from "react-toastify"
 
 interface Props {
     image: string
@@ -89,11 +92,17 @@ export const TopicCard = ({ image, title, view, count, type }: Props) => {
     const dispatch = useAppDispatch()
     const history = useHistory()
 
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
     const handleClickNavigation = () => {
         history.push('/posts')
     }
 
     const handleClickCreatePost = () => {
+        if (!currentUser) {
+            toast.error('Bạn phải đăng nhập để có thể sử dụng chức năng này!')
+            return
+        }
+
         if (type === 3) {
             console.log('zoooooo', type);
             history.push('/create-post/review')

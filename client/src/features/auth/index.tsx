@@ -99,7 +99,8 @@ export default function Auth() {
                     history.push('/auth/additional')
                 }
                 else {
-                    dispatch(authActions.login({ username: '', password: '', rememberMe: true, accessToken: response.data.accessToken }));
+                    localStorage.setItem('accessToken', JSON.stringify(response.data.accessToken))
+                    dispatch(authActions.login({ username: '', password: '', rememberMe: true }));
                 }
             } catch (error: any) {
                 dispatch(authActions.loginFailed(error.response.data.message))

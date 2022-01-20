@@ -53,7 +53,7 @@ const VerificationEmail = ({ sendMailSuccess, handleVerificationEmail }: Props) 
         if (!location.state?.email) return
 
         handleVerificationEmail(location.state.email)
-    }, [handleVerificationEmail, location.state])
+    }, [])
 
     useEffect(() => {
         if (!location.state?.email) history.push('/')
