@@ -524,12 +524,11 @@ const userRouter = (io) => {
           .status(404)
           .json({ success: false, message: "Không tìm thấy người dùng" });
       if (userDelete.avatarUrl.public_id) {
-        const unlinkFile = await upload.unlink(userDelete.avatarUrl.public_id);
-        if (unlinkFile.success)
-          return res
-            .status(200)
-            .json({ success: false, message: "Đã xóa người dùng" });
+        const unlinkFile = upload.unlink(userDelete.avatarUrl.public_id);
       }
+      return res
+        .status(200)
+        .json({ success: false, message: "Đã xóa người dùng" });
     } catch {
       res.status(422).json({ success: false, message: "Vui lòng thử lại" });
     }
