@@ -101,15 +101,15 @@ function FormLogin({ onSubmit, setRememberMe, onSuccessGG, onSuccessFB }: Props)
 
     useEffect(() => {
         onSuccessFB(response)
+    }, [response])
+
+    useEffect(() => {
+        clearToken()
 
         return () => {
             signOut()
             logout()
         }
-    }, [response])
-
-    useEffect(() => {
-        clearToken()
     }, [])
 
     return (
