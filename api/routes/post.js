@@ -12,6 +12,7 @@ const report = require("../models/report");
 const addDone = require("../utils/done");
 const proposal = require("../utils/proposal");
 const nullMotel = require("../utils/nullMotel");
+const { change } = require("../utils/creditFunction");
 const postRouter = (io) => {
   router.post("/reports", verifyToken, async (req, res) => {
     try {
@@ -214,6 +215,9 @@ const postRouter = (io) => {
           };
         }
       }
+      responsePosts = responsePosts.sort((r1, r2) => {
+        return new Date(r2) - new Date(r1);
+      });
       if (typeof _user === "string")
         responsePosts = responsePosts.filter((item) => {
           return JSON.stringify(item.owner._id) === JSON.stringify(_user);
@@ -385,16 +389,20 @@ const postRouter = (io) => {
   });
   router.delete("/:id", verifyToken, async (req, res) => {
     try {
-      if (req.user.isAdmin == false)
-        return res.status(403).json({
-          success: false,
-          message: "Bạn không đủ quyền thực hiện hành động này",
-        });
       const findPost = await post.findByIdAndDelete(req.params.id);
       if (!findPost)
         return res.status(400).json({
           success: false,
           message: "Không tìm thấy bài viết này",
+        });
+      if (
+        req.user.isAdmin == false &&
+        req.user.credit < 701 &&
+        JSON.stringify(req.user.id) !== JSON.stringify(findPost.owner)
+      )
+        return res.status(403).json({
+          success: false,
+          message: "Bạn không đủ quyền thực hiện hành động này",
         });
       await commentModel.deleteMany({ post: findPost._id });
       await subjectModel.findByIdAndUpdate(findPost.subject, {
@@ -402,6 +410,16 @@ const postRouter = (io) => {
       });
 
       io.sendDashboardStatisticals("posts");
+      if (
+        (req.user.isAdmin == true || req.user.credit > 700) &&
+        JSON.stringify(req.user.id) !== JSON.stringify(findPost.owner)
+      )
+        io.notifyToUser(findPost.owner, {
+          message: `Bài viết "${findPost.title}" của bạn đã bị người quản lý xóa`,
+          url: `/`,
+          imageUrl:
+            "https://res.cloudinary.com/dpregsdt9/image/upload/v1639701129/notify/qqorbp63avq7cpiygrxj.png",
+        });
       return res.status(200).json({
         success: false,
         message: "Đã xóa bài viết thành công",
@@ -543,7 +561,7 @@ const postRouter = (io) => {
       tags,
       motel,
     } = req.body;
-    console.log(tags);
+
     if (!subjectId) {
       return res.status(400).json({
         success: false,
@@ -601,16 +619,18 @@ const postRouter = (io) => {
         likes: [],
         type: 1,
       });
-      if (req.user.isAdmin) newPost.valid = true;
+      if (req.user.isAdmin == true || req.user.credit > 150)
+        newPost.valid = true;
       try {
         await newPost.save();
-        if (req.user.isAdmin) {
+        if (req.user.isAdmin == true || req.user.credit > 150) {
           await userModel.findByIdAndUpdate(newPost.owner, {
             $inc: { posts: 1 },
           });
           await subjectModel.findByIdAndUpdate(subjectId, {
             $inc: { posts: 1 },
           });
+          change(req.user.id, 3, io);
           addDone(
             req.user.id,
             "Đăng bài viết mới",
@@ -659,16 +679,18 @@ const postRouter = (io) => {
         motel,
         type: 2,
       });
-      if (req.user.isAdmin) newPost.valid = true;
+      if (req.user.isAdmin == true || req.user.credit > 150)
+        newPost.valid = true;
       try {
         await newPost.save();
-        if (req.user.isAdmin) {
+        if (req.user.isAdmin == true || req.user.credit > 150) {
           await userModel.findByIdAndUpdate(newPost.owner, {
             $inc: { posts: 1 },
           });
           await subjectModel.findByIdAndUpdate(subjectId, {
             $inc: { posts: 1 },
           });
+          change(req.user.id, 3, io);
           addDone(
             req.user.id,
             "Đăng bài viết mới",
@@ -713,16 +735,18 @@ const postRouter = (io) => {
         motel,
         type: 3,
       });
-      if (req.user.isAdmin) newPost.valid = true;
+      if (req.user.isAdmin == true || req.user.credit > 150)
+        newPost.valid = true;
       try {
         await newPost.save();
-        if (req.user.isAdmin) {
+        if (req.user.isAdmin == true || req.user.credit > 150) {
           await userModel.findByIdAndUpdate(newPost.owner, {
             $inc: { posts: 1 },
           });
           await subjectModel.findByIdAndUpdate(subjectId, {
             $inc: { posts: 1 },
           });
+          change(req.user.id, 3, io);
           addDone(
             req.user.id,
             "Đăng bài viết mới",

@@ -11,6 +11,7 @@ const shuffle = require("../utils/shuffle");
 const userUpdateMotel = require("../models/user-update-motel");
 const JWT = require("jsonwebtoken");
 const add = require("../utils/done");
+const { change } = require("../utils/creditFunction");
 const plus = async (idUser) => {
   const a = await user.findByIdAndUpdate(idUser, { $inc: { motels: 1 } });
   if (!a) return false;
@@ -289,7 +290,7 @@ const motelRouter = (io) => {
       if (newImage.length > 0)
         if (edited === "Chỉnh sửa nhà trọ: ") edited += "hình ảnh";
         else edited += ", hình ảnh";
-      if (req.user.isAdmin == true) {
+      if (req.user.isAdmin == true || req.user.credit > 150) {
         if (motelUpdate.editor.length >= 3) motelUpdate.editor.shift();
         motelUpdate.editor.push({
           user: userAtr,
@@ -440,9 +441,9 @@ const motelRouter = (io) => {
         .status(400)
         .json({ success: false, message: "Không có thông tin" });
     const id = req.params.id;
-    if (req.user.isAdmin != true)
+    if (req.user.isAdmin != true && req.user.credit < 1001)
       return res
-        .status(405)
+        .status(400)
         .json({ success: false, message: "Không đủ quyền hạn truy cập" });
     const checkMotel = await motel.findByIdAndDelete(id);
     if (!checkMotel)
@@ -800,6 +801,12 @@ const motelRouter = (io) => {
   };
 
   router.post("/", verifyToken, async (req, res) => {
+    if (req.user.credit < 21)
+      return res.status(400).json({
+        message:
+          "Bạn chưa đủ quyền hạn để gửi nhà trọ, yêu cầu điểm tín dụng tối thiểu là 21",
+        success: false,
+      });
     let {
       name,
       thumbnail,
@@ -813,92 +820,6 @@ const motelRouter = (io) => {
       available,
     } = req.body;
 
-    // if (id) {
-    //   if (req.user.isAdmin == false)
-    //     return res
-    //       .status(405)
-    //       .json({ success: false, message: "Không đủ quyền hạn truy cập" });
-    //   const checkMotel = await unapprovedMotel.findByIdAndDelete(id);
-    //   if (!checkMotel)
-    //     return res
-    //       .status(400)
-    //       .json({ success: false, message: "Không tìm thấy" });
-
-    //   const newMotel = new motel({
-    //     name: checkMotel.name,
-    //     unsignedName: checkMotel.unsignedName,
-    //     thumbnail: checkMotel.thumbnail,
-    //     images: [],
-    //     address: checkMotel.address,
-    //     desc: checkMotel.desc,
-    //     room: checkMotel.room,
-    //     contact: checkMotel.contact,
-    //     status: checkMotel.status,
-    //     vote: checkMotel.vote,
-    //     rate: checkMotel.rate,
-    //     mark: checkMotel.mark,
-    //     school: checkMotel.school,
-    //     owner: checkMotel.owner,
-    //     editor: [],
-    //     available: checkMotel.available,
-    //   });
-    //   try {
-    //     for (let i = 0; i < checkMotel.images.length; i++) {
-    //       const renameImage = await upload.rename(
-    //         checkMotel.images[i].public_id,
-    //         newMotel._id +
-    //           "/" +
-    //           checkMotel.images[i].public_id.substr(
-    //             checkMotel.images[i].public_id.indexOf("/") + 1
-    //           )
-    //       );
-    //       if (renameImage.success)
-    //         newMotel.images.push({
-    //           public_id: renameImage.data.public_id,
-    //           url: renameImage.data.url,
-    //         });
-    //       else {
-    //         return res
-    //           .status(400)
-    //           .json({ message: "Lỗi hình", success: false });
-    //       }
-    //     }
-    //     const renameThumbnail = await upload.rename(
-    //       checkMotel.thumbnail.public_id,
-    //       newMotel._id +
-    //         "/" +
-    //         checkMotel.thumbnail.public_id.substr(
-    //           checkMotel.thumbnail.public_id.indexOf("/") + 1
-    //         )
-    //     );
-    //     if (renameThumbnail.success)
-    //       newMotel.thumbnail = {
-    //         public_id: renameThumbnail.data.public_id,
-    //         url: renameThumbnail.data.url,
-    //       };
-    //     else {
-    //       return res
-    //         .status(400)
-    //         .json({ success: false, message: "Lỗi hình ảnh" });
-    //     }
-
-    //     await newMotel.save();
-    //     await plus(newMotel.owner);
-
-    //     return res.status(200).json({
-    //       success: true,
-    //       message: "duyệt thành công",
-    //     });
-    //   } catch (err) {
-    //     console.log(err);
-    //     await motel.findByIdAndDelete(newMotel._id);
-    //     await checkMotel.save();
-    //     return res.status(500).json({
-    //       success: false,
-    //       message: "Vui lòng thử lại",
-    //     });
-    //   }
-    // }
     if (typeof thumbnail === "undefined") {
       return res
         .status(400)
@@ -1020,8 +941,8 @@ const motelRouter = (io) => {
         room[j].optional = optional;
       }
     }
-    const checkUserPost = await user.findById(req.user.id).select("credit");
-    if (req.user.isAdmin == true || checkUserPost.credit >= 100) {
+
+    if (req.user.isAdmin == true || req.user.credit > 300) {
       const newMotel = new motel({
         name,
         unsignedName: removeVietNameseTones(name),
@@ -1126,6 +1047,7 @@ const motelRouter = (io) => {
           await newMotelUnapproved.save();
           io.sendDashboardRecent("motels");
           io.sendDashboardStatisticals("approvals");
+          change(req.user.id, 2, io);
           return res.status(200).json({
             success: true,
             message:
@@ -1154,7 +1076,7 @@ const motelRouter = (io) => {
           imageUrl:
             "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/motel_opx8rh.png",
         });
-
+        change(req.user.id, 5, io);
         io.sendDashboardRecent("motels");
         io.sendDashboardStatisticals("motels");
         return res.status(200).json({
@@ -1204,7 +1126,7 @@ const motelRouter = (io) => {
           duplicateUnapprovedCheck.dup == true
         ) {
           await newMotel.save();
-
+          change(req.user.id, 2, io);
           io.sendDashboardRecent("motels");
           io.sendDashboardStatisticals("approvals");
           return res.status(200).json({
@@ -1214,7 +1136,7 @@ const motelRouter = (io) => {
           });
         }
         await newMotel.save();
-
+        change(req.user.id, 2, io);
         io.sendDashboardStatisticals("approvals");
         io.sendDashboardRecent("motels");
         return res.status(200).json({

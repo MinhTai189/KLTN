@@ -18,9 +18,15 @@ const approvalStat = require("../utils/approvalStat");
 const add = require("../utils/done");
 const subject = require("../models/subject");
 const user = require("../models/user");
+const { change, changeRank } = require("../utils/creditFunction");
+
 const approveRouter = (io) => {
   //working
   router.delete("/motels/:type/:id", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không có quyền", success: false });
     const type = req.params.type;
     const id = req.params.id;
     if (type == "add") {
@@ -38,19 +44,21 @@ const approveRouter = (io) => {
       const updateMotel = await userUpdateMotel
         .findByIdAndDelete(id)
         .populate("motel");
-      for (let i = 0; i < updateMotel.images.length; i++) {
-        if (
-          !updateMotel.motel.images.some(
-            (item) => item.public_id === updateMotel.images[i].public_id
+      if (updateMotel.motel) {
+        for (let i = 0; i < updateMotel.images.length; i++) {
+          if (
+            !updateMotel.motel.images.some(
+              (item) => item.public_id === updateMotel.images[i].public_id
+            )
           )
+            await upload.unlink(updateMotel.images[i].public_id);
+        }
+        if (
+          updateMotel.thumbnail.public_id !==
+          updateMotel.motel.thumbnail.public_id
         )
-          await upload.unlink(updateMotel.images[i].public_id);
+          await upload.unlink(updateMotel.thumbnail.public_id);
       }
-      if (
-        updateMotel.thumbnail.public_id !==
-        updateMotel.motel.thumbnail.public_id
-      )
-        await upload.unlink(updateMotel.thumbnail.public_id);
     }
     res.status(200).json({ success: true, message: "Thành công" });
     io.sendDashboardRecent("motels");
@@ -145,10 +153,10 @@ const approveRouter = (io) => {
   //good
   router.post("/motels/:id", verifyToken, async (req, res) => {
     // duyệt nhà trọ mới
-    if (req.user.isAdmin == false)
-      res.status(403).json({
-        message: "Bạn không đủ quyền hạn",
-      });
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không có quyền", success: false });
     let type = "add";
     const checkMotel = await unapprovedMotel.findById(req.params.id);
     if (!checkMotel) type = "update";
@@ -257,6 +265,7 @@ const approveRouter = (io) => {
         user.findByIdAndUpdate(newMotel.owner, { $inc: { motels: 1 } });
 
         res.status(200).json({ message: "Duyệt thành công", success: true });
+        change(newMotel.owner, 5, io);
         io.sendDashboardRecent("motels");
         await unapprovedMotel.findByIdAndDelete(req.params.id);
         add(
@@ -284,6 +293,10 @@ const approveRouter = (io) => {
     else if (type === "update")
       try {
         const oldMotel = getNewUpdateMotel.motel;
+        if (!oldMotel)
+          return res
+            .status(400)
+            .json({ message: "Nhà trọ gốc đã bị xóa", success: false });
         let userAtr = getNewUpdateMotel.user;
 
         let edited = "Chỉnh sửa nhà trọ: ";
@@ -350,6 +363,7 @@ const approveRouter = (io) => {
         await motel.findByIdAndUpdate(oldMotel._id, { $set: updateProps });
         await userUpdateMotel.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: "Thành công", success: true });
+        change(userAtr, 3, io);
         io.notifyToUser(getNewUpdateMotel.user, {
           message: `Chúng tôi đã duyệt thông tin chỉnh sửa nhà trọ. Chân thành cám ơn sự đóng góp của bạn`,
           url: `/motels/${oldMotel._id}`,
@@ -382,10 +396,10 @@ const approveRouter = (io) => {
   ///ok
   router.get("/motels/comparisons/:id", verifyToken, async (req, res) => {
     // so sánh nhà trọ cũ và mới trong upadate nhà trọ
-    if (req.user.isAdmin == false)
-      res.status(403).json({
-        message: "Bạn không đủ quyền hạn",
-      });
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không có quyền", success: false });
     try {
       const newMotel = await userUpdateMotel
         .findById(req.params.id)
@@ -455,11 +469,12 @@ const approveRouter = (io) => {
   });
   //good
   router.get("/motels", verifyToken, async (req, res) => {
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không đủ quyền hạn", success: false });
     // lấy nhà trọ mới và update nhà trọ mới
-    if (req.user.isAdmin == false)
-      res.status(403).json({
-        message: "Bạn không đủ quyền hạn",
-      });
+
     try {
       const allMotel = await motel.find();
       const motelNewUpdate = await userUpdateMotel
@@ -584,10 +599,10 @@ const approveRouter = (io) => {
   //good
   router.delete("/reports/:id", verifyToken, async (req, res) => {
     // Xóa tó cáo
-    if (req.user.isAdmin == false)
-      res.status(403).json({
-        message: "Bạn không đủ quyền hạn",
-      });
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không đủ quyền hạn", success: false });
     try {
       const id = req.params.id;
       const delReport = await report.findByIdAndDelete(id);
@@ -597,9 +612,11 @@ const approveRouter = (io) => {
           .json({ message: "Không tìm được nội dung báo cáo", success: false });
 
       res.status(200).json({ message: "Thành công", success: true });
+
       let url = "";
       if (delReport.type === "post") url = "posts/" + delReport.id1;
       else if (delReport.type === "rate") url = "motels/" + delReport.id1;
+      else if (delReport.type === "comment") url = "posts/" + delReport.id1;
       io.notifyToUser(delReport.owner, {
         message: `Thông tin tố cáo bạn gửi là sai sự thật.`,
         url: `/${url}`,
@@ -613,11 +630,11 @@ const approveRouter = (io) => {
   });
   //good
   router.post("/reports/:id", verifyToken, async (req, res) => {
-    // Xóa tó cáo+ xóa nội dung + trừ điểm thằng bi tố cáo
-    if (req.user.isAdmin == false)
-      res.status(403).json({
-        message: "Bạn không đủ quyền hạn",
-      });
+    // duyet tó cáo + xóa nội dung + trừ điểm thằng bi tố cáo + cong diem thang to cao
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không đủ quyền hạn", success: false });
     try {
       const id = req.params.id;
       const delReport = await report.findByIdAndDelete(id);
@@ -627,37 +644,48 @@ const approveRouter = (io) => {
           .json({ message: "Không tìm được nội dung báo cáo", success: false });
 
       res.status(200).json({ message: "Thành công", success: true });
+
+      change(delReport.owner, 2, io);
       let dataReport;
       if (delReport.type === "comment") {
         dataReport = await comment.findByIdAndDelete(delReport.id1);
-        if (dataReport)
+        if (dataReport) {
           io.notifyToUser(dataReport.owner, {
             message: `Bình luận của bạn đã bị xóa vì vi phạm nguyên tắc cộng đồng`,
             url: `/posts/${dataReport.post}`,
             imageUrl:
               "https://res.cloudinary.com/dpregsdt9/image/upload/v1639744800/notify/b2ff8pc5qbbtc9sqbvq4.png",
           });
+          change(dataReport.owner, -10, io);
+        }
       } else if (delReport.type === "post") {
         dataReport = await post.findByIdAndDelete(delReport.id1);
-        if (dataReport)
+        comment.deleteMany({ post: dataReport._id });
+        if (dataReport) {
           io.notifyToUser(dataReport.owner, {
             message: `Bài viết của bạn đã bị xóa vì vi phạm nguyên tắc cộng đồng`,
             url: `/posts/`,
             imageUrl:
               "https://res.cloudinary.com/dpregsdt9/image/upload/v1639744800/notify/b2ff8pc5qbbtc9sqbvq4.png",
           });
+
+          change(dataReport.owner, -20, io);
+        }
       } else if (delReport.type == "rate") {
         getReportRateMotel = await motel.findById(delReport.id1);
         dataReport = getReportRateMotel.find(
           (item) => JSON.stringify(item._id) === JSON.stringify(delReport.id2)
         );
-        if (dataReport)
-          io.notifyToUser(dataReport.owner, {
+        if (dataReport) {
+          io.notifyToUser(dataReport.user, {
             message: `Đánh giá nhà trọ của bạn đã bị xóa vì vi phạm nguyên tắc cộng đồng`,
             url: `/motels/${getReportRateMotel._id}`,
             imageUrl:
               "https://res.cloudinary.com/dpregsdt9/image/upload/v1639744800/notify/b2ff8pc5qbbtc9sqbvq4.png",
           });
+
+          change(dataReport.user, -15, io);
+        }
       }
 
       io.notifyToUser(delReport.owner, {
@@ -666,6 +694,7 @@ const approveRouter = (io) => {
         imageUrl:
           "http://res.cloudinary.com/dpregsdt9/image/upload/v1639808792/notify/dpebhnmfzkxu6ojekj3r.png",
       });
+      change(delReport.owner, 3, io);
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Lỗi không xác định", success: false });
@@ -675,10 +704,10 @@ const approveRouter = (io) => {
   //ok
   router.get("/reports", verifyToken, async (req, res) => {
     // lấy các tố cáo
-    if (req.user.isAdmin == false)
-      res.status(403).json({
-        message: "Bạn không đủ quyền hạn",
-      });
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không đủ quyền hạn", success: false });
     try {
       const { _limit, _page } = req.query;
       let rates = [];
@@ -789,10 +818,10 @@ const approveRouter = (io) => {
   router.delete("/posts/:id", verifyToken, async (req, res) => {
     //Xóa post khôgn duyệt
 
-    if (req.user.isAdmin == false)
-      res.status(403).json({
-        message: "Bạn không đủ quyền hạn",
-      });
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không đủ quyền hạn", success: false });
     try {
       const id = req.params.id;
       const deletePost = await post.findOneAndDelete({ _id: id, valid: false });
@@ -815,10 +844,10 @@ const approveRouter = (io) => {
   //good
   router.post("/posts/:id", verifyToken, async (req, res) => {
     // duyệt post
-    if (req.user.isAdmin == false)
-      res.status(403).json({
-        message: "Bạn không đủ quyền hạn",
-      });
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không đủ quyền hạn", success: false });
     try {
       const id = req.params.id;
       const approvePost = await post.findOneAndUpdate(
@@ -836,6 +865,7 @@ const approveRouter = (io) => {
           "https://res.cloudinary.com/dpregsdt9/image/upload/v1639490398/notify/verified_rrd4yn.png",
       });
       res.status(200).json({ message: "Đã duyệt bài viết", success: true });
+      change(approvePost.owner, 3, io);
       approvalStat.addPostApproval(
         approvePost._id,
         `Bài viết "${approvePost.title}" của `,
@@ -871,10 +901,10 @@ const approveRouter = (io) => {
   //good
   router.get("/posts", verifyToken, async (req, res) => {
     // lấy post chưa duyệt
-    if (req.user.isAdmin == false)
-      res.status(403).json({
-        message: "Bạn không đủ quyền hạn",
-      });
+    if (req.user.isAdmin == false && req.user.credit < 1001);
+    return res
+      .status(400)
+      .json({ message: "Bạn không đủ quyền hạn", success: false });
     try {
       const getPosts = await post
         .find({ valid: false })
@@ -940,10 +970,10 @@ const approveRouter = (io) => {
   // good
   router.delete("/rates/:motelId/:id", verifyToken, async (req, res) => {
     //Xóa đánh giá không duyệt
-    if (req.user.isAdmin == false)
-      res.status(403).json({
-        message: "Bạn không đủ quyền hạn",
-      });
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không đủ quyền hạn", success: false });
     try {
       const motelId = req.params.motelId;
       const id = req.params.id;
@@ -984,10 +1014,10 @@ const approveRouter = (io) => {
   //good
   router.post("/rates/:id", verifyToken, async (req, res) => {
     // Duyệt đánh giá
-    if (req.user.isAdmin == false)
-      res.status(403).json({
-        message: "Bạn không đủ quyền hạn",
-      });
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không đủ quyền hạn", success: false });
     try {
       const id = req.params.id;
       const approveRate = await motel.findOneAndUpdate(
@@ -1006,6 +1036,7 @@ const approveRouter = (io) => {
           .status(400)
           .json({ message: "Không tìm thấy thông tin", success: false });
       res.status(200).json({ message: "Thành công", success: true });
+      change(findRate.user, 3, io);
       await motel.findOneAndUpdate(
         { _id: approveRate._id },
         {
@@ -1068,10 +1099,10 @@ const approveRouter = (io) => {
   // good
   router.get("/rates", verifyToken, async (req, res) => {
     // lấy dánh sách đánh giá chưa duyệt
-    if (req.user.isAdmin == false)
-      res.status(403).json({
-        message: "Bạn không đủ quyền hạn",
-      });
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không đủ quyền hạn", success: false });
     try {
       let rates = [];
       const allMotel = await motel

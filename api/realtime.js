@@ -458,7 +458,6 @@ module.exports.listen = function socket(server) {
   };
 
   io.notifyToUser = async (userId, data) => {
-    console.log(data.message);
     const newId = uuid.v4();
 
     const findUser = await user.findById(userId);

@@ -472,14 +472,10 @@ const userRouter = (io) => {
         if (email) newDataUser.email = email;
         if (credit >= 0 && typeof credit === "number")
           newDataUser.credit = credit;
-        const userUpdated = await user.findByIdAndUpdate(
-          id,
-          {
-            $set: newDataUser,
-          },
-          { new: true }
-        );
-        changeRank(userUpdated);
+        const userUpdated = await user.findByIdAndUpdate(id, {
+          $set: newDataUser,
+        });
+
         if (userUpdated) {
           if (
             typeof newDataUser.avatarUrl !== "undefined" &&
@@ -492,10 +488,11 @@ const userRouter = (io) => {
             message: "Đã cập nhật thông tin tài khoản!",
             data: userUpdated,
           });
+          if (typeof credit == "number") changeRank(userUpdated, credit, io);
           if (req.user.isAdmin)
             io.notifyToUser(userUpdated._id, {
-              message: `Thông tin cá nhân của bạn đã được cập nhật`,
-              url: `/users/${userUpdated._id}`,
+              message: `Thông tin cá nhân của bạn đã được người quản trị cập nhật`,
+              url: `/profile/${userUpdated._id}`,
               imageUrl:
                 "https://res.cloudinary.com/dpregsdt9/image/upload/v1638661792/notify/security_bsszl5.png",
             });
