@@ -4,6 +4,7 @@ const motel = require("../models/motel");
 const report = require("../models/report");
 const school = require("../models/school");
 const user = require("../models/user");
+const { change } = require("../utils/creditFunction");
 const add = require("../utils/done");
 const removeVietNameseTones = require("../utils/removeVietnameseTones");
 const router = express.Router();
@@ -249,7 +250,7 @@ const rateRouter = (io) => {
               (findMotel.vote + star) /
               (findMotel.rate.filter((item) => item.valid == true).length + 1),
           });
-
+          change(req.user.id, 2, io);
           add(
             req.user.id,
             "Đánh giá nhà trọ",

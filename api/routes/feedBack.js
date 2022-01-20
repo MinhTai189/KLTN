@@ -28,8 +28,10 @@ const feekBackRouter = (io) => {
     }
   });
   router.delete("/:id", verifyToken, async (req, res) => {
-    if (req.user.isAdmin == false)
-      return res.status(400).json({ message: "Ban khong co quyen" });
+    if (req.user.isAdmin == false && req.user.credit < 701)
+      return res
+        .status(400)
+        .json({ message: "Bạn không đủ quyền hạn", success: false });
     const id = req.params.id;
     try {
       const deleteFeedBack = await feedBack.findByIdAndDelete(id);
@@ -45,8 +47,10 @@ const feekBackRouter = (io) => {
     }
   });
   router.get("/", verifyToken, async (req, res) => {
-    if (req.user.isAdmin == false)
-      return res.status(400).json({ message: "Ban khong co quyen" });
+    if (req.user.isAdmin == false && req.user.credit < 501)
+      return res
+        .status(400)
+        .json({ message: "Bạn không đủ quyền hạn", success: false });
     try {
       const getfeedBack = await feedBack
         .find()

@@ -16,9 +16,9 @@ const userUpdateMotel = require("../models/user-update-motel");
 const comment = require("../models/comment");
 const dashboardRoute = (io) => {
   router.get("/statisticals", verifyToken, async (req, res) => {
-    if (req.user.isAdmin == false)
+    if (req.user.isAdmin == false && req.user.credit < 501)
       return res
-        .status(403)
+        .status(400)
         .json({ message: "Bạn không có quyền", success: false });
     try {
       const quantityAccount = await user.count({ deleted: false });
@@ -90,9 +90,9 @@ const dashboardRoute = (io) => {
   });
 
   router.get("/recents", verifyToken, async (req, res) => {
-    if (req.user.isAdmin == false)
+    if (req.user.isAdmin == false && req.user.credit < 501)
       return res
-        .status(403)
+        .status(400)
         .json({ message: "Bạn không có quyền", success: false });
     try {
       const users = await user
@@ -227,9 +227,9 @@ const dashboardRoute = (io) => {
   //   }
   // });
   router.get("/lists", verifyToken, async (req, res) => {
-    if (req.user.isAdmin == false)
+    if (req.user.isAdmin == false && req.user.credit < 501)
       return res
-        .status(403)
+        .status(400)
         .json({ message: "Bạn không có quyền", success: false });
     try {
       let responseOnline = online.getUsers(1, -1);
@@ -282,9 +282,9 @@ const dashboardRoute = (io) => {
     }
   });
   router.get("/charts", verifyToken, async (req, res) => {
-    if (req.user.isAdmin == false)
+    if (req.user.isAdmin == false && req.user.credit < 501)
       return res
-        .status(403)
+        .status(400)
         .json({ message: "Bạn không có quyền", success: false });
     try {
       const motels = await motel.find().select("_id createdAt");
@@ -467,9 +467,9 @@ const dashboardRoute = (io) => {
     }
   });
   router.get("/stats", verifyToken, async (req, res) => {
-    if (req.user.isAdmin == false)
+    if (req.user.isAdmin == false && req.user.credit < 501)
       return res
-        .status(403)
+        .status(400)
         .json({ message: "Bạn không có quyền", success: false });
     const posts = await post.find({ valid: true }).select("_id subject");
     const subjects = [
