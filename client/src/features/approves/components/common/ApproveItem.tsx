@@ -65,6 +65,10 @@ const useStyles = makeStyles((theme: Theme) => ({
                     padding: theme.spacing(0.2, 0.7),
                     borderRadius: 10,
                     background: '#edeef2'
+                },
+
+                '&.right-controls': {
+                    gap: theme.spacing(1.5)
                 }
             },
         },
@@ -145,7 +149,6 @@ export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, t
                         style={{
                             borderColor: '#ff4d4f',
                             color: '#ff4d4f',
-                            marginRight: 16,
                             textTransform: 'initial'
                         }}
                         onClick={onRefuse}
@@ -161,7 +164,6 @@ export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, t
                         style={{
                             borderColor: '#bb86fc',
                             color: '#bb86fc',
-                            marginRight: 16,
                             textTransform: 'initial'
                         }}
                         onClick={handleOpenModal}
@@ -169,7 +171,7 @@ export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, t
                         {isReview ? 'Xem trước' : 'So sánh'}
                     </Button>}
 
-                    {!isReport ? <Button
+                    {!isReport && <Button
                         className='btn btn-accept'
                         color='primary'
                         variant='contained'
@@ -180,19 +182,7 @@ export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, t
                         onClick={onApprove}
                     >
                         Duyệt
-                    </Button>
-
-                        : <Button
-                            className='btn btn-accept'
-                            color='primary'
-                            variant='contained'
-                            size='small'
-                            style={{
-                                textTransform: 'initial'
-                            }}
-                        >
-                            Xem xét
-                        </Button>}
+                    </Button>}
                 </Box>
             </Box>
 

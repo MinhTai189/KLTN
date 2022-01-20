@@ -97,6 +97,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const PostViewSection = memo(({ postData }: Props) => {
     const classes = useStyles()
     const dispatch = useAppDispatch()
+    const [sizeAction, setSizeAction] = useState<'large' | 'small'>('large')
 
     const filter = useAppSelector(selectFilterPost)
     const currentUser: User | undefined = useAppSelector(selectCurrentUser)
@@ -115,6 +116,22 @@ export const PostViewSection = memo(({ postData }: Props) => {
                 })
         }
     }, [currentUser, postData])
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth <= 425)
+                setSizeAction('small')
+            else setSizeAction('large')
+        }
+
+        handleResize()
+
+        window.addEventListener('resize', handleResize)
+
+        return () => {
+            window.removeEventListener('resize', handleResize)
+        }
+    }, [])
 
     const handleLikePost = async (type: number, isClickBtn?: boolean) => {
         try {
@@ -227,6 +244,7 @@ export const PostViewSection = memo(({ postData }: Props) => {
                         isLike={likePost.isLike}
                         type={likePost.type}
                         handleLike={handleLikePost}
+                        sizeAction={sizeAction}
                     />
 
                     <Button

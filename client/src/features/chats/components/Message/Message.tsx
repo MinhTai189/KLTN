@@ -192,7 +192,7 @@ const Message = ({ message }: Props) => {
                         }
                     </Box>
 
-                    {type === TYPE_MESSAGE.link && <LinkPreview dataLink={dataLink} />}
+                    {!removed && type === TYPE_MESSAGE.link && <LinkPreview dataLink={dataLink} />}
                 </Box>
 
                 {isOwner && <Box className='btn-control' component='span'>

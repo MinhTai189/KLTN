@@ -3,6 +3,7 @@ import { Menu, MenuOpen, PersonAdd, Settings } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/styles'
 import { useAppSelector } from 'app/hooks'
 import { DetectClickOutsize } from 'components/Common/DetectClickOutsize'
+import { GENERAL_GROUP_ID } from 'constant/constant'
 import ChatContext from 'contexts/ChatContext'
 import { selectCurrentUser } from 'features/auth/authSlice'
 import { User } from 'models'
@@ -184,14 +185,14 @@ const ChatInfomation = () => {
                 </Box>
 
                 <ul className='controls'>
-                    <li className="control" onClick={() => setShowAddMemberModal(true)}>
+                    {activedGroup._id !== GENERAL_GROUP_ID && <li className="control" onClick={() => setShowAddMemberModal(true)}>
                         <Tooltip title='Thêm thành viên'>
                             <IconButton color="primary">
                                 <PersonAdd fontSize='small' />
                             </IconButton>
                         </Tooltip>
-                    </li>
-                    <li className="control">
+                    </li>}
+                    {activedGroup._id !== GENERAL_GROUP_ID && <li className="control">
                         <Box
                             className='setting'
                             component='span'
@@ -210,7 +211,7 @@ const ChatInfomation = () => {
                                     <ListSetting onClickChangeNameGroup={() => setShowChangeNameGroupModal(true)} />
                                 </DetectClickOutsize>}
                         </Box>
-                    </li>
+                    </li>}
                     <li className="control" onClick={() => setShowListOnline(!showListOnline)}>
                         <Tooltip title={showListOnline ? 'Thu gọn' : 'Danh sách thành viên'}>
                             <IconButton color="primary">

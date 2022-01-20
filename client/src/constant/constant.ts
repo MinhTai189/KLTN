@@ -4,6 +4,8 @@ export const REVIEW_ID = '6173ba553c954151dcc8fdf9';
 
 export const URL_GG_MAP = 'https://maps.google.com/maps?q=';
 
+export const GENERAL_GROUP_ID = '61e0c632b24f444c7591c752';
+
 export const NAVIGATION_ROUTES = [
   {
     route: '/',
