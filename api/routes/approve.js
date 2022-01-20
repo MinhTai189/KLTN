@@ -901,10 +901,10 @@ const approveRouter = (io) => {
   //good
   router.get("/posts", verifyToken, async (req, res) => {
     // lấy post chưa duyệt
-    if (req.user.isAdmin == false && req.user.credit < 1001);
-    return res
-      .status(400)
-      .json({ message: "Bạn không đủ quyền hạn", success: false });
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không đủ quyền hạn", success: false });
     try {
       const getPosts = await post
         .find({ valid: false })
