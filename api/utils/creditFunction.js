@@ -5,7 +5,7 @@ const change = async (userId, credit, io) => {
     .select("credit rank _id banned isAdmin");
   if (res)
     if (res.credit + credit >= 0) changeRankAfter(res, credit, io);
-    else if (res.credit + credit < 0 && res.isAdmin == false) {
+    else if (credit < 0 && res.credit + credit < 0 && res.isAdmin == false) {
       if (res.credit + credit > -10) {
         res.banned = new Date(Date.now() + 1000 * 60 * 60 * 24 * 3);
         res.save();
