@@ -34,6 +34,8 @@ function* handleLogin(action: PayloadAction<LoginData>) {
       return;
     }
 
+    clearToken();
+
     if (action.payload.rememberMe) {
       localStorage.setItem(
         'accessToken',
