@@ -5,6 +5,7 @@ import { ButtonCustom } from 'components/Common/Button'
 import { InputField } from 'components/FormFields'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
 import { convertSecondIntoMS } from 'utils'
 import { ForgotPasswordData } from '../models'
 import Header from './Header'
@@ -28,6 +29,10 @@ const useStyles = makeStyles(theme => ({
         outline: `7px solid ${theme.palette.primary.main}`,
         zIndex: 10,
 
+        [theme.breakpoints.down('sm')]: {
+            padding: theme.spacing(2, 1.5),
+        },
+
         '& .resent': {
             textAlign: 'center',
 
@@ -39,6 +44,12 @@ const useStyles = makeStyles(theme => ({
                 color: theme.palette.primary.main,
                 textDecoration: 'underline',
                 cursor: 'pointer',
+            }
+        },
+
+        '& .nav-link': {
+            '& a': {
+                color: theme.palette.primary.main
             }
         }
     },
@@ -93,6 +104,12 @@ const ForgotPasswork = ({ onSubmit, loading, sendMailSuccess }: Props) => {
             <Box>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <InputField type="email" control={control} name='email' label='Email' required={true} />
+
+                    <Box className='nav-link'>
+                        <Link to='/auth/login'>
+                            Quay lại trang đăng nhập
+                        </Link>
+                    </Box>
 
                     {sendMailSuccess && <Box className='resent' mt={1}>
                         <Typography className='text'>

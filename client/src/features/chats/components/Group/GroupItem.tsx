@@ -178,7 +178,7 @@ const checkSeenMessage = (listSeen: string[], meId: string) => {
 
 const GroupItem = ({ actived, group }: Props) => {
     const classes = useStyles()
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
 
     const [members, setMembers] = useState(group.members)
     const [lastMessage, setLastMessage] = useState({

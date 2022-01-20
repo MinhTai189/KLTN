@@ -7,7 +7,7 @@ let url = '';
 if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
   url = 'http://localhost:5000/api';
 } else {
-  url = 'http://kltnapi.herokuapp.com/api';
+  url = 'https://kltnapi.herokuapp.com/api';
 }
 
 const axiosClient = axios.create({

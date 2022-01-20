@@ -1,4 +1,4 @@
-import { ForgotPasswordData, RegisterData } from 'features/auth/models';
+import { ForgotPasswordData } from 'features/auth/models';
 import axiosClient from './axiosClient';
 
 const authApis = {

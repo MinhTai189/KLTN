@@ -89,7 +89,7 @@ const useStyles = makeStyles(theme => ({
 
         '& > .MuiAutocomplete-root': {
             '& .MuiAutocomplete-input': {
-                paddingLeft: "40px !important"
+                paddingLeft: "40px !important",
             },
 
             '& fieldset': {

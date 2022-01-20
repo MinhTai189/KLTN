@@ -1,6 +1,5 @@
 import { Box, Button, IconButton, makeStyles, Theme, Tooltip } from "@material-ui/core";
 import { Image, Send } from "@material-ui/icons";
-import { isFulfilled } from "@reduxjs/toolkit";
 import { useAppDispatch } from "app/hooks";
 import { ReactComponent as Emoij } from 'assets/images/emoij.svg';
 import { ReactComponent as Gif } from 'assets/images/gif-icon.svg';
@@ -10,7 +9,7 @@ import Picker from 'emoji-picker-react';
 import { chatActions } from "features/chats/chatSlice";
 import { useTyping, useUpload } from "hooks";
 import { AddChatMessage } from "models";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { checkSizeOneImg, socketClient } from "utils";
@@ -119,6 +118,18 @@ const ChatInput = () => {
 
     const count = useRef(0)
 
+    const handleTyping = useCallback(() => {
+        if (!groupId) return
+
+        socketClient.emit(SOCKET_EVENT.startTyping, groupId)
+    }, [groupId])
+
+    const handleStopTyping = useCallback(() => {
+        if (!groupId) return
+
+        socketClient.emit(SOCKET_EVENT.stopTyping, groupId)
+    }, [groupId])
+
     const handleGrowArea = () => {
         if (areaRef.current) {
             areaRef.current.style.height = '26px'
@@ -202,18 +213,6 @@ const ChatInput = () => {
         setShowGifSelector(false)
     }
 
-    const handleTyping = () => {
-        if (!groupId) return
-
-        socketClient.emit(SOCKET_EVENT.startTyping, groupId)
-    }
-
-    const handleStopTyping = () => {
-        if (!groupId) return
-
-        socketClient.emit(SOCKET_EVENT.stopTyping, groupId)
-    }
-
     useEffect(() => {
         if (count.current > 0) {
             if (isTyping) handleTyping()
@@ -221,7 +220,7 @@ const ChatInput = () => {
         }
 
         count.current++
-    }, [isTyping])
+    }, [isTyping, handleStopTyping, handleTyping])
 
     return (
         <Box className={classes.root}>

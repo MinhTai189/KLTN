@@ -4,7 +4,7 @@ import { Alert } from '@material-ui/lab'
 import { useGoogleLogin, useGoogleLogout } from '@toxa23/react-google-login'
 import { useAppSelector } from 'app/hooks'
 import { ButtonCustom } from 'components/Common/Button'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import useFacebook from "react-easy-facebook"
 import { useForm } from 'react-hook-form'
 import { Link } from "react-router-dom"
@@ -36,11 +36,16 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: '#fff',
         outline: `7px solid ${theme.palette.primary.main}`,
         zIndex: 10,
+
+        [theme.breakpoints.down('sm')]: {
+            padding: theme.spacing(2, 1.5),
+        }
     },
     wrap: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        flexWrap: 'wrap',
         width: '100%',
 
         "& a": {

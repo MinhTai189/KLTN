@@ -46,6 +46,11 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: '#fff',
         outline: `7px solid ${theme.palette.primary.main}`,
         zIndex: 10,
+
+        [theme.breakpoints.down('sm')]: {
+            padding: theme.spacing(2, 1.5),
+            marginBlock: theme.spacing(1),
+        }
     },
     grid: {
         padding: theme.spacing(1),
@@ -150,7 +155,7 @@ function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactE
             <Box>
                 <form onSubmit={handleSubmit(onSubmit)} autoComplete='off'>
                     <Grid container spacing={2}>
-                        <Grid item className={classes.grid} xs={12} md={5}>
+                        <Grid item className={classes.grid} sm={12} md={5}>
                             <Typography variant='h6'>
                                 Thông tin tài khoản
                             </Typography>
@@ -162,7 +167,7 @@ function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactE
 
                             <InputField type="email" control={control} name='email' label='Email' required={true} />
                         </Grid>
-                        <Grid item className={classes.grid} xs={12} md={7}>
+                        <Grid item className={classes.grid} sm={12} md={7}>
                             <Typography variant='h6'>
                                 Thông tin cá nhân
                             </Typography>
@@ -170,10 +175,10 @@ function FormRegister({ onSubmit, onChange, loading, errAvatar }: Props): ReactE
                             <InputField type="text" control={control} name='name' label='Họ và tên*' required={true} />
 
                             <Grid container spacing={1}>
-                                <Grid item md={12} lg={6}>
+                                <Grid item sm={12} md={6}>
                                     <AutoCompleteField label="Tỉnh*" title='name' onChange={handleProvinceSelected} options={optionsProvince} disabled={optionsProvince.length === 0 ? true : false} />
                                 </Grid>
-                                <Grid item md={12} lg={6}>
+                                <Grid item sm={12} md={6}>
                                     <AutoCompleteField label="Quận/Huyện/TP*" title='name' value={district} onChange={handleDistrictSelected} options={optionsDistrict} disabled={optionsDistrict.length === 0 ? true : false} />
                                 </Grid>
                             </Grid>

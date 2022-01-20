@@ -59,7 +59,7 @@ export const ListTool = ({ isPost, isOwner, data }: Props) => {
     const filterPost = useAppSelector(selectFilterPost)
     const { _id } = data
 
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
     const [loading, setLoading] = useState(false)
 
     const [reportContent, setReportContent] = useState('')

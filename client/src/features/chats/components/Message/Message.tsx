@@ -136,7 +136,7 @@ const Message = ({ message }: Props) => {
     const classes = useStyles()
 
     const dispatch = useAppDispatch()
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
     const [isOwner, setIsOwner] = useState(false)
 
     const { _id, type, content, urlImages, urlGif, dataLink, createdAt, seen, owner: { avatarUrl, name }, removed } = message

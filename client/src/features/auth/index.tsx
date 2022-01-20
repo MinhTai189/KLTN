@@ -1,23 +1,23 @@
 import { Container, makeStyles } from '@material-ui/core';
-import axiosClient from 'api/axiosClient';
-import { useAppDispatch } from 'app/hooks';
+import authApis from 'api/auth';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { useUpload } from 'hooks';
 import { Response } from 'models';
 import React, { useState } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { authActions } from './authSlice';
+import { calculateCreatedTimeHDMY } from 'utils';
+import Background from '../../assets/images/background-auth.jpg';
+import { authActions, selectCountLoginWrong } from './authSlice';
 import AddiRegister from './components/AddiRegister';
+import ChangePassword from './components/ChangePassword';
+import ConfirmEmail from './components/ConfirmEmail';
 import ForgotPasswork from './components/ForgotPasswork';
 import FormLogin from './components/FormLogin';
 import FormRegister from './components/FormRegister';
 import ResetPassword from './components/ResetPassword';
-import { AddiRegisterData, ForgotPasswordData, LoginData, RegisterData } from './models';
-import Background from '../../assets/images/background-auth.jpg'
-import ChangePassword from './components/ChangePassword';
 import VerificationEmail from './components/VerificationEmail';
-import ConfirmEmail from './components/ConfirmEmail';
-import authApis from 'api/auth';
-import { useUpload } from 'hooks';
+import { AddiRegisterData, ForgotPasswordData, LoginData, RegisterData } from './models';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -42,6 +42,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Auth() {
     const classes = useStyles();
+    const countLoginWrong = useAppSelector(selectCountLoginWrong)
 
     const history = useHistory();
     const dispatch = useAppDispatch();
@@ -106,6 +107,25 @@ export default function Auth() {
     }
 
     const handleSubmitLogin = (data: LoginData) => {
+        let preventLogin = localStorage.getItem('preventLogin')
+
+        if (countLoginWrong === 3 || preventLogin) {
+            const preventTime = new Date()
+            preventTime.setHours(preventTime.getHours() + 3)
+
+            !preventLogin && localStorage.setItem('preventLogin', JSON.stringify(preventTime))
+
+            preventLogin = JSON.parse(localStorage.getItem('preventLogin')!)
+
+            if (new Date(preventLogin!).getTime() >= Date.now()) {
+                toast.error(`Bạn đã bị chặn đăng nhập đến ${calculateCreatedTimeHDMY(preventLogin!)}, vì đã đăng nhập sai quá nhiều lần liên tiếp!`)
+
+                return
+            } else {
+                localStorage.removeItem('preventLogin')
+            }
+        }
+
         dispatch(authActions.login({ ...data, rememberMe }))
     }
 

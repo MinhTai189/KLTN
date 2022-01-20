@@ -150,6 +150,8 @@ export const AlbumMotel = ({ images, motelName }: Props) => {
     const [openPreviewModal, setOpenPreviewModal] = useState(false)
 
     const checkFavoriteMotel = useCallback(() => {
+        if (!currentUser?.favorite) return false
+
         return !!currentUser.favorite && currentUser.favorite.includes(id as string)
     },
         [currentUser, id])

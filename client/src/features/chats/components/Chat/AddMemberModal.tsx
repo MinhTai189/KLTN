@@ -32,7 +32,7 @@ const AddMemberModal = ({ open, onCancel }: Props) => {
     const classes = useStyles()
 
     const dispatch = useAppDispatch()
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
     const { activedGroup } = useContext(ChatContext)
 
     const [selectedMembers, setSelectedMembers] = useState<Owner[]>([])
