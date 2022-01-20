@@ -95,6 +95,7 @@ export const TopicCard = ({ image, title, view, count, type }: Props) => {
 
     const handleClickCreatePost = () => {
         if (type === 3) {
+            console.log('zoooooo', type);
             history.push('/create-post/review')
             return
         }

@@ -15,6 +15,7 @@ function* handleLogin(action: PayloadAction<LoginData>) {
     const data = {
       username: action.payload.username,
       password: action.payload.password,
+      accessToken: action.payload.accessToken,
     };
 
     const responseData: Response<User> = yield axiosClient.post('/login', data);

@@ -72,6 +72,7 @@ function FormLogin({ onSubmit, setRememberMe, onSuccessGG, onSuccessFB }: Props)
     const classes = useStyles()
     const clientId = '643013812637-sjj5ejfidpkjk93pt9l4t3qleplnof1m.apps.googleusercontent.com'
     const appId = '985420175361023'
+    const errMessage = useAppSelector(selectErr)
 
     const loading = useAppSelector(selectLoading)
     const { control, handleSubmit } = useForm<LoginData>({
@@ -114,7 +115,7 @@ function FormLogin({ onSubmit, setRememberMe, onSuccessGG, onSuccessFB }: Props)
     return (
         <Box className={classes.root}>
             <Header textBtn='ĐĂNG NHẬP' icon={<LockOpen />} />
-            {err && <Alert severity="error">Tài khoản hoặc mật khẩu không chính xác!</Alert>}
+            {err && <Alert severity="error">{errMessage}</Alert>}
             <Box>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <InputField type="text" control={control} name='username' label='Tài khoản' required={true} />

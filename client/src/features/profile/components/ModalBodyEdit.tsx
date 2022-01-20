@@ -214,7 +214,7 @@ export const ModalBodyEdit = ({ loading, updateUserData, handleSubmitEdit }: Pro
 
             <InputField type="text" control={control} name='name' label='Họ và tên*' required sizeField='small' />
 
-            <InputField type="email" control={control} name='email' label='Email*' required sizeField='small' />
+            <InputField type="email" control={control} name='email' disabled label='Email*' required sizeField='small' />
 
             <Grid container spacing={2}>
                 <Grid item sm={6}>
