@@ -11,7 +11,6 @@ interface Props {
     modalId?: string
     isUpdate?: boolean
     isReview?: boolean
-    isReport?: boolean
     type: string
     user: Owner
     createdAt: string
@@ -81,7 +80,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }))
 
-export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, type, user, createdAt, title, content, setDataPreviewModal, onApprove, onRefuse }: Props) => {
+export const ApproveItem = ({ children, modalId, isUpdate, isReview, type, user, createdAt, title, content, setDataPreviewModal, onApprove, onRefuse }: Props) => {
     const classes = useStyles()
     const valueContext = useContext(ApproveContext)
 
@@ -171,7 +170,7 @@ export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, t
                         {isReview ? 'Xem trước' : 'So sánh'}
                     </Button>}
 
-                    {!isReport && <Button
+                    <Button
                         className='btn btn-accept'
                         color='primary'
                         variant='contained'
@@ -182,7 +181,7 @@ export const ApproveItem = ({ children, modalId, isUpdate, isReview, isReport, t
                         onClick={onApprove}
                     >
                         Duyệt
-                    </Button>}
+                    </Button>
                 </Box>
             </Box>
 

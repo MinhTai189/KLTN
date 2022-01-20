@@ -273,7 +273,6 @@ export const ApproveSection = () => {
                                     return (
                                         <Grid key={report._id} item xs={6}>
                                             <ApproveItem
-                                                isReport
                                                 // @ts-ignore
                                                 type={listType[report.type]}
                                                 user={report.owner}
