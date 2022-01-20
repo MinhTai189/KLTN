@@ -36,7 +36,7 @@ const MemberRow = ({ style, member }: Props) => {
     const { setShowListMember } = useContext(ChatContext)
     const dispatch = useAppDispatch()
 
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
     const [disableKickBtn, setDisableKickBtn] = useState(false)
 
     const { groupId } = useParams<{ groupId: string }>()

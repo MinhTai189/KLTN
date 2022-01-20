@@ -27,7 +27,7 @@ export const TypingComment = forwardRef(({ isRely = false, repliedUserName, hand
     const classes = useStyles()
     const history = useHistory()
 
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
 
     return (
         <Box

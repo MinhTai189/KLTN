@@ -40,7 +40,7 @@ const MotelPage = () => {
                 _limit: 15,
             }))
         }
-    }, [dispatch, filter, listSchool.length, location.state])
+    }, [dispatch, listSchool.length, location.state])
 
     const handleSelectPagination = (e: ChangeEvent<unknown>, page: number) => {
         dispatch(motelActions.setFilter({ ...filter, _page: page }))

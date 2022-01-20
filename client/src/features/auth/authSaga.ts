@@ -60,8 +60,10 @@ function* handleLogin(action: PayloadAction<LoginData>) {
     //Redirect to Home page
     if (!action.payload.isAutoLogin) yield put(push('/'));
   } catch (err: any) {
-    if (err.response.data.message)
+    if (err.response.data.message) {
       yield put(authActions.loginFailed(err.response.data.message));
+      yield put(authActions.increaseCountLoginWrong());
+    }
   }
 }
 

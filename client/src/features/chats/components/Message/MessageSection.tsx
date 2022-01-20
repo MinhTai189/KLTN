@@ -15,10 +15,6 @@ import ChatInput from "../Input/ChatInput"
 import Message from "./Message"
 import TypingMessage from "./TypingMessage"
 
-interface Props {
-
-}
-
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: '100%',
@@ -58,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }))
 
-const MessageSection = (props: Props) => {
+const MessageSection = () => {
     const classes = useStyles()
     const history = useHistory()
     const { groupId } = useParams<{ groupId: string }>()
@@ -192,9 +188,6 @@ const MessageSection = (props: Props) => {
         socketClient.on(SOCKET_EVENT.someoneStopTyping, removeUserTyping)
 
         return () => {
-            if (messageContainerRef.current) {
-                messageContainerRef.current.removeEventListener('scroll', handleShowBtnScrollBottom)
-            }
 
             socketClient.emit(SOCKET_EVENT.unsubscribeGroup, {
                 groupId

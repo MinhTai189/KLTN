@@ -214,7 +214,7 @@ export const ProfieDetail = ({ user, init }: Props) => {
     const history = useHistory()
 
     const dispatch = useAppDispatch()
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
     const updateUserData = useAppSelector(selectUpdateUserData)
 
     const [showDropdown, setShowDropdown] = useState(false)
@@ -290,7 +290,7 @@ export const ProfieDetail = ({ user, init }: Props) => {
     }
 
     const handleChat = async () => {
-        if (!user || !currentUser.groupPrivate)
+        if (!user || !currentUser?.groupPrivate)
             return
 
         try {

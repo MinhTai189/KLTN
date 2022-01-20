@@ -11,7 +11,8 @@ interface Props {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-    root: {},
+    root: {
+    },
     wrapper: {
         display: 'flex',
         flexDirection: 'column',
@@ -38,7 +39,7 @@ export const ModalConfirm = ({ openModal, onOk, onCancel, loading = false }: Pro
     const classes = useStyles()
 
     return (
-        <Modal title='Xác nhận cập nhật thông tin' visible={openModal} onCancel={onCancel} onOk={onOk} confirmLoading={loading} cancelText='Hủy' okText='Xác nhận'>
+        <Modal zIndex={9999} className={classes.root} title='Xác nhận cập nhật thông tin' visible={openModal} onCancel={onCancel} onOk={onOk} confirmLoading={loading} cancelText='Hủy' okText='Xác nhận'>
             <Box className={classes.wrapper}>
                 <img src={OK} alt='ok illutration' />
 

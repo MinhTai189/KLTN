@@ -271,7 +271,7 @@ const optionalIcons: any = {
 export const ItemMotel = ({ motelData }: Props) => {
     const classes = useStyles()
     const { _id, thumbnail, optional, name, room, desc, school, status, mark } = motelData
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
     const dispatch = useAppDispatch()
 
     const loading = useAppSelector(selectLoading)
@@ -285,6 +285,8 @@ export const ItemMotel = ({ motelData }: Props) => {
     let indexOptional = 0;
 
     const checkFavoriteMotel = useCallback((): boolean => {
+        if (!currentUser?.favorite) return false
+
         return !!currentUser.favorite && currentUser.favorite.includes(_id as string)
     }, [_id, currentUser])
 

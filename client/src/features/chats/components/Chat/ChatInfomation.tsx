@@ -128,7 +128,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ChatInfomation = () => {
     const classes = useStyles()
     const { showListOnline, activedGroup, setShowListOnline, setShowListMember } = useContext(ChatContext)
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
 
     const history = useHistory()
     const [members, setMembers] = useState<any[]>([])

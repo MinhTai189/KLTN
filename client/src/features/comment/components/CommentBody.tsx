@@ -153,7 +153,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export const CommentBody = ({ positionAction = 'right', sizeAction = 'large', comment, repliedUser }: Props) => {
     const classes = useStyles()
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
     const filter = useAppSelector(selectFilterComment)
 
     const dispatch = useAppDispatch()

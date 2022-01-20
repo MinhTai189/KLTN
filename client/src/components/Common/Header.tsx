@@ -148,14 +148,14 @@ export const Header = ({ isChangeNav }: Props) => {
     const dispatch = useAppDispatch()
 
     const totalNewMessage = useAppSelector(selectTotalUnseenMessageChat)
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
 
     const [showNotif, setShowNotif] = useState(false)
     const [showDropdown, setShowDropdown] = useState(false)
     const [sizeBtn, setSizeBtn] = useState<any>('large')
 
     const amountNotif = useCallback(() => {
-        if (!currentUser.notify) return 0
+        if (!currentUser?.notify) return 0
 
         return currentUser.notify.filter(notify => !notify.read).length
     }, [currentUser])
@@ -164,6 +164,7 @@ export const Header = ({ isChangeNav }: Props) => {
         setSizeBtn(calcSizeBtn(window.innerWidth))
 
         window.addEventListener('resize', () => {
+
             const size = calcSizeBtn(window.innerWidth)
 
             setSizeBtn(size)

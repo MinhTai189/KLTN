@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const NotifDropDown = () => {
     const classes = useStyles()
 
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
     const history = useHistory()
     const dispatch = useAppDispatch()
 
@@ -121,7 +121,7 @@ export const NotifDropDown = () => {
             <Divider style={{ marginTop: 4 }} />
 
             <Box className='body'>
-                {currentUser.notify && currentUser.notify.length > 0 ? <>
+                {currentUser?.notify && currentUser.notify.length > 0 ? <>
                     <ul className='notif-list'>
                         {currentUser.notify.slice(0, 10).map(notify => (
                             <li

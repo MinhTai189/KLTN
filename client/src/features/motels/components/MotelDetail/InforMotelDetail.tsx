@@ -3,6 +3,7 @@ import { Facebook, Mail, Phone, Star, StarBorder, StarHalf } from "@material-ui/
 import { useAppSelector } from "app/hooks"
 import { ReactComponent as Zalo } from 'assets/images/zalo.svg'
 import { ButtonCustom, ChipCustom } from "components/Common"
+import { URL_GG_MAP } from "constant/constant"
 import { selectCurrentUser } from "features/auth/authSlice"
 import { Editor, MotelDetail, OwnerDetail, Room } from "models"
 import { useCallback, useEffect, useState } from "react"
@@ -191,6 +192,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 
             "& .text": {
                 fontSize: '0.9em',
+
+                '&.addr:hover': {
+                    transition: '300ms',
+                    color: theme.palette.primary.main
+                },
 
                 [theme.breakpoints.down('sm')]: {
                     fontSize: '0.8em',
@@ -537,7 +543,14 @@ export const InforMotelDetail = ({ dataMotel, room, handleSelectRoom, setOpenRoo
                 <div className="row">
                     <span className="label"><b>Địa chỉ:</b></span>
 
-                    <span className="text">{address}</span>
+                    <a
+                        href={`${URL_GG_MAP}${encodeURIComponent(address)}`}
+                        className="text addr"
+                        target='_blank'
+                        rel="noreferrer"
+                    >
+                        {address}
+                    </a>
                 </div>
 
                 <div className="row" style={{ alignItems: 'flex-start' }}>

@@ -20,6 +20,10 @@ const useStyles = makeStyles(theme => ({
         outline: `7px solid ${theme.palette.primary.main}`,
         zIndex: 10,
 
+        [theme.breakpoints.down('sm')]: {
+            padding: theme.spacing(2, 1.5),
+        },
+
         '& .resent': {
             textAlign: 'center',
 
@@ -49,11 +53,11 @@ const VerificationEmail = ({ sendMailSuccess, handleVerificationEmail }: Props) 
         if (!location.state?.email) return
 
         handleVerificationEmail(location.state.email)
-    }, [])
+    }, [handleVerificationEmail, location.state])
 
     useEffect(() => {
         if (!location.state?.email) history.push('/')
-    }, [])
+    }, [location.state, history])
 
     useEffect(handleSubmit, [handleSubmit, location.state])
 

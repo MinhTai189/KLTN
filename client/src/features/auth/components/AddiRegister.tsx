@@ -29,6 +29,10 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: '#fff',
         outline: `7px solid ${theme.palette.primary.main}`,
         zIndex: 10,
+
+        [theme.breakpoints.down('sm')]: {
+            padding: theme.spacing(2, 1.5),
+        }
     },
 }))
 

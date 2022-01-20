@@ -99,7 +99,7 @@ export const PostViewSection = memo(({ postData }: Props) => {
     const dispatch = useAppDispatch()
 
     const filter = useAppSelector(selectFilterPost)
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
     const [likePost, setLikePost] = useState<{ isLike: boolean; type: number }>({
         isLike: false,
         type: -1,

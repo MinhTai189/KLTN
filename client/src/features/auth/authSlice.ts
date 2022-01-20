@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
+import { RootState } from 'app/store';
 import { Notify, User } from 'models';
 import { LoginData } from './models';
 
@@ -7,6 +8,7 @@ interface AuthState {
   loading: boolean;
   error: string;
   currentUser?: User;
+  countLoginWrong: number;
 }
 
 const initialState: AuthState = {
@@ -14,6 +16,7 @@ const initialState: AuthState = {
   loading: false,
   currentUser: undefined,
   error: '',
+  countLoginWrong: 0,
 };
 
 const authSlice = createSlice({
@@ -108,6 +111,9 @@ const authSlice = createSlice({
         notify: newNotifies,
       };
     },
+    increaseCountLoginWrong(state) {
+      state.countLoginWrong++;
+    },
   },
 });
 
@@ -115,10 +121,13 @@ const authSlice = createSlice({
 export const authActions = authSlice.actions;
 
 //selectors
-export const selectIsLogged = (state: any) => state.auth.isLogged;
-export const selectLoading = (state: any) => state.auth.loading;
-export const selectCurrentUser = (state: any) => state.auth.currentUser;
-export const selectErr = (state: any) => state.auth.error;
+export const selectIsLogged = (state: RootState) => state.auth.isLogged;
+export const selectLoading = (state: RootState) => state.auth.loading;
+export const selectCurrentUser = (state: RootState) => state.auth.currentUser;
+export const selectErr = (state: RootState) => state.auth.error;
+export const selectCountLoginWrong = (state: RootState) =>
+  state.auth.countLoginWrong;
+
 export const selectUpdateUserData = createSelector(
   selectCurrentUser,
   (currentUser: any) => {

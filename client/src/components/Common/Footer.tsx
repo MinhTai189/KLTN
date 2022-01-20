@@ -185,7 +185,7 @@ const socials = [
 
 export const Footer = () => {
     const classes = useStyles()
-    const currentUser: User = useAppSelector(selectCurrentUser)
+    const currentUser: User | undefined = useAppSelector(selectCurrentUser)
     const [feedback, setFeedback] = useState({
         title: '',
         content: ''
