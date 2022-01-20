@@ -451,7 +451,7 @@ const approveRouter = (io) => {
 
           totalLikes: newMotel.user.likes.length,
         },
-        images: oldMotel.images.map((image) => {
+        images: newMotel.images.map((image) => {
           if (image.url) return image.url;
           else return image;
         }),

@@ -479,7 +479,7 @@ module.exports.listen = function socket(server) {
     };
     findUser.notify.push(notify);
     if (findUser.notify.length > 30) findUser.notify.shift();
-    findUser.save();
+    findUser.update();
     const userToSend = io.users.find(
       (user) => JSON.stringify(user.id) === JSON.stringify(userId)
     );
