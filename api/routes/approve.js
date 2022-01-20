@@ -673,7 +673,7 @@ const approveRouter = (io) => {
         }
       } else if (delReport.type == "rate") {
         getReportRateMotel = await motel.findById(delReport.id1);
-        dataReport = getReportRateMotel.find(
+        dataReport = getReportRateMotel.rate.find(
           (item) => JSON.stringify(item._id) === JSON.stringify(delReport.id2)
         );
         if (dataReport) {
@@ -901,10 +901,10 @@ const approveRouter = (io) => {
   //good
   router.get("/posts", verifyToken, async (req, res) => {
     // lấy post chưa duyệt
-    if (req.user.isAdmin == false && req.user.credit < 1001);
-    return res
-      .status(400)
-      .json({ message: "Bạn không đủ quyền hạn", success: false });
+    if (req.user.isAdmin == false && req.user.credit < 1001)
+      return res
+        .status(400)
+        .json({ message: "Bạn không đủ quyền hạn", success: false });
     try {
       const getPosts = await post
         .find({ valid: false })
@@ -1065,7 +1065,7 @@ const approveRouter = (io) => {
         findRate.user
       );
       add(
-        req.user.id,
+        findRate.user,
         "Đánh giá nhà trọ",
         {
           type: "rating",

@@ -5,14 +5,14 @@ const change = async (userId, credit, io) => {
     .select("credit rank _id banned isAdmin");
   if (res)
     if (res.credit + credit >= 0) changeRankAfter(res, credit, io);
-    else if (res.credit + credit < 0 && res.isAdmin == false) {
-      if (res.credit + credit > -5) {
+    else if (credit < 0 && res.credit + credit < 0 && res.isAdmin == false) {
+      if (res.credit + credit > -10) {
         res.banned = new Date(Date.now() + 1000 * 60 * 60 * 24 * 3);
         res.save();
-      } else if (res.credit + credit > -10) {
+      } else if (res.credit + credit > -20) {
         res.banned = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
         res.save();
-      } else if (res.credit + credit > -20) {
+      } else if (res.credit + credit > -50) {
         res.banned = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
         res.save();
       } else {

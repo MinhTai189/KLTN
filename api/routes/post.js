@@ -216,7 +216,7 @@ const postRouter = (io) => {
         }
       }
       responsePosts = responsePosts.sort((r1, r2) => {
-        return new Date(r2) - new Date(r1);
+        return new Date(r2.createdAt) - new Date(r1.createdAt);
       });
       if (typeof _user === "string")
         responsePosts = responsePosts.filter((item) => {
